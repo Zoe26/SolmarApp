@@ -86,6 +86,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     private Handler mHandler; // to display Toast message
     private final IBinder mBinder = new LocalBinder(); // Binder given to client
     Tracking tracking = new Tracking();
+    private SignalRService mService;
     //**********************************************************************************************
 
     @Override
@@ -98,6 +99,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     @Override
     public void onCreate() {
         super.onCreate();
+
+        startService(new Intent(this, SignalRService.class));
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
@@ -239,9 +242,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     @Override
     public void onLocationChanged(Location location) {
-//        Log.e("LocationFusedApi ", location.toString());
+        Log.e("LocationFusedApi ", location.toString());
         requestActivityUpdates();
-//        sendTracking(location);
+        sendTracking(location);
 
     }
 
@@ -339,29 +342,29 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         } catch (Exception e) {}
 
 
-        numberDevice = number;//"945783335";//"931732035";
-        FechaCelular = formatoGuardar.format(currentDate.getTime());
-        Latitud = Double.toString(location.getLatitude());
-        Longitud = Double.toString(location.getLongitude());
-        EstadoCoordenada = "OK";
-        OrigenCoordenada = "fused";
-        Velocidad = Double.toString(location.getSpeed());
-        Bateria = Double.toString(nivelBateria);
-        Precision = Double.toString(location.getAccuracy());
-        SenialCelular = "5";
-        GpsHabilitado = GPSHabilitado;
-        WifiHabilitado = NetworkHabilitado;
-        DatosHabilitado = MobileHabilitado;
-        ModeloEquipo = Build.MODEL;
-        Imei = telephonyManager.getDeviceId();
-        VersionApp = Integer.toString(Build.VERSION.SDK_INT);
-        FechaEjecucionAlarm = formatoGuardar.format(currentDate.getTime());
-        Time = formatoGuardar.format(location.getTime());
-        ElapsedRealtimeNanos = Long.toString(location.getElapsedRealtimeNanos());
-        Altitude = Double.toString(location.getAltitude());;
-        Bearing = Double.toString(location.getBearing());;
-        Extras = "Tracking@5246.Solmar";
-        Class = "Location";
+//        numberDevice = number;//"945783335";//"931732035";
+//        FechaCelular = formatoGuardar.format(currentDate.getTime());
+//        Latitud = Double.toString(location.getLatitude());
+//        Longitud = Double.toString(location.getLongitude());
+//        EstadoCoordenada = "OK";
+//        OrigenCoordenada = "fused";
+//        Velocidad = Double.toString(location.getSpeed());
+//        Bateria = Double.toString(nivelBateria);
+//        Precision = Double.toString(location.getAccuracy());
+//        SenialCelular = "5";
+//        GpsHabilitado = GPSHabilitado;
+//        WifiHabilitado = NetworkHabilitado;
+//        DatosHabilitado = MobileHabilitado;
+//        ModeloEquipo = Build.MODEL;
+//        Imei = telephonyManager.getDeviceId();
+//        VersionApp = Integer.toString(Build.VERSION.SDK_INT);
+//        FechaEjecucionAlarm = formatoGuardar.format(currentDate.getTime());
+//        Time = formatoGuardar.format(location.getTime());
+//        ElapsedRealtimeNanos = Long.toString(location.getElapsedRealtimeNanos());
+//        Altitude = Double.toString(location.getAltitude());;
+//        Bearing = Double.toString(location.getBearing());;
+//        Extras = "Tracking@5246.Solmar";
+//        Class = "Location";
 
         tracking.Numero = number;//"945783335";//"931732035";
         tracking.FechaCelular = formatoGuardar.format(currentDate.getTime());
@@ -388,9 +391,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.Class = "Location";
         tracking.Actividad = "NO";
 
-        SignalRService signalRService = new SignalRService();
-        signalRService.sendMessage(tracking);
+        try {
 
+            mService.sendMessage(tracking);
+            Log.e("LocationFusedApi ", "sendMessage");
+        } catch (Exception e) {
+            Log.e("LocationFusedApi ", "Error");
+        }
 
 //        new PostAsync().execute(numberDevice, FechaCelular, Latitud, Longitud, EstadoCoordenada, OrigenCoordenada, Velocidad,
 //                Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, DatosHabilitado, ModeloEquipo, Imei,
