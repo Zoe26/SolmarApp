@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.idslatam.solmar.Models.Entities.Tracking;
+
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.Action;
@@ -48,7 +50,7 @@ public class SignalRService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e("Signalr", "on satart");
+        Log.e("Signalr", "on start");
         int result = super.onStartCommand(intent, flags, startId);
         startSignalR();
         Log.e("Signalr", "Execute");
@@ -100,20 +102,22 @@ public class SignalRService extends Service {
         String serverUrl = "http://solmar.azurewebsites.net/";
         mHubConnection = new HubConnection(serverUrl);
         //mHubConnection.setCredentials(credentials);
-        String SERVER_HUB_CHAT = "deviceHub";
+        String SERVER_HUB_CHAT = "trackingHub";
         mHubProxy = mHubConnection.createHubProxy(SERVER_HUB_CHAT);
         ClientTransport clientTransport = new ServerSentEventsTransport(mHubConnection.getLogger());
         SignalRFuture<Void> signalRFuture = mHubConnection.start(clientTransport);
         Log.e("Signal R", signalRFuture.toString());
         try {
             signalRFuture.get();
-            Log.e("Try", "startSignalR: ");
+            Log.e("Try", "startSignalR");
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return;
         }
 
-        mHubProxy.invoke(String.class, "send", "Olimpo", "ganaste tu marraqueta").done(new Action<String>() {
+        Tracking tracking = new Tracking();
+
+        mHubProxy.invoke(String.class, "addMarker", tracking).done(new Action<String>() {
             @Override
             public void run(String s) throws Exception {
                 Log.e("Signal R", "Ejecución Ok");
