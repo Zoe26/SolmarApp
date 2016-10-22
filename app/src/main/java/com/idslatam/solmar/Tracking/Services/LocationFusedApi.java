@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -81,30 +83,31 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //**********************************************************************************************
-    private HubConnection mHubConnection;
-    private HubProxy mHubProxy;
-    private Handler mHandler; // to display Toast message
-    private final IBinder mBinder = new LocalBinder(); // Binder given to client
+//    private HubConnection mHubConnection;
+//    private HubProxy mHubProxy;
+//    private Handler mHandler; // to display Toast message
+//    private final IBinder mBinder = new LocalBinder(); // Binder given to client
     Tracking tracking = new Tracking();
+    private final Context mContext = this;
     private SignalRService mService;
     //**********************************************************************************************
 
     @Override
     public IBinder onBind(Intent intent) {
-        // Return the communication channel to the service.
-//        startSignalR();
-        return mBinder;
+        return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        startService(new Intent(this, SignalRService.class));
+//        startService(new Intent(this, SignalRService.class));
+        Intent intent = new Intent();
+        intent.setClass(mContext, SignalRService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
-        mHandler = new Handler(Looper.getMainLooper());
         buildGoogleApiClient();
 
     }
@@ -119,89 +122,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mHubConnection.stop();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
     }
 
-    // METODOS SIGNALR *********************************************************************************
-    public class LocalBinder extends Binder {
-        public LocationFusedApi getService() {
-            // Return this instance of SignalRService so clients can call public methods
-            return LocationFusedApi.this;
-        }
-    }
-
-    public void sendMessage(String message) {
-        String SERVER_METHOD_SEND = "Send";
-        mHubProxy.invoke(SERVER_METHOD_SEND, message);
-    }
-
-    private void startSignalR() {
-        Platform.loadPlatformComponent(new AndroidPlatformComponent());
-
-        /*Credentials credentials = new Credentials() {
-            @Override
-            public void prepareRequest(Request request) {
-                request.addHeader("User-Name", "BNK");
-            }
-        };*/
-
-        String serverUrl = "http://solmar.azurewebsites.net/";
-        mHubConnection = new HubConnection(serverUrl);
-        //mHubConnection.setCredentials(credentials);
-        String SERVER_HUB_CHAT = "trackingHub";
-        mHubProxy = mHubConnection.createHubProxy(SERVER_HUB_CHAT);
-        ClientTransport clientTransport = new ServerSentEventsTransport(mHubConnection.getLogger());
-        SignalRFuture<Void> signalRFuture = mHubConnection.start(clientTransport);
-        Log.e("Signal R", signalRFuture.toString());
-        try {
-            signalRFuture.get();
-            Log.e("Try", "startSignalR");
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return;
-        }
-
-
-
-        mHubProxy.invoke(String.class, "addMarker", tracking).done(new Action<String>() {
-            @Override
-            public void run(String s) throws Exception {
-                Log.e("Signal R", "Ejecución Ok");
-                Log.w("SimpleSignalR", s);
-            }
-        }).onError(new ErrorCallback() {
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("SimpleSignalR", throwable.toString());
-            }
-        });
-
-        String HELLO_MSG = "Hello from Android!";
-        sendMessage(HELLO_MSG);
-
-        Log.e("Signal R ENvio", "Envio de mensaje");
-
-        String CLIENT_METHOD_BROADAST_MESSAGE = "addNewMessageToPage";
-
-        mHubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE,
-                new SubscriptionHandler1<CustomMessage>() {
-                    @Override
-                    public void run(final CustomMessage msg) {
-                        final String finalMsg = msg.UserName + " says " + msg.Message;
-                        // display Toast message
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), finalMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-                , CustomMessage.class);
-    }
     // METODOS FUSED API *******************************************************************************
     protected synchronized void buildGoogleApiClient() {
         Log.e("Ingreso", "Building GoogleApiClient");
@@ -405,6 +330,23 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         return  true;
     }
+
+    private final ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to SignalRService, cast the IBinder and get SignalRService instance
+            SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
+            mService = binder.getService();
+//            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+//            mBound = false;
+        }
+    };
 
     // HILO DE ENVIO ***********************************************************************************
     class PostAsync extends AsyncTask<String, String, JSONObject> {
