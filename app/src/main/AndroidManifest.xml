@@ -23,16 +23,15 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".Api.Singalr.MainActivity">
+        </activity>
+        <activity android:name=".View.Bienvenido"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".View.Bienvenido"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/FullscreenTheme">
-
         </activity>
         <activity android:name=".View.RegisterNumber"
             android:configChanges="orientation|keyboardHidden|screenSize"

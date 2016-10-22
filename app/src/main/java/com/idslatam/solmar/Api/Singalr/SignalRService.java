@@ -84,9 +84,21 @@ public class SignalRService extends Service {
     /**
      * method for clients (activities)
      */
-    public void sendMessage(String message) {
-        String SERVER_METHOD_SEND = "Send";
-        mHubProxy.invoke(SERVER_METHOD_SEND, message);
+    public void sendMessage(Tracking marker) {
+//        String SERVER_METHOD_SEND = "addMarker";
+//        mHubProxy.invoke(SERVER_METHOD_SEND, marker);
+        mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
+            @Override
+            public void run(String s) throws Exception {
+                Log.e("Signal R", "Ejecución Ok");
+                Log.w("SimpleSignalR", s);
+            }
+        }).onError(new ErrorCallback() {
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e("SimpleSignalR", throwable.toString());
+            }
+        });
     }
 
     private void startSignalR() {
@@ -131,7 +143,7 @@ public class SignalRService extends Service {
         });
 
         String HELLO_MSG = "Hello from Android!";
-        sendMessage(HELLO_MSG);
+//        sendMessage(HELLO_MSG);
 
         Log.e("Signal R ENvio", "Envio de mensaje");
 

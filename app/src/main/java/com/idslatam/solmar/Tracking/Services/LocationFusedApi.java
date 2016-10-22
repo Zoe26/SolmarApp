@@ -17,9 +17,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -38,7 +41,10 @@ import com.google.android.gms.location.LocationServices;
 
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
+import com.idslatam.solmar.Api.Singalr.CustomMessage;
+import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.R;
 
 import org.json.JSONObject;
@@ -46,6 +52,20 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+
+import microsoft.aspnet.signalr.client.hubs.HubConnection;
+import microsoft.aspnet.signalr.client.hubs.HubProxy;
+import microsoft.aspnet.signalr.client.Action;
+import microsoft.aspnet.signalr.client.ErrorCallback;
+import microsoft.aspnet.signalr.client.Platform;
+import microsoft.aspnet.signalr.client.SignalRFuture;
+import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
+import microsoft.aspnet.signalr.client.hubs.HubConnection;
+import microsoft.aspnet.signalr.client.hubs.HubProxy;
+import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
+import microsoft.aspnet.signalr.client.transport.ClientTransport;
+import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
 
 public class LocationFusedApi extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -60,10 +80,19 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    //**********************************************************************************************
+    private HubConnection mHubConnection;
+    private HubProxy mHubProxy;
+    private Handler mHandler; // to display Toast message
+    private final IBinder mBinder = new LocalBinder(); // Binder given to client
+    Tracking tracking = new Tracking();
+    //**********************************************************************************************
+
     @Override
     public IBinder onBind(Intent intent) {
-
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Return the communication channel to the service.
+//        startSignalR();
+        return mBinder;
     }
 
     @Override
@@ -72,7 +101,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
-
+        mHandler = new Handler(Looper.getMainLooper());
         buildGoogleApiClient();
 
     }
@@ -80,18 +109,96 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mGoogleApiClient.connect();
-
+//        startSignalR();
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mHubConnection.stop();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
     }
 
+    // METODOS SIGNALR *********************************************************************************
+    public class LocalBinder extends Binder {
+        public LocationFusedApi getService() {
+            // Return this instance of SignalRService so clients can call public methods
+            return LocationFusedApi.this;
+        }
+    }
+
+    public void sendMessage(String message) {
+        String SERVER_METHOD_SEND = "Send";
+        mHubProxy.invoke(SERVER_METHOD_SEND, message);
+    }
+
+    private void startSignalR() {
+        Platform.loadPlatformComponent(new AndroidPlatformComponent());
+
+        /*Credentials credentials = new Credentials() {
+            @Override
+            public void prepareRequest(Request request) {
+                request.addHeader("User-Name", "BNK");
+            }
+        };*/
+
+        String serverUrl = "http://solmar.azurewebsites.net/";
+        mHubConnection = new HubConnection(serverUrl);
+        //mHubConnection.setCredentials(credentials);
+        String SERVER_HUB_CHAT = "trackingHub";
+        mHubProxy = mHubConnection.createHubProxy(SERVER_HUB_CHAT);
+        ClientTransport clientTransport = new ServerSentEventsTransport(mHubConnection.getLogger());
+        SignalRFuture<Void> signalRFuture = mHubConnection.start(clientTransport);
+        Log.e("Signal R", signalRFuture.toString());
+        try {
+            signalRFuture.get();
+            Log.e("Try", "startSignalR");
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return;
+        }
+
+
+
+        mHubProxy.invoke(String.class, "addMarker", tracking).done(new Action<String>() {
+            @Override
+            public void run(String s) throws Exception {
+                Log.e("Signal R", "Ejecución Ok");
+                Log.w("SimpleSignalR", s);
+            }
+        }).onError(new ErrorCallback() {
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e("SimpleSignalR", throwable.toString());
+            }
+        });
+
+        String HELLO_MSG = "Hello from Android!";
+        sendMessage(HELLO_MSG);
+
+        Log.e("Signal R ENvio", "Envio de mensaje");
+
+        String CLIENT_METHOD_BROADAST_MESSAGE = "addNewMessageToPage";
+
+        mHubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE,
+                new SubscriptionHandler1<CustomMessage>() {
+                    @Override
+                    public void run(final CustomMessage msg) {
+                        final String finalMsg = msg.UserName + " says " + msg.Message;
+                        // display Toast message
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), finalMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+                , CustomMessage.class);
+    }
     // METODOS FUSED API *******************************************************************************
     protected synchronized void buildGoogleApiClient() {
         Log.e("Ingreso", "Building GoogleApiClient");
@@ -231,6 +338,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             nivelBateria = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         } catch (Exception e) {}
 
+
         numberDevice = number;//"945783335";//"931732035";
         FechaCelular = formatoGuardar.format(currentDate.getTime());
         Latitud = Double.toString(location.getLatitude());
@@ -255,13 +363,38 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         Extras = "Tracking@5246.Solmar";
         Class = "Location";
 
-//        String guidDisp ="F7D713E5-EBFF-4514-A506-331C3C71B76F";
-        //6E9A2DA9-98BE-409F-AC39-57F9A1650783
-        //F7D713E5-EBFF-4514-A506-331C3C71B76F
+        tracking.Numero = number;//"945783335";//"931732035";
+        tracking.FechaCelular = formatoGuardar.format(currentDate.getTime());
+        tracking.Latitud = Double.toString(location.getLatitude());
+        tracking.Longitud = Double.toString(location.getLongitude());
+        tracking.EstadoCoordenada = "OK";
+        tracking.OrigenCoordenada = "fused";
+        tracking.Velocidad = Double.toString(location.getSpeed());
+        tracking.Bateria = Double.toString(nivelBateria);
+        tracking.Presicion = Double.toString(location.getAccuracy());
+        tracking.SenialCelular = "5";
+        tracking.GpsHabilitado = GPSHabilitado;
+        tracking.WifiHabilitado = NetworkHabilitado;
+        tracking.DatosHabilitado = MobileHabilitado;
+        tracking.ModeloEquipo = Build.MODEL;
+        tracking.Imei = telephonyManager.getDeviceId();
+        tracking.VersionApp = Integer.toString(Build.VERSION.SDK_INT);
+        tracking.FechaEjecucionAlarm = formatoGuardar.format(currentDate.getTime());
+        tracking.Time = formatoGuardar.format(location.getTime());
+        tracking.ElapsedRealtimeNanos = Long.toString(location.getElapsedRealtimeNanos());
+        tracking.Altitude = Double.toString(location.getAltitude());;
+        tracking.Bearing = Double.toString(location.getBearing());;
+        tracking.Extras = "Tracking@5246.Solmar";
+        tracking.Class = "Location";
+        tracking.Actividad = "NO";
 
-        new PostAsync().execute(numberDevice, FechaCelular, Latitud, Longitud, EstadoCoordenada, OrigenCoordenada, Velocidad,
-                Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, DatosHabilitado, ModeloEquipo, Imei,
-                VersionApp, FechaEjecucionAlarm, Time, ElapsedRealtimeNanos, Altitude, Bearing, Extras, Class, guidDispositivo);
+        SignalRService signalRService = new SignalRService();
+        signalRService.sendMessage(tracking);
+
+
+//        new PostAsync().execute(numberDevice, FechaCelular, Latitud, Longitud, EstadoCoordenada, OrigenCoordenada, Velocidad,
+//                Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, DatosHabilitado, ModeloEquipo, Imei,
+//                VersionApp, FechaEjecucionAlarm, Time, ElapsedRealtimeNanos, Altitude, Bearing, Extras, Class, guidDispositivo);
 
         return  true;
     }
