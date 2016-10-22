@@ -662,7 +662,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         private ProgressDialog pDialog;
 
-        private final String URL = URL_API.concat("/api/dispositivo");
+        private final String URL = URL_API.concat("api/dispositivo");
         private static final String TAG_SUCCESS = "success";
         private static final String TAG_MESSAGE = "message";
 
