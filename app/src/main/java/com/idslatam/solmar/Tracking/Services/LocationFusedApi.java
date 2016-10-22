@@ -83,10 +83,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //**********************************************************************************************
-//    private HubConnection mHubConnection;
-//    private HubProxy mHubProxy;
-//    private Handler mHandler; // to display Toast message
-//    private final IBinder mBinder = new LocalBinder(); // Binder given to client
     Tracking tracking = new Tracking();
     private final Context mContext = this;
     private SignalRService mService;
@@ -348,84 +344,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
     };
 
-    // HILO DE ENVIO ***********************************************************************************
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
 
-        JsonParser jsonParser = new JsonParser();
-
-        private ProgressDialog pDialog;
-
-        private final String URL = URL_API.concat("api/Tracking");//"http://solmar.azurewebsites.net/api/Tracking";
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-
-                params.put("Numero", args[0]);
-                params.put("FechaCelular", args[1]);
-                params.put("Latitud", args[2]);
-                params.put("Longitud", args[3]);
-                params.put("EstadoCoordenada", args[4]);
-                params.put("OrigenCoordenada", args[5]);
-                params.put("Velocidad", args[6]);
-                params.put("Bateria", args[7]);
-                params.put("Precision", args[8]);
-                params.put("SenialCelular", args[9]);
-                params.put("GpsHabilitado", args[10]);
-                params.put("WifiHabilitado", args[11]);
-                params.put("DatosHabilitado", args[12]);
-                params.put("ModeloEquipo", args[13]);
-                params.put("Imei", args[14]);
-                params.put("VersionApp", args[15]);
-                params.put("FechaAlarma", args[16]);
-                params.put("Time", args[17]);
-                params.put("ElapsedRealtimeNanos", args[18]);
-                params.put("Altitude", args[19]);
-                params.put("Bearing", args[20]);
-                params.put("Extras", args[21]);
-                params.put("Classx", args[22]);
-                params.put("DispositivoId", args[23]);
-
-                JSONObject json = jsonParser.makeHttpRequest(URL, "POST", params);
-
-                if (json != null) {
-
-                    Log.e("JSON", json.toString());
-                    return json;
-
-                } else {
-                    Log.e("HTTP", "Error Json Request");
-                }
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-
-
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
-        }
-    }
 
     //*************************************************************************************************
     private boolean isGPSAvailable() {

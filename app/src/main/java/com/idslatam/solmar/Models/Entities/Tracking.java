@@ -37,7 +37,7 @@ public class Tracking {
     public static final String KEY_FechaEjecucionAlarm = "FechaEjecucionAlarm";
 
 
-    public int TrackingId;
+//    public int TrackingId;
     public String Numero;
     public String FechaCelular;
     public String Latitud;
@@ -54,10 +54,10 @@ public class Tracking {
     public String ModeloEquipo;
     public String Imei;
     public String VersionApp;
-    public String EstadoEnvio;
-    public String FechaCelularIso;
-    public String FechaLimite;
-    public String FechaDelayed;
+//    public String EstadoEnvio;
+//    public String FechaCelularIso;
+//    public String FechaLimite;
+//    public String FechaDelayed;
     public String FechaEjecucionAlarm;
     public String Time;
     public String Altitude;
