@@ -3,6 +3,7 @@ package com.idslatam.solmar.Api.Http;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.google.android.gms.location.DetectedActivity;
 import com.idslatam.solmar.R;
 
 /**
@@ -25,7 +26,7 @@ public class Constants {
             ".ACTIVITY_UPDATES_REQUESTED";
 
     public static final long DETECTION_INTERVAL_IN_MILLISECONDS = 0;
-/*
+
     public static String getActivityString(Context context, int detectedActivityType) {
         Resources resources = context.getResources();
         switch(detectedActivityType) {
@@ -49,7 +50,7 @@ public class Constants {
                 return resources.getString(R.string.unidentifiable_activity, detectedActivityType);
         }
     }
-*/
+
     public String getURL() {
         return URL;
     }

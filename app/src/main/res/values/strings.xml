@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">Solmar</string>
+    <string name="title_app">SOLGIS</string>
+    <!-- Activity Login -->
+    <string name="txt_bienvenido">Bienvenido a Solgis</string>
+
+    <!-- Activity detection strings -->
+    <string name="in_vehicle">VEHICULO</string>
+    <string name="on_bicycle">BICICLETA</string>
+    <string name="on_foot">CAMINANDOOCORRIENDO</string>
+    <string name="running">CORRIENDO</string>
+    <string name="still">SINMOVIMIENTO</string>
+    <string name="tilting">INCLINACION</string>
+    <string name="unknown">ACTIVIDADNODETECTADA</string>
+    <string name="walking">CAMINANDO</string>
+    <string name="unidentifiable_activity">ACTIVIDAD SIN IDENTIFICAR: %1$d </string>
+
+    <string name="detected_activities_title">ACTIVIDADES DETECTADAS</string>
+    <string name="not_connected">GoogleApiClient not yet connected. Try again.</string>
+
+    <string name="title_activity_bienvenido">Bienvenido</string>
+    <string name="dummy_button">Actualizar</string>
+    <string name="dummy_content">SOLGIS\nBIENVENIDO</string>
+    <string name="txt_content_register_number">INGRESE SU NÚMERO</string>
+
+    <string name="title_activity_register_number">RegisterNumber</string>
+    <string name="ingrese_n_mero">Ingrese Número</string>
+    <string name="btn_login">Entrar</string>
+    <string name="txt_codEmpleado">Ingrese código</string>
+    <string name="txt_iniciarTurno">INICIAR TURNO</string>
+    <string name="descripcion_numero">Registre su número telefónico para poder acceder a la aplicación</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.idslatam.solmar;
+package com.idslatam.solmar.Api.Singalr;
 
 import android.app.Service;
 import android.content.Intent;
@@ -13,11 +13,9 @@ import android.widget.Toast;
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.Action;
-import microsoft.aspnet.signalr.client.Credentials;
 import microsoft.aspnet.signalr.client.ErrorCallback;
 import microsoft.aspnet.signalr.client.Platform;
 import microsoft.aspnet.signalr.client.SignalRFuture;
-import microsoft.aspnet.signalr.client.http.Request;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;

@@ -1,0 +1,84 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bienvenido"
+    tools:context="com.idslatam.solmar.View.RegisterNumber">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="140sp"
+        android:orientation="vertical"
+        android:gravity="bottom|center"
+        tools:ignore="UselessParent">
+
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/txt_iniciarTurno"
+            android:textColor="@color/black_overlay"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/dummy_button"
+                android:textSize="18dp"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/black"
+                android:text="@string/btn_login"
+                tools:ignore="SpUsage" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:hint="@string/txt_codEmpleado"
+                android:id="@+id/Ed_codEmpleado"
+                tools:ignore="ContentDescription,LabelFor,UnusedAttribute"
+                tools:text="Ingrese código de empleado"
+                android:textColor="@color/black_overlay"
+                android:contentDescription=""
+                android:maxLines="1"
+                android:textAlignment="center"
+                android:elevation="6dp"
+                android:textColorLink="@color/black_overlay"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

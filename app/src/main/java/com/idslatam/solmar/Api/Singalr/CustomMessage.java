@@ -1,4 +1,4 @@
-package com.idslatam.solmar;
+package com.idslatam.solmar.Api.Singalr;
 
 /**
  * Created by ronaldsalazar on 10/21/16.
