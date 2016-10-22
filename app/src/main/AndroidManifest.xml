@@ -38,8 +38,8 @@
             android:theme="@style/FullscreenTheme" />
         <activity android:name=".View.Login"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/FullscreenTheme" />
-
+            android:theme="@style/FullscreenTheme" >
+        </activity>
         <receiver
             android:name=".Tracking.Broadcast.AlarmLocation"
             android:enabled="true"

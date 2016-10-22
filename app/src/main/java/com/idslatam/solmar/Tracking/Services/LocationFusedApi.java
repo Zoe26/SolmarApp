@@ -241,7 +241,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public void onLocationChanged(Location location) {
 //        Log.e("LocationFusedApi ", location.toString());
         requestActivityUpdates();
-        sendTracking(location);
+//        sendTracking(location);
 
     }
 
