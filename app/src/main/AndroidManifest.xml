@@ -19,10 +19,17 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".SignalRService">
+        <service android:name=".SignalRService" />
 
-        </service>
+        <receiver
+            android:name=".Tracking.Broadcast.AlarmLocation"
+            android:enabled="true"
+            android:exported="true" />
 
+        <service
+            android:name=".Tracking.Services.LocationFusedApi"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
