@@ -9,7 +9,7 @@ import com.idslatam.solmar.R;
  * Created by Luis on 22/10/2016.
  */
 
-public class Constans {
+public class Constants {
 
     public String URL = "http://solmar.azurewebsites.net/";
 
