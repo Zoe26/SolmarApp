@@ -14,7 +14,7 @@ public class Tracking {
     public static final String KEY_Longitud = "Longitud";
     public static final String KEY_OrigenCoordenada = "OrigenCoordenada";
     public static final String KEY_Velocidad = "Velocidad";
-    public static final String KEY_Presicion = "Presicion";
+    public static final String KEY_Presicion = "Precision";
     public static final String KEY_Time = "Time";
     public static final String KEY_Altitude = "Altitude";
     public static final String KEY_Bearing = "Bearing";
@@ -34,19 +34,20 @@ public class Tracking {
     public static final String KEY_FechaCelularIso = "FechaCelularIso";
     public static final String KEY_FechaLimite = "FechaLimite";
     public static final String KEY_FechaDelayed = "FechaDelayed";
-    public static final String KEY_FechaEjecucionAlarm = "FechaEjecucionAlarm";
+    public static final String KEY_FechaEjecucionAlarm = "FechaAlarma";
 
 
 //    public int TrackingId;
     public String Numero;
     public String FechaCelular;
+    public String DispositivoId;
     public String Latitud;
     public String Longitud;
     public String EstadoCoordenada;
     public String OrigenCoordenada;
     public String Velocidad;
     public String Bateria;
-    public String Presicion;
+    public String Precision;
     public String SenialCelular;
     public String GpsHabilitado;
     public String WifiHabilitado;
@@ -54,16 +55,12 @@ public class Tracking {
     public String ModeloEquipo;
     public String Imei;
     public String VersionApp;
-//    public String EstadoEnvio;
-//    public String FechaCelularIso;
-//    public String FechaLimite;
-//    public String FechaDelayed;
-    public String FechaEjecucionAlarm;
+    public String FechaAlarma;
     public String Time;
     public String Altitude;
     public String Bearing;
     public String Extras;
-    public String Class;
+    public String Classx;
     public String ElapsedRealtimeNanos;
     public String Actividad;
 }

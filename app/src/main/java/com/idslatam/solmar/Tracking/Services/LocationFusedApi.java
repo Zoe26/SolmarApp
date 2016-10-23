@@ -288,6 +288,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 //        Class = "Location";
 
         tracking.Numero = number;//"945783335";//"931732035";
+        tracking.DispositivoId = guidDispositivo;
         tracking.FechaCelular = formatoGuardar.format(currentDate.getTime());
         tracking.Latitud = Double.toString(location.getLatitude());
         tracking.Longitud = Double.toString(location.getLongitude());
@@ -295,7 +296,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.OrigenCoordenada = "fused";
         tracking.Velocidad = Double.toString(location.getSpeed());
         tracking.Bateria = Double.toString(nivelBateria);
-        tracking.Presicion = Double.toString(location.getAccuracy());
+        tracking.Precision = Double.toString(location.getAccuracy());
         tracking.SenialCelular = "5";
         tracking.GpsHabilitado = GPSHabilitado;
         tracking.WifiHabilitado = NetworkHabilitado;
@@ -303,14 +304,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.ModeloEquipo = Build.MODEL;
         tracking.Imei = telephonyManager.getDeviceId();
         tracking.VersionApp = Integer.toString(Build.VERSION.SDK_INT);
-        tracking.FechaEjecucionAlarm = formatoGuardar.format(currentDate.getTime());
+        tracking.FechaAlarma = formatoGuardar.format(currentDate.getTime());
         tracking.Time = formatoGuardar.format(location.getTime());
         tracking.ElapsedRealtimeNanos = Long.toString(location.getElapsedRealtimeNanos());
         tracking.Altitude = Double.toString(location.getAltitude());;
         tracking.Bearing = Double.toString(location.getBearing());;
         tracking.Extras = "Tracking@5246.Solmar";
-        tracking.Class = "Location";
+        tracking.Classx = "Location";
         tracking.Actividad = "NO";
+
+        Log.e("guidDispositivo ", guidDispositivo);
 
         try {
 
