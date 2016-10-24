@@ -277,25 +277,23 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             if(deltaVelocidad > 6 || deltaAltitud > 14) {
 
                 contador++;
-
+                valido = "false";
                 if(contador == 1) {
-                    flagFail = true;
                     currentfail = Calendar.getInstance();
                     currentfail.set(Calendar.SECOND, 15);
                 }
-
-                valido = "false";
 
             } else {
 
                 if(currentDate.getTime().after(currentfail.getTime()))
                 {
-                    valido = "true";
                     locationLastSend = location;
+                    valido = "true";
 
                 } else {
-                    if(contador==5)
+                    if(contador>=5)
                     {
+                        locationLastSend = location;
                         valido = "true";
                         contador=0;
                     }
