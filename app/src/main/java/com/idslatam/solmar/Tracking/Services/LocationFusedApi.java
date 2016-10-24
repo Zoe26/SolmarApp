@@ -78,7 +78,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     Location locationLastSend = null;
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado;
-    Calendar currentfail;
+    Calendar currentfail = Calendar.getInstance();
     Boolean flagFail = false;
     int contador =0;
     int contadorTest=0;
@@ -275,6 +275,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 contador++;
 
                 if(contador <= 1) {
+                    flagFail = true;
                     currentfail = Calendar.getInstance();
                     currentfail.set(Calendar.SECOND, 15);
                 }
@@ -283,11 +284,18 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             } else {
 
-                if(currentDate.getTime().after(currentfail.getTime()) && contador==5)
+                if(currentDate.getTime().after(currentfail.getTime()))
                 {
                     valido = "true";
-                    contador=0;
+                    locationLastSend = location;
+
+                } else {
+                    if(contador==5)
+                    {
+                        contador=0;
+                    }
                 }
+
             }
 
         }
