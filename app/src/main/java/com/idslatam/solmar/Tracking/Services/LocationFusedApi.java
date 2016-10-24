@@ -81,6 +81,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     Calendar currentfail;
     Boolean flagFail = false;
     int contador =0;
+    int contadorTest=0;
     protected double nivelBateria=0;
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -235,7 +236,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         int precision = 0;
         double deltaAltitud=0;
         float deltaVelocidad=0;
-        long segundosDif;
 
 
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
@@ -283,7 +283,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             } else {
 
-                if(currentDate.getTime().after(currentDate.getTime()) && contador==5)
+                if(currentDate.getTime().after(currentfail.getTime()) && contador==5)
                 {
                     valido = "true";
                     contador=0;
@@ -303,7 +303,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             nivelBateria = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         } catch (Exception e) {}
 
-        locationLastSend = location;
+        contadorTest++;
+
+        if (contadorTest==1)
+            locationLastSend = location;
+        else
+            contadorTest =2;
 
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
