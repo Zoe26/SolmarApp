@@ -32,7 +32,7 @@ public class Configuration {
     public static final String KEY_ContadorLocation = "ContadorLocation";
     public static final String KEY_ContadorProvider = "ContadorProvider";
     public static final String KEY_FechaEjecucionAlarm = "FechaEjecucionAlarm";
-    public static final String KEY_TipoActividad = "TipoActividad";
+    public static final String KEY_TipoActividad = "Actividad";
 
 
     public int ConfigurationId;
@@ -58,6 +58,6 @@ public class Configuration {
     public int ContadorLocation;
     public int ContadorProvider;
     public String FechaEjecucionAlarm;
-    public String TipoActividad;
+    public String Actividad;
 
 }

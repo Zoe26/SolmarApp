@@ -3,12 +3,14 @@ package com.idslatam.solmar.Tracking.Services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 import com.idslatam.solmar.Api.Http.Constants;
+import com.idslatam.solmar.Models.Database.DBHelper;
 
 import java.util.ArrayList;
 
@@ -49,14 +51,14 @@ public class Recognition extends IntentService {
         detectedActivities.get(iposition).getType();
         detectedActivities.get(iposition);
 
-//        try {
-//
-//            DBHelper dataBaseHelper = new DBHelper(this);
-//            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-//            db.execSQL("UPDATE Configuration SET TipoActividad = '" + actividadM + "'");
-//            db.close();
-//
-//        } catch (Exception e) {}
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Configuration SET Actividad = '" + actividadM + "'");
+            db.close();
+
+        } catch (Exception e) {}
 
         Log.e("---| Actividad | " + actividadM , " " + String.valueOf(actividadMayor));
 

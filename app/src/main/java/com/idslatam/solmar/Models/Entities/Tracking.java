@@ -63,4 +63,5 @@ public class Tracking {
     public String Classx;
     public String ElapsedRealtimeNanos;
     public String Actividad;
+    public String Valido;
 }
