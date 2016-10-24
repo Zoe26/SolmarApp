@@ -87,6 +87,7 @@ public class SignalRService extends Service {
     public void sendMessage(Tracking marker) {
 //        String SERVER_METHOD_SEND = "addMarker";
 //        mHubProxy.invoke(SERVER_METHOD_SEND, marker);
+        Log.e("Tracking", marker.Longitud.toString() );
         mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
             @Override
             public void run(String s) throws Exception {

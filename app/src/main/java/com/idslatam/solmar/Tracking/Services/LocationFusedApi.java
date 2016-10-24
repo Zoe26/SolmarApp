@@ -228,18 +228,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     // METODOS ENVIO** *********************************************************************************
     public Boolean sendTracking(Location location) {
 
-        String numberDevice, number = null, FechaCelular, Latitud, Longitud, EstadoCoordenada ,
-                OrigenCoordenada, Velocidad, Bateria, Precision, SenialCelular, GpsHabilitado,
-                WifiHabilitado, DatosHabilitado, ModeloEquipo, Imei, VersionApp, FechaEjecucionAlarm,
-                Time, ElapsedRealtimeNanos, Altitude, Bearing, Extras, Class, guidDispositivo=null;
+        String number = null, guidDispositivo=null;
+        int precision = 0;
 
-
-        isGPSAvailable();
-        isMOBILEAvailable();
-        isWIFIAvailable();
 
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         Calendar currentDate = Calendar.getInstance();
+
 
         try {
 
@@ -256,6 +251,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             dbConfiguration.close();
         } catch (Exception e) {
         }
+
+        if(precision==0){precision=20;}
+
+        if(location.getAccuracy()>=precision){
+            return null;
+        }
+
+        isGPSAvailable();
+        isMOBILEAvailable();
+        isWIFIAvailable();
+
         try {
             IntentFilter batIntentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = this.registerReceiver(null, batIntentFilter);
