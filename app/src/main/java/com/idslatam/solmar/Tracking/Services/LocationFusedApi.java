@@ -270,11 +270,15 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             deltaVelocidad = locationLastSend.getSpeed() - location.getSpeed();
             deltaAltitud = locationLastSend.getAltitude() - location.getAltitude();
 
+            if(deltaVelocidad<0) {deltaVelocidad = deltaVelocidad*(-1);}
+
+            if(deltaAltitud<0) {deltaAltitud = deltaAltitud*(-1);}
+
             if(deltaVelocidad > 6 || deltaAltitud > 14) {
 
                 contador++;
 
-                if(contador <= 1) {
+                if(contador == 1) {
                     flagFail = true;
                     currentfail = Calendar.getInstance();
                     currentfail.set(Calendar.SECOND, 15);
@@ -292,6 +296,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 } else {
                     if(contador==5)
                     {
+                        valido = "true";
                         contador=0;
                     }
                 }
