@@ -273,6 +273,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(locationLastSend==null){
             locationLastSend=location;
         }
+
         if(contador>0){
             contador--;
             if(contador == 0){
@@ -283,7 +284,10 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         if(location.getSpeed()>=14){
-            contador = 8;
+
+            if(contador == 0){
+                contador = 8;
+            }
             valido = "false";
             //return false;
         }
@@ -308,15 +312,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 deltaVelocidad = 0;
             }
 
-
-
-            //if(deltaVelocidad<0) {deltaVelocidad = deltaVelocidad*(-1);}
-            //if(deltaAltitud<0) {deltaAltitud = deltaAltitud*(-1);}
-
-
             if(deltaVelocidad > 6 || deltaAltitud > 14) {
 
-                contador = 8;
+
+                if(contador == 0){
+                    contador = 8;
+                }
                 valido = "false";
                 //return false;
                 /*
