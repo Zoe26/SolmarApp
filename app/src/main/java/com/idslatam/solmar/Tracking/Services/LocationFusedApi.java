@@ -258,34 +258,64 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             dbConfiguration.close();
         } catch (Exception e) {}
 
-        if(precision==0){precision=20;}
+        if(precision==0){
+            precision=20;
+        }
 
         if(actividad==null){actividad="ACTIVIDADNODETECTADA";}
 
         // evitar precisiones mayores a 20
-        if(location.getAccuracy()>=precision || location.getSpeed()>=14){return null;}
+        if(location.getAccuracy()>=precision)
+        {
+            return false;
+        }
 
-        if(locationLastSend!=null){
+        if(contador>0){
+            contador--;
+            if(contador == 0){
+                contadorTest = 1;
+            }
+            valido = "false";
+            //return  false;
+        }
 
-            deltaVelocidad = locationLastSend.getSpeed() - location.getSpeed();
-            deltaAltitud = locationLastSend.getAltitude() - location.getAltitude();
+        if(location.getSpeed()>=14){
+            contador = 8;
+            valido = "false";
+            //return false;
+        }
 
-            if(deltaVelocidad<0) {deltaVelocidad = deltaVelocidad*(-1);}
 
-            if(deltaAltitud<0) {deltaAltitud = deltaAltitud*(-1);}
+        if(contadorTest == 1){
+            contadorTest = 0;
+            valido = "true";
+            locationLastSend = location;
+        }
+        else if(locationLastSend!=null){
+
+            deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
+            deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
+
+            //if(deltaVelocidad<0) {deltaVelocidad = deltaVelocidad*(-1);}
+            //if(deltaAltitud<0) {deltaAltitud = deltaAltitud*(-1);}
+
 
             if(deltaVelocidad > 6 || deltaAltitud > 14) {
 
-                contador++;
+                contador = 8;
                 valido = "false";
+                //return false;
+                /*
                 if(contador == 1) {
                     currentfail = Calendar.getInstance();
                     currentfail.set(Calendar.SECOND, 15);
-                }
+                }*/
 
             } else {
 
-                if(currentDate.getTime().after(currentfail.getTime()))
+                valido = "true";
+                locationLastSend = location;
+                /*if(currentDate.getTime().after(currentfail.getTime()))
                 {
                     locationLastSend = location;
                     valido = "true";
@@ -297,7 +327,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                         valido = "true";
                         contador=0;
                     }
-                }
+                }*/
 
             }
 
@@ -314,12 +344,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             nivelBateria = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         } catch (Exception e) {}
 
+        /*
         contadorTest++;
 
         if (contadorTest==1)
             locationLastSend = location;
         else
             contadorTest =2;
+            */
 
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
@@ -353,6 +385,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         try {
 
             mService.sendMessage(tracking);
+
             Log.e("LocationFusedApi ", "sendMessage");
         } catch (Exception e) {
             Log.e("LocationFusedApi ", "Error");
