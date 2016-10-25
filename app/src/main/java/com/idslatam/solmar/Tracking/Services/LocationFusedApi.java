@@ -77,7 +77,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected LocationRequest mLocationRequest;
     Location locationLastSend = null;
     protected String URL_API;
-    String NetworkHabilitado,GPSHabilitado,MobileHabilitado;
+    String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
     Calendar currentfail = Calendar.getInstance();
     Boolean flagFail = false;
     int contador =0;
@@ -232,7 +232,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     // METODOS ENVIO** *********************************************************************************
     public Boolean sendTracking(Location location) {
 
-        String number = null, guidDispositivo=null, actividad=null, valido=null;
+        String number = null, guidDispositivo=null, actividad=null;
         int precision = 0;
         double deltaAltitud=0;
         float deltaVelocidad=0;
@@ -275,11 +275,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         if(contador>0){
-            contador--;
-            if(contador == 0){
+
+            valido = "false";
+            if(contador == 1){
                 contadorTest = 1;
             }
-            valido = "false";
+            contador--;
             //return  false;
         }
 
@@ -297,8 +298,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             contadorTest = 0;
             valido = "true";
             locationLastSend = location;
-        }
-        else if(true){
+
+        } else if(true){
 
             if(locationLastSend!=null){
                 Log.e("locationLastSend ", locationLastSend.toString());
@@ -313,8 +314,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
 
             if(deltaVelocidad > 6 || deltaAltitud > 14) {
-
-
                 if(contador == 0){
                     contador = 8;
                 }
