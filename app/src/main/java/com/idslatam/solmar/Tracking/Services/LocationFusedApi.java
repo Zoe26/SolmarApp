@@ -291,10 +291,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             valido = "true";
             locationLastSend = location;
         }
-        else if(locationLastSend!=null){
+        else if(true){
 
-            deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
-            deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
+            if(locationLastSend==null){
+                deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
+                deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
+            }else {
+                deltaAltitud = 0;
+                deltaVelocidad = 0;
+            }
+
+
 
             //if(deltaVelocidad<0) {deltaVelocidad = deltaVelocidad*(-1);}
             //if(deltaAltitud<0) {deltaAltitud = deltaAltitud*(-1);}
