@@ -60,7 +60,7 @@ public class Recognition extends IntentService {
 
         } catch (Exception e) {}
 
-        Log.e("---| Actividad | " + actividadM , " " + String.valueOf(actividadMayor));
+//        Log.e("---| Actividad | " + actividadM , " " + String.valueOf(actividadMayor));
 
         // Broadcast the list of detected activities.
         localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);

@@ -270,6 +270,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             return false;
         }
 
+        if(locationLastSend==null){
+            locationLastSend=location;
+        }
         if(contador>0){
             contador--;
             if(contador == 0){
@@ -293,9 +296,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
         else if(true){
 
-            if(locationLastSend==null){
+            if(locationLastSend!=null){
+                Log.e("locationLastSend ", locationLastSend.toString());
                 deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
                 deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
+
+                Log.e("deltaVelocidad ", String.valueOf(deltaVelocidad));
+                Log.e("deltaAltitud ", String.valueOf(deltaAltitud));
             }else {
                 deltaAltitud = 0;
                 deltaVelocidad = 0;
@@ -351,15 +358,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             nivelBateria = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         } catch (Exception e) {}
 
-        /*
-        contadorTest++;
-
-        if (contadorTest==1)
-            locationLastSend = location;
-        else
-            contadorTest =2;
-            */
-
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
         tracking.FechaCelular = formatoGuardar.format(currentDate.getTime());
@@ -387,20 +385,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.Actividad = actividad;
         tracking.Valido = valido;
 
-        Log.e("guidDispositivo ", guidDispositivo);
-
         try {
 
             mService.sendMessage(tracking);
 
-            Log.e("LocationFusedApi ", "sendMessage");
+//            Log.e("LocationFusedApi ", "sendMessage");
         } catch (Exception e) {
             Log.e("LocationFusedApi ", "Error");
         }
-
-//        new PostAsync().execute(numberDevice, FechaCelular, Latitud, Longitud, EstadoCoordenada, OrigenCoordenada, Velocidad,
-//                Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, DatosHabilitado, ModeloEquipo, Imei,
-//                VersionApp, FechaEjecucionAlarm, Time, ElapsedRealtimeNanos, Altitude, Bearing, Extras, Class, guidDispositivo);
 
         return  true;
     }
