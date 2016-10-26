@@ -337,18 +337,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(deltaVelocidad > 6 || deltaAltitud > 14) {
 
-            valido = "false";
-
             if(contador == 0){
                 contador = 8;
             }
 
+            valido = "false";
             //return false;
 
         } else {
 
-            valido = "true";
             locationLastSend = location;
+            valido = "true";
         }
 
         // y velocidades mayores a 14
