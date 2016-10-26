@@ -300,11 +300,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(contador>0){
 
-            valido = "false";
-            contador--;
             if(contador == 1){
                 contadorTest = 1;
             }
+            valido = "false";
+            contador--;
             //return  false;
         }
 
