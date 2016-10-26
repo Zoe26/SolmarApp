@@ -5,19 +5,22 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class AlarmLocation extends BroadcastReceiver {
 
     Context mContext;
-    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
-            formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -32,26 +35,45 @@ public class AlarmLocation extends BroadcastReceiver {
 
             Log.e("Alarm Api > 19", "Execute");
 
+            updateFechaAlarmLocation();
+
             Intent alarm = new Intent(context, AlarmLocation.class);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 59);
+            long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 60);
             alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
 
         } else {
 
             Log.e("Alarm Api < 19", "Execute");
 
+            updateFechaAlarmLocation();
+
             Intent alarm = new Intent(context, AlarmLocation.class);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 59);
+            long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 60);
             alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
         }
+    }
+
+    public Boolean updateFechaAlarmLocation() {
+
+        Calendar currentDate = Calendar.getInstance();
+
+        try {
+            DBHelper dataBaseHelperA = new DBHelper(mContext);
+            SQLiteDatabase dbA = dataBaseHelperA.getWritableDatabase();
+            dbA.execSQL("UPDATE Configuration SET FechaEjecucionAlarm = '"+ formatoGuardar.format(currentDate.getTime()) +"'");
+            dbA.close();
+
+        } catch (Exception e) {}
+
+        return true;
     }
 
 }

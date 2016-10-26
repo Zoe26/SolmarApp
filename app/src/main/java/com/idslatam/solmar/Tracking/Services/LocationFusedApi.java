@@ -79,8 +79,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
     Calendar currentfail = Calendar.getInstance();
-    Boolean flagFail = false;
-    int contador =0;
+    Calendar currentSend = null;
+    Boolean flagSend = false;
+    int contador =0, intervalSend=0;
     int contadorTest=0;
     protected double nivelBateria=0;
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
@@ -101,21 +102,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public void onCreate() {
         super.onCreate();
 
-//        startService(new Intent(this, SignalRService.class));
         Intent intent = new Intent();
         intent.setClass(mContext, SignalRService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
         buildGoogleApiClient();
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mGoogleApiClient.connect();
-//        startSignalR();
         return START_NOT_STICKY;
     }
 
@@ -150,24 +147,60 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             return;
         }
 
+        requestActivityUpdates();
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
 
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
+    public void onConnectionSuspended(int i) {}
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 
     @Override
     public void onLocationChanged(Location location) {
         Log.e("LocationFusedApi ", location.toString());
+
+        //TIMER DE CONTROL DE ENVIO *****************************************************************
+        try {
+
+            DBHelper dbHelperIntervalo = new DBHelper(this);
+            SQLiteDatabase dba = dbHelperIntervalo.getWritableDatabase();
+            String selectQuery = "SELECT IntervaloTracking, FechaEjecucionAlarm FROM Configuration";
+            Cursor ca = dba.rawQuery(selectQuery, new String[]{});
+
+            if (ca.moveToFirst()) {
+                intervalSend = ca.getInt(ca.getColumnIndex("IntervaloTracking"));
+            }
+            ca.close();
+            dba.close();
+
+        } catch (Exception e) {}
+
+        if (intervalSend==0){intervalSend=1;}
+
+        if (currentSend==null){
+            Log.e("-- SEND ", " NULL");
+            currentSend = Calendar.getInstance();
+            currentSend.add(Calendar.MINUTE, intervalSend);
+            flagSend = true;
+        }
+
+        Calendar currentDate = Calendar.getInstance();
+        Log.e("-- DATE ", String.valueOf(currentDate.getTime()));
+        Log.e("-- SEND ", String.valueOf(currentSend.getTime()));
+        Log.e("-- FLAG ", String.valueOf(flagSend));
+
+        if (currentDate.after(currentSend)){
+            flagSend = true;
+            currentSend.add(Calendar.MINUTE, intervalSend);
+            Log.e("-- SEND LAST ", String.valueOf(currentSend.getTime()));
+        }
+
+        //TIMER DE CONTROL DE ENVIO *****************************************************************
+
         requestActivityUpdates();
         sendTracking(location);
 
@@ -232,24 +265,23 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     // METODOS ENVIO** *********************************************************************************
     public Boolean sendTracking(Location location) {
 
-        String number = null, guidDispositivo=null, actividad=null;
+        String number = null, guidDispositivo=null, actividad=null, fechaAlarma=null;
         int precision = 0;
         double deltaAltitud=0;
         float deltaVelocidad=0;
 
-
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         Calendar currentDate = Calendar.getInstance();
-
 
         try {
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, Actividad FROM Configuration";
+            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, Actividad, FechaEjecucionAlarm FROM Configuration";
             Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
             if (cConfiguration.moveToFirst()) {
+                fechaAlarma = cConfiguration.getString(cConfiguration.getColumnIndex("FechaEjecucionAlarm"));
                 actividad = cConfiguration.getString(cConfiguration.getColumnIndex("Actividad"));
                 number = cConfiguration.getString(cConfiguration.getColumnIndex("NumeroCel"));
                 guidDispositivo = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
@@ -258,21 +290,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             dbConfiguration.close();
         } catch (Exception e) {}
 
-        if(precision==0){
-            precision=20;
-        }
+        if(precision==0){precision=20;}
 
         if(actividad==null){actividad="ACTIVIDADNODETECTADA";}
 
-        // evitar precisiones mayores a 20
-        if(location.getAccuracy()>=precision)
-        {
-            return false;
-        }
+        if(location.getAccuracy()>=precision) {return false;}
 
-        if(locationLastSend==null){
-            locationLastSend=location;
-        }
+        if(locationLastSend==null){locationLastSend=location;}
 
         if(contador>0){
 
@@ -299,15 +323,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             valido = "true";
             locationLastSend = location;
 
-        } else if(true){
+        }
+//        else if(true){
 
             if(locationLastSend!=null){
                 Log.e("locationLastSend ", locationLastSend.toString());
                 deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
                 deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
 
-                Log.e("deltaVelocidad ", String.valueOf(deltaVelocidad));
-                Log.e("deltaAltitud ", String.valueOf(deltaAltitud));
             }else {
                 deltaAltitud = 0;
                 deltaVelocidad = 0;
@@ -319,33 +342,15 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 }
                 valido = "false";
                 //return false;
-                /*
-                if(contador == 1) {
-                    currentfail = Calendar.getInstance();
-                    currentfail.set(Calendar.SECOND, 15);
-                }*/
 
             } else {
 
                 valido = "true";
                 locationLastSend = location;
-                /*if(currentDate.getTime().after(currentfail.getTime()))
-                {
-                    locationLastSend = location;
-                    valido = "true";
-
-                } else {
-                    if(contador>=5)
-                    {
-                        locationLastSend = location;
-                        valido = "true";
-                        contador=0;
-                    }
-                }*/
 
             }
 
-        }
+//        }
 
         // y velocidades mayores a 14
         isGPSAvailable();
@@ -375,7 +380,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.ModeloEquipo = Build.MODEL;
         tracking.Imei = telephonyManager.getDeviceId();
         tracking.VersionApp = Integer.toString(Build.VERSION.SDK_INT);
-        tracking.FechaAlarma = formatoGuardar.format(currentDate.getTime());
+        tracking.FechaAlarma = fechaAlarma;
         tracking.Time = formatoGuardar.format(location.getTime());
         tracking.ElapsedRealtimeNanos = Long.toString(location.getElapsedRealtimeNanos());
         tracking.Altitude = Double.toString(location.getAltitude());;
@@ -384,6 +389,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.Classx = "Location";
         tracking.Actividad = actividad;
         tracking.Valido = valido;
+        if(flagSend) {
+            Log.e("--! LOCATION SEND", location.toString());
+            tracking.Intervalo = Integer.toString(intervalSend);
+            flagSend = false;
+        } else {
+            tracking.Intervalo = "0";
+        }
 
         try {
 
