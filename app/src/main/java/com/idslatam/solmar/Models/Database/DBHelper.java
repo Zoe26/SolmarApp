@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.idslatam.solmar.Models.Entities.Alert;
+import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Tracking;
 
@@ -81,8 +83,38 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_TipoActividad + " TEXT,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 
+        String CREATE_TABLE_ASISTENCIA = "CREATE TABLE " + Asistencia.TABLE_ASISTENCIA + "("
+                + Asistencia.KEY_ID_Asistencia  + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Asistencia.KEY_Numero + " TEXT, "
+                + Asistencia.KEY_Asistencia + " TEXT, "
+                + Asistencia.KEY_DispositivoId + " TEXT, "
+                + Asistencia.KEY_FechaInicio + " TEXT, "
+                + Asistencia.KEY_FechaTermino + " TEXT, "
+                + Asistencia.KEY_Fotocheck + " TEXT)";
+
+        String CREATE_TABLE_ALERT= "CREATE TABLE " + Alert.TABLE_ALERT  + "("
+                + Alert.KEY_ID_ALERT  + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Alert.KEY_NumeroA + " TEXT,"
+                + Alert.KEY_FechaMarcacion + " TEXT,"
+                + Alert.KEY_FechaEsperada + " TEXT, "
+                + Alert.KEY_FechaProxima + " TEXT, "
+                + Alert.KEY_FlagTiempo + " TEXT, "
+                + Alert.KEY_MargenAceptado + " TEXT, "
+                + Alert.KEY_LatitudA + " TEXT, "
+                + Alert.KEY_LongitudA + " TEXT, "
+                + Alert.KEY_EstadoA + " TEXT, "
+                + Alert.KEY_EstadoBoton + " TEXT, "
+                + Alert.KEY_FechaEsperadaIso + " TEXT, "
+                + Alert.KEY_FechaEsperadaIsoFin + " TEXT, "
+                + Alert.KEY_DispositivoId + " TEXT, "
+                + Alert.KEY_CodigoEmpleado + " TEXT, "
+                + Alert.KEY_FinTurno + " TEXT)";
+
+
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
+        db.execSQL(CREATE_TABLE_ASISTENCIA);
+        db.execSQL(CREATE_TABLE_ALERT);
     }
 
     @Override
@@ -90,7 +122,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.execSQL("DROP TABLE IF EXISTS " + Tracking.TABLE);
         onCreate(db);
+
         db.execSQL("DROP TABLE IF EXISTS " + Configuration.TABLE_CONFIGURATION);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + Asistencia.TABLE_ASISTENCIA);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + Alert.TABLE_ALERT);
         onCreate(db);
 
     }

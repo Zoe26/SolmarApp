@@ -43,7 +43,7 @@
             tools:ignore="UselessParent">
 
             <Button
-                android:id="@+id/dummy_button"
+                android:id="@+id/login_button"
                 android:textSize="18dp"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="0dp"
