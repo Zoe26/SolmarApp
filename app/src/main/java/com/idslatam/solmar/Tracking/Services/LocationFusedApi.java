@@ -301,10 +301,10 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(contador>0){
 
             valido = "false";
+            contador--;
             if(contador == 1){
                 contadorTest = 1;
             }
-            contador--;
             //return  false;
         }
 
@@ -324,33 +324,32 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             locationLastSend = location;
 
         }
-//        else if(true){
 
-            if(locationLastSend!=null){
-                Log.e("locationLastSend ", locationLastSend.toString());
-                deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
-                deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
+        if(locationLastSend!=null){
+            Log.e("locationLastSend ", locationLastSend.toString());
+            deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
+            deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
 
-            }else {
-                deltaAltitud = 0;
-                deltaVelocidad = 0;
+        }else {
+            deltaAltitud = 0;
+            deltaVelocidad = 0;
+        }
+
+        if(deltaVelocidad > 6 || deltaAltitud > 14) {
+
+            valido = "false";
+
+            if(contador == 0){
+                contador = 8;
             }
 
-            if(deltaVelocidad > 6 || deltaAltitud > 14) {
-                if(contador == 0){
-                    contador = 8;
-                }
-                valido = "false";
-                //return false;
+            //return false;
 
-            } else {
+        } else {
 
-                valido = "true";
-                locationLastSend = location;
-
-            }
-
-//        }
+            valido = "true";
+            locationLastSend = location;
+        }
 
         // y velocidades mayores a 14
         isGPSAvailable();
@@ -389,7 +388,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.Classx = "Location";
         tracking.Actividad = actividad;
         tracking.Valido = valido;
-        if(flagSend) {
+        if(flagSend == true && valido =="true") {
             Log.e("--! LOCATION SEND", location.toString());
             tracking.Intervalo = Integer.toString(intervalSend);
             flagSend = false;
