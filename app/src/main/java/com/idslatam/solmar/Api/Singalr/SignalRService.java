@@ -143,28 +143,25 @@ public class SignalRService extends Service {
             }
         });
 
-        String HELLO_MSG = "Hello from Android!";
-//        sendMessage(HELLO_MSG);
-
         Log.e("Signal R ENvio", "Envio de mensaje");
 
-        String CLIENT_METHOD_BROADAST_MESSAGE = "addNewMessageToPage";
-
+        String CLIENT_METHOD_BROADAST_MESSAGE = "broadcastMessage";
         mHubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE,
-                new SubscriptionHandler1<CustomMessage>() {
+                new SubscriptionHandler1<Tracking>() {
                     @Override
-                    public void run(final CustomMessage msg) {
-                        final String finalMsg = msg.UserName + " says " + msg.Message;
+                    public void run(final Tracking msg) {
+                        final String finalMsg = msg.Classx;
                         // display Toast message
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
+                                Log.e("Signal R RespMsg", finalMsg);
                                 Toast.makeText(getApplicationContext(), finalMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
                 }
-                , CustomMessage.class);
+                , Tracking.class);
     }
 
 }

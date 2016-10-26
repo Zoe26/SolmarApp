@@ -296,7 +296,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(location.getAccuracy()>=precision) {return false;}
 
-        if(locationLastSend==null){locationLastSend=location;}
+        if(locationLastSend==null){
+            locationLastSend=location;
+            contador = 8;
+            return false;
+        }
 
         if(contador>0){
 
