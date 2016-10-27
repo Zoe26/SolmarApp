@@ -305,9 +305,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 number = cConfiguration.getString(cConfiguration.getColumnIndex("NumeroCel"));
                 guidDispositivo = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
                 precision = cConfiguration.getInt(cConfiguration.getColumnIndex("Precision"));
+
             }
             cConfiguration.close();
             dbConfiguration.close();
+
         } catch (Exception e) {}
 
         if(precision==0){precision=20;}
@@ -315,7 +317,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(location.getAccuracy()>=precision) {return false;}
 
         if(location.getAltitude() < 0) {return false;}
-
 
         if(actividad==null)
         {
@@ -325,7 +326,10 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         } else {
             lastActividad = actividad;
 
-            if (firstActividad.equals("SINMOVIMIENTO") && lastActividad.equals("VEHICULO")){
+            if (firstActividad == "SINMOVIMIENTO" && lastActividad == "VEHICULO"){
+                Log.e("Errro! firstActividad ", firstActividad);
+                Log.e("Errro! actividad ", actividad);
+
                 firstActividad = actividad;
                 valido = "false";
                 contador = 4;
@@ -450,9 +454,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             mService.sendMessage(tracking);
 
 //            Log.e("LocationFusedApi ", "sendMessage");
-        } catch (Exception e) {
-            Log.e("LocationFusedApi ", "Error");
-        }
+        } catch (Exception e) {}
 
         return  true;
     }
