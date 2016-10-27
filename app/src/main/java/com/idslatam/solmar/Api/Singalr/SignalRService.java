@@ -88,22 +88,36 @@ public class SignalRService extends Service {
 //        String SERVER_METHOD_SEND = "addMarker";
 //        mHubProxy.invoke(SERVER_METHOD_SEND, marker);
         Log.e("Tracking", marker.Longitud.toString() );
-        mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
-            @Override
-            public void run(String s) throws Exception {
-                Log.e("SimpleSignalR", s);
-            }
-        }).onError(new ErrorCallback() {
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("SimpleSignalR", throwable.toString());
-            }
-        });
+        Log.e("SimpleSignalR", mHubConnection.getState().toString());
+
+        if(mHubConnection.getState().toString() == "Disconnected"){
+
+            //mHubConnection.start();
+            //mHubConnection.;
+            startSignalR();
+
+        }else if(mHubConnection.getState().toString()=="Connected"){
+
+            mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
+                @Override
+                public void run(String s) throws Exception {
+                    Log.e("Signal R", "Ejecución Ok");
+                    //Log.e("SimpleSignalR", mHubConnection.getState().toString());
+                }
+            }).onError(new ErrorCallback() {
+                @Override
+                public void onError(Throwable throwable) {
+                    Log.e("SimpleSignalR", throwable.toString());
+                }
+            });
+        }
+
+
     }
 
     private void startSignalR() {
-        Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
+        Platform.loadPlatformComponent(new AndroidPlatformComponent());
         /*Credentials credentials = new Credentials() {
             @Override
             public void prepareRequest(Request request) {
@@ -124,25 +138,11 @@ public class SignalRService extends Service {
             Log.e("Try", "startSignalR");
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            Log.e("Close SignalR", "Closed 1");
             return;
         }
 
-        Tracking tracking = new Tracking();
-
-        mHubProxy.invoke(Tracking.class, "addMarker", tracking).done(new Action<Tracking>() {
-            @Override
-            public void run(Tracking s) throws Exception {
-                Log.e("SimpleSignalR", String.valueOf(s));
-            }
-        }).onError(new ErrorCallback() {
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("SimpleSignalR", throwable.toString());
-            }
-        });
-
-        Log.e("Signal R ENvio", "Envio de mensaje");
-
+        /*
         String CLIENT_METHOD_BROADAST_MESSAGE = "broadcastMessage";
         mHubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE,
                 new SubscriptionHandler1<Tracking>() {
@@ -159,7 +159,7 @@ public class SignalRService extends Service {
                         });
                     }
                 }
-                , Tracking.class);
+                , Tracking.class);*/
     }
 
 }
