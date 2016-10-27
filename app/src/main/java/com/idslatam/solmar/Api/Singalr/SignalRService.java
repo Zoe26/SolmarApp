@@ -91,8 +91,7 @@ public class SignalRService extends Service {
         mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
             @Override
             public void run(String s) throws Exception {
-                Log.e("Signal R", "Ejecución Ok");
-                Log.w("SimpleSignalR", s);
+                Log.e("SimpleSignalR", s);
             }
         }).onError(new ErrorCallback() {
             @Override
@@ -130,11 +129,10 @@ public class SignalRService extends Service {
 
         Tracking tracking = new Tracking();
 
-        mHubProxy.invoke(String.class, "addMarker", tracking).done(new Action<String>() {
+        mHubProxy.invoke(Tracking.class, "addMarker", tracking).done(new Action<Tracking>() {
             @Override
-            public void run(String s) throws Exception {
-                Log.e("Signal R", "Ejecución Ok");
-                Log.w("SimpleSignalR", s);
+            public void run(Tracking s) throws Exception {
+                Log.e("SimpleSignalR", String.valueOf(s));
             }
         }).onError(new ErrorCallback() {
             @Override

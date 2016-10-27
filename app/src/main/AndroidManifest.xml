@@ -24,7 +24,7 @@
         <activity android:name=".Api.Singalr.MainActivity" />
         <activity
             android:name=".View.Bienvenido"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,11 +34,12 @@
         </activity>
         <activity
             android:name=".View.RegisterNumber"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".View.Login"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
 
         <receiver

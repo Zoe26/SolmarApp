@@ -78,6 +78,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     Location locationLastSend = null;
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
+    String lastActividad=null, firstActividad=null;
     Calendar currentfail = Calendar.getInstance();
     Calendar currentSend = null;
     Boolean flagSend = false;
@@ -292,12 +293,31 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(precision==0){precision=20;}
 
-        if(actividad==null){actividad="ACTIVIDADNODETECTADA";}
+        if(actividad==null)
+        {
+            actividad="ACTIVIDADNODETECTADA";
+            firstActividad = actividad;
+
+        } else {
+            lastActividad = actividad;
+
+            if (firstActividad.equals("SINMOVIMIENTO") && lastActividad.equals("VECHICULO")){
+                firstActividad = actividad;
+                valido = "false";
+                contador = 4;
+            } else {
+                firstActividad = actividad;
+            }
+        }
 
         if(location.getAccuracy()>=precision) {return false;}
 
+        if(location.getAltitude() < 0) {return false;}
+
+        if(actividad.equals("SINMOVIMIENTO") && location.getSpeed() > 0) {return false;}
+
         if(locationLastSend==null){
-            locationLastSend=location;
+            locationLastSend = location;
             contador = 8;
             return false;
         }
@@ -310,15 +330,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             valido = "false";
             contador--;
             //return  false;
-        }
-
-        if(location.getSpeed()>=14){
-
-            if(contador == 0){
-                contador = 8;
-            }
-            valido = "false";
-            //return false;
         }
 
 
@@ -339,7 +350,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             deltaVelocidad = 0;
         }
 
-        if(deltaVelocidad > 6 || deltaAltitud > 14) {
+        if(location.getSpeed()>=14){
+
+            if(contador == 0){
+                contador = 8;
+            }
+            valido = "false";
+            //return false;
+        }
+
+        if(deltaVelocidad >= 6 || deltaAltitud > 14) {
 
             if(contador == 0){
                 contador = 8;
