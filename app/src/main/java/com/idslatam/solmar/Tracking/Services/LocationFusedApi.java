@@ -87,6 +87,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected double nivelBateria=0;
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private boolean mBound = false;
 
     //**********************************************************************************************
     Tracking tracking = new Tracking();
@@ -111,6 +112,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         buildGoogleApiClient();
     }
 
+    /*@Override
+    protected void onStop() {
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+        //super.onStop();
+    }*/
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mGoogleApiClient.connect();
@@ -119,10 +130,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+
+        super.onDestroy();
+
     }
 
     // METODOS FUSED API *******************************************************************************
@@ -439,12 +457,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             // We've bound to SignalRService, cast the IBinder and get SignalRService instance
             SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
             mService = binder.getService();
-//            mBound = true;
+            mBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-//            mBound = false;
+            Log.e("Close SignalR", "Closed Yeah");
+            mBound = false;
         }
     };
 
