@@ -96,7 +96,9 @@ public class SignalRService extends Service {
         }
 
         if (countConex==0 && mHubConnection.getState().toString() == "Disconnected"){
-            startSignalR();
+            try {
+                startSignalR();
+            } catch (Exception e) {}
         }
 
         if(mHubConnection.getState().toString() == "Disconnected"){
