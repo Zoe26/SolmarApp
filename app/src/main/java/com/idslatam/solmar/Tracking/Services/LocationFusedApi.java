@@ -278,7 +278,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, Actividad, FechaEjecucionAlarm FROM Configuration";
+            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, Actividad, FechaEjecucionAlarm, Precision FROM Configuration";
             Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
             if (cConfiguration.moveToFirst()) {
@@ -286,12 +286,18 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 actividad = cConfiguration.getString(cConfiguration.getColumnIndex("Actividad"));
                 number = cConfiguration.getString(cConfiguration.getColumnIndex("NumeroCel"));
                 guidDispositivo = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
+                precision = cConfiguration.getInt(cConfiguration.getColumnIndex("Precision"));
             }
             cConfiguration.close();
             dbConfiguration.close();
         } catch (Exception e) {}
 
         if(precision==0){precision=20;}
+
+        if(location.getAccuracy()>=precision) {return false;}
+
+        if(location.getAltitude() < 0) {return false;}
+
 
         if(actividad==null)
         {
@@ -310,16 +316,18 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
         }
 
-        if(location.getAccuracy()>=precision) {return false;}
-
-        if(location.getAltitude() < 0) {return false;}
-
         if(actividad.equals("SINMOVIMIENTO") && location.getSpeed() > 0) {return false;}
 
         if(locationLastSend==null){
             locationLastSend = location;
             contador = 8;
             return false;
+        }
+
+        if(actividad.equals("VEHICULO") &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95)
+        {
+            valido = "false";
+            contador = 4;
         }
 
         if(contador>0){
