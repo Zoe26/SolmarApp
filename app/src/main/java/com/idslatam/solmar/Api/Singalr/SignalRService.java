@@ -36,6 +36,7 @@ public class SignalRService extends Service {
     private HubProxy mHubProxy;
     private Handler mHandler; // to display Toast message
     private final IBinder mBinder = new LocalBinder(); // Binder given to client
+    private int countConex=0;
 
     public SignalRService() {
         Log.e("Signalr", "onCreate");
@@ -90,13 +91,24 @@ public class SignalRService extends Service {
         Log.e("Tracking", marker.Longitud.toString() );
         Log.e("SimpleSignalR", mHubConnection.getState().toString());
 
+        if (countConex > 0){
+            countConex --;
+        }
+
+        if (countConex==0 && mHubConnection.getState().toString() == "Disconnected"){
+            startSignalR();
+        }
+
         if(mHubConnection.getState().toString() == "Disconnected"){
 
-            //mHubConnection.start();
-            //mHubConnection.;
-            startSignalR();
+            if (countConex==0){
+                countConex = 10;
+            }
+        }
 
-        }else if(mHubConnection.getState().toString()=="Connected"){
+        if(mHubConnection.getState().toString()=="Connected"){
+
+            countConex = 0;
 
             mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
                 @Override
@@ -111,8 +123,6 @@ public class SignalRService extends Service {
                 }
             });
         }
-
-
     }
 
     private void startSignalR() {
