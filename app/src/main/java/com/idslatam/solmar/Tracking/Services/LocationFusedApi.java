@@ -301,7 +301,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         } else {
             lastActividad = actividad;
 
-            if (firstActividad.equals("SINMOVIMIENTO") && lastActividad.equals("VECHICULO")){
+            if (firstActividad.equals("SINMOVIMIENTO") && lastActividad.equals("VEHICULO")){
                 firstActividad = actividad;
                 valido = "false";
                 contador = 4;
