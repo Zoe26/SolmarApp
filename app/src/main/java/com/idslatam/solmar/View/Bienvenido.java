@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -56,6 +57,7 @@ import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
@@ -144,6 +146,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     String NumeroReinstlado;
     protected String URL_API;
     String estado, RequiereNumero, Id;
+    TextView txtApro;
 
     private static final int MY_READ_PHONE_STATE = 1 ;
     private static final int MY_ACCESS_FINE_LOCATION = 2 ;
@@ -162,6 +165,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         setContentView(R.layout.activity_bienvenido);
 
+        txtApro = (TextView)findViewById(R.id.text_aprobacion);
         // PERMISO DE LEER TELEFONO
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED) {
 
@@ -406,7 +410,12 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
-//        mGoogleApiClient.disconnect();
+
+        if(validacion.equals("false")){
+            txtApro.setVisibility(View.GONE);
+        } else {
+            txtApro.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -670,7 +679,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         protected void onPreExecute() {
 
             pDialog = new ProgressDialog(Bienvenido.this);
-            pDialog.setMessage("Obteniendo Código...");
+            pDialog.setMessage("Obteniendo C\u00f3digo...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();

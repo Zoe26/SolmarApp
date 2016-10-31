@@ -17,6 +17,24 @@
         android:background="@mipmap/bienvenido"
         android:textStyle="bold" />
 
+    <TextView
+        android:text="@string/txt_aprobacion"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|bottom"
+        android:textSize="18sp"
+        android:textColor="@color/lightGray"
+        android:id="@+id/text_aprobacion" />
+
+    <TextView
+        android:text="@string/txt_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|top"
+        android:textSize="15sp"
+        android:textColor="@color/black_overlay"
+        android:id="@+id/info" />
+
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <FrameLayout
@@ -46,6 +64,7 @@
                 tools:ignore="SpUsage" />
 
         </LinearLayout>
+
     </FrameLayout>
 
 </FrameLayout>

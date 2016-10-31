@@ -122,7 +122,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         TextView textView = new TextView(getActivity());
 //        textView.setText(getArguments().getString(STARTING_TEXT));
 
-        thiscontext = container.getContext();
+        this.thiscontext = container.getContext();
         alertCRUD = new AlertCrud(thiscontext);
 
         try {
@@ -132,7 +132,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             String selectQuery = "SELECT IntervaloMarcacion, IntervaloMarcacionTolerancia FROM Configuration";
             Cursor c = db.rawQuery(selectQuery, new String[]{});
 
-            if (c.moveToLast()) {
+            if (c.moveToFirst()) {
 
                 tiempoEnvio = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
                 tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
@@ -682,7 +682,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             try {
 
                 btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcación");
+                btnMarcacion.setText("Marcaci\u00d3n");
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
                 btnMarcacion.setTextColor(Color.WHITE);
                 FlagTiempo="1";
@@ -706,7 +706,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } else {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
-            btnMarcacion.setText("Activación en " + difBoton+ " min.");
+            btnMarcacion.setText("Activaci\u00d3n en " + difBoton+ " min.");
             btnMarcacion.setEnabled(false);
             btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
         }
@@ -985,7 +985,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             Cursor c = db.rawQuery(selectQuery, new String[]{});
 
-            if (c.moveToLast()) {
+            if (c.moveToFirst()) {
                 tiempoGuardado = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
                 tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
             }

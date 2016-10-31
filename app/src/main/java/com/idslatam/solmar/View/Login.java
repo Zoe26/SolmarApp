@@ -198,7 +198,7 @@ public class Login extends AppCompatActivity implements
 
 //        verConfiguracion.setOnClickListener(this);
 
-        DBHelper dbhToken = new DBHelper(this);
+        DBHelper dbhToken = new DBHelper(context);
         SQLiteDatabase sqlToken = dbhToken.getWritableDatabase();
         String selectQueryToken = "SELECT Token FROM Configuration WHERE Token is null or Token = ''";
         Cursor cbuscaToken = sqlToken.rawQuery(selectQueryToken, new String[]{}, null);
@@ -242,7 +242,7 @@ public class Login extends AppCompatActivity implements
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         // All required changes were successfully made
-                        Toast.makeText(this, "¡Configuración éxitosa!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "¡Configuración éxitosa!", Toast.LENGTH_LONG).show();
                         Log.e("VerificarAcceso ","RESULT_OK");
                         break;
                     case Activity.RESULT_CANCELED:
@@ -430,7 +430,7 @@ public class Login extends AppCompatActivity implements
 
         try {
 
-            AsistenciaCrud asistenciaCRUD = new AsistenciaCrud(this);
+            AsistenciaCrud asistenciaCRUD = new AsistenciaCrud(context);
             Asistencia asistencia = new Asistencia();
 
             asistencia.NumeroAs = Numero;
@@ -533,7 +533,7 @@ public class Login extends AppCompatActivity implements
 
 //        private static final String LOGIN_URL = "https://solmar.azurewebsites.net/Aplicacion/GetAppByUser";
 
-        private final String LOGIN_URL = URL_API.concat("/Aplicacion/GetAppByUser");
+        private final String LOGIN_URL = URL_API.concat("Aplicacion/GetAppByUser");
 
         private static final String TAG_SUCCESS = "success";
         private static final String TAG_MESSAGE = "message";
@@ -555,7 +555,7 @@ public class Login extends AppCompatActivity implements
                 if (json != null) {
 
                     datosMenu(json);
-
+                    tareaLarga();
                     return json;
                 }
 
@@ -634,7 +634,6 @@ public class Login extends AppCompatActivity implements
             for (int i = 0; i < jsonA.length(); i++) {
 
                 JSONObject c = jsonA.getJSONObject(i);
-//                            valores[i] = c.getString("Nombre");
                 val[i] = c.getInt("Id");
                 valores[i] = c.getString("Configuracion");
 
@@ -643,43 +642,41 @@ public class Login extends AppCompatActivity implements
                 for (int j = 0; j < jsonValores.length(); j++) {
                     JSONObject v = jsonValores.getJSONObject(j);
 
-                    if(c.getInt("Id")==1){
+//                    if(c.getInt("Id")==1){
+
+//                        if(v.getInt("ConfiguracionId")==7){
+//                            DBHelper dbhPrecision = new DBHelper(context);
+//                            SQLiteDatabase db = dbhPrecision.getWritableDatabase();
+//                            db.execSQL("UPDATE Configuration SET Precision = '" + v.getInt("Valor") + "'");
+//                            db.close();
 //
-//                                    Log.e("-- "+c.getString("Nombre"), String.valueOf(v.getInt("ConfiguracionId")));
-                        if(v.getInt("ConfiguracionId")==7){
-                            DBHelper dbhPrecision = new DBHelper(this);
-                            SQLiteDatabase db = dbhPrecision.getWritableDatabase();
-                            db.execSQL("UPDATE Configuration SET Precision = '" + v.getInt("Valor") + "'");
-                            db.close();
+//                            Log.e("CONF login "+c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
+//                        }
 
-                            Log.e("CONF login "+c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
-                        }
+//                        if(v.getInt("ConfiguracionId")==1){
+//                            DBHelper dbhIntervalo = new DBHelper(context);
+//                            SQLiteDatabase db = dbhIntervalo.getWritableDatabase();
+//                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + v.getInt("Valor") + "'");
+//                            db.close();
+//
+//                            Log.e("CONF login " + c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
+//                        }
 
-                        if(v.getInt("ConfiguracionId")==1){
-                            DBHelper dbhIntervalo = new DBHelper(this);
-                            SQLiteDatabase db = dbhIntervalo.getWritableDatabase();
-                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + v.getInt("Valor") + "'");
-                            db.close();
-
-                            Log.e("CONF login " + c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
-                        }
-
-                        if(v.getInt("ConfiguracionId")==2){
-                            DBHelper dbhSinConex = new DBHelper(this);
-                            SQLiteDatabase db = dbhSinConex.getWritableDatabase();
-                            db.execSQL("UPDATE Configuration SET IntervaloTrackingSinConex = '" + v.getInt("Valor") + "'");
-                            db.close();
-
-                            Log.e("CONF login "+c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
-                        }
-
-                    }
+//                        if(v.getInt("ConfiguracionId")==2){
+//                            DBHelper dbhSinConex = new DBHelper(context);
+//                            SQLiteDatabase db = dbhSinConex.getWritableDatabase();
+//                            db.execSQL("UPDATE Configuration SET IntervaloTrackingSinConex = '" + v.getInt("Valor") + "'");
+//                            db.close();
+//
+//                            Log.e("CONF login "+c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
+//                        }
+//
+//                    }
 
                     if(c.getInt("Id")==2){
-//
-//                                    Log.e("-- "+c.getString("Nombre"), String.valueOf(v.getInt("ConfiguracionId")));
+
                         if(v.getInt("ConfiguracionId")==3){
-                            DBHelper dbhMarcacion = new DBHelper(this);
+                            DBHelper dbhMarcacion = new DBHelper(context);
                             SQLiteDatabase db = dbhMarcacion.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + v.getInt("Valor") + "'");
                             db.close();
@@ -688,7 +685,7 @@ public class Login extends AppCompatActivity implements
                         }
 
                         if(v.getInt("ConfiguracionId")==4){
-                            DBHelper dbhTolerancia = new DBHelper(this);
+                            DBHelper dbhTolerancia = new DBHelper(context);
                             SQLiteDatabase db = dbhTolerancia.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + v.getInt("Valor")  + "'");
                             db.close();
@@ -699,7 +696,7 @@ public class Login extends AppCompatActivity implements
                     if(c.getInt("Id")==3){
 
                         if(v.getInt("ConfiguracionId")==5){
-                            DBHelper dbhBP = new DBHelper(this);
+                            DBHelper dbhBP = new DBHelper(context);
                             SQLiteDatabase db = dbhBP.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+v.getInt("Valor")+"'");
                             db.close();
@@ -708,7 +705,7 @@ public class Login extends AppCompatActivity implements
 
                         }
                         if(v.getInt("ConfiguracionId")==6){
-                            DBHelper dbhIntervaloEmergencia = new DBHelper(this);
+                            DBHelper dbhIntervaloEmergencia = new DBHelper(context);
                             SQLiteDatabase db = dbhIntervaloEmergencia.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloTrackingEmergencia = '"+v.getInt("Valor")+"'");
                             db.close();
@@ -728,12 +725,18 @@ public class Login extends AppCompatActivity implements
 
     public void configuracionRechazada(){
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
         builder.setTitle("¡Advertencia!");
         builder.setMessage("Al no aceptar las configuraciones previas Solgis no iniciara de manera correcta. Por favor intente nuevamente");
         builder.setPositiveButton("Ok", null);
         builder.show();
+    }
+
+    private void tareaLarga() {
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException e) {}
     }
 
 }

@@ -6,6 +6,6 @@
     <dimen name="activity_horizontal_margin">5dp</dimen>
     <dimen name="activity_vertical_margin">5dp</dimen>
     <dimen name="fab_margin">10dp</dimen>
-    <dimen name="vistas_alert">5dp</dimen>
+    <dimen name="vistas_alert">1dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
 </resources>
