@@ -104,12 +104,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public void onCreate() {
         super.onCreate();
 
+        Log.e("-- LocationFusedApi ", " onCreate");
+
         Intent intent = new Intent();
         intent.setClass(mContext, SignalRService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
         buildGoogleApiClient();
+
     }
 
     /*@Override
