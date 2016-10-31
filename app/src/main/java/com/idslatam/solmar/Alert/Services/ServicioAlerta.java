@@ -72,7 +72,7 @@ public class ServicioAlerta extends Service {
 //        URLGlobal = globalClass.getUrl();
 
         guardarAlertaX();
-//        Log.e("Last Consulta", " Guardar ");
+        Log.e("Last Consulta", " Guardar ");
     }
 
     @Override
