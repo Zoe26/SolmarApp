@@ -39,7 +39,7 @@
     <string name="open">Abierto</string>
     <string name="close">cerrado</string>
     <string name="txt_aprobacion">Solicitud enviada, a espera de aprobación</string>
-    <string name="txt_info">\nTocar pantalla para actualizar</string>
+    <string name="txt_info">\n\nTocar pantalla para actualizar</string>
 
 
     <string name="pbbienvenido">Obteniendo Código...</string>

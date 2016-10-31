@@ -409,13 +409,13 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             return;
         }
 
-        new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
-
-        if(validacion.equals("false")){
-            txtApro.setVisibility(View.GONE);
-        } else {
+        if(validacion=="true"){
             txtApro.setVisibility(View.INVISIBLE);
         }
+
+        new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
+
+
     }
 
     @Override
