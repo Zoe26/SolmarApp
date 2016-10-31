@@ -8,6 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="FullscreenTheme" parent="AppTheme">
 
         <item name="android:windowActionBarOverlay">true</item>
@@ -18,6 +20,17 @@
 
     <style name="FullscreenActionBarStyle" parent="AppTheme">
         <item name="android:background">@color/black_overlay</item>
+    </style>
+
+    <style name="NavigationViewTheme" parent="AppTheme">
+        <item name="textAppearanceListItem">@style/TextAppearance.AppCompat.Body2</item>
+    </style>
+
+    <style name="BotonActualizar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/icons</item>
     </style>
 
 </resources>

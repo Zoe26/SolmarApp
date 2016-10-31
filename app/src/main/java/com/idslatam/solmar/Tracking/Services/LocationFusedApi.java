@@ -83,7 +83,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     Calendar currentSend = null;
     Boolean flagSend = false;
     int contador =0, intervalSend=0;
-    int contadorTest=0;
+    int contadorTest=0, _TrackingUpdateRee_Id = 0;
     protected double nivelBateria=0;
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -444,17 +444,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(flagSend == true && valido =="true") {
             Log.e("--! LOCATION SEND", location.toString());
             tracking.Intervalo = Integer.toString(intervalSend);
-            flagSend = false;
-        } else {
-            tracking.Intervalo = "0";
-        }
-
-        try {
-
-            mService.sendMessage(tracking);
-
+            try {
+                mService.sendMessage(tracking);
 //            Log.e("LocationFusedApi ", "sendMessage");
-        } catch (Exception e) {}
+            } catch (Exception e) {}
+            flagSend = false;
+            consultaSinConexion();
+        }
+//        else {
+//            tracking.Intervalo = "0";
+//        }
+
 
         return  true;
     }
@@ -477,7 +477,98 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
     };
 
+    public Boolean consultaSinConexion(){
 
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbN = dataBaseHelper.getWritableDatabase();
+            String selectQueryBuscaN = "SELECT Numero FROM Tracking WHERE EstadoEnvio = 'false'";
+            Cursor cbuscaN = dbN.rawQuery(selectQueryBuscaN, new String[]{}, null);
+            int contador = cbuscaN.getCount();
+            cbuscaN.close();
+            dbN.close();
+
+            if (contador>0) {
+                sendSave();
+            }
+
+        }catch (Exception e){
+            Log.e("-- Error Reenvio Track", e.getMessage());
+        }
+
+        return true;
+    }
+
+    public void sendSave() {
+
+        int i =0;
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+            String selectQuery = "SELECT TrackingId, Numero, DispositivoId, FechaCelular, Latitud, Longitud, EstadoCoordenada, " +
+                    "OrigenCoordenada, Velocidad, Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, " +
+                    "DatosHabilitado, ModeloEquipo, Imei, VersionApp, FechaAlarma, Time, ElapsedRealtimeNanos, " +
+                    "Altitude, Bearing, Extras, Classx, Actividad, Valido, Intervalo, EstadoEnvio FROM Tracking WHERE EstadoEnvio = 'false'";
+            Cursor c = db.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                do {
+                    Tracking trackingPos = new Tracking();
+
+                    _TrackingUpdateRee_Id = c.getInt(c.getColumnIndex("TrackingId"));
+
+                    trackingPos.Numero = c.getString(c.getColumnIndex("Numero"));
+                    trackingPos.DispositivoId = c.getString(c.getColumnIndex("DispositivoId"));
+                    trackingPos.FechaCelular = c.getString(c.getColumnIndex("FechaCelular"));
+                    trackingPos.Latitud = c.getString(c.getColumnIndex("Latitud"));
+                    trackingPos.Longitud = c.getString(c.getColumnIndex("Longitud"));
+                    trackingPos.EstadoCoordenada = "OK";
+                    trackingPos.OrigenCoordenada = "fused";
+                    trackingPos.Velocidad = c.getString(c.getColumnIndex("Velocidad"));
+                    trackingPos.Bateria = c.getString(c.getColumnIndex("Bateria"));
+                    trackingPos.Precision = c.getString(c.getColumnIndex("Precision"));
+                    trackingPos.SenialCelular = c.getString(c.getColumnIndex("SenialCelular"));
+                    trackingPos.GpsHabilitado = c.getString(c.getColumnIndex("GpsHabilitado"));
+                    trackingPos.WifiHabilitado = c.getString(c.getColumnIndex("WifiHabilitado"));
+                    trackingPos.DatosHabilitado = c.getString(c.getColumnIndex("DatosHabilitado"));
+                    trackingPos.ModeloEquipo = c.getString(c.getColumnIndex("ModeloEquipo"));
+                    trackingPos.Imei = c.getString(c.getColumnIndex("Imei"));
+                    trackingPos.VersionApp = c.getString(c.getColumnIndex("VersionApp"));
+                    trackingPos.FechaAlarma = c.getString(c.getColumnIndex("FechaAlarma"));
+                    trackingPos.Time = c.getString(c.getColumnIndex("Time"));
+                    trackingPos.ElapsedRealtimeNanos = c.getString(c.getColumnIndex("ElapsedRealtimeNanos"));
+                    trackingPos.Altitude = c.getString(c.getColumnIndex("Altitude"));
+                    trackingPos.Bearing = c.getString(c.getColumnIndex("Bearing"));
+                    trackingPos.Extras = "Tracking@5246.Solmar";
+                    trackingPos.Classx = "Location";
+                    trackingPos.Actividad = c.getString(c.getColumnIndex("Actividad"));
+                    trackingPos.Valido = c.getString(c.getColumnIndex("Valido"));
+                    trackingPos.Intervalo = c.getString(c.getColumnIndex("Intervalo"));
+
+                    deleteTracking(_TrackingUpdateRee_Id);
+
+                    mService.sendMessage(trackingPos);
+
+                    i++;
+
+                } while(c.moveToNext() && i<30);
+
+            }
+            c.close();
+            db.close();
+
+        } catch (Exception e){}
+
+    }
+
+    public  Boolean deleteTracking(int id) {
+        DBHelper dbgelperDeete = new DBHelper(this);
+        SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
+        sqldbDelete.execSQL("DELETE FROM  Tracking WHERE TrackingId = "+id);
+        sqldbDelete.close();
+        return true;
+    }
 
     //*************************************************************************************************
     private boolean isGPSAvailable() {

@@ -15,4 +15,17 @@
     <color name="gris">#9E9E9E</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="grayPanel">#EEEEEE</color>
+    <color name="lightGray">#d6d6d6</color>
+
+    <color name="icons">#FFFFFF</color>
+    <color name="boton_deshabilitado">#CFD8DC</color>
+
+    <color name="alert">#3B494C</color>
+    <color name="image">#00796B</color>
+    <color name="jobs">#7B1FA2</color>
+    <color name="home">#FF5252</color>
+
 </resources>

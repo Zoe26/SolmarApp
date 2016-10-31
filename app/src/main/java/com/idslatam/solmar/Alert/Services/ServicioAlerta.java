@@ -15,21 +15,6 @@ import com.idslatam.solmar.Models.Entities.Alert;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.IBinder;
-import android.util.Log;
-
-import com.idslatam.solmar.Models.Crud.AlertCrud;
-import com.idslatam.solmar.Models.Database.DBHelper;
-import com.idslatam.solmar.Models.Entities.Alert;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 public class ServicioAlerta extends Service {
 
     int tiempoEnvio, tiempoIntervalo;
@@ -288,5 +273,6 @@ public class ServicioAlerta extends Service {
         return  true;
     }
 }
+
 
 

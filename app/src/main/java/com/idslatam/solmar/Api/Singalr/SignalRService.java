@@ -2,6 +2,7 @@ package com.idslatam.solmar.Api.Singalr;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -10,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.idslatam.solmar.Models.Crud.TrackingCrud;
+import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
 
 import java.util.concurrent.ExecutionException;
@@ -36,7 +39,7 @@ public class SignalRService extends Service {
     private HubProxy mHubProxy;
     private Handler mHandler; // to display Toast message
     private final IBinder mBinder = new LocalBinder(); // Binder given to client
-    private int countConex=0;
+    private int countConex=0, _Tracking_Id=0;
 
     public SignalRService() {
         Log.e("Signalr", "onCreate");
@@ -88,7 +91,13 @@ public class SignalRService extends Service {
     public void sendMessage(Tracking marker) {
 //        String SERVER_METHOD_SEND = "addMarker";
 //        mHubProxy.invoke(SERVER_METHOD_SEND, marker);
-        Log.e("Tracking", marker.Longitud.toString() );
+//        Log.e("Tracking", marker.Longitud.toString() );
+        DBHelper dataBaseHelper = new DBHelper(this);
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+        db.execSQL("UPDATE Configuration SET Longitud = '" + marker.Longitud.toString() + "'");
+        db.execSQL("UPDATE Configuration SET Latitud = '" + marker.Latitud.toString() + "'");
+        db.close();
+
         Log.e("SimpleSignalR", mHubConnection.getState().toString());
 
         if (countConex > 0){
@@ -102,6 +111,15 @@ public class SignalRService extends Service {
         }
 
         if(mHubConnection.getState().toString() == "Disconnected"){
+
+            try {
+
+                TrackingCrud trackingCRUD = new TrackingCrud(this);
+                marker.EstadoEnvio = "false";
+                marker.TrackingId = _Tracking_Id;
+                _Tracking_Id = trackingCRUD.insert(marker);
+
+            }catch (Exception e){}
 
             if (countConex==0){
                 countConex = 10;
