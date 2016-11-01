@@ -104,12 +104,6 @@ public class SignalRService extends Service {
 //            countConex --;
 //        }
 
-        if (mHubConnection.getState().toString() == "Disconnected"){
-            try {
-                startSignalR();
-            } catch (Exception e) {}
-        }
-
         if(mHubConnection.getState().toString() == "Disconnected"){
 
             try {
@@ -124,6 +118,12 @@ public class SignalRService extends Service {
 //            if (countConex==0){
 //                countConex = 10;
 //            }
+        }
+
+        if (mHubConnection.getState().toString() == "Disconnected"){
+            try {
+                startSignalR();
+            } catch (Exception e) {}
         }
 
         if(mHubConnection.getState().toString()=="Connected"){
