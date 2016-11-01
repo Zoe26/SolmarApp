@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registro Tracking"
+        android:textSize="13dp"
+        android:textColor="@color/colorPrimary"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_FechaCelular"
+        android:text="FechaCelular"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Latitud"
+        android:text="Latitud"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Longitud"
+        android:text="Longitud"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Velocidadd"
+        android:text="Velocidad"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Bateria"
+        android:text="Bateria"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Precision"
+        android:text="Precision"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_GpsHabilitado"
+        android:text="GpsHabilitado"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_WifiHabilitado"
+        android:text="WifiHabilitado"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_DatosHabilitado"
+        android:text="DatosHabilitado"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_SenialCelular"
+        android:text="Longitud"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_FechaAlarma"
+        android:text="FechaAlarma"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Time"
+        android:text="Time"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_ElapsedRealtimeNanos"
+        android:text="ElapsedRealtimeNanos"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Altitude"
+        android:text="Altitude"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Bearing"
+        android:text="Bearing"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Actividad"
+        android:text="Actividad"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Valido"
+        android:text="Valido"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_Intervalo"
+        android:text="Intervalo"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tracking_lv_EstadoEnvio"
+        android:text="EstadoEnvio"
+        android:textSize="13dp"/>
+
+
+</LinearLayout>

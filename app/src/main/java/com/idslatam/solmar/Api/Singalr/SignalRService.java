@@ -1,6 +1,7 @@
 package com.idslatam.solmar.Api.Singalr;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
@@ -40,6 +41,7 @@ public class SignalRService extends Service {
     private Handler mHandler; // to display Toast message
     private final IBinder mBinder = new LocalBinder(); // Binder given to client
     private int countConex=0, _Tracking_Id=0;
+    Context mContext;
 
     public SignalRService() {
         Log.e("Signalr", "onCreate");
@@ -49,6 +51,7 @@ public class SignalRService extends Service {
     public void onCreate() {
         Log.e("Signalr", "onCreate");
         super.onCreate();
+        this.mContext = this;
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -133,6 +136,19 @@ public class SignalRService extends Service {
             mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
                 @Override
                 public void run(String s) throws Exception {
+
+                    String[] arrayParametros = s.split(",");
+
+                    for (int i = 0; i < arrayParametros.length; i++) {
+                        Log.e("Signal R Intervalo ", arrayParametros[0]);
+                        Log.e("Signal R Precision ", arrayParametros[1]);
+                    }
+
+                    DBHelper dataBaseHelper = new DBHelper(mContext);
+                    SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                    db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
+                    db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
+                    db.close();
                     Log.e("Signal R", s);
                     //Log.e("SimpleSignalR", mHubConnection.getState().toString());
                 }

@@ -2,6 +2,7 @@ package com.idslatam.solmar.View;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Pruebas.Fragments.AdapterTrackingF;
 import com.idslatam.solmar.View.Fragments.HomeFragment;
 import com.idslatam.solmar.View.Fragments.ImageFragment;
 import com.idslatam.solmar.View.Fragments.JobsFragment;
@@ -150,6 +152,8 @@ public class MenuPrincipal extends  ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        FragmentManager fragmentManager = getFragmentManager();
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_close) {
             try {
@@ -163,6 +167,18 @@ public class MenuPrincipal extends  ActionBarActivity {
         if (id == R.id.action_salir) {
             try {
                 showDialog();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        if (id == R.id.action_tracking) {
+            try {
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainer, new AdapterTrackingF());
+                fragmentTransaction.commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -13,5 +13,9 @@
     <item android:id="@+id/action_salir"
         android:title="Cerrar Sesion"
         app:showAsAction="never"/>
+
+    <item android:id="@+id/action_tracking"
+        android:title="Ver Tracking"
+        app:showAsAction="never"/>
 </menu>
 
