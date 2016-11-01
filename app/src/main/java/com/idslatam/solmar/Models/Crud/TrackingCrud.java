@@ -51,11 +51,9 @@ public class TrackingCrud {
         values.put(Tracking.KEY_Bearing, tracking.Bearing);
         values.put(Tracking.KEY_Extras, tracking.Extras);
         values.put(Tracking.KEY_Classx, tracking.Classx);
-        values.put(Tracking.KEY_Actividad, tracking.Altitude);
-        values.put(Tracking.KEY_Valido, tracking.Altitude);
-        values.put(Tracking.KEY_Intervalo, tracking.Altitude);
-        values.put(Tracking.KEY_EstadoEnvio, tracking.Altitude);
-
+        values.put(Tracking.KEY_Actividad, tracking.Actividad);
+        values.put(Tracking.KEY_Valido, tracking.Valido);
+        values.put(Tracking.KEY_Intervalo, tracking.Intervalo);
         values.put(Tracking.KEY_EstadoEnvio, tracking.EstadoEnvio);
 
         long TrakingId = db.insert(Tracking.TABLE, null, values);

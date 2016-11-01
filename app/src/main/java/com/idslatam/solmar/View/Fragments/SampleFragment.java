@@ -133,10 +133,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             Cursor c = db.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
-
                 tiempoEnvio = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
                 tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
-
             }
 
             c.close();

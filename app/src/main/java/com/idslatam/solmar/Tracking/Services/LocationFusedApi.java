@@ -212,14 +212,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         Calendar currentDate = Calendar.getInstance();
-        Log.e("-- DATE ", String.valueOf(currentDate.getTime()));
+//        Log.e("-- DATE ", String.valueOf(currentDate.getTime()));
         Log.e("-- SEND ", String.valueOf(currentSend.getTime()));
-        Log.e("-- FLAG ", String.valueOf(flagSend));
+//        Log.e("-- FLAG ", String.valueOf(flagSend));
 
         if (currentDate.after(currentSend)){
             flagSend = true;
             currentSend.add(Calendar.MINUTE, intervalSend);
-            Log.e("-- SEND LAST ", String.valueOf(currentSend.getTime()));
+//            Log.e("-- SEND LAST ", String.valueOf(currentSend.getTime()));
         }
 
         //TIMER DE CONTROL DE ENVIO *****************************************************************
@@ -375,7 +375,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         if(locationLastSend!=null){
-            Log.e("locationLastSend ", locationLastSend.toString());
+//            Log.e("locationLastSend ", locationLastSend.toString());
             deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
             deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
 
@@ -506,6 +506,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public void sendSave() {
 
         int i =0;
+        Log.e("--! Reenvio ", "sendSave");
 
         try {
 

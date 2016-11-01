@@ -100,11 +100,11 @@ public class SignalRService extends Service {
 
         Log.e("SimpleSignalR", mHubConnection.getState().toString());
 
-        if (countConex > 0){
-            countConex --;
-        }
+//        if (countConex > 0){
+//            countConex --;
+//        }
 
-        if (countConex==0 && mHubConnection.getState().toString() == "Disconnected"){
+        if (mHubConnection.getState().toString() == "Disconnected"){
             try {
                 startSignalR();
             } catch (Exception e) {}
@@ -121,19 +121,19 @@ public class SignalRService extends Service {
 
             }catch (Exception e){}
 
-            if (countConex==0){
-                countConex = 10;
-            }
+//            if (countConex==0){
+//                countConex = 10;
+//            }
         }
 
         if(mHubConnection.getState().toString()=="Connected"){
 
-            countConex = 0;
+//            countConex = 0;
 
             mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
                 @Override
                 public void run(String s) throws Exception {
-                    Log.e("Signal R", "Ejecución Ok");
+                    Log.e("Signal R", s);
                     //Log.e("SimpleSignalR", mHubConnection.getState().toString());
                 }
             }).onError(new ErrorCallback() {
