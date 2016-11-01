@@ -328,6 +328,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(location.getAltitude() < 0) {return false;}
 
+        Log.e("-- !! Contador Fisrt ", String.valueOf(contador));
+
         if(locationLastSend==null){
             locationLastSend = location;
             contador = 8;
@@ -348,7 +350,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
 //                valido = "false";
                 firstActividad = actividad;
-                if(contador <= 1) {
+                if(contador == 0) {
                     contador = 4;
                 }
             } else {
@@ -362,7 +364,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(actividad == "VEHICULO" &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95)
         {
 //            valido = "false";
-            if(contador <= 1) {
+            if(contador == 0) {
                 contador = 4;
             }
         }
@@ -397,7 +399,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(location.getSpeed()>=14){
 
-            if(contador <= 1){
+            if(contador == 0){
                 contador = 8;
             }
             valido = "false";
@@ -406,7 +408,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(deltaVelocidad >= 6 || deltaAltitud > 14) {
 
-            if(contador <= 1){
+            if(contador == 0){
                 contador = 8;
             }
 
@@ -418,6 +420,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             locationLastSend = location;
             valido = "true";
         }
+
+        Log.e("-- !! Contador Last ", String.valueOf(contador));
 
         // y velocidades mayores a 14
         isGPSAvailable();

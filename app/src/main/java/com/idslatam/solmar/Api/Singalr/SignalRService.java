@@ -140,8 +140,8 @@ public class SignalRService extends Service {
                     String[] arrayParametros = s.split(",");
 
                     for (int i = 0; i < arrayParametros.length; i++) {
-                        Log.e("Signal R Intervalo ", arrayParametros[0]);
-                        Log.e("Signal R Precision ", arrayParametros[1]);
+//                        Log.e("Signal R Intervalo ", arrayParametros[0]);
+//                        Log.e("Signal R Precision ", arrayParametros[1]);
                     }
 
                     DBHelper dataBaseHelper = new DBHelper(mContext);
