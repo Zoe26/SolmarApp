@@ -6,7 +6,6 @@
     android:gravity="bottom"
     android:orientation="vertical">
 
-
     <TableLayout
         android:background="@color/boton_deshabilitado"
         android:id="@+id/tableLayout1"

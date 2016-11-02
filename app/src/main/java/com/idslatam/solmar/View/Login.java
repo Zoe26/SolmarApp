@@ -373,10 +373,6 @@ public class Login extends AppCompatActivity implements
             String message = "";
             String token=null;
 
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
             if (json != null) {
                 new GetAsync().execute(DispositivoId);
 
@@ -411,6 +407,10 @@ public class Login extends AppCompatActivity implements
                 Intent intent = new Intent(Login.this, MenuPrincipal.class);
                 intent.putExtra("Fotoch", Fotoch);
                 startActivity(intent);
+            }
+
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
             }
 
             if (success == 1) {

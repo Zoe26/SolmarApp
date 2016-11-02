@@ -693,7 +693,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             try {
 
                 btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcación");
+                btnMarcacion.setText("Marcaci\u00d3n");
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
                 btnMarcacion.setTextColor(Color.WHITE);
                 FlagTiempo = "0";

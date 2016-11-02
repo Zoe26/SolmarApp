@@ -82,7 +82,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
     String lastActividad=null, firstActividad=null;
     Calendar currentfail = Calendar.getInstance();
-    Calendar currentSend = null;
+    Calendar currentSend = null, currentForced=null;
     Boolean flagSend = false;
     int contador =0, intervalSend=0;
     int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0;
@@ -210,6 +210,10 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             currentSend = Calendar.getInstance();
             currentSend.add(Calendar.MINUTE, intervalSend);
+
+            currentForced = currentSend;
+            currentForced.add(Calendar.SECOND, 30);
+
             flagSend = true;
         }
 
@@ -322,7 +326,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         Log.e("-- !! Intervalo "+ String.valueOf(intervalSend), " ! Precision "+ String.valueOf(precision));
 
-        if (location.getAccuracy()<=50){locationForced=location;}
+        //***
+        if (location.getAccuracy()<=(precision+30)){locationForced=location;}
+        //***
 
         if(location.getAccuracy()>=precision) {return false;}
 
@@ -360,6 +366,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         if(actividad == "SINMOVIMIENTO" && location.getSpeed() > 0) {return false;}
+
+        if(actividad == "CAMINANDO" && location.getSpeed() > 3)
+        {
+            if(contador == 0) {
+                contador = 3;
+            }
+        }
 
         if(actividad == "VEHICULO" &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95)
         {
@@ -406,7 +419,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             //return false;
         }
 
-        if(deltaVelocidad >= 6 || deltaAltitud > 14) {
+        if(deltaVelocidad >= 5 || deltaAltitud > 14) {
 
             if(contador == 0){
                 contador = 8;
@@ -420,6 +433,15 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             locationLastSend = location;
             valido = "true";
         }
+
+        //***********
+        if (currentDate.after(currentForced)){
+            currentForced = currentSend;
+            currentForced.add(Calendar.SECOND, 30);
+            location = locationForced;
+            Log.e("-- locationForced ", locationForced.toString());
+        }
+        //***********
 
         Log.e("-- !! Contador Last ", String.valueOf(contador));
 
@@ -473,6 +495,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         try {
             _TrackingSave_Id = trackingCRUD.insertAll(tracking);
         }catch (Exception e){}
+
+        //*********
+        if(currentDate.after(currentForced) && flagSend == true) {
+            mService.sendMessage(tracking);
+            flagSend = false;
+//            consultaSinConexion();
+        }
+        //**********
 
         if(valido =="true" && flagSend == true) {
             mService.sendMessage(tracking);
