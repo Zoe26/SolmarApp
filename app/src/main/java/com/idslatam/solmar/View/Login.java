@@ -291,7 +291,14 @@ public class Login extends AppCompatActivity implements
                 Fotoch = pass;
                 String user = pass.concat("@gruposolmar.com.pe");
 
-                new PostAsync().execute(type, user, pass);
+                if(pass.matches("")){
+
+                    Toast.makeText(this, "Ingrese Codigo", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    new PostAsync().execute(type, user, pass);
+                }
+
 
                 break;
         }

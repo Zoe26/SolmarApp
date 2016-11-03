@@ -35,6 +35,9 @@ public class Configuration {
     public static final String KEY_TipoActividad = "Actividad";
     public static final String KEY_Latitud = "Latitud";
     public static final String KEY_Longitud = "Longitud";
+    public static final String KEY_FechaInicioIso = "FechaInicioIso";
+    public static final String KEY_FechaSendIso = "FechaSendIso";
+    public static final String KEY_FechaAlarmaIso = "FechaAlarmaIso";
 
 
     public int ConfigurationId;
@@ -63,5 +66,8 @@ public class Configuration {
     public String Actividad;
     public String Latitud;
     public String Longitud;
+    public String FechaInicioIso;
+    public String FechaSendIso;
+    public String FechaAlarmaIso;
 
 }

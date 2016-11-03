@@ -1,9 +1,14 @@
 package com.idslatam.solmar.Tracking.Services;
 
 import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.Service;
+import android.app.usage.UsageEvents;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +46,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Api.Singalr.CustomMessage;
@@ -49,26 +55,16 @@ import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.R;
+import com.idslatam.solmar.View.Settings.AccessSettings;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-
-import microsoft.aspnet.signalr.client.hubs.HubConnection;
-import microsoft.aspnet.signalr.client.hubs.HubProxy;
-import microsoft.aspnet.signalr.client.Action;
-import microsoft.aspnet.signalr.client.ErrorCallback;
-import microsoft.aspnet.signalr.client.Platform;
-import microsoft.aspnet.signalr.client.SignalRFuture;
-import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
-import microsoft.aspnet.signalr.client.hubs.HubConnection;
-import microsoft.aspnet.signalr.client.hubs.HubProxy;
-import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
-import microsoft.aspnet.signalr.client.transport.ClientTransport;
-import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class LocationFusedApi extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -81,15 +77,21 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
     String lastActividad=null, firstActividad=null;
-    Calendar currentfail = Calendar.getInstance();
+    Calendar currentIsoSend = null;
     Calendar currentSend = null, currentForced=null;
-    Boolean flagSend = false;
+    Boolean flagSend = false, flagApi = false;
     int contador =0, intervalSend=0;
     int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0;
     protected double nivelBateria=0;
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private boolean mBound = false;
+
+    String sFechaSend, sCurrendInicioIso, sCurrentSendIso, sFechaAlarmaIso;
+
+    Calendar currentSend5, cCurrendInicioIso, cCurrentSendIso, cFechaAlarmaIso, currentAux;
+
+    final Handler handler = new Handler();
 
     //**********************************************************************************************
     Tracking tracking = new Tracking();
@@ -114,36 +116,66 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
-        buildGoogleApiClient();
+
+        //************************************************************************************************************************
+
+        try {
+
+            DBHelper dbHelperIntervalo = new DBHelper(this);
+            SQLiteDatabase dba = dbHelperIntervalo.getWritableDatabase();
+            String selectQuery = "SELECT IntervaloTracking FROM Configuration";
+            Cursor ca = dba.rawQuery(selectQuery, new String[]{});
+
+            if (ca.moveToFirst()) {
+                intervalSend = ca.getInt(ca.getColumnIndex("IntervaloTracking"));
+            }
+            ca.close();
+            dba.close();
+
+        } catch (Exception e) {}
+
+
+        Log.e("-- INTERVALo onCREATE ", String.valueOf(intervalSend));
+
+//        if (intervalSend == 1 || intervalSend == 2) {
+            buildGoogleApiClient();
+//        } else {
+            buildGoogleApiClient();
+//        }
 
     }
 
-    /*@Override
-    protected void onStop() {
-        // Unbind from the service
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-        //super.onStop();
-    }*/
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mGoogleApiClient.connect();
+
+
+            mGoogleApiClient.connect();
+            runnable.run();
+
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
         }
 
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+        if(mGoogleApiClient.isConnected()) {
+            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(
+                    mGoogleApiClient,
+                    getActivityDetectionPendingIntent()
+            ).setResultCallback(this);
+
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
+
+        Log.e("-- !! onDESTROY ", " INGRESO!!!");
 
         super.onDestroy();
 
@@ -158,6 +190,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 .addApi(ActivityRecognition.API)
                 .addApi(LocationServices.API)
                 .build();
+
+
     }
 
     @Override
@@ -193,11 +227,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             DBHelper dbHelperIntervalo = new DBHelper(this);
             SQLiteDatabase dba = dbHelperIntervalo.getWritableDatabase();
-            String selectQuery = "SELECT IntervaloTracking, FechaEjecucionAlarm FROM Configuration";
+            String selectQuery = "SELECT IntervaloTracking, FechaEjecucionAlarm, FechaSendIso FROM Configuration";
             Cursor ca = dba.rawQuery(selectQuery, new String[]{});
 
             if (ca.moveToFirst()) {
                 intervalSend = ca.getInt(ca.getColumnIndex("IntervaloTracking"));
+                sCurrentSendIso = ca.getString(ca.getColumnIndex("FechaSendIso"));
             }
             ca.close();
             dba.close();
@@ -206,32 +241,63 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if (intervalSend==0){intervalSend=1;}
 
-        if (currentSend==null){
+        // METODO INTERVALO MENOR A 2 ---------------------------------------------------------------------------------------
+        if (intervalSend == 1 || intervalSend == 2) {
 
-            currentSend = Calendar.getInstance();
-            currentSend.add(Calendar.MINUTE, intervalSend);
+            if (currentSend==null){
 
-            currentForced = currentSend;
-            currentForced.add(Calendar.SECOND, 30);
+                currentSend = Calendar.getInstance();
+                currentSend.add(Calendar.SECOND, intervalSend);
 
-            flagSend = true;
+                currentForced = Calendar.getInstance();
+                currentForced.add(Calendar.MINUTE, intervalSend);
+                currentForced.add(Calendar.SECOND, 30);
+//                flagSend = true;
+            }
+
+            Calendar currentDate = Calendar.getInstance();
+//            Log.e("-- DATE ", String.valueOf(currentDate.getTime()));
+//            Log.e("-- SEND ", String.valueOf(currentSend.getTime()));
+//            Log.e("-- FLAG ", String.valueOf(flagSend));
+
+            if (currentDate.after(currentSend)){
+                flagSend = true;
+                currentSend.add(Calendar.MINUTE, intervalSend);
+                currentForced.add(Calendar.MINUTE, intervalSend);
+            }
+
+            requestActivityUpdates();
+            sendTracking(location);
         }
+        // FIN METODO INTERVALO MENOR A 2 ---------------------------------------------------------------------------------------
 
-        Calendar currentDate = Calendar.getInstance();
-        Log.e("-- DATE ", String.valueOf(currentDate.getTime()));
-        Log.e("-- SEND ", String.valueOf(currentSend.getTime()));
-        Log.e("-- FLAG ", String.valueOf(flagSend));
+        if(intervalSend > 2){
 
-        if (currentDate.after(currentSend)){
-            flagSend = true;
-            currentSend.add(Calendar.MINUTE, intervalSend);
-//            Log.e("-- SEND LAST ", String.valueOf(currentSend.getTime()));
+            if (currentSend==null){
+
+                currentSend = Calendar.getInstance();
+                currentSend.add(Calendar.MINUTE, 1);
+
+                currentForced = Calendar.getInstance();
+                currentForced.add(Calendar.MINUTE, intervalSend);
+                currentForced.add(Calendar.SECOND, 30);
+
+            }
+
+            Calendar currentDate = Calendar.getInstance();
+            if (currentDate.after(currentSend)){
+                flagSend = true;
+                currentSend.add(Calendar.MINUTE, intervalSend);
+                currentForced.add(Calendar.MINUTE, intervalSend);
+            }
+
+            requestActivityUpdates();
+            sendTracking(location);
+
         }
 
         //TIMER DE CONTROL DE ENVIO *****************************************************************
 
-        requestActivityUpdates();
-        sendTracking(location);
 
     }
 
@@ -294,6 +360,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     // METODOS ENVIO** *********************************************************************************
     public Boolean sendTracking(Location location) {
 
+        consultaSinConexion();
+        //***************************
+
         String number = null, guidDispositivo=null, actividad=null, fechaAlarma=null;
         int precision = 0;
         double deltaAltitud=0;
@@ -334,13 +403,13 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(location.getAltitude() < 0) {return false;}
 
-        Log.e("-- !! Contador Fisrt ", String.valueOf(contador));
-
         if(locationLastSend==null){
             locationLastSend = location;
             contador = 8;
             return false;
         }
+
+        Log.e("-- !! Contador Fisrt ", String.valueOf(contador));
 
         if(actividad==null)
         {
@@ -365,7 +434,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
         }
 
-        if(actividad == "SINMOVIMIENTO" && location.getSpeed() > 0) {return false;}
+        if(location.getSpeed() > 0 && actividad == "SINMOVIMIENTO") {return false;}
 
         if(actividad == "CAMINANDO" && location.getSpeed() > 3)
         {
@@ -435,17 +504,18 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         //***********
-        if (currentDate.after(currentForced)){
-            currentForced = currentSend;
-            currentForced.add(Calendar.SECOND, 30);
-            location = locationForced;
-            Log.e("-- locationForced ", locationForced.toString());
-        }
+//        if (currentDate.after(currentForced)){
+//            currentForced = currentSend;
+//            currentForced.add(Calendar.SECOND, 30);
+//            location = locationForced;
+//            Log.e("-- locationForced ", locationForced.toString());
+//        }
         //***********
 
-        Log.e("-- !! Contador Last ", String.valueOf(contador));
+//        Log.e("-- !! Contador Last ", String.valueOf(contador));
 
         // y velocidades mayores a 14
+
         isGPSAvailable();
         isMOBILEAvailable();
         isWIFIAvailable();
@@ -456,7 +526,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             nivelBateria = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         } catch (Exception e) {}
 
-        TrackingCrud trackingCRUD = new TrackingCrud(this);
+//        TrackingCrud trackingCRUD = new TrackingCrud(this);
 
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
@@ -492,22 +562,23 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             tracking.Intervalo = "0";
         }
 
-        try {
-            _TrackingSave_Id = trackingCRUD.insertAll(tracking);
-        }catch (Exception e){}
+//        try {
+//            _TrackingSave_Id = trackingCRUD.insertAll(tracking);
+//        }catch (Exception e){}
 
         //*********
         if(currentDate.after(currentForced) && flagSend == true) {
             mService.sendMessage(tracking);
             flagSend = false;
-//            consultaSinConexion();
         }
         //**********
 
+        Log.e("-- !! flagSend ", String.valueOf(flagSend));
+
         if(valido =="true" && flagSend == true) {
+
             mService.sendMessage(tracking);
             flagSend = false;
-            consultaSinConexion();
         }
 
         return  true;
@@ -663,4 +734,110 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
     }
 
+    // METODOS PARA ACCESO A CONFIGURACIONES ********************************************************************************
+        Runnable runnable = new Runnable() {
+        public void run() {
+            try {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+//                    activePackages = getActivePackages();
+//                    getRunningSuperioKITKAT();
+//                    getLollipopFGAppPackageName();
+                    printForegroundTask();
+                } else {
+                    getRunningKITKAT();
+//                    activePackages = getActivePackagesCompat();
+                }
+
+
+            }catch (Exception e){}
+            handler.postDelayed(runnable, 1000*60);
+        }
+    };
+
+    public void getRunningKITKAT(){
+
+        try {
+            ActivityManager am = (ActivityManager) this
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+
+            List<ActivityManager.RunningTaskInfo> alltasks = am.getRunningTasks(1);
+
+            for (ActivityManager.RunningTaskInfo aTask : alltasks) {
+
+//                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
+
+                if (aTask.topActivity.getClassName().equals("com.android.settings.Settings")
+                        || aTask.topActivity.getClassName().equals("com.android.settings.Settings$DateTimeSettingsActivity"))
+                {
+                    // When user on call screen show a alert message
+                    Log.e("Ingreso if ", " Settings");
+                    Intent dialogIntent = new Intent(this, AccessSettings.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(dialogIntent);
+                }
+            }
+
+        } catch (Throwable t) {
+            Log.w("TAG", "Throwable caught: "
+                    + t.getMessage(), t);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void printForegroundTask() {
+
+//        Log.e("_printForegroundTask ", " ingreso");
+
+        String foregroundApp = "";
+        final long timeEnd = System.currentTimeMillis();
+        final long timeBegin = timeEnd - 1000;
+
+        UsageStatsManager mUsageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
+        long time = System.currentTimeMillis();
+
+        List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,timeBegin,timeEnd);
+
+        Log.e("_stats ", String.valueOf(stats));
+
+        if (stats!= null) {
+            SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+            for (UsageStats usageStats : stats) {
+                mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+            }
+            if (mySortedMap != null && !mySortedMap.isEmpty()) {
+                foregroundApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+            }
+
+            Log.e("_app first if ", foregroundApp);
+
+            if (foregroundApp.equalsIgnoreCase("com.android.settings")) {
+                Log.e("Ingreso if ", " Settings");
+//                Toast.makeText(this, "Settings.", Toast.LENGTH_LONG).show();
+
+                Intent dialogIntent = new Intent(this, AccessSettings.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(dialogIntent);
+            }
+
+            Log.e("_app last if ", foregroundApp);
+        }
+
+        // CONDICION PARA FUNCIONAMIENTO EN API 23
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            UsageEvents usageEvents = mUsageStatsManager.queryEvents(time - 100 * 1000, time);
+            UsageEvents.Event event = new UsageEvents.Event();
+            // get last event
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event);
+            }
+            if (foregroundApp.equals(event.getPackageName()) && event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                Log.e("_mUsageStatsManager", String.valueOf(foregroundApp));
+            }
+
+        }
+
+    }
+
+
+    // FIN DE METODOS PARA ACCESO A CONFIGURACIONES **************************************************************************
 }

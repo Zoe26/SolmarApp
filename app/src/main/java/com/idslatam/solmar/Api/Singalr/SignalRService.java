@@ -3,6 +3,7 @@ package com.idslatam.solmar.Api.Singalr;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.Handler;
@@ -12,9 +13,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
+import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
+import com.idslatam.solmar.View.MenuPrincipal;
 
 import java.util.concurrent.ExecutionException;
 
@@ -41,6 +45,7 @@ public class SignalRService extends Service {
     private Handler mHandler; // to display Toast message
     private final IBinder mBinder = new LocalBinder(); // Binder given to client
     private int countConex=0, _Tracking_Id=0;
+    int intervalSend=0;
     Context mContext;
 
     public SignalRService() {
@@ -150,6 +155,12 @@ public class SignalRService extends Service {
                     db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
                     db.close();
                     Log.e("Signal R", s);
+
+                    int pre = Integer.parseInt(arrayParametros[1]);
+
+                    if(pre>2){
+                        stopService(new Intent(mContext, LocationFusedApi.class));
+                    }
                     //Log.e("SimpleSignalR", mHubConnection.getState().toString());
                 }
             }).onError(new ErrorCallback() {
