@@ -402,7 +402,7 @@ public class Login extends AppCompatActivity implements
 
     public Boolean getMenu(){
         new GetAsync().execute(DispositivoId);
-        Log.e("request ", "Boolean getMenu(");
+        Log.e("request ", "Boolean getMenu");
         return true;
     }
 
