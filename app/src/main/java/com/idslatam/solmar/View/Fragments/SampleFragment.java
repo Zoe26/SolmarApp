@@ -122,7 +122,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         TextView textView = new TextView(getActivity());
 //        textView.setText(getArguments().getString(STARTING_TEXT));
 
-        this.thiscontext = container.getContext();
+        thiscontext = container.getContext();
         alertCRUD = new AlertCrud(thiscontext);
 
         try {
@@ -132,9 +132,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             String selectQuery = "SELECT IntervaloMarcacion, IntervaloMarcacionTolerancia FROM Configuration";
             Cursor c = db.rawQuery(selectQuery, new String[]{});
 
-            if (c.moveToFirst()) {
+            if (c.moveToLast()) {
+
                 tiempoEnvio = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
                 tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
+
             }
 
             c.close();
@@ -142,9 +144,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         }catch (Exception e){}
 
-        if(tiempoIntervalo==0){
-            tiempoIntervalo=1;
-        }
+        if(tiempoIntervalo==0){tiempoIntervalo=1;}
+//        if(tiempoEnvio==0){tiempoEnvio=30;}
         Log.e("---! tiempoIntervalo ", String.valueOf(tiempoIntervalo));
         //--------------------------------------------------------------------
 
@@ -566,6 +567,27 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public Boolean fechaProximaMarcacionAlternativo(){
 
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(thiscontext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT IntervaloMarcacion, IntervaloMarcacionTolerancia FROM Configuration";
+            Cursor c = db.rawQuery(selectQuery, new String[]{});
+
+            if (c.moveToLast()) {
+
+                tiempoEnvio = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
+                tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
+
+            }
+
+            c.close();
+            db.close();
+
+        }catch (Exception e){}
+
+        Log.e("ALTERN tiempoEnvio : ", String.valueOf(tiempoEnvio));
+
         choraEsperadaG = Calendar.getInstance();//Fecha Actual
         Calendar choraEsperadaIsoG = Calendar.getInstance(); //Fecha Utilizada para los límites.
 
@@ -680,7 +702,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             try {
 
                 btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcaci\u00d3n");
+                btnMarcacion.setText("Marcación");
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
                 btnMarcacion.setTextColor(Color.WHITE);
                 FlagTiempo="1";
@@ -693,7 +715,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             try {
 
                 btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcaci\u00d3n");
+                btnMarcacion.setText("Marcación");
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
                 btnMarcacion.setTextColor(Color.WHITE);
                 FlagTiempo = "0";
@@ -704,7 +726,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } else {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
-            btnMarcacion.setText("Activaci\u00d3n en " + difBoton+ " min.");
+            btnMarcacion.setText("Activación en " + difBoton+ " min.");
             btnMarcacion.setEnabled(false);
             btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
         }
@@ -983,7 +1005,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             Cursor c = db.rawQuery(selectQuery, new String[]{});
 
-            if (c.moveToFirst()) {
+            if (c.moveToLast()) {
                 tiempoGuardado = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
                 tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
             }

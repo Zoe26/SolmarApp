@@ -83,10 +83,14 @@ public class Login extends AppCompatActivity implements
     String Numero, DispositivoId, FechaInicioCelular;
 
     ConfigurationCrud configurationCRUD = new ConfigurationCrud(this);
+    DBHelper dataBaseHelper = new DBHelper(this);
 
     String cvalidacion, cNumero, cGuidDispositivo, cToken
             , cOutApp, cIntervaloTracking, cIntervaloAlert
             , cMargenAlert, Fotoch;
+
+    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -307,13 +311,8 @@ public class Login extends AppCompatActivity implements
     class PostAsync extends AsyncTask<String, String, JSONObject> {
 
         JsonParser jsonParser = new JsonParser();
-
         private ProgressDialog pDialog;
-
         private final String URL = URL_API.concat("token");//"https://solmar.azurewebsites.net/token";
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
 
         @Override
         protected void onPreExecute() {
@@ -343,9 +342,7 @@ public class Login extends AppCompatActivity implements
 
                     try {
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-                        FechaInicioCelular = sdf.format(new Date());
-
+                        FechaInicioCelular = formatoGuardar.format(new Date());
                         DBHelper dbhGUID = new DBHelper(context);
                         SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
                         String selectQueryA = "SELECT NumeroCel, GuidDipositivo FROM Configuration";
@@ -359,12 +356,9 @@ public class Login extends AppCompatActivity implements
                         }
                         cA.close();
                         dbA.close();
+                        getMenu();
 
                     }catch (Exception e){}
-
-                    String id = DispositivoId; //"4349C419-3409-4D35-B379-AD907604F888";
-//                    new GetAsync().execute(DispositivoId);
-
                     return json;
                 }
 
@@ -376,13 +370,10 @@ public class Login extends AppCompatActivity implements
 
         protected void onPostExecute(JSONObject json) {
 
-            int success = 0;
-            String message = "";
-            String token=null;
+
 
             if (json != null) {
-                new GetAsync().execute(DispositivoId);
-
+                String token=null;
                 try {
                     token = json.getString("access_token");
                 } catch (JSONException e) {
@@ -398,19 +389,6 @@ public class Login extends AppCompatActivity implements
                 guardarAsistencia();
 
                 new PostAsyncAsistencia().execute(Numero, DispositivoId, FechaInicioCelular);
-
-
-                try {
-                    success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-//                startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
-//                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-
                 Intent intent = new Intent(Login.this, MenuPrincipal.class);
                 intent.putExtra("Fotoch", Fotoch);
                 startActivity(intent);
@@ -419,18 +397,13 @@ public class Login extends AppCompatActivity implements
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-
-            if (success == 1) {
-                Log.d("Hecho!", message);
-            }else{
-                Log.d("Falló", message);
-            }
-
-            // sacar token de la bd
-//            authorization = token; //"Bearer OFLUyn09Ye4jqYVuc2cuFh7fXrAizKlfCbeX3pVbbr6wAuCPmN7_AfXjh6nyHdqmiKVDbUMr2vssyrV3yR4pPGNxAr2sQKGLYJnfyZLpbtxw72wyroNHT7Rlyegob5XLiV_ntGUq4KSzutOhBCGEvV-F7oy9f4v0b6ttb4tTTtaZFwSx0mIshUfx-f4gRkQZ9HC7nz2C-PfGHkKJSUs9IafmPOq8G02-IyjGxif7G6ZbqdDfM09vBXXL1H56nXGI21cJgsAa5INRxgiBHDAWgUU0MFfec_hkP8UKgqhZkybipH9Px-2P9cmS9wPgSG9s13l3qA2j890hhzMSmm_-X85Zn7DtuuHQC-B3DN0TjyO9Phur3xcpfp-nESb4rVmSo4QL2PQ-S4zvViY0UOkkQw0DvaJOROU2T6_B-No3zQtxsOKy065qtMuSY0cIYtMCZT9TZ92son--ER4YkhYGImiDTm1FkuNhkXS0NbEyiVItVliCM2xDB58EXdA_pFEIFwOTQMC-CCe56E4Exw06-wKNB7OVWb7oLaCQJTHpLmI";//token;
-//            String id = "4349C419-3409-4D35-B379-AD907604F888";
-//            new GetAsync().execute(id);
         }
+    }
+
+    public Boolean getMenu(){
+        new GetAsync().execute(DispositivoId);
+        Log.e("request ", "Boolean getMenu(");
+        return true;
     }
 
     public void guardarAsistencia (){
@@ -457,10 +430,10 @@ public class Login extends AppCompatActivity implements
 
         private ProgressDialog pDialog;
 
-        private final String URL = URL_API.concat("/api/Attendance");//"http://solmar.azurewebsites.net/api/Attendance";
+        private final String URL = URL_API.concat("api/Attendance");//"http://solmar.azurewebsites.net/api/Attendance";
 
         private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
+        private static final String TAG_MESSAGE0 = "message";
 
         @Override
         protected void onPreExecute() {}
@@ -515,7 +488,6 @@ public class Login extends AppCompatActivity implements
 
                 try {
                     success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -562,7 +534,8 @@ public class Login extends AppCompatActivity implements
                 if (json != null) {
 
                     datosMenu(json);
-                    tareaLarga();
+                    Log.e("--PostAsyncAsistencia ", "datosMenu(json)");
+
                     return json;
                 }
 
@@ -578,18 +551,16 @@ public class Login extends AppCompatActivity implements
             int success = 0;
             String message = "";
 
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
             if (json != null) {
 
                 try {
                     if (ServicioAlerta.serviceRunningAlerta == true) {
                         Log.e("--------", "Servicio Alert ya está ejecutándose!--------");
                     } else {
-                        startService(new Intent(Login.this, ServicioAlerta.class));
-                        Log.e("--------", "Servicio Alert Detenido! ...Reiniciando..");
+
+                            startService(new Intent(Login.this, ServicioAlerta.class));
+                            Log.e("--------", "Servicio Alert Detenido! ...Reiniciando..");
+
                     }
                 } catch (Exception e){
                     Log.e("-- Error! Serv Alerta", " A");
@@ -603,6 +574,10 @@ public class Login extends AppCompatActivity implements
                 }
             }
 
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+
             if (success == 1) {
                 Log.d("Success!", message);
             }else{
@@ -614,7 +589,7 @@ public class Login extends AppCompatActivity implements
 
     public Boolean datosMenu(JSONObject json){
 
-        Log.e("JSON GET: ", json.toString());
+        Log.e("JSON GET: Boolean", json.toString());
 
         String Menu = null;
         try {
@@ -633,14 +608,11 @@ public class Login extends AppCompatActivity implements
         String []valores = new String[5];
         int []val = new int[5];
 
-        int a = 0, b=0;
-
-//                    int [][]m = new int [5][5];
-
         try {
             for (int i = 0; i < jsonA.length(); i++) {
 
                 JSONObject c = jsonA.getJSONObject(i);
+//                            valores[i] = c.getString("Nombre");
                 val[i] = c.getInt("Id");
                 valores[i] = c.getString("Configuracion");
 
@@ -649,76 +621,23 @@ public class Login extends AppCompatActivity implements
                 for (int j = 0; j < jsonValores.length(); j++) {
                     JSONObject v = jsonValores.getJSONObject(j);
 
-//                    if(c.getInt("Id")==1){
-
-//                        if(v.getInt("ConfiguracionId")==7){
-//                            DBHelper dbhPrecision = new DBHelper(context);
-//                            SQLiteDatabase db = dbhPrecision.getWritableDatabase();
-//                            db.execSQL("UPDATE Configuration SET Precision = '" + v.getInt("Valor") + "'");
-//                            db.close();
-//
-//                            Log.e("CONF login "+c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
-//                        }
-
-//                        if(v.getInt("ConfiguracionId")==1){
-//                            DBHelper dbhIntervalo = new DBHelper(context);
-//                            SQLiteDatabase db = dbhIntervalo.getWritableDatabase();
-//                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + v.getInt("Valor") + "'");
-//                            db.close();
-//
-//                            Log.e("CONF login " + c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
-//                        }
-
-//                        if(v.getInt("ConfiguracionId")==2){
-//                            DBHelper dbhSinConex = new DBHelper(context);
-//                            SQLiteDatabase db = dbhSinConex.getWritableDatabase();
-//                            db.execSQL("UPDATE Configuration SET IntervaloTrackingSinConex = '" + v.getInt("Valor") + "'");
-//                            db.close();
-//
-//                            Log.e("CONF login "+c.getString("Nombre"), String.valueOf(v.getInt("Valor")));
-//                        }
-//
-//                    }
 
                     if(c.getInt("Id")==2){
-
+//
+//                                    Log.e("-- "+c.getString("Nombre"), String.valueOf(v.getInt("ConfiguracionId")));
                         if(v.getInt("ConfiguracionId")==3){
-                            DBHelper dbhMarcacion = new DBHelper(context);
-                            SQLiteDatabase db = dbhMarcacion.getWritableDatabase();
+                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + v.getInt("Valor") + "'");
                             db.close();
 
-//                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
+                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
                         }
 
                         if(v.getInt("ConfiguracionId")==4){
-                            DBHelper dbhTolerancia = new DBHelper(context);
-                            SQLiteDatabase db = dbhTolerancia.getWritableDatabase();
+                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + v.getInt("Valor")  + "'");
                             db.close();
-//                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
-                        }
-                    }
-
-                    if(c.getInt("Id")==3){
-
-                        if(v.getInt("ConfiguracionId")==5){
-                            DBHelper dbhBP = new DBHelper(context);
-                            SQLiteDatabase db = dbhBP.getWritableDatabase();
-                            db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+v.getInt("Valor")+"'");
-                            db.close();
-
-                            a = v.getInt("Valor");
-
-                        }
-                        if(v.getInt("ConfiguracionId")==6){
-                            DBHelper dbhIntervaloEmergencia = new DBHelper(context);
-                            SQLiteDatabase db = dbhIntervaloEmergencia.getWritableDatabase();
-                            db.execSQL("UPDATE Configuration SET IntervaloTrackingEmergencia = '"+v.getInt("Valor")+"'");
-                            db.close();
-
-                            a = v.getInt("Valor");
-
+                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
                         }
                     }
                 }
@@ -740,9 +659,10 @@ public class Login extends AppCompatActivity implements
         builder.show();
     }
 
+
     private void tareaLarga() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         } catch(InterruptedException e) {}
     }
 
