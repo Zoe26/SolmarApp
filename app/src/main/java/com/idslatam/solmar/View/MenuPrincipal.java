@@ -2,8 +2,8 @@ package com.idslatam.solmar.View;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,12 +15,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
-import com.idslatam.solmar.Pruebas.Fragments.AdapterTrackingF;
 import com.idslatam.solmar.View.Fragments.HomeFragment;
 import com.idslatam.solmar.View.Fragments.ImageFragment;
 import com.idslatam.solmar.View.Fragments.JobsFragment;
@@ -45,7 +48,7 @@ public class MenuPrincipal extends  ActionBarActivity {
     private Toolbar toolbar;
     String fotocheckCod;
     Bundle b;
-    String Fotoch;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,7 @@ public class MenuPrincipal extends  ActionBarActivity {
         setContentView(R.layout.activity_menu_principal);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
 
+        mContext = this;
         try {
 
             DBHelper dataBaseHelper = new DBHelper(this);
@@ -176,9 +180,41 @@ public class MenuPrincipal extends  ActionBarActivity {
         if (id == R.id.action_tracking) {
             try {
 
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentContainer, new AdapterTrackingF());
-                fragmentTransaction.commit();
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MenuPrincipal.this);
+                mBuilder.setTitle("ACCESO CONFIGURACIONES");
+
+                View mView = getLayoutInflater().inflate(R.layout.dialog_active_setting, null);
+                EditText mPIN = (EditText) mView.findViewById(R.id.editTextPIN);
+                Button mPinCode = (Button) mView.findViewById(R.id.btn_Pin);
+
+                mPinCode.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View vew) {
+
+                        if(mPIN.getText().toString().isEmpty()){
+                            Toast.makeText(MenuPrincipal.this, "Ingrese PIN", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            if(mPIN.getText().toString()=="2016"){
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE SettingsPermissions SET Estado = 'true'");
+                                dba.close();
+                                Toast.makeText(MenuPrincipal.this, "Desbloqueado!", Toast.LENGTH_SHORT).show();
+
+                            } else  {
+                                Toast.makeText(MenuPrincipal.this, "PIN Incorrecto!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+
+                mBuilder.setView(mView);
+                AlertDialog dialog = mBuilder.create();
+                dialog.show();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.fragmentContainer, new AdapterTrackingF());
+//                fragmentTransaction.commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }

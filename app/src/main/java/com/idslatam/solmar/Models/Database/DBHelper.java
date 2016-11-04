@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Configuration;
+import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
 
 /**
@@ -117,11 +118,16 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Alert.KEY_CodigoEmpleado + " TEXT, "
                 + Alert.KEY_FinTurno + " TEXT)";
 
+        String CREATE_TABLE_SETTING_PERMISSION= "CREATE TABLE " + SettingsPermissions.TABLE_SETTING_PERMISSIONS + "("
+                + SettingsPermissions.KEY_ID_SettingsPermissions  + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + SettingsPermissions.KEY_Nombre + " TEXT,"
+                + SettingsPermissions.KEY_Estado + " TEXT)";
 
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
         db.execSQL(CREATE_TABLE_ASISTENCIA);
         db.execSQL(CREATE_TABLE_ALERT);
+        db.execSQL(CREATE_TABLE_SETTING_PERMISSION);
     }
 
     @Override
@@ -137,6 +143,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + Alert.TABLE_ALERT);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + SettingsPermissions.TABLE_SETTING_PERMISSIONS);
         onCreate(db);
 
     }

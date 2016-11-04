@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.SettingsDevice.Configurations.ServiceAccessSettings;
 import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
 
 import java.text.ParseException;
@@ -32,6 +33,11 @@ public class AlarmLocation extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         this.mContext = context;
+
+        // INTENTI AL SERVICIO ----------------------------------------------------------------------
+        Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
+        mContext.startService(backgroundS);
+        // FIN INTENTI AL SERVICIO ------------------------------------------------------------------
 
         //NO TOCAR *****************************************************************************************************************************
         int vApi = Build.VERSION.SDK_INT;

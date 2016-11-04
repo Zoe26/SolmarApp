@@ -165,6 +165,8 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         setContentView(R.layout.activity_bienvenido);
 
+        dataAccessSettings();
+
         txtApro = (TextView)findViewById(R.id.text_aprobacion);
         // PERMISO DE LEER TELEFONO
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED) {
@@ -531,63 +533,10 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
     }
 
-    public void consultaConfiguracion() {
-
-        // BUSCA SI EL NUMERO TIENE PERMISOS DE ACCESO
-        try {
-
-            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT EstaActivado, NumeroCel, GuidDipositivo, Token, OutApp, IntervaloTracking, IntervaloMarcacion, IntervaloMarcacionTolerancia FROM Configuration";
-
-            Cursor c = db.rawQuery(selectQuery, new String[]{});
-
-            if (c.moveToFirst()) {
-                validacion = c.getString(c.getColumnIndex("EstaActivado"));
-                cNumero = c.getString(c.getColumnIndex("NumeroCel"));
-                cGuidDispositivo = c.getString(c.getColumnIndex("GuidDipositivo"));
-                cToken = c.getString(c.getColumnIndex("Token"));
-                cOutApp = c.getString(c.getColumnIndex("OutApp"));
-                cIntervaloTracking = c.getString(c.getColumnIndex("IntervaloTracking"));
-                cIntervaloAlert = c.getString(c.getColumnIndex("IntervaloMarcacion"));
-                cMargenAlert = c.getString(c.getColumnIndex("IntervaloMarcacionTolerancia"));
-            }
-            c.close();
-            db.close();
-
-        } catch (Exception e) {}
-
-    }
-
     @Override
     public void onClick(View v) {
 
-//        switch(v.getId()) {
-//            case R.id.btn_login:
-//
-//                Intent intent = getIntent();
-//                finish();
-//                startActivity(intent);
-//
-//                break;
-//            case R.id.btn_configuracion:
-//                consultaConfiguracion();
-//                verConfiguracion();
-//                break;
-//        }
     }
-
-    public void verConfiguracion(){
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-        builder.setTitle("Configuracion de teléfono");
-        builder.setMessage("Nro: "+cNumero +" |Estado: "+validacion+" |DispositivoId: "+cGuidDispositivo+" |Token: "+cToken
-                +" |IntervaloTracking: "+cIntervaloTracking+" |IntervaloAlert: "+cIntervaloAlert+" |MargenAlert: "+ cMargenAlert );
-        builder.setPositiveButton("Aceptar", null);
-        builder.show();
-
-    }
-
     public void simDialogo(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -819,4 +768,34 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         db.close();
     }
     //******************************************************************
+
+    public void dataAccessSettings() {
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+            String selectQueryBusca = "SELECT Nombre FROM SettingsPermissions WHERE SettingsPermissionsId = 1";
+            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+            busca = cbusca.getCount();
+            cbusca.close();
+            dbc.close();
+
+        } catch (Exception e) {}
+
+        if(busca==0){
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("INSERT INTO SettingsPermissions (SettingsPermissionsId, Nombre, Estado) " +
+                    "VALUES (1,'com.android.settings.Settings','false')");
+
+            db.execSQL("INSERT INTO SettingsPermissions (SettingsPermissionsId, Nombre, Estado) " +
+                    "VALUES (2,'com.android.settings.Settings$DateTimeSettingsActivity','false')");
+
+            db.execSQL("INSERT INTO SettingsPermissions (SettingsPermissionsId, Nombre, Estado) " +
+                    "VALUES (3,'com.android.settings','false')");
+
+            db.close();
+        }
+
+    }
 }

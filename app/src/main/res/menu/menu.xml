@@ -15,7 +15,7 @@
         app:showAsAction="never"/>
 
     <item android:id="@+id/action_tracking"
-        android:title="Ver Tracking"
+        android:title="Configuracion"
         app:showAsAction="never"/>
 </menu>
 

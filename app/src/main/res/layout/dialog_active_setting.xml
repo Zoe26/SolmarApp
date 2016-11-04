@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+
+    <EditText
+        android:id="@+id/editTextPIN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/pin"
+        android:ems="10"
+        android:inputType=""
+        tools:ignore="TextFields">
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:text="ACTIVAR"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_Pin"
+        tools:ignore="HardcodedText" />
+
+
+</LinearLayout>

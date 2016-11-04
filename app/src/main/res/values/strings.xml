@@ -21,6 +21,7 @@
     <string name="title_activity_bienvenido">Bienvenido</string>
     <string name="dummy_button">Actualizar</string>
     <string name="dummy_content">SOLGIS\nBIENVENIDO</string>
+    <string name="txt_acceso">SOLGIS\nACCESO BLOQUEADO</string>
     <string name="txt_content_register_number">INGRESE SU NÚMERO</string>
 
     <string name="title_activity_register_number">RegisterNumber</string>
@@ -43,5 +44,6 @@
     <string name="txt_numero">\nIngrese Número Telefónico</string>
 
     <string name="pbbienvenido">Obteniendo Código...</string>
+    <string name="pin">PIN</string>
 
 </resources>

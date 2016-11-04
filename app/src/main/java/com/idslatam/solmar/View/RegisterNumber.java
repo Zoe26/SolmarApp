@@ -70,7 +70,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
         private ProgressDialog pDialog;
 
 
-        private final String URL = URL_API.concat("//Dispositivo/PutNumber");//; "http://solmar.azurewebsites.net//Dispositivo/PutNumber";
+        private final String URL = URL_API.concat("Dispositivo/PutNumber");//; "http://solmar.azurewebsites.net//Dispositivo/PutNumber";
 
         private static final String TAG_SUCCESS = "success";
         private static final String TAG_MESSAGE = "message";

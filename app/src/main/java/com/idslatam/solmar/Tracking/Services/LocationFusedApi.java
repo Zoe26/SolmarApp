@@ -61,14 +61,17 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class LocationFusedApi extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, ResultCallback<Status> {
+        LocationListener, ResultCallback<Status>{
 
     protected GoogleApiClient mGoogleApiClient;
     protected LocationRequest mLocationRequest;
@@ -150,7 +153,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
 
             mGoogleApiClient.connect();
-            runnable.run();
+//            runnable.run();
 
         return START_NOT_STICKY;
     }
@@ -737,6 +740,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     // METODOS PARA ACCESO A CONFIGURACIONES ********************************************************************************
         Runnable runnable = new Runnable() {
         public void run() {
+            Log.e("Ingreso run ", " Runnable");
             try {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
 //                    activePackages = getActivePackages();
@@ -750,7 +754,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
 
             }catch (Exception e){}
-            handler.postDelayed(runnable, 1000*60);
+            handler.postDelayed(runnable, 1000);
         }
     };
 
@@ -764,7 +768,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             for (ActivityManager.RunningTaskInfo aTask : alltasks) {
 
-//                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
+                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
 
                 if (aTask.topActivity.getClassName().equals("com.android.settings.Settings")
                         || aTask.topActivity.getClassName().equals("com.android.settings.Settings$DateTimeSettingsActivity"))
@@ -837,7 +841,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
     }
-
 
     // FIN DE METODOS PARA ACCESO A CONFIGURACIONES **************************************************************************
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.idslatam.solmar">
 
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
@@ -10,6 +11,10 @@
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -41,15 +46,15 @@
             android:name=".View.Login"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".View.MenuPrincipal"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".View.Settings.AccessSettings"
+        <activity
+            android:name=".View.Settings.AccessSettings"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
 
         <receiver
             android:name=".Tracking.Broadcast.AlarmLocation"
@@ -71,7 +76,14 @@
             android:name=".Alert.Services.ServicioAlerta"
             android:enabled="true"
             android:exported="true" />
-
+        <service
+            android:name=".SettingApp.Services.AccessSettingS"
+            android:enabled="false"
+            android:exported="false" />
+        <service
+            android:name=".SettingsDevice.Configurations.ServiceAccessSettings"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
