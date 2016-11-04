@@ -9,13 +9,14 @@
         android:title="Cerrar Sesion"
         app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/action_tracking"
+        android:title="Configuracion"
+        app:showAsAction="never"/>
+
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_salir"
         android:title="Cerrar Sesion"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_tracking"
-        android:title="Configuracion"
-        app:showAsAction="never"/>
 </menu>
 

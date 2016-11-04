@@ -30,11 +30,12 @@ public class ServiceAccessSettings extends Service {
     int _SettingsPermissions_Id=0;
     String estadoPermiso;
 
-    boolean flagLock= false;
+    ActivityManager am;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        am = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
             runnable.run();
 
         return START_STICKY;
@@ -71,8 +72,7 @@ public class ServiceAccessSettings extends Service {
 
 
         try {
-            ActivityManager am = (ActivityManager) this
-                    .getSystemService(Context.ACTIVITY_SERVICE);
+
 
             List<ActivityManager.RunningTaskInfo> alltasks = am.getRunningTasks(1);
 

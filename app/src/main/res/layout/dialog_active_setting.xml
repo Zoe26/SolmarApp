@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-
     <EditText
         android:id="@+id/editTextPIN"
         android:layout_width="match_parent"
@@ -17,13 +16,6 @@
         tools:ignore="TextFields">
         <requestFocus />
     </EditText>
-
-    <Button
-        android:text="ACTIVAR"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_Pin"
-        tools:ignore="HardcodedText" />
 
 
 </LinearLayout>

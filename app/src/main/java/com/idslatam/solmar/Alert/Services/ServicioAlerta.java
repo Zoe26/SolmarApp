@@ -222,6 +222,25 @@ public class ServicioAlerta extends Service {
 
     public Boolean fechaProximaMarcacion(){
 
+//        try {
+//
+//            DBHelper dataBaseHelper = new DBHelper(this);
+//            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+//            String selectQuery = "SELECT IntervaloMarcacion, IntervaloMarcacionTolerancia FROM Configuration";
+//            Cursor c = db.rawQuery(selectQuery, new String[]{});
+//
+//            if (c.moveToLast()) {
+//
+//                tiempoEnvio = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
+//                tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
+//
+//            }
+//
+//            c.close();
+//            db.close();
+//
+//        }catch (Exception e){}
+
         Calendar choraEsperadaG = Calendar.getInstance();//Fecha Actual
         Calendar choraEsperadaIsoG = Calendar.getInstance(); //Fecha Utilizada para los límites.
 

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.idslatam.solmar.Alert.Services.ServicioAlerta;
@@ -180,22 +181,27 @@ public class MenuPrincipal extends  ActionBarActivity {
         if (id == R.id.action_tracking) {
             try {
 
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MenuPrincipal.this);
-                mBuilder.setTitle("ACCESO CONFIGURACIONES");
-
                 View mView = getLayoutInflater().inflate(R.layout.dialog_active_setting, null);
                 EditText mPIN = (EditText) mView.findViewById(R.id.editTextPIN);
-                Button mPinCode = (Button) mView.findViewById(R.id.btn_Pin);
-
-                mPinCode.setOnClickListener(new View.OnClickListener(){
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MenuPrincipal.this);
+                mBuilder.setTitle("ACCESO CONFIGURACIONES");
+                mBuilder.setMessage("Ingrese PIN de desbloqueo de configuraciones del telefono");
+                mBuilder.setNegativeButton("SALIR", new DialogInterface.OnClickListener(){
                     @Override
-                    public void onClick(View vew) {
+                    public void onClick(DialogInterface d, int arg1) {
+                        d.cancel();
+                    };
+                });
 
+                mBuilder.setPositiveButton("ACTIVAR", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface d, int arg1) {
                         if(mPIN.getText().toString().isEmpty()){
                             Toast.makeText(MenuPrincipal.this, "Ingrese PIN", Toast.LENGTH_SHORT).show();
 
                         } else {
-                            if(mPIN.getText().toString()=="2016"){
+                            String pin = mPIN.getText().toString();
+                            if(pin.equals("s2016")){
                                 DBHelper dbHelperAlarm = new DBHelper(mContext);
                                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
                                 dba.execSQL("UPDATE SettingsPermissions SET Estado = 'true'");
@@ -203,10 +209,11 @@ public class MenuPrincipal extends  ActionBarActivity {
                                 Toast.makeText(MenuPrincipal.this, "Desbloqueado!", Toast.LENGTH_SHORT).show();
 
                             } else  {
+                                mPIN.setText("");
                                 Toast.makeText(MenuPrincipal.this, "PIN Incorrecto!", Toast.LENGTH_SHORT).show();
                             }
                         }
-                    }
+                    };
                 });
 
                 mBuilder.setView(mView);
