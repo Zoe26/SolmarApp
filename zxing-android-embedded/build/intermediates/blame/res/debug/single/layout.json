@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\res\\merged\\debug\\layout\\zxing_capture.xml",
+        "source": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res\\layout\\zxing_capture.xml"
+    },
+    {
+        "merged": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\res\\merged\\debug\\layout\\zxing_barcode_scanner.xml",
+        "source": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res\\layout\\zxing_barcode_scanner.xml"
+    }
+]

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.journeyapps.barcodescanner.BarcodeView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/zxing_barcode_surface"/>
+
+    <com.journeyapps.barcodescanner.ViewfinderView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        tools:ignore="DisableBaselineAlignment">
+
+        <ImageView
+            android:id="@+id/bSearch"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:src="@mipmap/Barcode"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/txt_title"
+            android:layout_height="wrap_content"
+            android:text="Codebar"
+            android:layout_gravity="center_vertical"
+            android:background="@color/zxing_transparent"
+            android:textColor="@color/zxing_status_text"
+            tools:ignore="RtlHardcoded" />
+
+    </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        tools:ignore="DisableBaselineAlignment">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_margin="15sp"
+            android:orientation="vertical"
+            android:gravity="center|right">
+
+            <ImageView
+                android:id="@+id/img_code"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginRight="20sp"
+                android:background="@mipmap/ic_barcode"
+                android:contentDescription=""
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:text="trh,klñr"
+                android:layout_marginRight="20sp"
+                android:gravity="center|right"
+                android:background="@color/zxing_transparent"
+                android:textColor="@color/zxing_status_text"
+                android:id="@+id/txt_format" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="trhtr"
+                android:layout_marginRight="20sp"
+                android:gravity="center|right"
+                android:background="@color/zxing_transparent"
+                android:textColor="@color/zxing_status_text"
+                android:id="@+id/txt_fecha" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="left|center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:background="@color/zxing_transparent"
+                android:textColor="@color/zxing_status_text"
+                android:id="@+id/txt_content"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</merge>
+
+

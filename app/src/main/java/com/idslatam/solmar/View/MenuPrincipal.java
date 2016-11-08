@@ -21,10 +21,13 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.View.Code.CodeBar;
 import com.idslatam.solmar.View.Fragments.HomeFragment;
 import com.idslatam.solmar.View.Fragments.ImageFragment;
 import com.idslatam.solmar.View.Fragments.JobsFragment;
@@ -93,7 +96,8 @@ public class MenuPrincipal extends  ActionBarActivity {
                 new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
                 new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
                 new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home")
+                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
+                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Barcode")
         );
 
         // Setting colors for different tabs when there's more than three of them.
@@ -101,6 +105,7 @@ public class MenuPrincipal extends  ActionBarActivity {
         bottomBar.mapColorForTab(1, "#00796B");
         bottomBar.mapColorForTab(2, "#7B1FA2");
         bottomBar.mapColorForTab(3, "#FF5252");
+        bottomBar.mapColorForTab(4, "#3B494C");
 
         bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
             @Override
@@ -122,6 +127,12 @@ public class MenuPrincipal extends  ActionBarActivity {
                     case 3:
                         // Item 1 Selected
                         break;
+
+                    case 4:
+                        // Item 1 Selected
+                        scanBarcode();
+                        break;
+
                 }
             }
         });
@@ -141,6 +152,10 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         // If you want the badge be shown always after unselecting the tab that contains it.
         //unreadMessages.setAutoShowAfterUnSelection(true);
+    }
+
+    public void scanBarcode() {
+        new IntentIntegrator(this).initiateScan();
     }
 
     @Override
@@ -219,9 +234,6 @@ public class MenuPrincipal extends  ActionBarActivity {
                 mBuilder.setView(mView);
                 AlertDialog dialog = mBuilder.create();
                 dialog.show();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.fragmentContainer, new AdapterTrackingF());
-//                fragmentTransaction.commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -230,8 +242,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    //**********************************************************************************************
 
     public void showDialog() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -463,6 +473,29 @@ public class MenuPrincipal extends  ActionBarActivity {
             }else{
                 Log.d("Falló", message);
             }
+        }
+    }
+
+    //**********************************************************************************************
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+                Log.d("MainActivity", "Cancelled scan");
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d("MainActivity", "Scanned");
+                Intent i = new Intent(this, CodeBar.class);
+                i.putExtra("epuzzle", result.getContents());
+                i.putExtra("format", result.getFormatName());
+                startActivity(i);
+
+                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+            }
+        } else {
+            // This is important, otherwise the result will not be passed to the fragment
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

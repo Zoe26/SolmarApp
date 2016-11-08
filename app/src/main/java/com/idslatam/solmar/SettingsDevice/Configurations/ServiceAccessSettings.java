@@ -36,7 +36,7 @@ public class ServiceAccessSettings extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         am = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-            runnable.run();
+        runnable.run();
 
         return START_STICKY;
     }

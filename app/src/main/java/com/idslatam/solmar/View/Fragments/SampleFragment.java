@@ -92,7 +92,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     String Latitud, Longitud, Numero;
     String LatitudG, LongitudG, NumeroG, DispositivoId, CodigoEmpleado;
 
-    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"), formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
+            , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     boolean flagMostrarFecha = false;
 
