@@ -41,4 +41,9 @@
         <item name="colorAccent">#ffb341</item>
     </style>
 
+    <style name="MySpinner" parent="Base.Widget.AppCompat.Spinner">
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:textColor">@color/icons</item>
+    </style>
+
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tipo">
+        <item>DNI</item>
+        <item>Foto Controles</item>
+        <item>Tarjetas de Propiedad Vehicular</item>
+        <item>Guías de Remisión de Clientes</item>
+    </string-array>
+</resources>

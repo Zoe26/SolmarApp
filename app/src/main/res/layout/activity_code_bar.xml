@@ -19,28 +19,65 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-    <LinearLayout
+        <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:orientation="horizontal"
         tools:ignore="DisableBaselineAlignment">
 
-        <ImageView
-            android:id="@+id/bSearch"
-            android:layout_width="40sp"
-            android:layout_height="30sp"
-            android:src="@mipmap/Barcode"/>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment,UseCompoundDrawables">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:id="@+id/txt_title"
-            android:layout_height="wrap_content"
-            android:text="Codebar"
-            android:layout_gravity="center_vertical"
-            android:background="@color/zxing_transparent"
-            android:textColor="@color/zxing_status_text"
-            tools:ignore="RtlHardcoded" />
+                <ImageView
+                    android:id="@+id/bSearch"
+                    android:layout_width="40sp"
+                    android:layout_height="30sp"
+                    android:src="@mipmap/barcode_ic"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/txt_title"
+                    android:layout_height="wrap_content"
+                    android:text="@string/codebar"
+                    android:layout_gravity="center_vertical"
+                    android:background="@color/zxing_transparent"
+                    android:textColor="@color/zxing_status_text"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo"
+                    android:layout_marginRight="3sp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@color/zxing_transparent"
+                    android:textColor="@color/zxing_status_text"
+                    tools:ignore="RtlHardcoded" />
+
+                <Spinner android:id="@+id/spinner_solgis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@color/black"
+                    style="@style/MySpinner"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
 
     </LinearLayout>
 
@@ -49,6 +86,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="5dp"
             android:background="@color/colorPrimary" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -103,6 +141,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="15sp"
             android:orientation="vertical"
             android:gravity="left|center">
 
@@ -117,8 +156,61 @@
 
         </LinearLayout>
 
+
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            tools:ignore="DisableBaselineAlignment">
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_irMenu"
+                android:onClick="backmenu"
+                android:text="Ir Menu"
+                android:layout_gravity="bottom"
+                android:background="@color/zxing_transparent"
+                android:textColor="@color/zxing_status_text"
+                tools:ignore="RtlHardcoded" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            tools:ignore="DisableBaselineAlignment">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_enviarCode"
+                android:onClick="enviarCode"
+                android:text="Enviar"
+                android:layout_marginRight="3sp"
+                android:background="@color/zxing_transparent"
+                android:textColor="@color/zxing_status_text"
+                tools:ignore="RtlHardcoded" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </merge>
 

@@ -2,6 +2,7 @@ package com.idslatam.solmar.View;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -97,7 +98,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
                 new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
                 new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Barcode")
+                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_codebar, "Codebar")
         );
 
         // Setting colors for different tabs when there's more than three of them.
@@ -129,8 +130,10 @@ public class MenuPrincipal extends  ActionBarActivity {
                         break;
 
                     case 4:
-                        // Item 1 Selected
+                        // Item 4 Selected
                         scanBarcode();
+                        bottomBar.setDefaultTabPosition(0);
+
                         break;
 
                 }
@@ -490,8 +493,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 i.putExtra("epuzzle", result.getContents());
                 i.putExtra("format", result.getFormatName());
                 startActivity(i);
-
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
