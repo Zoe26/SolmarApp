@@ -3,15 +3,20 @@ package com.idslatam.solmar.Tracking.Broadcast;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.SettingsDevice.Configurations.ServiceAccessSettings;
 import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
 
@@ -21,7 +26,6 @@ import java.util.Calendar;
 
 public class AlarmLocation extends BroadcastReceiver {
 
-    Context mContext;
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -29,6 +33,13 @@ public class AlarmLocation extends BroadcastReceiver {
     Calendar ccurrentInicio;
 
     int intervalo;
+
+    //+++++++++++++++++++++
+    private SignalRService mService;
+    private boolean mBound = false;
+    private Context mContext;
+    int _TrackingUpdateRee_Id = 0;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -38,6 +49,8 @@ public class AlarmLocation extends BroadcastReceiver {
         Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
         mContext.startService(backgroundS);
         // FIN INTENTI AL SERVICIO ------------------------------------------------------------------
+
+        consultaSinConexion();
 
         //NO TOCAR *****************************************************************************************************************************
         int vApi = Build.VERSION.SDK_INT;
@@ -182,4 +195,116 @@ public class AlarmLocation extends BroadcastReceiver {
         return true;
     }
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    private final ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to SignalRService, cast the IBinder and get SignalRService instance
+            SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.e("Close SignalR", "Closed Yeah");
+            mBound = false;
+        }
+    };
+
+    public Boolean consultaSinConexion(){
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbN = dataBaseHelper.getWritableDatabase();
+            String selectQueryBuscaN = "SELECT Numero FROM Tracking WHERE EstadoEnvio = 'false'";
+            Cursor cbuscaN = dbN.rawQuery(selectQueryBuscaN, new String[]{}, null);
+            int contador = cbuscaN.getCount();
+            cbuscaN.close();
+            dbN.close();
+
+            if (contador>0) {
+                sendSave();
+            }
+
+        }catch (Exception e){
+            Log.e("-- Error Reenvio Track", e.getMessage());
+        }
+
+        return true;
+    }
+
+    public void sendSave() {
+
+        int i =0;
+        Log.e("--! Reenvio ", "sendSave");
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+            String selectQuery = "SELECT TrackingId, Numero, DispositivoId, FechaCelular, Latitud, Longitud, EstadoCoordenada, " +
+                    "OrigenCoordenada, Velocidad, Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, " +
+                    "DatosHabilitado, ModeloEquipo, Imei, VersionApp, FechaAlarma, Time, ElapsedRealtimeNanos, " +
+                    "Altitude, Bearing, Extras, Classx, Actividad, Valido, Intervalo, EstadoEnvio FROM Tracking WHERE EstadoEnvio = 'false'";
+            Cursor c = db.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                do {
+                    Tracking trackingPos = new Tracking();
+
+                    _TrackingUpdateRee_Id = c.getInt(c.getColumnIndex("TrackingId"));
+
+                    trackingPos.Numero = c.getString(c.getColumnIndex("Numero"));
+                    trackingPos.DispositivoId = c.getString(c.getColumnIndex("DispositivoId"));
+                    trackingPos.FechaCelular = c.getString(c.getColumnIndex("FechaCelular"));
+                    trackingPos.Latitud = c.getString(c.getColumnIndex("Latitud"));
+                    trackingPos.Longitud = c.getString(c.getColumnIndex("Longitud"));
+                    trackingPos.EstadoCoordenada = "OK";
+                    trackingPos.OrigenCoordenada = "fused";
+                    trackingPos.Velocidad = c.getString(c.getColumnIndex("Velocidad"));
+                    trackingPos.Bateria = c.getString(c.getColumnIndex("Bateria"));
+                    trackingPos.Precision = c.getString(c.getColumnIndex("Precision"));
+                    trackingPos.SenialCelular = c.getString(c.getColumnIndex("SenialCelular"));
+                    trackingPos.GpsHabilitado = c.getString(c.getColumnIndex("GpsHabilitado"));
+                    trackingPos.WifiHabilitado = c.getString(c.getColumnIndex("WifiHabilitado"));
+                    trackingPos.DatosHabilitado = c.getString(c.getColumnIndex("DatosHabilitado"));
+                    trackingPos.ModeloEquipo = c.getString(c.getColumnIndex("ModeloEquipo"));
+                    trackingPos.Imei = c.getString(c.getColumnIndex("Imei"));
+                    trackingPos.VersionApp = c.getString(c.getColumnIndex("VersionApp"));
+                    trackingPos.FechaAlarma = c.getString(c.getColumnIndex("FechaAlarma"));
+                    trackingPos.Time = c.getString(c.getColumnIndex("Time"));
+                    trackingPos.ElapsedRealtimeNanos = c.getString(c.getColumnIndex("ElapsedRealtimeNanos"));
+                    trackingPos.Altitude = c.getString(c.getColumnIndex("Altitude"));
+                    trackingPos.Bearing = c.getString(c.getColumnIndex("Bearing"));
+                    trackingPos.Extras = "Tracking@5246.Solmar";
+                    trackingPos.Classx = "Location";
+                    trackingPos.Actividad = c.getString(c.getColumnIndex("Actividad"));
+                    trackingPos.Valido = c.getString(c.getColumnIndex("Valido"));
+                    trackingPos.Intervalo = c.getString(c.getColumnIndex("Intervalo"));
+
+                    deleteTracking(_TrackingUpdateRee_Id);
+
+                    mService.sendMessage(trackingPos);
+
+                    i++;
+
+                } while(c.moveToNext() && i<10);
+
+            }
+            c.close();
+            db.close();
+
+        } catch (Exception e){}
+
+    }
+
+    public  Boolean deleteTracking(int id) {
+        DBHelper dbgelperDeete = new DBHelper(mContext);
+        SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
+        sqldbDelete.execSQL("DELETE FROM  Tracking WHERE TrackingId = "+id);
+        sqldbDelete.close();
+        return true;
+    }
 }

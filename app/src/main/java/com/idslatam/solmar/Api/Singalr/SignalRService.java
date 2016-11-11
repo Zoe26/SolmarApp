@@ -109,26 +109,6 @@ public class SignalRService extends Service {
 
         Log.e("SimpleSignalR", mHubConnection.getState().toString());
 
-//        if (countConex > 0){
-//            countConex --;
-//        }
-
-        if(mHubConnection.getState().toString() == "Disconnected"){
-
-            try {
-
-                TrackingCrud trackingCRUD = new TrackingCrud(this);
-                marker.EstadoEnvio = "false";
-                marker.TrackingId = _Tracking_Id;
-                _Tracking_Id = trackingCRUD.insert(marker);
-
-            }catch (Exception e){}
-
-//            if (countConex==0){
-//                countConex = 10;
-//            }
-        }
-
         if (mHubConnection.getState().toString() == "Disconnected"){
             try {
                 startSignalR();
@@ -137,24 +117,20 @@ public class SignalRService extends Service {
 
         if(mHubConnection.getState().toString()=="Connected"){
 
-//            countConex = 0;
-
             mHubProxy.invoke(String.class, "addMarker", marker).done(new Action<String>() {
                 @Override
                 public void run(String s) throws Exception {
 
                     String[] arrayParametros = s.split(",");
 
-                    for (int i = 0; i < arrayParametros.length; i++) {
-//                        Log.e("Signal R Intervalo ", arrayParametros[0]);
-//                        Log.e("Signal R Precision ", arrayParametros[1]);
-                    }
+                    for (int i = 0; i < arrayParametros.length; i++) {}
 
                     DBHelper dataBaseHelper = new DBHelper(mContext);
                     SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                     db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
                     db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
                     db.close();
+
                     Log.e("Signal R", s);
 
                     pre = Integer.parseInt(arrayParametros[0].toString());
@@ -170,6 +146,17 @@ public class SignalRService extends Service {
                     Log.e("SimpleSignalR", throwable.toString());
                 }
             });
+
+        } else if(mHubConnection.getState().toString() == "Disconnected"){
+
+            try {
+
+                TrackingCrud trackingCRUD = new TrackingCrud(this);
+                marker.EstadoEnvio = "false";
+                marker.TrackingId = _Tracking_Id;
+                _Tracking_Id = trackingCRUD.insert(marker);
+
+            }catch (Exception e){}
         }
     }
 

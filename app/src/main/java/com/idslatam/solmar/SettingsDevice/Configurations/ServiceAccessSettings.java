@@ -56,7 +56,7 @@ public class ServiceAccessSettings extends Service {
 //                    activePackages = getActivePackages();
 //                    getRunningSuperioKITKAT();
 //                    getLollipopFGAppPackageName();
-                    printForegroundTask();
+                    //printForegroundTask();
                 } else {
                     getRunningKITKAT();
 //                    activePackages = getActivePackagesCompat();
