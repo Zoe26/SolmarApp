@@ -529,7 +529,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             nivelBateria = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         } catch (Exception e) {}
 
-//        TrackingCrud trackingCRUD = new TrackingCrud(this);
+        TrackingCrud trackingCRUD = new TrackingCrud(this);
 
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
@@ -565,9 +565,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             tracking.Intervalo = "0";
         }
 
-//        try {
-//            _TrackingSave_Id = trackingCRUD.insertAll(tracking);
-//        }catch (Exception e){}
+        try {
+            _TrackingSave_Id = trackingCRUD.insertAll(tracking);
+        }catch (Exception e){}
 
         //*********
         if(currentDate.after(currentForced) && flagSend == true) {

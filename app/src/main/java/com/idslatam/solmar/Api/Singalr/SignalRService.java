@@ -47,6 +47,7 @@ public class SignalRService extends Service {
     private int countConex=0, _Tracking_Id=0;
     int intervalSend=0;
     Context mContext;
+    int pre=0;
 
     public SignalRService() {
         Log.e("Signalr", "onCreate");
@@ -156,7 +157,7 @@ public class SignalRService extends Service {
                     db.close();
                     Log.e("Signal R", s);
 
-                    int pre = Integer.parseInt(arrayParametros[1]);
+                    pre = Integer.parseInt(arrayParametros[0].toString());
 
                     if(pre>2){
                         stopService(new Intent(mContext, LocationFusedApi.class));

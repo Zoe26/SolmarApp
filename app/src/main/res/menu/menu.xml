@@ -10,6 +10,10 @@
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_tracking"
+        android:title="Ver Tracking"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_configuration"
         android:title="Configuracion"
         app:showAsAction="never"/>
 
