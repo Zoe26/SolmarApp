@@ -101,14 +101,14 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
         Log.e("CONSULT", "CLICK");
 
         Calendar current = Calendar.getInstance();
-        current.set(Calendar.HOUR, val);
+        current.set(Calendar.HOUR_OF_DAY, val);
         current.set(Calendar.MINUTE, 0);
         current.set(Calendar.SECOND, 0);
 
         String strLong = formatoIso.format(current.getTime());
 
         Calendar currentL = Calendar.getInstance();
-        currentL.set(Calendar.HOUR, val);
+        currentL.set(Calendar.HOUR_OF_DAY, val);
         currentL.set(Calendar.MINUTE, 59);
         currentL.set(Calendar.SECOND, 59);
 

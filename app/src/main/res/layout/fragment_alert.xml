@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/RelativeLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -11,7 +12,8 @@
         android:id="@+id/tableLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        tools:ignore="InefficientWeight,UselessParent">
 
         <TableRow
 
@@ -49,7 +51,8 @@
                         android:layout_width="70sp"
                         android:adjustViewBounds="true"
                         android:id="@+id/imageView5"
-                        android:background="@drawable/ic_logo_alert" />
+                        android:background="@drawable/ic_logo_alert"
+                        tools:ignore="ContentDescription" />
 
                 </LinearLayout>
 
@@ -95,7 +98,8 @@
                         android:gravity="center"
                         android:text="+/-"
                         android:textColor="@color/negro_general"
-                        android:textSize="20sp"/>
+                        android:textSize="20sp"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
 
@@ -106,7 +110,8 @@
                         android:text="1"
                         android:textSize="40sp"
                         android:textColor="@color/negro_general"
-                        android:id="@+id/intervalo"/>
+                        android:id="@+id/intervalo"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -125,7 +130,8 @@
                         android:textSize="14sp"
                         android:text="Margen"
                         android:background="@color/icons"
-                        android:textColor="@color/negro_general"/>
+                        android:textColor="@color/negro_general"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -161,7 +167,8 @@
                         android:layout_width="match_parent"
                         android:id="@+id/carita"
                         android:src="@drawable/ic_feliz"
-                        android:layout_gravity="center" />
+                        android:layout_gravity="center"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:layout_below="@+id/carita"
@@ -172,7 +179,8 @@
                         android:gravity="center"
                         android:text="Sin marcación"
                         android:textColor="@color/negro_general"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp"
+                        tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                     <TextView
                         android:layout_below="@+id/ultima_marcacion"
@@ -182,7 +190,8 @@
                         android:text="Estado"
                         android:textColor="@color/negro_general"
                         android:id="@+id/flag_tiempo"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                     <TextView
                         android:layout_below="@+id/flag_tiempo"
@@ -191,7 +200,8 @@
                         android:gravity="center"
                         android:textColor="@color/negro_general"
                         android:id="@+id/ultima_marcacion_fecha"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        tools:ignore="ObsoleteLayoutParam" />
 
                 </LinearLayout>
 
@@ -210,7 +220,8 @@
                         android:textSize="14sp"
                         android:text="Última Marcación"
                         android:background="@color/icons"
-                        android:textColor="@color/negro_general"/>
+                        android:textColor="@color/negro_general"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -241,7 +252,8 @@
                         android:text="10:10"
                         android:textColor="@color/negro_general"
                         android:id="@+id/hora"
-                        android:textSize="40sp"/>
+                        android:textSize="40sp"
+                        tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -251,7 +263,8 @@
                         android:id="@+id/hora_fecha"
                         android:textSize="14sp"
                         android:layout_below="@+id/hora"
-                        android:layout_alignParentStart="true" />
+                        android:layout_alignParentStart="true"
+                        tools:ignore="ObsoleteLayoutParam" />
 
                 </LinearLayout>
 
@@ -269,7 +282,8 @@
                         android:gravity="center"
                         android:textSize="14sp"
                         android:text="Próxima Marcación"
-                        android:textColor="@color/negro_general"/>
+                        android:textColor="@color/negro_general"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -280,8 +294,8 @@
 
         <Button
             android:id="@+id/btn_marcacion"
-            android:layout_marginBottom="5sp"
-            android:layout_marginTop="5sp"
+            android:layout_marginBottom="2sp"
+            android:layout_marginTop="2sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text=""
@@ -290,7 +304,8 @@
             android:textStyle="bold"
             android:layout_gravity="bottom"
             android:layout_alignParentStart="false"
-            android:layout_alignParentEnd="false" />
+            android:layout_alignParentEnd="false"
+            tools:ignore="ObsoleteLayoutParam,SpUsage" />
     </TableLayout>
 
 
