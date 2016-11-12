@@ -39,6 +39,7 @@ public class Tracking {
     public static final String KEY_Valido = "Valido";
     public static final String KEY_Intervalo = "Intervalo";
     public static final String KEY_EstadoEnvio = "EstadoEnvio";
+    public static final String KEY_FechaIso = "FechaIso";
 
 
     public int TrackingId;
@@ -70,6 +71,7 @@ public class Tracking {
     public String Valido;
     public String Intervalo;
     public String EstadoEnvio;
+    public String FechaIso;
 
 
 

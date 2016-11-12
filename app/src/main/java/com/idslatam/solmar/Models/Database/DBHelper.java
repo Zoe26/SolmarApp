@@ -56,7 +56,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Tracking.KEY_Actividad + " TEXT, "
                 + Tracking.KEY_Valido + " TEXT, "
                 + Tracking.KEY_Intervalo + " TEXT, "
-                + Tracking.KEY_EstadoEnvio + " TEXT)";
+                + Tracking.KEY_EstadoEnvio + " TEXT, "
+                + Tracking.KEY_FechaIso+ " TEXT)";
 
 
         String CREATE_TABLE_CONFIGURATION = "CREATE TABLE " + Configuration.TABLE_CONFIGURATION  + "("

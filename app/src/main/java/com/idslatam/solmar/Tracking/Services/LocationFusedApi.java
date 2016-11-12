@@ -391,7 +391,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         } catch (Exception e) {}
 
-        if(precision==0){precision=20;}
+        if(precision==0){precision=24;}
 
         Log.e("-- !! Intervalo "+ String.valueOf(intervalSend), " ! Precision "+ String.valueOf(precision));
 
@@ -564,6 +564,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.Classx = "Location";
         tracking.Actividad = lastActividad;
         tracking.Valido = valido;
+        tracking.FechaIso = formatoIso.format(currentDate.getTime());
         //si es valido guarde en el sqlite
         //guardar puntos menores a la precision
         if(valido =="true") {
@@ -573,7 +574,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         try {
-            //_TrackingSave_Id = trackingCRUD.insertAll(tracking);
+            _TrackingSave_Id = trackingCRUD.insertAll(tracking);
         }catch (Exception e){}
 
         //*********
@@ -587,7 +588,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(valido =="true" && flagSend == true) {
             mService.sendMessage(tracking);
-            consultaSinConexion();
+            //consultaSinConexion();
             flagSend = false;
         }
 
@@ -682,7 +683,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                     trackingPos.Valido = c.getString(c.getColumnIndex("Valido"));
                     trackingPos.Intervalo = c.getString(c.getColumnIndex("Intervalo"));
 
-                    deleteTracking(_TrackingUpdateRee_Id);
+                    //deleteTracking(_TrackingUpdateRee_Id);
 
                     mService.sendMessage(trackingPos);
 

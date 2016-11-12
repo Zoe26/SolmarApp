@@ -47,7 +47,7 @@ public class AdapterTracking extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = View.inflate(mContext, R.layout.tracking_items, null);
         TextView FechaCelular = (TextView)v.findViewById(R.id.tracking_lv_FechaCelular);
-        TextView Latitud = (TextView)v.findViewById(R.id.tracking_lv_Latitud);
+        /*TextView Latitud = (TextView)v.findViewById(R.id.tracking_lv_Latitud);
         TextView Longitud = (TextView)v.findViewById(R.id.tracking_lv_Longitud);
         TextView Velocidad = (TextView)v.findViewById(R.id.tracking_lv_Velocidadd);
         TextView Bateria = (TextView)v.findViewById(R.id.tracking_lv_Bateria);
@@ -64,8 +64,9 @@ public class AdapterTracking extends BaseAdapter {
         TextView Valido = (TextView)v.findViewById(R.id.tracking_lv_Valido);
         TextView Intervalo = (TextView)v.findViewById(R.id.tracking_lv_Intervalo);
         TextView EstadoEnvio = (TextView)v.findViewById(R.id.tracking_lv_EstadoEnvio);
-
+*/
         FechaCelular.setText(mDataTrackingList.get(position).getFechaCelular());
+        /*
         Latitud.setText(mDataTrackingList.get(position).getLatitud());
         Longitud.setText(mDataTrackingList.get(position).getLongitud());
         Velocidad.setText(mDataTrackingList.get(position).getVelocidad());
@@ -83,9 +84,10 @@ public class AdapterTracking extends BaseAdapter {
         Valido.setText(mDataTrackingList.get(position).getValido());
         Intervalo.setText(mDataTrackingList.get(position).getIntervalo());
         EstadoEnvio.setText(mDataTrackingList.get(position).getEstadoEnvio());
-
+*/
         v.setTag(mDataTrackingList.get(position).getTrackingId());
 
         return v;
     }
+
 }

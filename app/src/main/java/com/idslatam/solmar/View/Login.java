@@ -507,7 +507,6 @@ public class Login extends AppCompatActivity implements
     class GetAsync extends AsyncTask<String, String, JSONObject> {
 
         JsonParser jsonParser = new JsonParser();
-
         private ProgressDialog pDialog;
 
 //        private static final String LOGIN_URL = "https://solmar.azurewebsites.net/Aplicacion/GetAppByUser";

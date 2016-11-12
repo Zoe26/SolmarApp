@@ -92,6 +92,7 @@ public class TrackingCrud {
         values.put(Tracking.KEY_Actividad, tracking.Actividad);
         values.put(Tracking.KEY_Valido, tracking.Valido);
         values.put(Tracking.KEY_Intervalo, tracking.Intervalo);
+        values.put(Tracking.KEY_FechaIso, tracking.FechaIso);
 
         long TrakingId = db.insert(Tracking.TABLE, null, values);
         db.close();

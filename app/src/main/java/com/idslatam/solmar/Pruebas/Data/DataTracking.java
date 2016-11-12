@@ -9,65 +9,70 @@ public class DataTracking {
     public int TrackingId;
 //    public String Numero;
 //    public String DispositivoId;
-    public String FechaCelular;
-    public String Latitud;
-    public String Longitud;
+//    public String FechaCelular;
+//    public String Latitud;
+//    public String Longitud;
 //    public String EstadoCoordenada;
 //    public String OrigenCoordenada;
-    public String Velocidad;
-    public String Bateria;
-    public String Precision;
+//    public String Velocidad;
+//    public String Bateria;
+//    public String Precision;
 //    public String SenialCelular;
-    public String GpsHabilitado;
-    public String WifiHabilitado;
-    public String DatosHabilitado;
+//    public String GpsHabilitado;
+//    public String WifiHabilitado;
+//    public String DatosHabilitado;
 //    public String ModeloEquipo;
 //    public String Imei;
 //    public String VersionApp;
-    public String FechaAlarma;
-    public String Time;
-    public String ElapsedRealtimeNanos;
-    public String Altitude;
-    public String Bearing;
+//    public String FechaAlarma;
+//    public String Time;
+//    public String ElapsedRealtimeNanos;
+//    public String Altitude;
+//    public String Bearing;
 //    public String Extras;
 //    public String Classx;
-    public String Actividad;
-    public String Valido;
-    public String Intervalo;
-    public String EstadoEnvio;
+//    public String Actividad;
+//    public String Valido;
+//    public String Intervalo;
+//    public String EstadoEnvio;
+    public String FechaIso;
 
 
 //    public DataTracking(int trackingId, String numero, String dispositivoId, String fechaCelular, String latitud, String longitud, String estadoCoordenada, String origenCoordenada, String velocidad, String bateria, String precision, String senialCelular, String gpsHabilitado, String wifiHabilitado, String datosHabilitado, String modeloEquipo, String imei, String versionApp, String fechaAlarma, String time, String elapsedRealtimeNanos, String altitude, String bearing, String extras, String classx, String actividad, String valido, String intervalo, String estadoEnvio) {
-      public DataTracking(int trackingId, String fechaCelular, String latitud, String longitud, String velocidad, String bateria, String precision, String gpsHabilitado, String wifiHabilitado, String datosHabilitado, String fechaAlarma, String time, String elapsedRealtimeNanos, String altitude, String bearing, String actividad, String valido, String intervalo, String estadoEnvio) {
+      //public DataTracking(int trackingId, String fechaCelular, String latitud, String longitud, String velocidad, String bateria, String precision, String gpsHabilitado, String wifiHabilitado, String datosHabilitado, String fechaAlarma, String time, String elapsedRealtimeNanos, String altitude, String bearing, String actividad, String valido, String intervalo, String estadoEnvio) {
+
+    public DataTracking(int trackingId, String fechaIso) {
+
         this.TrackingId = trackingId;
 //        this.Numero = numero;
 //        this.DispositivoId = dispositivoId;
-        this.FechaCelular = fechaCelular;
-        this.Latitud = latitud;
-        this.Longitud = longitud;
+        this.FechaIso = fechaIso;
+//        this.Latitud = latitud;
+//        this.Longitud = longitud;
 //        this.EstadoCoordenada = estadoCoordenada;
 //        this.OrigenCoordenada = origenCoordenada;
-        this.Velocidad = velocidad;
-        this.Bateria = bateria;
-        this.Precision = precision;
+//        this.Velocidad = velocidad;
+//        this.Bateria = bateria;
+//        this.Precision = precision;
 //        this.SenialCelular = senialCelular;
-        this.GpsHabilitado = gpsHabilitado;
-        this.WifiHabilitado = wifiHabilitado;
-        this.DatosHabilitado = datosHabilitado;
+//        this.GpsHabilitado = gpsHabilitado;
+//        this.WifiHabilitado = wifiHabilitado;
+//        this.DatosHabilitado = datosHabilitado;
 //        this.ModeloEquipo = modeloEquipo;
 //        this.Imei = imei;
 //        this.VersionApp = versionApp;
-        this.FechaAlarma = fechaAlarma;
-        this.Time = time;
-        this.ElapsedRealtimeNanos = elapsedRealtimeNanos;
-        this.Altitude = altitude;
-        this.Bearing = bearing;
+//        this.FechaAlarma = fechaAlarma;
+//        this.Time = time;
+//        this.ElapsedRealtimeNanos = elapsedRealtimeNanos;
+//        this.Altitude = altitude;
+//        this.Bearing = bearing;
 //        this.Extras = extras;
 //        this.Classx = classx;
-        this.Actividad = actividad;
-        this.Valido = valido;
-        this.Intervalo = intervalo;
-        this.EstadoEnvio = estadoEnvio;
+//        this.Actividad = actividad;
+//        this.Valido = valido;
+//        this.Intervalo = intervalo;
+//        this.EstadoEnvio = estadoEnvio;
+        this.FechaIso = fechaIso;
     }
 
     public int getTrackingId() {
@@ -79,13 +84,13 @@ public class DataTracking {
     }
 
     public String getFechaCelular() {
-        return FechaCelular;
+        return FechaIso;
     }
 
     public void setFechaCelular(String fechaCelular) {
-        FechaCelular = fechaCelular;
+        FechaIso = fechaCelular;
     }
-
+/*
     public String getLatitud() {
         return Latitud;
     }
@@ -221,4 +226,5 @@ public class DataTracking {
     public void setEstadoEnvio(String estadoEnvio) {
         EstadoEnvio = estadoEnvio;
     }
+    */
 }

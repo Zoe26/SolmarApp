@@ -17,7 +17,7 @@
         android:text="FechaCelular"
         android:textSize="13dp"/>
 
-    <TextView
+    <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tracking_lv_Latitud"
@@ -142,6 +142,6 @@
         android:id="@+id/tracking_lv_EstadoEnvio"
         android:text="EstadoEnvio"
         android:textSize="13dp"/>
-
+-->
 
 </LinearLayout>
