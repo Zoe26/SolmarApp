@@ -99,7 +99,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
                 new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
                 new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_codebar, "Codebar")
+                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_codebar, "Bars")
         );
 
         // Setting colors for different tabs when there's more than three of them.

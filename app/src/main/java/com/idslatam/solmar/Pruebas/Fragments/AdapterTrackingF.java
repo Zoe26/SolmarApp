@@ -1,7 +1,9 @@
 package com.idslatam.solmar.Pruebas.Fragments;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -232,23 +234,77 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
 
         lvDatost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                /*
-                Intent intent = new Intent(AdapterTrackingF.this, DetailTrcking.class);
-                String message = "abc";
-                intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);
-                */
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //members.get(position).getMessage())
-                //String message = (String)parent.getItemAtPosition(position);
+                DataTracking person = (DataTracking) parent.getItemAtPosition(position);
+
+                Log.e("FILTRO ", String.valueOf(person.getTrackingId()));
+
+                //Toast.makeText(thiscontext, "P4: "+person.getTrackingId(), Toast.LENGTH_SHORT).show();
+
+                int sf = person.getTrackingId();
+
+                String FechaCelular = null, Latitud = null, Longitud = null, Velocidad = null, Bateria = null, Precision = null, GpsHabilitado = null, WifiHabilitado = null,
+                        DatosHabilitado = null, FechaAlarma = null, Time = null, ElapsedRealtimeNanos = null, Altitude = null, Bearing = null, Actividad = null, Valido = null, Intervalo = null, EstadoEnvio = null;
+
+                try {
+
+                    DBHelper dataBaseHelper = new DBHelper(thiscontext);
+                    SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+                    String selectQuery = "SELECT TrackingId, FechaCelular, Latitud, Longitud, Velocidad, Bateria, Precision, GpsHabilitado" +
+                    ", WifiHabilitado, DatosHabilitado, FechaAlarma, Time, ElapsedRealtimeNanos, Altitude, Bearing, Actividad, Valido" +
+                    ", Intervalo, EstadoEnvio, FechaIso FROM Tracking WHERE TrackingId = '"+sf+"'";
+
+                    Cursor c = db.rawQuery(selectQuery, new String[]{});
+
+                    if (c.moveToFirst()) {
+
+                        FechaCelular = c.getString(c.getColumnIndex("FechaIso"));
+                        Latitud = c.getString(c.getColumnIndex("Latitud"));
+                        Longitud = c.getString(c.getColumnIndex("Longitud"));
+                        Velocidad = c.getString(c.getColumnIndex("Velocidad"));
+                        Bateria = c.getString(c.getColumnIndex("Bateria"));
+                        Precision = c.getString(c.getColumnIndex("Precision"));
+                        GpsHabilitado = c.getString(c.getColumnIndex("GpsHabilitado"));
+                        WifiHabilitado = c.getString(c.getColumnIndex("WifiHabilitado"));
+                        DatosHabilitado = c.getString(c.getColumnIndex("DatosHabilitado"));
+                        FechaAlarma = c.getString(c.getColumnIndex("FechaAlarma"));
+                        Time = c.getString(c.getColumnIndex("Time"));
+                        ElapsedRealtimeNanos = c.getString(c.getColumnIndex("ElapsedRealtimeNanos"));
+                        Altitude = c.getString(c.getColumnIndex("Altitude"));
+                        Bearing = c.getString(c.getColumnIndex("Bearing"));
+                        Actividad = c.getString(c.getColumnIndex("Actividad"));
+                        Valido = c.getString(c.getColumnIndex("Valido"));
+                        Intervalo = c.getString(c.getColumnIndex("Intervalo"));
+                        EstadoEnvio = c.getString(c.getColumnIndex("EstadoEnvio"));
 
 
+                    /*mDataTracking.add(new DataTracking(_Tracking_Id, "FechaCelular: "+ FechaCelular, "Latitud: "+ Latitud, "Longitud: "+Longitud,
+                            "Velocidad (m/s): "+Velocidad, "Bateria: "+Bateria, "Precision: "+Precision, "GpsHabilitado: "+GpsHabilitado, "WifiHabilitado: "+WifiHabilitado,
+                            "DatosHabilitado: "+DatosHabilitado, "FechaAlarma: "+FechaAlarma, "Time: "+Time, "ElapsedRealtimeNanos: "+ElapsedRealtimeNanos, "Altitude: "+Altitude,
+                            "Bearing: "+ Bearing, "Actividad: "+ Actividad, "Valido: "+ Valido, "Intervalo: "+ Intervalo, "EstadoEnvio: "+EstadoEnvio));
+                            */
+                    }
 
-                Object item = parent.getItemAtPosition(position);
-                String value = item.toString();
-                Toast.makeText(thiscontext, "P3: "+value, Toast.LENGTH_SHORT).show();
+                }catch (Exception e){
+                    Log.e("EXCPTIO", e.toString());
+                }
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setMessage("FechaCelular: "+ FechaCelular + "| Latitud: "+ Latitud + "| Longitud: "+Longitud +
+                        "| Velocidad (m/s): "+Velocidad + "| Bateria: "+Bateria + "| Precision: "+Precision + "| GpsHabilitado: "+GpsHabilitado + "| WifiHabilitado: "+WifiHabilitado +
+                        "| DatosHabilitado: "+DatosHabilitado + "| FechaAlarma: "+FechaAlarma + "| Time: "+Time + "| ElapsedRealtimeNanos: "+ElapsedRealtimeNanos + "| Altitude: "+Altitude +
+                        "| Bearing: "+ Bearing + "| Actividad: "+ Actividad + "| Valido: "+ Valido + "| Intervalo: "+ Intervalo + "| EstadoEnvio: "+EstadoEnvio);
+
+                alertDialog.setNegativeButton("SALIR", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface d, int arg1) {
+                        d.cancel();
+                    };
+                });
+
+                AlertDialog dialog = alertDialog.create();
+                dialog.show();
 
             }
         });
