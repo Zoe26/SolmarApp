@@ -148,6 +148,8 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
         String strLong = formatoIso.format(current.getTime());
 
         Calendar currentL = Calendar.getInstance();
+        currentL.set(Calendar.MONTH, intfromMes);
+        currentL.set(Calendar.DAY_OF_MONTH, intfromDia);
         currentL.set(Calendar.HOUR_OF_DAY, toH);
         currentL.set(Calendar.MINUTE, toM);
         currentL.set(Calendar.SECOND, 59);
