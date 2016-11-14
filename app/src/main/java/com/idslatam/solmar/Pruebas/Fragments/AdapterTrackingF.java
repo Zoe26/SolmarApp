@@ -2,6 +2,7 @@ package com.idslatam.solmar.Pruebas.Fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -41,6 +43,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class AdapterTrackingF extends android.app.Fragment implements  View.OnClickListener{
 
@@ -225,6 +229,30 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
 
         adapter = new AdapterTracking(thiscontext, mDataTracking);
         lvDatost.setAdapter(adapter);
+
+        lvDatost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                /*
+                Intent intent = new Intent(AdapterTrackingF.this, DetailTrcking.class);
+                String message = "abc";
+                intent.putExtra(EXTRA_MESSAGE, message);
+                startActivity(intent);
+                */
+
+                //members.get(position).getMessage())
+                //String message = (String)parent.getItemAtPosition(position);
+
+
+
+                Object item = parent.getItemAtPosition(position);
+                String value = item.toString();
+                Toast.makeText(thiscontext, "P3: "+value, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
 
