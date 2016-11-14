@@ -53,19 +53,15 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
     private AdapterTracking adapter;
     private List<DataTracking> mDataTracking;
 
-    EditText fromhor, frommin;
-    EditText tohor, tomin;
-    Button filtrar;
-
-    EditText fromDateEtxt, toDateEtxt;
-    DatePicker fromDatePickerDialog, toDatePickerDialog;
-    private SimpleDateFormat dateFormatter;
-
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    int fromH, fromM;
-    int toH, toM;
+    EditText fromhor, frommin, fromDia, fromMes;
+    EditText tohor, tomin;
+    Button filtrar;
+
+    int intfromH, intfromM, intfromDia, intfromMes ;
+    int toH, toM, toD, tiMesint ;
 
     public static AdapterTrackingF newInstance(String text) {
         Bundle args = new Bundle();
@@ -89,40 +85,44 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
     }
 
     private void findViewsById(View myView) {
-
         //++++++++++
-
         fromhor = (EditText)myView.findViewById(R.id.edtHora);
         frommin = (EditText)myView.findViewById(R.id.edtMin);
 
         tohor = (EditText)myView.findViewById(R.id.ToedtHora);
         tomin = (EditText)myView.findViewById(R.id.ToedtMin);
 
+        fromDia = (EditText)myView.findViewById(R.id.edtDia);
+        fromMes = (EditText)myView.findViewById(R.id.edtMes);
+
         filtrar = (Button) myView.findViewById(R.id.btnFiltrar);
         lvDatost = (ListView) myView.findViewById(R.id.tracking_ListView);
 
-        String s = fromhor.getText().toString();
-        String m = frommin.getText().toString();
+        Calendar currentF = Calendar.getInstance();
 
-        String tos = tohor.getText().toString();
-        String tom = tomin.getText().toString();
+        int month = currentF.get(Calendar.MONTH);
+        int dia = currentF.get(Calendar.DAY_OF_MONTH);
 
-        if (s.matches("")) {
-            fromH=1;
-        }
-        if (m.matches("")) {fromM=00;}
+        String d = String.valueOf(dia);
+        String m = String.valueOf(month);
 
-        if (tos.matches("")) {toH=23;}
-        if (tom.matches("")) {toM=59;}
+        fromDia.setText(d);
+        fromMes.setText(m);
 
+        fromhor.setText("00");
+        frommin.setText("00");
+        tohor.setText("23");
+        tomin.setText("59");
 
         filtrar.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Log.e("FILTRO ", "CLICK");
-                fromH = Integer.parseInt(fromhor.getText().toString() );
-                fromM = Integer.parseInt(frommin.getText().toString() );
+                intfromH = Integer.parseInt(fromhor.getText().toString());
+                intfromM = Integer.parseInt(frommin.getText().toString());
+                intfromDia = Integer.parseInt(fromDia.getText().toString());
+                intfromMes = Integer.parseInt(fromMes.getText().toString());
 
                 toH = Integer.parseInt(tohor.getText().toString() );
                 toM = Integer.parseInt(tomin.getText().toString() );
@@ -139,8 +139,10 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
         Log.e("CONSULT", "CLICK");
 
         Calendar current = Calendar.getInstance();
-        current.set(Calendar.HOUR_OF_DAY, fromH);
-        current.set(Calendar.MINUTE, fromM);
+        current.set(Calendar.MONTH, intfromMes);
+        current.set(Calendar.DAY_OF_MONTH, intfromDia);
+        current.set(Calendar.HOUR_OF_DAY, intfromH);
+        current.set(Calendar.MINUTE, intfromM);
         current.set(Calendar.SECOND, 0);
 
         String strLong = formatoIso.format(current.getTime());

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@color/icons">
 
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -65,18 +65,18 @@
             tools:ignore="LabelFor,TextFields"
             android:inputType="number" />
 
-    </LinearLayout>
-
+    </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/ToedtDia"
+            android:id="@+id/edtDia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textAlignment="center"
             android:hint="Dia"
             tools:ignore="LabelFor,TextFields"
             android:inputType="number" />
@@ -88,22 +88,57 @@
             android:textColor="@color/black_overlay" />
 
         <EditText
-            android:id="@+id/ToedtMes"
+            android:id="@+id/edtMes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textAlignment="center"
             android:hint="Mes"
             tools:ignore="LabelFor,TextFields"
             android:inputType="number" />
 
         <TextView
-            android:text="  -  "
+            android:text="|"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black_overlay" />
 
         <EditText
+            android:id="@+id/edtHora"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Hora"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text=":"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
+
+        <EditText
+            android:id="@+id/edtMin"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Min."
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text="-"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
+
+
+        <EditText
             android:id="@+id/ToedtHora"
+            android:textAlignment="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -119,6 +154,7 @@
 
         <EditText
             android:id="@+id/ToedtMin"
+            android:textAlignment="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
