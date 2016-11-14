@@ -1,5 +1,6 @@
 package com.idslatam.solmar.Pruebas.Fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,11 +8,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
@@ -26,6 +29,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.os.Bundle;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.DatePicker;
+import android.widget.EditText;
 
 public class AdapterTrackingF extends android.app.Fragment implements  View.OnClickListener{
 
@@ -38,13 +53,19 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
     private AdapterTracking adapter;
     private List<DataTracking> mDataTracking;
 
-    EditText hor;
+    EditText fromhor, frommin;
+    EditText tohor, tomin;
     Button filtrar;
+
+    EditText fromDateEtxt, toDateEtxt;
+    DatePicker fromDatePickerDialog, toDatePickerDialog;
+    private SimpleDateFormat dateFormatter;
 
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    int val;
+    int fromH, fromM;
+    int toH, toM;
 
     public static AdapterTrackingF newInstance(String text) {
         Bundle args = new Bundle();
@@ -61,34 +82,51 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
 
         thiscontext = container.getContext();
         myView = inflater.inflate(R.layout.tracking_list_view, container, false);
-
         findViewsById(myView);
-
         mDataTracking = new ArrayList<>();
-
-
 
         return myView;
     }
 
     private void findViewsById(View myView) {
 
-        hor = (EditText)myView.findViewById(R.id.edtHora);
+        //++++++++++
+
+        fromhor = (EditText)myView.findViewById(R.id.edtHora);
+        frommin = (EditText)myView.findViewById(R.id.edtMin);
+
+        tohor = (EditText)myView.findViewById(R.id.ToedtHora);
+        tomin = (EditText)myView.findViewById(R.id.ToedtMin);
+
         filtrar = (Button) myView.findViewById(R.id.btnFiltrar);
         lvDatost = (ListView) myView.findViewById(R.id.tracking_ListView);
 
-        String s = hor.getText().toString();
+        String s = fromhor.getText().toString();
+        String m = frommin.getText().toString();
+
+        String tos = tohor.getText().toString();
+        String tom = tomin.getText().toString();
 
         if (s.matches("")) {
-            val=1;
+            fromH=1;
         }
+        if (m.matches("")) {fromM=00;}
+
+        if (tos.matches("")) {toH=23;}
+        if (tom.matches("")) {toM=59;}
+
 
         filtrar.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Log.e("FILTRO ", "CLICK");
-                val = Integer.parseInt(hor.getText().toString() );
+                fromH = Integer.parseInt(fromhor.getText().toString() );
+                fromM = Integer.parseInt(frommin.getText().toString() );
+
+                toH = Integer.parseInt(tohor.getText().toString() );
+                toM = Integer.parseInt(tomin.getText().toString() );
+
                 Consult();
             }
         });
@@ -101,15 +139,15 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
         Log.e("CONSULT", "CLICK");
 
         Calendar current = Calendar.getInstance();
-        current.set(Calendar.HOUR_OF_DAY, val);
-        current.set(Calendar.MINUTE, 0);
+        current.set(Calendar.HOUR_OF_DAY, fromH);
+        current.set(Calendar.MINUTE, fromM);
         current.set(Calendar.SECOND, 0);
 
         String strLong = formatoIso.format(current.getTime());
 
         Calendar currentL = Calendar.getInstance();
-        currentL.set(Calendar.HOUR_OF_DAY, val);
-        currentL.set(Calendar.MINUTE, 59);
+        currentL.set(Calendar.HOUR_OF_DAY, toH);
+        currentL.set(Calendar.MINUTE, toM);
         currentL.set(Calendar.SECOND, 59);
 
         String strLongL = formatoIso.format(currentL.getTime());;
@@ -131,7 +169,7 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
                     ", Intervalo, EstadoEnvio  FROM Tracking ORDER BY ElapsedRealtimeNanos DESC";
                     */
 
-            String selectQuery = "SELECT TrackingId, FechaIso, ElapsedRealtimeNanos FROM Tracking WHERE FechaIso BETWEEN '"+strLong+"' AND '"+strLongL+"'";
+            String selectQuery = "SELECT TrackingId, FechaIso, ElapsedRealtimeNanos FROM Tracking WHERE FechaIso BETWEEN '"+strLong+"' AND '"+strLongL+"' ORDER BY FechaIso DESC";
             //String selectQuery = "SELECT TrackingId, FechaCelular FROM Tracking ORDER BY ElapsedRealtimeNanos DESC";
 
             Cursor c = db.rawQuery(selectQuery, new String[]{});
@@ -184,6 +222,9 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
         adapter = new AdapterTracking(thiscontext, mDataTracking);
         lvDatost.setAdapter(adapter);
     }
+
+
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 }
 

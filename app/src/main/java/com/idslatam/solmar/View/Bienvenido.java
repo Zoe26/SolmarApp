@@ -240,6 +240,15 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             }
         }
 
+        // PERMISO DE LA APP
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.PACKAGE_USAGE_STATS)!= PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.PACKAGE_USAGE_STATS)) {
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.PACKAGE_USAGE_STATS}, MY_PACKAGE_USAGE_STATS);
+            }
+        }
+
         //**********************************************************************************************************************************
 
         if (mGoogleApiClient== null) {
@@ -370,6 +379,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         } catch (Exception e) {}
 
+
         if(busca==0){
 
             Configuration configuration = new Configuration();
@@ -384,6 +394,11 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '5'");
             db.close();
+
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+                Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                startActivity(intent);
+            }
         }
 
         // BUSCA SI EL NUMERO TIENE PERMISOS DE ACCESO
@@ -537,12 +552,13 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     public void onClick(View v) {
 
     }
+
     public void simDialogo(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
         builder.setTitle("Inserte tarjeta SIM Card");
-        builder.setMessage("Debe insertar tarjeta SIM Card para poder iniciar la aplicación");
+        builder.setMessage("Debe insertar tarjeta SIM Card para poder iniciar la aplicaci\u003fn");
         builder.setPositiveButton("Aceptar", null);
         builder.show();
     }
@@ -722,7 +738,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
     }
-
 
     public  Boolean actualizarConfiguracion(){
 

@@ -289,8 +289,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(thiscontext);
         builder.setCancelable(false);
-        builder.setTitle("Marcación a destiempo");
-        builder.setMessage("Ésta marcación corresponde a las "+hora+" del día "+fecha+"");
+        builder.setTitle("Marcaci\u00F3n a destiempo");
+        builder.setMessage("\u00C9sta marcaci\u00F3n corresponde a las "+hora+" del d\u00EDa "+fecha+"");
         builder.setPositiveButton("Aceptar", null);
         builder.show();
     }
@@ -703,7 +703,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             try {
 
                 btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcación");
+                btnMarcacion.setText("Marcaci\u00F3n");
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
                 btnMarcacion.setTextColor(Color.WHITE);
                 FlagTiempo="1";
@@ -716,7 +716,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             try {
 
                 btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcación");
+                btnMarcacion.setText("Marcaci\u00F3n");
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
                 btnMarcacion.setTextColor(Color.WHITE);
                 FlagTiempo = "0";
@@ -727,7 +727,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } else {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
-            btnMarcacion.setText("Activación en " + difBoton+ " min.");
+            btnMarcacion.setText("Activaci\u00F3n en " + difBoton+ " min.");
             btnMarcacion.setEnabled(false);
             btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
         }

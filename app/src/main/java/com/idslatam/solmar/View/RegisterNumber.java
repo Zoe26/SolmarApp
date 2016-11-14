@@ -78,7 +78,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
         @Override
         protected void onPreExecute() {
             pDialog = new ProgressDialog(RegisterNumber.this);
-            pDialog.setMessage("Gracias, en instántes nos comunicarémos contigo!");
+            pDialog.setMessage("Gracias, en inst\u00E1ntes nos comunicar\u00E9mos contigo!");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

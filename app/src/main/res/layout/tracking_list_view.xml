@@ -7,14 +7,122 @@
     android:background="@color/icons">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edtDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Dia"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text="/"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay"
+            android:id="@+id/info" />
+
+        <EditText
+            android:id="@+id/edtMes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Mes"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text="  -  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
 
         <EditText
             android:id="@+id/edtHora"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:hint="Hora"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text=":"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
+
+        <EditText
+            android:id="@+id/edtMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Min."
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/ToedtDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Dia"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text="/"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
+
+        <EditText
+            android:id="@+id/ToedtMes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Mes"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text="  -  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
+
+        <EditText
+            android:id="@+id/ToedtHora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Hora"
+            tools:ignore="LabelFor,TextFields"
+            android:inputType="number" />
+
+        <TextView
+            android:text=":"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_overlay" />
+
+        <EditText
+            android:id="@+id/ToedtMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Min."
             tools:ignore="LabelFor,TextFields"
             android:inputType="number" />
 
@@ -23,7 +131,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="FILTRAR"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 
@@ -36,7 +145,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:dividerHeight="1dp"
-        android:divider="#d1d1d1">
+        android:divider="#d1d1d1"
+        tools:ignore="InefficientWeight">
     </ListView>
 
 

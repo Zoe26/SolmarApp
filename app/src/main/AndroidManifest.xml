@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.idslatam.solmar">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,9 +13,9 @@
     <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <!-- <uses-permission
+    <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" /> -->
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- Don't require camera, as this requires a rear camera. This allows it to work on the Nexus 7 -->
@@ -104,9 +105,20 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".View.Code.CodeBar"
+        <activity
+            android:name=".View.Code.CodeBar"
             android:noHistory="true"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
+
+        <receiver
+            android:name=".SettingsDevice.Broadcast.BootSettings">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED">
+                    <category android:name="android.intent.category.HOME">
+                    </category>
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

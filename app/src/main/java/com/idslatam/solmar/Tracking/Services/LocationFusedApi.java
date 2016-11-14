@@ -73,6 +73,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener, ResultCallback<Status>{
 
+    public static Boolean isRunning= false;
+
     protected GoogleApiClient mGoogleApiClient;
     protected LocationRequest mLocationRequest;
     Location locationLastSend = null;
@@ -148,7 +150,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 //        if (intervalSend == 1 || intervalSend == 2) {
             buildGoogleApiClient();
 //        } else {
-            buildGoogleApiClient();
+//            buildGoogleApiClient();
 //        }
 
     }
@@ -156,8 +158,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
-            mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
+        if(!this.isRunning) {this.isRunning = true;}
 //            runnable.run();
 
         return START_NOT_STICKY;
@@ -165,6 +167,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     @Override
     public void onDestroy() {
+
+        this.isRunning = false;
 
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
@@ -423,8 +427,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 if(contador == 0) {
                     contador = 4;
                     valido = "false";
+                    lastActividad = actividadsql;
+                    return null;
                 }
-                lastActividad = actividadsql;
 
             } else {
                 lastActividad = actividadsql;
@@ -743,111 +748,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             MobileHabilitado = "0";
             return true;
         }
-    }
-
-    // METODOS PARA ACCESO A CONFIGURACIONES ********************************************************************************
-        Runnable runnable = new Runnable() {
-        public void run() {
-            Log.e("Ingreso run ", " Runnable");
-            try {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-//                    activePackages = getActivePackages();
-//                    getRunningSuperioKITKAT();
-//                    getLollipopFGAppPackageName();
-                    printForegroundTask();
-                } else {
-                    getRunningKITKAT();
-//                    activePackages = getActivePackagesCompat();
-                }
-
-
-            }catch (Exception e){}
-            handler.postDelayed(runnable, 1000);
-        }
-    };
-
-    public void getRunningKITKAT(){
-
-        try {
-            ActivityManager am = (ActivityManager) this
-                    .getSystemService(Context.ACTIVITY_SERVICE);
-
-            List<ActivityManager.RunningTaskInfo> alltasks = am.getRunningTasks(1);
-
-            for (ActivityManager.RunningTaskInfo aTask : alltasks) {
-
-                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
-
-                if (aTask.topActivity.getClassName().equals("com.android.settings.Settings")
-                        || aTask.topActivity.getClassName().equals("com.android.settings.Settings$DateTimeSettingsActivity"))
-                {
-                    // When user on call screen show a alert message
-                    Log.e("Ingreso if ", " Settings");
-                    Intent dialogIntent = new Intent(this, AccessSettings.class);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(dialogIntent);
-                }
-            }
-
-        } catch (Throwable t) {
-            Log.w("TAG", "Throwable caught: "
-                    + t.getMessage(), t);
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void printForegroundTask() {
-
-//        Log.e("_printForegroundTask ", " ingreso");
-
-        String foregroundApp = "";
-        final long timeEnd = System.currentTimeMillis();
-        final long timeBegin = timeEnd - 1000;
-
-        UsageStatsManager mUsageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
-        long time = System.currentTimeMillis();
-
-        List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,timeBegin,timeEnd);
-
-        Log.e("_stats ", String.valueOf(stats));
-
-        if (stats!= null) {
-            SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-            for (UsageStats usageStats : stats) {
-                mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-            }
-            if (mySortedMap != null && !mySortedMap.isEmpty()) {
-                foregroundApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-            }
-
-            Log.e("_app first if ", foregroundApp);
-
-            if (foregroundApp.equalsIgnoreCase("com.android.settings")) {
-                Log.e("Ingreso if ", " Settings");
-//                Toast.makeText(this, "Settings.", Toast.LENGTH_LONG).show();
-
-                Intent dialogIntent = new Intent(this, AccessSettings.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(dialogIntent);
-            }
-
-            Log.e("_app last if ", foregroundApp);
-        }
-
-        // CONDICION PARA FUNCIONAMIENTO EN API 23
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            UsageEvents usageEvents = mUsageStatsManager.queryEvents(time - 100 * 1000, time);
-            UsageEvents.Event event = new UsageEvents.Event();
-            // get last event
-            while (usageEvents.hasNextEvent()) {
-                usageEvents.getNextEvent(event);
-            }
-            if (foregroundApp.equals(event.getPackageName()) && event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
-                Log.e("_mUsageStatsManager", String.valueOf(foregroundApp));
-            }
-
-        }
-
     }
 
     // FIN DE METODOS PARA ACCESO A CONFIGURACIONES **************************************************************************
