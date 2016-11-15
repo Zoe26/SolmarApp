@@ -53,15 +53,18 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        String Num = edNumero.getText().toString();
+        try {
 
-        Configuration configuration = new Configuration();
-        configuration.NumeroCel = Num;
-        configuration.ConfigurationId = 1;
-        configurationCRUD.updateNumero(configuration);
+            String Num = edNumero.getText().toString();
 
-        new PostAsync().execute(Id, Num);
+            Configuration configuration = new Configuration();
+            configuration.NumeroCel = Num;
+            configuration.ConfigurationId = 1;
+            configurationCRUD.updateNumero(configuration);
 
+            new PostAsync().execute(Id, Num);
+
+        } catch (Exception e){}
     }
 
     class PostAsync extends AsyncTask<String, String, JSONObject> {

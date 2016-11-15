@@ -52,12 +52,6 @@ import com.idslatam.solmar.Tracking.Broadcast.AlarmLocation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -103,10 +97,14 @@ public class Login extends AppCompatActivity implements
 
         if (mGoogleApiClient== null) {
 
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API).addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this).build();
-            mGoogleApiClient.connect();
+            try {
+
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addApi(LocationServices.API).addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this).build();
+                mGoogleApiClient.connect();
+
+            } catch (Exception e){}
 
             LocationRequest locationRequest = LocationRequest.create();
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -163,12 +161,12 @@ public class Login extends AppCompatActivity implements
 
         // METODO QUE INICIA EL SERVICIO LOCATION ***************************************************
         Intent alarm = new Intent(this.context, AlarmLocation.class);
-        boolean alarmRunning = (PendingIntent.getBroadcast(this.context, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+        boolean alarmRunning = (PendingIntent.getBroadcast(this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
 
         int vApi = Build.VERSION.SDK_INT;
 
         //Toast.makeText(getApplicationContext(), "Prender Alarma", Toast.LENGTH_SHORT).show();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context, 0, alarm, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarm, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         if(vApi <= 19){
@@ -202,40 +200,39 @@ public class Login extends AppCompatActivity implements
 
 //        verConfiguracion.setOnClickListener(this);
 
-        DBHelper dbhToken = new DBHelper(context);
-        SQLiteDatabase sqlToken = dbhToken.getWritableDatabase();
-        String selectQueryToken = "SELECT Token FROM Configuration WHERE Token is null or Token = ''";
-        Cursor cbuscaToken = sqlToken.rawQuery(selectQueryToken, new String[]{}, null);
-        int buscaToken = cbuscaToken.getCount();
-        cbuscaToken.close();
-        sqlToken.close();
+        try {
 
-        if(buscaToken==0){
-            startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-            finish();
-        } else {
-            password.setEnabled(true);
-            acceso.setEnabled(true);
-        }
+            DBHelper dbhToken = new DBHelper(context);
+            SQLiteDatabase sqlToken = dbhToken.getWritableDatabase();
+            String selectQueryToken = "SELECT Token FROM Configuration WHERE Token is null or Token = ''";
+            Cursor cbuscaToken = sqlToken.rawQuery(selectQueryToken, new String[]{}, null);
+            int buscaToken = cbuscaToken.getCount();
+            cbuscaToken.close();
+            sqlToken.close();
 
+            if(buscaToken==0){
+                startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                finish();
+            } else {
+                password.setEnabled(true);
+                acceso.setEnabled(true);
+            }
+
+        } catch (Exception e){}
 
     }
 
 
     // METODOS DE FUSED *****************************************************************************
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnected(@Nullable Bundle bundle) {}
 
-    }
     @Override
-    public void onConnectionSuspended(int i) {
+    public void onConnectionSuspended(int i) {}
 
-    }
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("INGRESO  ", "onActivityResult");
@@ -267,38 +264,15 @@ public class Login extends AppCompatActivity implements
 
         switch(v.getId()) {
 
-//            case R.id.boton_configuracion:
-//
-//                try {
-////                    BD_backup();
-////                    Intent intent = new Intent(LoginActivity.this, FragmentApps.class);
-////                    startActivity(intent);
-//
-//                } catch (Exception e) {
-//                    Log.e("Error en extraer bd", e.getMessage());
-//                }
-//
-//                consultaConfiguracion();
-//                verConfiguracion();
-//
-//                break;
-
             case R.id.login_button:
 
-                //***
-//                startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
-//                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                //****
                 String type = "password";
-//                String user = "luis.calua@idslatam.com";
                 pass = password.getText().toString();
                 Fotoch = pass;
                 String user = pass.concat("@gruposolmar.com.pe");
 
                 if(pass.matches("")){
-
                     Toast.makeText(this, "Ingrese Codigo", Toast.LENGTH_SHORT).show();
-
                 } else {
                     new PostAsync().execute(type, user, pass);
                 }
@@ -380,10 +354,16 @@ public class Login extends AppCompatActivity implements
                     e.printStackTrace();
                 }
 
-                Configuration configuration = new Configuration();
-                configuration.Token= token;
-                configuration.ConfigurationId = 1;
-                configurationCRUD.updateToken(configuration);
+                try {
+
+                    Configuration configuration = new Configuration();
+                    configuration.Token= token;
+                    configuration.ConfigurationId = 1;
+                    configurationCRUD.updateToken(configuration);
+
+                } catch (Exception e) {}
+
+
 
                 // GUARDAR DATOS EN LA CLASE ASISTENCIA
                 guardarAsistencia();
@@ -478,11 +458,17 @@ public class Login extends AppCompatActivity implements
                     e.printStackTrace();
                 }
 
-                Configuration configuration = new Configuration();
-                configuration.AsistenciaId= AsistenciaId;
-                configuration.CodigoEmpleado= pass;
-                configuration.ConfigurationId = 1;
-                configurationCRUD.updateAsistencia(configuration);
+                try {
+
+                    Configuration configuration = new Configuration();
+                    configuration.AsistenciaId= AsistenciaId;
+                    configuration.CodigoEmpleado= pass;
+                    configuration.ConfigurationId = 1;
+                    configurationCRUD.updateAsistencia(configuration);
+
+                } catch (Exception e) {}
+
+
 
                 Log.e("Asistencia ", json.toString());
 
@@ -625,6 +611,7 @@ public class Login extends AppCompatActivity implements
 //
 //                                    Log.e("-- "+c.getString("Nombre"), String.valueOf(v.getInt("ConfiguracionId")));
                         if(v.getInt("ConfiguracionId")==3){
+
                             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + v.getInt("Valor") + "'");
                             db.close();
@@ -633,6 +620,7 @@ public class Login extends AppCompatActivity implements
                         }
 
                         if(v.getInt("ConfiguracionId")==4){
+
                             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                             db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + v.getInt("Valor")  + "'");
                             db.close();

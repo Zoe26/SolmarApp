@@ -31,11 +31,7 @@ import java.util.TreeMap;
 
 public class ServiceAccessSettings extends Service {
 
-
-    String topPackageName ;
-
     final Handler handler = new Handler();
-    int _SettingsPermissions_Id=0;
     String estadoPermiso;
 
     ActivityManager am;
@@ -58,34 +54,25 @@ public class ServiceAccessSettings extends Service {
     // METODOS PARA ACCESO A CONFIGURACIONES ********************************************************************************
     Runnable runnable = new Runnable() {
         public void run() {
-//            Log.e("Ingreso run ", " Runnable");
             try {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-//                    activePackages = getActivePackages();
-//                    getRunningSuperioKITKAT();
-//                    getLollipopFGAppPackageName();
                     printForegroundTask();
                 } else {
                     getRunningKITKAT();
-//                    activePackages = getActivePackagesCompat();
                 }
 
 
             }catch (Exception e){}
-            handler.postDelayed(runnable, 400);
+            handler.postDelayed(runnable, 750);
         }
     };
 
     public void getRunningKITKAT(){
 
-
         try {
 
-
             List<ActivityManager.RunningTaskInfo> alltasks = am.getRunningTasks(1);
-
             for (ActivityManager.RunningTaskInfo aTask : alltasks) {
-
 //                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
                 String g = aTask.topActivity.getClassName();
 
@@ -108,22 +95,12 @@ public class ServiceAccessSettings extends Service {
                 if (aTask.topActivity.getClassName().equals("com.android.settings.Settings")
                         || aTask.topActivity.getClassName().equals("com.android.settings.Settings$DateTimeSettingsActivity"))
                 {
-                    // When user on call screen show a alert message
-//                    Log.e("Ingreso if ", " Settings");
-
                     if (estadoPermiso.equals("false")) {
-
                         Log.e("---! estadoPermiso IF ", estadoPermiso);
-
                         Intent dialogIntent = new Intent(this, AccessSettings.class);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(dialogIntent);
-//                        flagLock=true;
-
                     }
-//                    else {
-//                        flagLock=false;
-//                    }
                 }
             }
 
@@ -136,88 +113,36 @@ public class ServiceAccessSettings extends Service {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void printForegroundTask() {
 
-
         try {
-            PackageManager packageManager = this.getPackageManager();
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(this.getPackageName(), 0);
-            AppOpsManager appOpsManager = (AppOpsManager) this.getSystemService(Context.APP_OPS_SERVICE);
-            int mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName);
 
-            Log.e("mode ", String.valueOf(AppOpsManager.MODE_ALLOWED));
+            String foregroundApp = "";
+            final long timeEnd = System.currentTimeMillis();
+            final long timeBegin = timeEnd - 1000;
 
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e("mode Error! ", e.toString());
-        }
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UsageStatsManager mUsageStatsManager = (UsageStatsManager)getSystemService(Context.USAGE_STATS_SERVICE);
-            long time = System.currentTimeMillis();
-            // We get usage stats for the last 10 seconds
-            List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000*10, time);
-            // Sort the stats by the last time used
+            UsageStatsManager mUsageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
+            List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,timeBegin,timeEnd);
             Log.e("_stats ", String.valueOf(stats));
-            if(stats != null) {
-                SortedMap<Long,UsageStats> mySortedMap = new TreeMap<Long,UsageStats>();
+
+            if (stats!= null) {
+                SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
                 for (UsageStats usageStats : stats) {
-                    mySortedMap.put(usageStats.getLastTimeUsed(),usageStats);
+                    mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
                 }
-                if(mySortedMap != null && !mySortedMap.isEmpty()) {
-                    topPackageName =  mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+                if (mySortedMap != null && !mySortedMap.isEmpty()) {
+                    foregroundApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
                 }
-                Log.e("_app first if ", topPackageName);
-            }
-        }
 
-//        Log.e("_printForegroundTask ", " ingreso");
+                Log.e("_app first if ", foregroundApp);
 
-        String foregroundApp = "";
-        final long timeEnd = System.currentTimeMillis();
-        final long timeBegin = timeEnd - 1000;
+                if (foregroundApp.equalsIgnoreCase("com.android.settings")) {
 
-        UsageStatsManager mUsageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
-        long time = System.currentTimeMillis();
-
-        List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,timeBegin,timeEnd);
-
-        Log.e("_stats ", String.valueOf(stats));
-
-        if (stats!= null) {
-            SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-            for (UsageStats usageStats : stats) {
-                mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-            }
-            if (mySortedMap != null && !mySortedMap.isEmpty()) {
-                foregroundApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+                    Intent dialogIntent = new Intent(this, AccessSettings.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(dialogIntent);
+                }
             }
 
-            Log.e("_app first if ", foregroundApp);
-
-            if (foregroundApp.equalsIgnoreCase("com.android.settings")) {
-                Log.e("Ingreso if ", " Settings");
-//                Toast.makeText(this, "Settings.", Toast.LENGTH_LONG).show();
-
-                Intent dialogIntent = new Intent(this, AccessSettings.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(dialogIntent);
-            }
-
-            Log.e("_app last if ", foregroundApp);
-        }
-
-        // CONDICION PARA FUNCIONAMIENTO EN API 23
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            UsageEvents usageEvents = mUsageStatsManager.queryEvents(time - 100 * 1000, time);
-            UsageEvents.Event event = new UsageEvents.Event();
-            // get last event
-            while (usageEvents.hasNextEvent()) {
-                usageEvents.getNextEvent(event);
-            }
-            if (foregroundApp.equals(event.getPackageName()) && event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
-                Log.e("_mUsageStatsManager", String.valueOf(foregroundApp));
-            }
-
-        }
-
+        } catch (Exception e){}
     }
 
     // FIN DE METODOS PARA ACCESO A CONFIGURACIONES **************************************************************************

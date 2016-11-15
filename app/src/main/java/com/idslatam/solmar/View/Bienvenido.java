@@ -575,7 +575,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         // All required changes were successfully made
-                        Toast.makeText(Bienvenido.this, "¡Configuración éxitosa!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(Bienvenido.this, "¡Configuraci\u00f3n \u00e9xitosa!", Toast.LENGTH_LONG).show();
                         Log.e("VerificarAcceso ","RESULT_OK");
                         break;
                     case Activity.RESULT_CANCELED:
@@ -592,7 +592,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         // All required changes were successfully made
-                        Toast.makeText(getApplicationContext(), "Aplicación Registrada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Aplicaci\u00f3n Registrada", Toast.LENGTH_SHORT).show();
 
                         break;
                     case Activity.RESULT_CANCELED:
@@ -741,48 +741,33 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
     public  Boolean actualizarConfiguracion(){
 
-        DBHelper dbHelperAlarm = new DBHelper(this);
-        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-        dba.execSQL("UPDATE Configuration SET EstaActivado = '"+estado+"'");
-        dba.execSQL("UPDATE Configuration SET IntervaloTracking = '1'");
-        dba.execSQL("UPDATE Configuration SET GuidDipositivo = '"+Id+"'");
-        dba.close();
+        try {
+
+            DBHelper dbHelperAlarm = new DBHelper(this);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE Configuration SET EstaActivado = '"+estado+"'");
+            dba.execSQL("UPDATE Configuration SET IntervaloTracking = '1'");
+            dba.execSQL("UPDATE Configuration SET GuidDipositivo = '"+Id+"'");
+            dba.close();
+
+        } catch (Exception e){}
 
         return true;
     }
 
     public  Boolean actualizarNumero(){
 
-        DBHelper dbHelperNumero = new DBHelper(this);
-        SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
-        dbNro.execSQL("UPDATE Configuration SET NumeroCel = '"+NumeroReinstlado+"' WHERE ConfigurationId = 1");
-        dbNro.close();
+        try {
+
+            DBHelper dbHelperNumero = new DBHelper(this);
+            SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+            dbNro.execSQL("UPDATE Configuration SET NumeroCel = '"+NumeroReinstlado+"' WHERE ConfigurationId = 1");
+            dbNro.close();
+
+        } catch (Exception e){}
 
         return true;
     }
-
-    public static boolean usageAccessGranted(Context context) {
-
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), 0);
-            AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-            int mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName);
-            return (mode == AppOpsManager.MODE_ALLOWED);
-
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        }
-    }
-
-    //******************************************************************
-    public void alertFechas(){
-        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-        db.execSQL("INSERT INTO AlertFechas (AlertFechasId, FechaEjecucion, FechaComprobacion) " +
-                "VALUES (1,'1900,01,01,00,00,00','1900,01,01,00,00,00')");
-        db.close();
-    }
-    //******************************************************************
 
     public void dataAccessSettings() {
         try {

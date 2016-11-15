@@ -72,7 +72,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             if (cConfiguration.moveToFirst()) {
                 fotocheckCod = cConfiguration.getString(cConfiguration.getColumnIndex("CodigoEmpleado"));
-
             }
             cConfiguration.close();
             dbConfiguration.close();
@@ -80,8 +79,14 @@ public class MenuPrincipal extends  ActionBarActivity {
         } catch (Exception e) {}
 
         if(fotocheckCod==null) {
-            b = getIntent().getExtras();
-            fotocheckCod = b.getString("Fotoch");
+
+            try {
+
+                b = getIntent().getExtras();
+                fotocheckCod = b.getString("Fotoch");
+
+            } catch (Exception e){}
+
 //            fotocheckCod = Fotoch;
         }
 
@@ -114,26 +119,16 @@ public class MenuPrincipal extends  ActionBarActivity {
             public void onItemSelected(int position) {
                 FragmentManager fragmentManager = getFragmentManager();
                 switch (position) {
-                    case 0:
-                        // Item 1 Selected
-                        break;
-
-                    case 1:
-                        // Item 1 Selected
-                        break;
-
-                    case 2:
-                        // Item 1 Selected
-                        break;
-
-                    case 3:
-                        // Item 1 Selected
-                        break;
-
                     case 4:
                         // Item 4 Selected
-                        scanBarcode();
-                        bottomBar.setDefaultTabPosition(0);
+
+                        try {
+
+                            scanBarcode();
+                            bottomBar.setDefaultTabPosition(0);
+
+                        } catch (Exception e){}
+
 
                         break;
 
@@ -203,6 +198,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainer, new AdapterTrackingF());
                 fragmentTransaction.commit();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -216,7 +212,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 EditText mPIN = (EditText) mView.findViewById(R.id.editTextPIN);
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MenuPrincipal.this);
                 mBuilder.setTitle("ACCESO CONFIGURACIONES");
-                mBuilder.setMessage("Ingrese PIN de desbloqueo de configuraciones del telefono");
+                mBuilder.setMessage("Ingrese PIN de desbloqueo de configuraciones del tel\u00e9fono");
                 mBuilder.setNegativeButton("SALIR", new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface d, int arg1) {
@@ -262,7 +258,7 @@ public class MenuPrincipal extends  ActionBarActivity {
     public void showDialog() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setMessage("¿Está seguro que desea salir?");
+        builder.setMessage("¿Est\u00e1 seguro que desea salir?");
 
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 
@@ -288,8 +284,8 @@ public class MenuPrincipal extends  ActionBarActivity {
         private ProgressDialog dialog;
 
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
+
             dialog = new ProgressDialog(MenuPrincipal.this);
             dialog.setMessage("Finalizando...");
             dialog.setIndeterminate(false);
@@ -299,17 +295,28 @@ public class MenuPrincipal extends  ActionBarActivity {
             //do initialization of required objects objects here
         };
         @Override
-        protected Void doInBackground(Void... params)
-        {
+        protected Void doInBackground(Void... params) {
 
-            finalizarTurno();
-            tareaLarga();
-            finish();
+            try {
+
+                finalizarTurno();
+                tareaLarga();
+                finish();
+
+            } catch (Exception e){}
+
+
 //            Intent intent = new Intent(mainPerfil.this, LoginActivity.class);
 //            startActivity(intent);
 
-            startActivity(new Intent(MenuPrincipal.this, Login.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+            try {
+
+                startActivity(new Intent(MenuPrincipal.this, Login.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+
+            } catch (Exception e){}
+
+
 //            finish();
 
             //do loading operation here
@@ -329,10 +336,13 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     private Boolean finalizarTurno(){
 
-        stopService(new Intent(MenuPrincipal.this, ServicioAlerta.class));
+        try {
 
-        updateAlert();
-        Asistencia();
+            stopService(new Intent(MenuPrincipal.this, ServicioAlerta.class));
+            updateAlert();
+            Asistencia();
+
+        } catch (Exception e){}
 
         return true;
     }
@@ -345,14 +355,26 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     public Boolean updateAlert(){
 
-        DBHelper dataBaseHelper = new DBHelper(this);
-        SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
-        dbT.execSQL("UPDATE Configuration SET Token = " + null);
-        dbT.close();
+        try {
 
-        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-        db.execSQL("UPDATE Alert SET FinTurno = 'true'");
-        db.close();
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("UPDATE Configuration SET Token = " + null);
+            dbT.close();
+
+        } catch (Exception e){}
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Alert SET FinTurno = 'true'");
+            db.close();
+
+        } catch (Exception e){}
+
+
+
 
 //        DBHelper dataBaseHelper = new DBHelper(this);
 
@@ -388,10 +410,16 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         if(statusBoton.equals("false") && statusFinTurno.equals("true")){
 
-            SQLiteDatabase dbU = dataBaseHelper.getWritableDatabase();
-            dbU.execSQL("DELETE FROM  Alert WHERE AlertId = "+idUp);
+            try {
+
+                SQLiteDatabase dbU = dataBaseHelper.getWritableDatabase();
+                dbU.execSQL("DELETE FROM  Alert WHERE AlertId = "+idUp);
 //            dbU.execSQL("UPDATE Alert SET FinTurno = 'false' WHERE AlertId = "+idUp);
-            dbU.close();
+                dbU.close();
+
+            } catch (Exception e){}
+
+
             Log.e("Fin Consulta ", " Eliminar ");
 
         }

@@ -101,11 +101,13 @@ public class SignalRService extends Service {
 //        String SERVER_METHOD_SEND = "addMarker";
 //        mHubProxy.invoke(SERVER_METHOD_SEND, marker);
 //        Log.e("Tracking", marker.Longitud.toString() );
-        DBHelper dataBaseHelper = new DBHelper(this);
-        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-        db.execSQL("UPDATE Configuration SET Longitud = '" + marker.Longitud.toString() + "'");
-        db.execSQL("UPDATE Configuration SET Latitud = '" + marker.Latitud.toString() + "'");
-        db.close();
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Configuration SET Longitud = '" + marker.Longitud.toString() + "'");
+            db.execSQL("UPDATE Configuration SET Latitud = '" + marker.Latitud.toString() + "'");
+            db.close();
+        } catch (Exception e) {}
 
         Log.e("SimpleSignalR", mHubConnection.getState().toString());
 
@@ -125,11 +127,16 @@ public class SignalRService extends Service {
 
                     for (int i = 0; i < arrayParametros.length; i++) {}
 
-                    DBHelper dataBaseHelper = new DBHelper(mContext);
-                    SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                    db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
-                    db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
-                    db.close();
+                    try {
+
+                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                        db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
+                        db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
+                        db.close();
+
+                    } catch (Exception e) {}
+
 
                     Log.e("Signal R", s);
 

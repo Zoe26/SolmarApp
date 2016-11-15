@@ -49,23 +49,20 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     Context thiscontext;
     AlertCrud alertCRUD;
-    String estadoAlert;
 
     final Handler handler = new Handler();
 
-    Button btnMarcacion, btnFinTurno;
-    TextView textHora, textHoraCelular, textHoraMarcacionP, textHoraComprobacionFocus, textHoraComprobacionServicio,
-            textEjecucion, textUltimaMarcacion, textUltimaMarcacionFecha, textHoraFecha, textintervalo, textflag_tiempo;
+    Button btnMarcacion;
+    TextView textHora, textUltimaMarcacion, textUltimaMarcacionFecha, textHoraFecha, textintervalo, textflag_tiempo;
 
     View myView;
     ImageView caritaEstado;
 
     String Proxima;
-    String FechaComproba, FechaEjecucion, FechaEjecucionFocus, HoraMarcacionP;
+    String HoraMarcacionP;
 
     String EstadoBoton, FechaEsperadaIso, FechaEsperadaIsoFin, EstadoE;
     Calendar horaIni, horaFin, horaIso;
-
 
     String EstadoBotonMostrar, FechaEsperada, FechaProxima, FlagTiempo, MargenAceptado;
 
@@ -81,15 +78,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     int tiempoEnvio, tiempoIntervalo, tiempoGuardado, intervaloResta, intervaloInicial;
 
-    private int _Alert_Id = 0, _Alert_Id_Eliminar=0;
-    private int _AlertUpdate_Id = 0, _AlertUpdateRee_Id=0;
+    private int _Alert_Id = 0;
+    private int _AlertUpdate_Id = 0;
 
-
-    Calendar choraProximaG, choraEsperadaG, choraIso, choraIsoFin, cFechaEsperadaIso_Eliminar, horaActual;
+    Calendar choraProximaG, choraEsperadaG, choraIso, choraIsoFin;
 
     String  horaEsperadaG, horaProximaG, horaEsperadaIsoG, horaEsperadaIsoFinG;
-
-    String Latitud, Longitud, Numero;
     String LatitudG, LongitudG, NumeroG, DispositivoId, CodigoEmpleado;
 
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
@@ -256,43 +250,46 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public void dialogoNoMarco(){
 
-        String hora, fecha, fechaEsp = null;
-
-        DBHelper dataBaseHelper = new DBHelper(thiscontext);
-        SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
-        String selectQueryAlert = "SELECT FechaEsperada, FechaProxima, EstadoBoton FROM Alert";
-
-        Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
-
-        if (calert.moveToLast()) {
-
-            fechaEsp = calert.getString(calert.getColumnIndex("FechaEsperada"));
-        }
-        calert.close();
-        dbalert.close();
-
-
-        DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-        Calendar cal  = Calendar.getInstance(); //--
         try {
-            cal.setTime(df.parse(fechaEsp));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calf = cal;
-        SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
 
-        hora = formatProx.format(calf.getTime());
-        fecha = formatProxFecha.format(calf.getTime());
+            String hora, fecha, fechaEsp = null;
+
+            DBHelper dataBaseHelper = new DBHelper(thiscontext);
+            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
+            String selectQueryAlert = "SELECT FechaEsperada, FechaProxima, EstadoBoton FROM Alert";
+
+            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
+
+            if (calert.moveToLast()) {
+
+                fechaEsp = calert.getString(calert.getColumnIndex("FechaEsperada"));
+            }
+            calert.close();
+            dbalert.close();
 
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(thiscontext);
-        builder.setCancelable(false);
-        builder.setTitle("Marcaci\u00F3n a destiempo");
-        builder.setMessage("\u00C9sta marcaci\u00F3n corresponde a las "+hora+" del d\u00EDa "+fecha+"");
-        builder.setPositiveButton("Aceptar", null);
-        builder.show();
+            DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+            Calendar cal  = Calendar.getInstance(); //--
+            try {
+                cal.setTime(df.parse(fechaEsp));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Calendar calf = cal;
+            SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
+
+            hora = formatProx.format(calf.getTime());
+            fecha = formatProxFecha.format(calf.getTime());
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(thiscontext);
+            builder.setCancelable(false);
+            builder.setTitle("Marcaci\u00F3n a destiempo");
+            builder.setMessage("\u00C9sta marcaci\u00F3n corresponde a las "+hora+" del d\u00EDa "+fecha+"");
+            builder.setPositiveButton("Aceptar", null);
+            builder.show();
+        } catch (Exception e){}
     }
 
     void startRepeatingTask()
@@ -303,36 +300,14 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     Runnable runnable = new Runnable() {
         public void run() {
             try {
-//                getRunning(thiscontext);
                 habilitarBoton();
                 mostrarHora();
                 ultimaMarcacion();
             }catch (Exception e){}
+
             handler.postDelayed(runnable, 100 * 1);
         }
     };
-
-    public void getRunning(Context context){
-        Log.e("Ingreso ", "Package");
-        ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-        List l = am.getRunningAppProcesses();
-        Iterator i = l.iterator();
-        PackageManager pm = context.getPackageManager();
-        ApplicationInfo data;
-        while(i.hasNext()) {
-            ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo)(i.next());
-            try {
-                CharSequence c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
-                Log.w("LABEL", c.toString());
-
-//                Log.e("Package: ", String.valueOf(c));
-//                runningApplications.add(c.toString());
-            }catch(Exception e) {
-                //Name Not Found Exception
-            }
-        }
-
-    }
 
     void stopRepeatingTask()
     {
@@ -387,9 +362,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             _Alert_Id = alertCRUD.insert(alert);
 
-            //Si en algún momento es necesario ejecutar Alert
-            //startAt10(alert);
-
         } catch (Exception e) {
         }
 
@@ -409,8 +381,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             cta.close();
             Adb.close();
 
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         Log.e("Cantidad Alert: ", String.valueOf(CantidadAlert));
         //Si se tiene un alert ya registrado en la Base de Datos y no ha terminado turno
@@ -443,11 +414,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             _Alert_Id = alertCRUD.insert(alert);
 
-            //Si en algún momento es necesario ejecutar Alert
-            //startAt10(alert);
-
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
     }
 
@@ -466,8 +433,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             cConfiguration.close();
             dbConfiguration.close();
 
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         // SE OBTIENE EL NUMERO DEL CELULAR
         try {
@@ -485,8 +451,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             cConfiguration.close();
             dbConfiguration.close();
 
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         // CONSULTA TRACKING -----------------------------------------
         try {
@@ -823,14 +788,18 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         }catch (Exception e){}
 
-        String est = "true";
-        Alert alert = new Alert();
-        alert.FechaMarcacion = horaActual;
-        alert.FlagTiempo = FlagTiempo;
-        alert.MargenAceptado = MargenAceptado;
-        alert.EstadoBoton = est;
-        alert.AlertId = _AlertUpdate_Id;
-        alertCRUD.update(alert);
+        try {
+
+            String est = "true";
+            Alert alert = new Alert();
+            alert.FechaMarcacion = horaActual;
+            alert.FlagTiempo = FlagTiempo;
+            alert.MargenAceptado = MargenAceptado;
+            alert.EstadoBoton = est;
+            alert.AlertId = _AlertUpdate_Id;
+            alertCRUD.update(alert);
+
+        } catch (Exception e){}
 
         // CONSULTA DE DATOS DEL SQLITE PARA ENVIO AL SERVIDOR
         try {
@@ -905,10 +874,15 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
 //                    Log.e("-- Estado Envio "+estadoEnvio, "-- IdAlert "+_AlertUpdate_Id);
 
-                    Alert alert = new Alert();
-                    alert.EstadoA = estadoEnvio;
-                    alert.AlertId = _AlertUpdate_Id;
-                    alertCRUD.updateEstado(alert);
+                    try {
+
+                        Alert alert = new Alert();
+                        alert.EstadoA = estadoEnvio;
+                        alert.AlertId = _AlertUpdate_Id;
+                        alertCRUD.updateEstado(alert);
+
+                    } catch (Exception e){}
+
 
                     JSONArray jsonA = new JSONArray(Configuracion);
 
@@ -943,26 +917,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                     Log.e("AlerF Interv/ Toleranc ", String.valueOf(te)+"| "+String.valueOf(tes));
 
-                    try {
-
-
-//                        Log.e("-- Update","Inicio Try Correcto");
-
-//                        DBHelper dataBaseHelper = new DBHelper(thiscontext);
-//                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-//                        Boolean open = db.isOpen();
-//
-////                        Log.e("-- Open", open.toString());
-//                        db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + te + "', IntervaloMarcacionTolerancia = '" + tes + "'");
-//                        db.execSQL("UPDATE Alert SET Estado = '" + estadoEnvio + "' WHERE AlertId ='"+_AlertUpdate_Id+"'");
-//                        db.close();
-
-//                        Log.e("-- Update","Correcto");
-
-                    }catch (SQLException e){
-                        e.getMessage();
-//                        Log.e("Update -- ",e.getMessage().toString());
-                    }
 
                     return json;
                 }
@@ -1017,52 +971,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         String inte = String.valueOf(tiempoIntervalo);
         textintervalo.setText(inte);
-
-    }
-
-    public void ComprobacionFocus(){
-
-        String prox = null;
-
-        try {
-
-            DBHelper dataBaseHelper = new DBHelper(thiscontext);
-            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
-            String selectQueryAlert = "SELECT FechaEsperada, FechaProxima, EstadoBoton FROM Alert";
-
-            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
-
-            if (calert.moveToLast()) {
-
-                prox = calert.getString(calert.getColumnIndex("FechaProxima"));
-            }
-            calert.close();
-            dbalert.close();
-
-            // Formato de guardado de las fechas en la BD
-            Calendar cProx = Calendar.getInstance();
-            Calendar cActual = Calendar.getInstance();
-            SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-            SimpleDateFormat formatoGuardarISO = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            // --- Hora Esperada Enviada en Formato con comas (,)
-            try {
-                cProx.setTime(formatoGuardar.parse(prox));
-            } catch (ParseException e) {
-            }
-
-            if(cActual.before(cProx)){
-
-                String fI;
-                fI = formatoGuardarISO.format(cActual.getTime());
-                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                db.execSQL("UPDATE AlertFechas SET FechaEjecucion = '" + fI + "'");
-                db.close();
-
-                Log.e("--- Comprobacion ","Fecha Focus ");
-            }
-
-        } catch (Exception e) {}
 
     }
 

@@ -264,13 +264,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 currentForced = Calendar.getInstance();
                 currentForced.add(Calendar.MINUTE, intervalSend);
                 currentForced.add(Calendar.SECOND, 30);
-//                flagSend = true;
             }
 
             Calendar currentDate = Calendar.getInstance();
-//            Log.e("-- DATE ", String.valueOf(currentDate.getTime()));
-//            Log.e("-- SEND ", String.valueOf(currentSend.getTime()));
-//            Log.e("-- FLAG ", String.valueOf(flagSend));
 
             if (currentDate.after(currentSend)){
                 flagSend = true;
@@ -288,7 +284,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             if (currentSend==null){
 
                 currentSend = Calendar.getInstance();
-                currentSend.add(Calendar.MINUTE, 1);
+                currentSend.add(Calendar.MINUTE, intervalSend);
 
                 currentForced = Calendar.getInstance();
                 currentForced.add(Calendar.MINUTE, intervalSend);
@@ -327,7 +323,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if (Apiv <=20) {
             Intent restartService = new Intent(getApplicationContext(), Recognition.class);
             restartService.setPackage(getPackageName());
-            PendingIntent restartServicePI = PendingIntent.getService(getApplicationContext(), 1, restartService,PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent restartServicePI = PendingIntent.getService(getApplicationContext(), 1000, restartService,PendingIntent.FLAG_ONE_SHOT);
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates( mGoogleApiClient, 0, restartServicePI );
 
         } else {
@@ -419,33 +415,18 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(actividadsql == null) {
             actividadsql = "ACTIVIDADNODETECTADA";
             lastActividad = "ACTIVIDADNODETECTADA";
-
-        } else {
-
-            if (actividadsql == "SINMOVIMIENTO" && lastActividad == "VEHICULO"){
-
-                if(contador == 0) {
-                    contador = 4;
-                    valido = "false";
-                    lastActividad = actividadsql;
-                    return null;
-                }
-
-            } else {
-                lastActividad = actividadsql;
-            }
         }
 
-        if(location.getSpeed() > 0 && lastActividad == "SINMOVIMIENTO") {
+        if(location.getSpeed() > 0 && actividadsql == "SINMOVIMIENTO") {
 
             if(contador == 0) {
                 contador = 3;
             }
             valido = "false";
-            return null;
+            //return null;
         }
 
-        if(lastActividad == "CAMINANDO" && location.getSpeed() > 3)
+        if(actividadsql == "CAMINANDO" && location.getSpeed() > 3)
         {
             if(contador == 0) {
                 contador = 3;
@@ -454,7 +435,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             //return null;
         }
 
-        if(lastActividad == "VEHICULO" &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95)
+        if(actividadsql == "VEHICULO" &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95)
         {
             if(contador == 0) {
                 contador = 4;
@@ -462,6 +443,17 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             valido = "false";
             //return null;
         }
+
+        if (actividadsql == "SINMOVIMIENTO" && lastActividad == "VEHICULO"){
+
+            if(contador == 0) {
+                contador = 4;
+                valido = "false";
+                //return null;
+            }
+        }
+
+        lastActividad = actividadsql;
 
         if(location.getSpeed()>=14){
 
@@ -491,15 +483,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             valido = "false";
             //return null;
 
-        } else {
+        }
+        /*
+        else {
 
             locationLastSend = location;
-
             if(contador == 0){
                 valido = "true";
             }
-
         }
+        */
 
         if(contador>0){
 
@@ -515,7 +508,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(contadorTest == 1){
             contadorTest = 0;
             valido = "true";
-            locationLastSend = location;
+            //locationLastSend = location;
 
         }
         //***********
@@ -530,6 +523,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 //        Log.e("-- !! Contador Last ", String.valueOf(contador));
 
         // y velocidades mayores a 14
+
+        locationLastSend = location;
 
         isGPSAvailable();
         isMOBILEAvailable();
@@ -605,10 +600,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
-            // We've bound to SignalRService, cast the IBinder and get SignalRService instance
-            SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
+            try {
+                // We've bound to SignalRService, cast the IBinder and get SignalRService instance
+                SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
+                mService = binder.getService();
+                mBound = true;
+
+            } catch (Exception e){}
+
         }
 
         @Override
