@@ -417,34 +417,19 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             lastActividad = "ACTIVIDADNODETECTADA";
         }
 
-        if(location.getSpeed() > 0 && actividadsql == "SINMOVIMIENTO") {
+        Log.e("------ ACTIVIDAD ", actividadsql);
 
-            if(contador == 0) {
-                contador = 3;
+        if(actividadsql.equalsIgnoreCase("SINMOVIMIENTO")) {
+            //Log.e("------ SINMOVIMIENTO", String.valueOf(location.getSpeed()));
+            if(location.getSpeed() > 0) {
+                //Log.e("------ SINMOVIMIENTO ", " -- VELO: "+String.valueOf(location.getSpeed()));
+                if(contador == 0) {contador = 3;}
+                valido = "false";
+                return false;
             }
-            valido = "false";
-            //return null;
         }
 
-        if(actividadsql == "CAMINANDO" && location.getSpeed() > 3)
-        {
-            if(contador == 0) {
-                contador = 3;
-            }
-            valido = "false";
-            //return null;
-        }
-
-        if(actividadsql == "VEHICULO" &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95)
-        {
-            if(contador == 0) {
-                contador = 4;
-            }
-            valido = "false";
-            //return null;
-        }
-
-        if (actividadsql == "SINMOVIMIENTO" && lastActividad == "VEHICULO"){
+        if (actividadsql.equalsIgnoreCase("SINMOVIMIENTO") && lastActividad.equalsIgnoreCase("VEHICULO")){
 
             if(contador == 0) {
                 contador = 4;
@@ -453,7 +438,23 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
         }
 
-        lastActividad = actividadsql;
+        if(actividadsql.equalsIgnoreCase("CAMINANDO")){
+
+            if(location.getSpeed() > 3){
+                if(contador == 0) {
+                    contador = 3;
+                }
+                valido = "false";
+            }
+        }
+
+        if(actividadsql.equalsIgnoreCase("VEHICULO") &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95) {
+            if(contador == 0) {
+                contador = 4;
+            }
+            valido = "false";
+            //return null;
+        }
 
         if(location.getSpeed()>=14){
 
@@ -508,8 +509,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(contadorTest == 1){
             contadorTest = 0;
             valido = "true";
-            //locationLastSend = location;
-
         }
         //***********
 //        if (currentDate.after(currentForced)){
@@ -525,6 +524,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         // y velocidades mayores a 14
 
         locationLastSend = location;
+        lastActividad = actividadsql;
 
         isGPSAvailable();
         isMOBILEAvailable();
@@ -562,7 +562,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.Bearing = Double.toString(location.getBearing());;
         tracking.Extras = "Tracking@5246.Solmar";
         tracking.Classx = "Location";
-        tracking.Actividad = lastActividad;
+        tracking.Actividad = actividadsql;
         tracking.Valido = valido;
         tracking.FechaIso = formatoIso.format(currentDate.getTime());
         //si es valido guarde en el sqlite

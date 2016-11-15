@@ -60,10 +60,8 @@ public class ServiceAccessSettings extends Service {
                 } else {
                     getRunningKITKAT();
                 }
-
-
             }catch (Exception e){}
-            handler.postDelayed(runnable, 750);
+            handler.postDelayed(runnable, 1000);
         }
     };
 
@@ -96,7 +94,6 @@ public class ServiceAccessSettings extends Service {
                         || aTask.topActivity.getClassName().equals("com.android.settings.Settings$DateTimeSettingsActivity"))
                 {
                     if (estadoPermiso.equals("false")) {
-                        Log.e("---! estadoPermiso IF ", estadoPermiso);
                         Intent dialogIntent = new Intent(this, AccessSettings.class);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(dialogIntent);
@@ -121,7 +118,6 @@ public class ServiceAccessSettings extends Service {
 
             UsageStatsManager mUsageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
             List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,timeBegin,timeEnd);
-            Log.e("_stats ", String.valueOf(stats));
 
             if (stats!= null) {
                 SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
