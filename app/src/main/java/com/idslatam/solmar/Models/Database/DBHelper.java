@@ -9,6 +9,7 @@ import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
+import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
 
 /**
  * Created by Luis on 22/10/2016.
@@ -124,11 +125,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 + SettingsPermissions.KEY_Nombre + " TEXT,"
                 + SettingsPermissions.KEY_Estado + " TEXT)";
 
+        String CREATE_TABLE_ALARM_TRACK = "CREATE TABLE " + AlarmTrack.TABLE_ALARM_TRACK + "("
+                + AlarmTrack.KEY_ID_ALARM_TRACK + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + AlarmTrack.KEY_FechaAlarm + " TEXT,"
+                + AlarmTrack.KEY_Estado + " TEXT)";
+
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
         db.execSQL(CREATE_TABLE_ASISTENCIA);
         db.execSQL(CREATE_TABLE_ALERT);
         db.execSQL(CREATE_TABLE_SETTING_PERMISSION);
+        db.execSQL(CREATE_TABLE_ALARM_TRACK);
     }
 
     @Override
@@ -147,6 +154,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + SettingsPermissions.TABLE_SETTING_PERMISSIONS);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + AlarmTrack.TABLE_ALARM_TRACK);
         onCreate(db);
 
     }

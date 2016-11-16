@@ -575,7 +575,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         // All required changes were successfully made
-                        Toast.makeText(Bienvenido.this, "¡Configuraci\u00f3n \u00e9xitosa!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(Bienvenido.this, "Configuraci\u00f3n \u00e9xitosa", Toast.LENGTH_LONG).show();
                         Log.e("VerificarAcceso ","RESULT_OK");
                         break;
                     case Activity.RESULT_CANCELED:
