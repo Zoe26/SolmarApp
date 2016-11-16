@@ -412,48 +412,41 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         Log.e("-- !! Contador Fisrt ", String.valueOf(contador));
 
-        if(actividadsql == null) {
-            actividadsql = "ACTIVIDADNODETECTADA";
-            lastActividad = "ACTIVIDADNODETECTADA";
-        }
+        if(actividadsql == null) {actividadsql = "ACTIVIDADNODETECTADA";}
+        if(lastActividad == null) {lastActividad = "ACTIVIDADNODETECTADA";}
 
-        Log.e("------ ACTIVIDAD ", actividadsql);
 
         if(actividadsql.equalsIgnoreCase("SINMOVIMIENTO")) {
-            //Log.e("------ SINMOVIMIENTO", String.valueOf(location.getSpeed()));
+            Log.e("------ SINMOVIMIENTO", String.valueOf(location.getSpeed()));
             if(location.getSpeed() > 0) {
-                //Log.e("------ SINMOVIMIENTO ", " -- VELO: "+String.valueOf(location.getSpeed()));
+                Log.e("------ SINMOVIMIENTO ", " -- VELO: "+String.valueOf(location.getSpeed()));
                 if(contador == 0) {contador = 3;}
                 valido = "false";
                 return false;
             }
         }
 
-        if (actividadsql.equalsIgnoreCase("SINMOVIMIENTO") && lastActividad.equalsIgnoreCase("VEHICULO")){
+        Log.e("------ ACTIVIDAD ", actividadsql);
+        Log.e("------ LASTACTIVIDAD ", lastActividad);
+        if (lastActividad.equalsIgnoreCase("VEHICULO")){
 
-            if(contador == 0) {
-                contador = 4;
-                valido = "false";
-                //return null;
-            }
-        }
-
-        if(actividadsql.equalsIgnoreCase("CAMINANDO")){
-
-            if(location.getSpeed() > 3){
+            if(actividadsql.equalsIgnoreCase("SINMOVIMIENTO")){
+                Log.e("------ VEHICULO - ", "SINMOVIMIENTO ");
                 if(contador == 0) {
-                    contador = 3;
+                    contador = 4;
+                    valido = "false";
                 }
-                valido = "false";
             }
         }
+
 
         if(actividadsql.equalsIgnoreCase("VEHICULO") &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95) {
+            Log.e("------ BEARING ", String.valueOf(Math.abs(locationLastSend.getBearing() - location.getBearing())));
+
             if(contador == 0) {
                 contador = 4;
             }
             valido = "false";
-            //return null;
         }
 
         if(location.getSpeed()>=14){
@@ -462,7 +455,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 contador = 8;
             }
             valido = "false";
-            //return null;
         }
 
         if(locationLastSend!=null){
@@ -482,18 +474,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
 
             valido = "false";
-            //return null;
 
         }
-        /*
-        else {
-
-            locationLastSend = location;
-            if(contador == 0){
-                valido = "true";
-            }
-        }
-        */
 
         if(contador>0){
 
@@ -502,7 +484,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
             valido = "false";
             contador--;
-            //return  false;
         }
 
 

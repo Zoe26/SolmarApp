@@ -123,28 +123,25 @@ public class SignalRService extends Service {
                 @Override
                 public void run(String s) throws Exception {
 
-                    String[] arrayParametros = s.split(",");
-
-                    for (int i = 0; i < arrayParametros.length; i++) {}
-
                     try {
 
-                        DBHelper dataBaseHelper = new DBHelper(mContext);
-                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                        db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
-                        db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
-                        db.close();
+                        String[] arrayParametros = s.split(",");
+
+                        for (int i = 0; i < arrayParametros.length; i++) {}
+
+                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
+                            db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
+                            db.close();
+
+                        Log.e("Signal R", s);
+
+                        pre = Integer.parseInt(arrayParametros[0].toString());
+
+                        if(pre>2){stopService(new Intent(mContext, LocationFusedApi.class));}
 
                     } catch (Exception e) {}
-
-
-                    Log.e("Signal R", s);
-
-                    pre = Integer.parseInt(arrayParametros[0].toString());
-
-                    if(pre>2){
-                        stopService(new Intent(mContext, LocationFusedApi.class));
-                    }
                     //Log.e("SimpleSignalR", mHubConnection.getState().toString());
                 }
             }).onError(new ErrorCallback() {
@@ -184,7 +181,8 @@ public class SignalRService extends Service {
         mHubProxy = mHubConnection.createHubProxy(SERVER_HUB_CHAT);
         ClientTransport clientTransport = new ServerSentEventsTransport(mHubConnection.getLogger());
         SignalRFuture<Void> signalRFuture = mHubConnection.start(clientTransport);
-        Log.e("Signal R", signalRFuture.toString());
+        //Log.e("Signal R", signalRFuture.toString());
+
         try {
             signalRFuture.get();
             Log.e("Try", "startSignalR");
