@@ -46,28 +46,14 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
-import com.idslatam.solmar.Api.Singalr.CustomMessage;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.R;
-import com.idslatam.solmar.View.Settings.AccessSettings;
-
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class LocationFusedApi extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -81,10 +67,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     Location locationForced = null;
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
-    String lastActividad=null, firstActividad=null;
-    Calendar currentIsoSend = null;
+    String lastActividad=null;
     Calendar currentSend = null, currentForced=null;
-    Boolean flagSend = false, flagApi = false;
+    Boolean flagSend = false;
     int contador =0, intervalSend=0;
     int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0;
     protected double nivelBateria=0;
@@ -92,9 +77,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private boolean mBound = false;
 
-    String sFechaSend, sCurrendInicioIso, sCurrentSendIso, sFechaAlarmaIso;
-
-    Calendar currentSend5, cCurrendInicioIso, cCurrentSendIso, cFechaAlarmaIso, currentAux;
+    String sCurrentSendIso;
 
     final Handler handler = new Handler();
 
@@ -147,11 +130,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         Log.e("-- INTERVALo onCREATE ", String.valueOf(intervalSend));
 
-//        if (intervalSend == 1 || intervalSend == 2) {
             buildGoogleApiClient();
-//        } else {
-//            buildGoogleApiClient();
-//        }
 
     }
 
@@ -438,7 +417,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 }
             }
         }
-
 
         if(actividadsql.equalsIgnoreCase("VEHICULO") &&  Math.abs(locationLastSend.getBearing() - location.getBearing()) > 95) {
             Log.e("------ BEARING ", String.valueOf(Math.abs(locationLastSend.getBearing() - location.getBearing())));
