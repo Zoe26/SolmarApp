@@ -1,14 +1,8 @@
 package com.idslatam.solmar.Tracking.Services;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.ActivityManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.app.Service;
-import android.app.usage.UsageEvents;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -22,14 +16,11 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.BatteryManager;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -137,7 +128,18 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        mGoogleApiClient.connect();
+        try {
+            if (!mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.connect();
+            }
+        } catch (Exception e){
+            Toast.makeText(this, "Excepcion mGoogleApiClient.connect()", Toast.LENGTH_LONG).show();
+        }
+
+        //try {
+            //mGoogleApiClient.connect();
+        //} catch (Exception e){}
+
         if(!this.isRunning) {this.isRunning = true;}
 //            runnable.run();
 

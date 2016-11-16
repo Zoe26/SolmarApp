@@ -482,7 +482,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
     //**************************************************************************************************************
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
 

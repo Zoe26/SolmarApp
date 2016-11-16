@@ -9,11 +9,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
@@ -21,6 +27,8 @@ import com.idslatam.solmar.Pruebas.Crud.AlarmTrackCrud;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
 import com.idslatam.solmar.SettingsDevice.Configurations.ServiceAccessSettings;
 import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
+import com.idslatam.solmar.View.Bienvenido;
+import com.idslatam.solmar.View.Login;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +50,9 @@ public class AlarmLocation extends BroadcastReceiver {
     private Context mContext;
     int _TrackingUpdateRee_Id = 0, _AlarmTrack_Id = 0;
 
+    //--------------------------------------------------------
+    boolean gps;
+    //---------------------------------------------------------
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -52,6 +63,18 @@ public class AlarmLocation extends BroadcastReceiver {
         mContext.startService(backgroundS);
         // FIN INTENTI AL SERVICIO ------------------------------------------------------------------
 
+        gps = isGPSAvailable();
+
+        if (!gps){
+
+            Intent i = new Intent(context, Bienvenido.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(i);
+
+            //mContext.startActivity(new Intent(mContext, Login.class)
+              //      .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+        }
+
         //NO TOCAR *****************************************************************************************************************************
         int vApi = Build.VERSION.SDK_INT;
 
@@ -61,13 +84,20 @@ public class AlarmLocation extends BroadcastReceiver {
 
             updateFechaAlarmLocation();
 
-            Intent alarm = new Intent(context, AlarmLocation.class);
+            try {
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent alarm = new Intent(context, AlarmLocation.class);
 
-            long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 60);
-            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+                long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 60);
+                alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
+
+            } catch (Exception e){
+                Toast.makeText(mContext, "Excepcion Start Service", Toast.LENGTH_LONG).show();
+            }
+
 
         } else {
 
@@ -75,13 +105,21 @@ public class AlarmLocation extends BroadcastReceiver {
 
             updateFechaAlarmLocation();
 
-            Intent alarm = new Intent(context, AlarmLocation.class);
+            try {
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent alarm = new Intent(context, AlarmLocation.class);
 
-            long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 60);
-            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+                long timeInMillis = (SystemClock.elapsedRealtime() + 1000 * 60);
+                alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
+
+            } catch (Exception e){
+                Toast.makeText(mContext, "Excepcion Start Service", Toast.LENGTH_LONG).show();
+            }
+
+
         }
         //*************************************************************************************************************************************
 
@@ -204,5 +242,16 @@ public class AlarmLocation extends BroadcastReceiver {
         }catch (Exception e){}
 
         return true;
+    }
+
+    private boolean isGPSAvailable() {
+
+        //return true;
+        LocationManager locationManagerx = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        if (!locationManagerx.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
