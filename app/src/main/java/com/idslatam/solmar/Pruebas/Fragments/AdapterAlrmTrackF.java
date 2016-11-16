@@ -31,7 +31,7 @@ public class AdapterAlrmTrackF extends android.app.Fragment {
 
     int _AlarmTrack_Id =0;
 
-    private ListView lvDatost;
+    private ListView lvDatosAlrms;
     private AdapterAlarmTrack adapter;
     private List<DataAlarmTrack> mDataAlarmTrack;
 
@@ -92,13 +92,13 @@ public class AdapterAlrmTrackF extends android.app.Fragment {
         Log.e("EXCPTIO", "LAST");
 
         adapter = new AdapterAlarmTrack(thiscontext, mDataAlarmTrack);
-        lvDatost.setAdapter(adapter);
+        lvDatosAlrms.setAdapter(adapter);
 
         return myView;
     }
 
     private void findViewsById(View myView) {
 
-        lvDatost = (ListView) myView.findViewById(R.id.tracking_ListView);
+        lvDatosAlrms = (ListView) myView.findViewById(R.id.alarmtrack_ListView);
     }
 }

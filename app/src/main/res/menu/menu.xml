@@ -13,6 +13,10 @@
         android:title="Ver Tracking"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/action_alarmtrack"
+        android:title="Ver Alarms"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/action_configuration"
         android:title="Configuracion"
         app:showAsAction="never"/>

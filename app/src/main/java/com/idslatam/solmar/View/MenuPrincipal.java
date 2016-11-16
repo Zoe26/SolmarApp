@@ -28,6 +28,7 @@ import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Pruebas.Fragments.AdapterAlrmTrackF;
 import com.idslatam.solmar.Pruebas.Fragments.AdapterTrackingF;
 import com.idslatam.solmar.View.Code.CodeBar;
 import com.idslatam.solmar.View.Fragments.HomeFragment;
@@ -197,6 +198,19 @@ public class MenuPrincipal extends  ActionBarActivity {
 
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainer, new AdapterTrackingF());
+                fragmentTransaction.commit();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        if (id == R.id.action_alarmtrack) {
+            try {
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainer, new AdapterAlrmTrackF());
                 fragmentTransaction.commit();
 
             } catch (Exception e) {
