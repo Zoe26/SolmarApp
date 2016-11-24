@@ -203,7 +203,7 @@ public class ServicioAlerta extends Service {
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbtracking = dataBaseHelper.getWritableDatabase();
-            String selectQueryTracking = "SELECT Latitud , Longitud FROM Tracking";
+            String selectQueryTracking = "SELECT Latitud , Longitud FROM Configuration";
             Cursor ctracking = dbtracking.rawQuery(selectQueryTracking, new String[]{});
 
             if (ctracking.moveToLast()) {

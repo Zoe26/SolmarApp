@@ -159,6 +159,8 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     private static final int MY_WRITE_EXTERNAL_STORAGE = 8;
     private static final int MY_PACKAGE_USAGE_STATS = 9;
 
+    String serieSIM;
+    String imei;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,28 +334,111 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
-//        btn = (Button) findViewById(R.id.btn_login);
-//        btnC = (Button) findViewById(R.id.btn_configuracion);
-
-//        btn.setOnClickListener(this);
-//        btnC.setOnClickListener(this);
-
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
-        String serieSIM = null;
 
-        try {
-            serieSIM = tm.getSimSerialNumber();
-        }catch (Exception e){}
+        int networkType = tm.getNetworkType();
+        switch (networkType) {
+            case (TelephonyManager.NETWORK_TYPE_1xRTT) :
+                Log.e("--NETWORK_TYPE_1xRTT ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_CDMA) :
+                Log.e("--PHONE_TYPE_CDMA ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_EDGE) :
+                Log.e("--NETWORK_TYPE_EDGE ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_EHRPD) :
+                Log.e("--NETWORK_TYPE_EHRPD ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_EVDO_0) :
+                Log.e("--NETWORK_TYPE_EVDO_0 ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_EVDO_A) :
+                Log.e("--NETWORK_TYPE_EVDO_A ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_EVDO_B) :
+                Log.e("--NETWORK_TYPE_EVDO_B ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_GPRS) :
+                Log.e("--NETWORK_TYPE_GPRS ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_HSDPA) :
+                Log.e("--NETWORK_TYPE_HSDPA ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_HSPA) :
+                Log.e("--NETWORK_TYPE_HSPA ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_LTE) :
+                Log.e("--NETWORK_TYPE_LTE ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_UMTS) :
+                Log.e("--NETWORK_TYPE_UMTS ", String.valueOf(networkType));
+                break;
+            case (TelephonyManager.NETWORK_TYPE_UNKNOWN) :
+                Log.e("--NETWORK_TYPE_UNKNOWN ", String.valueOf(networkType));
+                break;
+
+        }
+
+        int phoneType=tm.getPhoneType();
+
+        switch (phoneType)
+        {
+            case (TelephonyManager.PHONE_TYPE_CDMA):
+                // your code
+                Log.e("--PHONE_TYPE_CDMA ", String.valueOf(phoneType));
+                break;
+            case (TelephonyManager.PHONE_TYPE_GSM):
+                // your code
+                Log.e("--PHONE_TYPE_GSM ", String.valueOf(phoneType));
+                break;
+            case (TelephonyManager.PHONE_TYPE_NONE):
+                // your code
+                Log.e("--PHONE_TYPE_NONE ", String.valueOf(phoneType));
+                break;
+        }
+
+        int SIMState=tm.getSimState();
+        switch(SIMState)
+        {
+            case TelephonyManager.SIM_STATE_ABSENT :
+                // your code
+                Log.e("--STATE_ABSENT ", String.valueOf(SIMState));
+
+                //serieSIM = "8951061121515203889f";
+                //imei = "014578003254447";
+                //numero = "931732035";
+
+                //simDialogo();
+                break;
+
+            case TelephonyManager.SIM_STATE_READY :
+                // your code
+
+                serieSIM = tm.getSimSerialNumber();
+                imei = tm.getDeviceId();
+                numero = tm.getLine1Number();
+
+                SimOtorgaNumero = "true";
+                if (numero.equals("")) {SimOtorgaNumero = "false";}
+
+                Log.e("--STATE_READY ", String.valueOf(SIMState));
+                Log.e("--Country ", String.valueOf(tm.getSimCountryIso()));
+                Log.e("--OperatorCode ", String.valueOf(tm.getSimOperator()));
+                Log.e("--OperatorName ", String.valueOf(tm.getSimOperatorName()));
+                Log.e("--simSerial ", String.valueOf(tm.getSimSerialNumber()));
+
+                break;
+
+            case TelephonyManager.SIM_STATE_UNKNOWN :
+                // your code
+                Log.e("--STATE_UNKNOWN ", String.valueOf(SIMState));
+                break;
+
+        }
 
         isWIFIAvailable();
-
-        if (serieSIM == null) {
-            simDialogo();
-            return;
-        }
 
         //**********************DESPUES DE VALIDAR SIN SE OBTIENE DATOS DEL TELEFONO************************************
         String modelo = Build.MODEL;
@@ -416,6 +501,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         } catch (Exception e) {}
 
 
+        //validacion = "true";
         // ************************************* VALIDACIONES **************************************
         Log.e("--! busca " + String.valueOf(busca), "! validacion " + validacion);
         if(busca!=0 && validacion.equals("true")){
@@ -429,6 +515,15 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         if(validacion=="true"){
             txtApro.setVisibility(View.INVISIBLE);
         }
+
+        Log.e("--NUMERO ", String.valueOf(numero));
+        Log.e("--ID ", String.valueOf(androidId));
+        Log.e("--IMEI ", String.valueOf(imei));
+        Log.e("--MODELO ", String.valueOf(modelo));
+        Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
+        Log.e("--SERIE SIM ", String.valueOf(serieSIM));
+        Log.e("--FABRCANTE ", String.valueOf(fabricante));
+        Log.e("--VERSION ", String.valueOf(versionO));
 
         new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
 

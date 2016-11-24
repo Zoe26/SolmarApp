@@ -12,8 +12,6 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;

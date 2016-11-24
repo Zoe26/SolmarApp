@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
@@ -351,8 +350,6 @@ public class MenuPrincipal extends  ActionBarActivity {
     private Boolean finalizarTurno(){
 
         try {
-
-            stopService(new Intent(MenuPrincipal.this, ServicioAlerta.class));
             updateAlert();
             Asistencia();
 

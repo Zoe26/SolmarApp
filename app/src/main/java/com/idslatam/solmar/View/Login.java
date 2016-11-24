@@ -38,7 +38,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.idslatam.solmar.Alert.Services.ServicioAlerta;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.AsistenciaCrud;
@@ -538,20 +537,8 @@ public class Login extends AppCompatActivity implements
 
             if (json != null) {
 
-                try {
-                    if (ServicioAlerta.serviceRunningAlerta == true) {
-                        Log.e("--------", "Servicio Alert ya está ejecutándose!--------");
-                    } else {
 
-                            startService(new Intent(Login.this, ServicioAlerta.class));
-                            Log.e("--------", "Servicio Alert Detenido! ...Reiniciando..");
-
-                    }
-                } catch (Exception e){
-                    Log.e("-- Error! Serv Alerta", " A");
-                }
-
-                try {
+                try{
                     success = json.getInt(TAG_SUCCESS);
                     message = json.getString(TAG_MESSAGE);
                 } catch (JSONException e) {
