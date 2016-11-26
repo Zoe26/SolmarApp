@@ -60,7 +60,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
     String lastActividad=null;
     Calendar currentSend = null, currentPrecision = null;
-    Boolean flagSend = false;
+    Boolean flagSend = false, flagDelay = false, flagUpdate = false;
     int contador =0, intervalSend=0;
     int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0;
     protected double nivelBateria=0;
@@ -195,7 +195,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.e("LocationFusedApi ", location.toString());
+        //Log.e("LocationFusedApi ", location.toString());
 
         //TIMER DE CONTROL DE ENVIO *****************************************************************
         try {
@@ -217,62 +217,52 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if (intervalSend==0){intervalSend=1;}
 
         // METODO INTERVALO MENOR A 2 ---------------------------------------------------------------------------------------
-        if (intervalSend == 1 || intervalSend == 2) {
+        //if (intervalSend == 1 || intervalSend == 2) {
 
             if (currentSend==null){
                 currentSend = Calendar.getInstance();
                 currentSend.add(Calendar.SECOND, intervalSend);
-            }
-
-            Calendar currentDate = Calendar.getInstance();
-
-            if (currentDate.after(currentSend)){
-
-                currentSend.add(Calendar.MINUTE, intervalSend);
-
-                int cH = currentSend.get(Calendar.HOUR_OF_DAY);
-                int cM = currentSend.get(Calendar.MINUTE);
-                int cS = currentSend.get(Calendar.SECOND) + 15;
 
                 currentPrecision = Calendar.getInstance();
-                currentPrecision.set(Calendar.HOUR_OF_DAY, cH);
-                currentPrecision.set(Calendar.MINUTE, cM);
+                int cS = currentSend.get(Calendar.SECOND) + 15;
                 currentPrecision.set(Calendar.SECOND, cS);
-                flagSend = true;
-                Log.e("-- FLAG IF ", " TRUE");
+
             }
+
+        Calendar currentDate = Calendar.getInstance();
+
+        Log.e("---------- INFO ", "-----------");
+
+        Log.e("-- FALG SEND ", String.valueOf(flagSend));
+        if(currentDate.after(currentPrecision)){
+            //precision = precision + 5;
+            flagDelay = true;
+
+            if(flagUpdate == false){
+                flagSend = true;
+            }
+            Log.e("-- DELAY TRUE ", String.valueOf(precision)+ " ----------- ");
+        }
+
+        Log.e("-- C SEND ", formatoIso.format(currentSend.getTime()));
+        Log.e("-- C  NOW ", formatoIso.format(currentDate.getTime()));
+        Log.e("-- C PREC ", formatoIso.format(currentPrecision.getTime()));
+
+        if (currentDate.after(currentSend)){
+
+            Log.e("-- FLAG UPDATE ", String.valueOf(flagUpdate));
+            if(flagUpdate == true){
+                Log.e("-- |*** UPDATE ***", "| -- ");
+                currentSend.add(Calendar.MINUTE, intervalSend);
+                currentPrecision.add(Calendar.MINUTE, intervalSend);
+                flagSend = true;
+            }
+        }
 
             requestActivityUpdates();
             sendTracking(location);
-        }
+        //}
         // FIN METODO INTERVALO MENOR A 2 ---------------------------------------------------------------------------------------
-
-        if(intervalSend > 2){
-
-            if (currentSend==null){
-
-                currentSend = Calendar.getInstance();
-                currentSend.add(Calendar.MINUTE, intervalSend);
-
-            }
-
-            Calendar currentDate = Calendar.getInstance();
-            if (currentDate.after(currentSend)){
-
-                currentSend.add(Calendar.MINUTE, intervalSend);
-
-                currentPrecision.setTime(currentSend.getTime());
-                currentPrecision.add(Calendar.SECOND, 15);
-                flagSend = true;
-
-            }
-
-            requestActivityUpdates();
-            sendTracking(location);
-
-        }
-
-        //TIMER DE CONTROL DE ENVIO *****************************************************************
 
     }
 
@@ -358,21 +348,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         } catch (Exception e) {}
 
         if(precision==0){precision=20;}
-
-        Log.e("-- !! Intervalo "+ String.valueOf(intervalSend), " ! Precision "+ String.valueOf(precision));
+        Log.e("-- PRECISION | GPS " , String.valueOf(precision)+"|"+ String.valueOf(location.getAccuracy()));
+        //Log.e("-- !! Intervalo "+ String.valueOf(intervalSend), " ! Precision "+ String.valueOf(precision));
 
         //***
         //if (location.getAccuracy()<=(precision+30)){locationForced=location;}
         //***
 
-        Calendar now  = Calendar.getInstance();
-        if(flagSend == true && now.after(currentPrecision)){
-            precision = precision + 5;
-        }
-
-        if(precision>60){
-            precision = 20;
-        }
+        if(precision>60){precision = 20;}
 
         if(location.getAccuracy()>=precision) {
             return false;
@@ -382,18 +365,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(locationLastSend==null){
             locationLastSend = location;
-            contador = 5;
-            valido = "false";
             return null;
         }
 
-        Log.e("-- !! Contador Fisrt ", String.valueOf(contador));
+        Log.e("-- |CONTADOR| ", "-|" + String.valueOf(contador)+"|-");
 
         if(actividadsql == null) {actividadsql = "ACTIVIDADNODETECTADA";}
         if(lastActividad == null) {lastActividad = "ACTIVIDADNODETECTADA";}
 
         if(actividadsql.equalsIgnoreCase("SINMOVIMIENTO")) {
-            Log.e("------ SINMOVIMIENTO", String.valueOf(location.getSpeed()));
+            //Log.e("------ SINMOVIMIENTO", String.valueOf(location.getSpeed()));
             if(location.getSpeed() > 0) {
                 Log.e("------ SINMOVIMIENTO ", " -- VELO: "+String.valueOf(location.getSpeed()));
                 if(contador == 0) {contador = 3;}
@@ -402,12 +383,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
         }
 
-        Log.e("------ ACTIVIDAD ", actividadsql);
-        Log.e("------ LASTACTIVIDAD ", lastActividad);
+        //Log.e("------ ACTIVIDAD ", actividadsql);
+        //Log.e("------ LASTACTIVIDAD ", lastActividad);
         if (lastActividad.equalsIgnoreCase("VEHICULO")){
 
             if(actividadsql.equalsIgnoreCase("SINMOVIMIENTO")){
-                Log.e("------ VEHICULO - ", "SINMOVIMIENTO ");
+                //Log.e("------ VEHICULO - ", "SINMOVIMIENTO ");
                 if(contador == 0) {
                     contador = 4;
                     valido = "false";
@@ -433,7 +414,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         if(locationLastSend!=null){
-            Log.e("locationLastSend ", locationLastSend.toString());
+            //Log.e("locationLastSend ", locationLastSend.toString());
             deltaVelocidad = Math.abs(locationLastSend.getSpeed() - location.getSpeed());
             deltaAltitud = Math.abs(locationLastSend.getAltitude() - location.getAltitude());
 
@@ -520,24 +501,22 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             _TrackingSave_Id = trackingCRUD.insertAll(tracking);
         }catch (Exception e){}
 
-        Log.e("-- FLAG ", String.valueOf(flagSend));
-        Log.e("-- PRECISION ", String.valueOf(precision));
-        Log.e("-- CURRENT SEND ", formatoIso.format(currentSend.getTime()));
-        Log.e("-- CURRENT PREC ", formatoIso.format(currentPrecision.getTime()));
-
-        if(flagSend == true && now.after(currentPrecision)){
+        if(flagDelay==true){
             tracking.EstadoCoordenada = "DELAY";
-            Log.e("-- PRECISION ", "----- DELAY ------");
         } else {
             tracking.EstadoCoordenada = "OK";
         }
 
-
         if(valido =="true" && flagSend == true) {
+            Log.e("--------- ENVIO ", "-----------");
+            flagUpdate = true;
             flagSend = false;
+            flagDelay = false;
             precision = 20;
             mService.sendMessage(tracking);
             //consultaSinConexion();
+        } else {
+            flagUpdate = false;
         }
 
         return  true;
