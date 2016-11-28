@@ -91,6 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_FechaInicioIso + " TEXT,"
                 + Configuration.KEY_FechaSendIso + " TEXT,"
                 + Configuration.KEY_FechaAlarmaIso + " TEXT,"
+                + Configuration.KEY_FlagUpdate + " TEXT,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 
         String CREATE_TABLE_ASISTENCIA = "CREATE TABLE " + Asistencia.TABLE_ASISTENCIA + "("

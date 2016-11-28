@@ -842,6 +842,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             dba.execSQL("UPDATE Configuration SET EstaActivado = '"+estado+"'");
             dba.execSQL("UPDATE Configuration SET IntervaloTracking = '1'");
             dba.execSQL("UPDATE Configuration SET GuidDipositivo = '"+Id+"'");
+            dba.execSQL("UPDATE Configuration SET FlagUpdate = 'true'");
             dba.close();
 
         } catch (Exception e){}
