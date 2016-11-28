@@ -47,7 +47,6 @@ public class ServiceAccessSettings extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -56,7 +55,7 @@ public class ServiceAccessSettings extends Service {
         public void run() {
             try {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-                    printForegroundTask();
+                    //printForegroundTask();
                 } else {
                     getRunningKITKAT();
                 }
