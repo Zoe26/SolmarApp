@@ -25,7 +25,7 @@ public class Constants {
     public static final String ACTIVITY_UPDATES_REQUESTED_KEY = PACKAGE_NAME +
             ".ACTIVITY_UPDATES_REQUESTED";
 
-    public static final long DETECTION_INTERVAL_IN_MILLISECONDS = 1000;
+    public static final long DETECTION_INTERVAL_IN_MILLISECONDS = 0;
 
     public static String getActivityString(Context context, int detectedActivityType) {
         Resources resources = context.getResources();

@@ -360,7 +360,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(precision>100){precision = 95;}
 
         if(currentDate.after(currentPrecision)){
-            precision = precision + 5;
+            precision = precision + 10;
             Log.e("-- DELAY PRECISION ", "-- ");
         }
 
