@@ -79,11 +79,10 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
-
-        <receiver
-            android:name=".Tracking.Broadcast.AlarmLocation"
-            android:enabled="true"
-            android:exported="true" />
+        <activity
+            android:name=".View.Code.CodeBar"
+            android:noHistory="true"
+            android:screenOrientation="landscape" />
 
         <service
             android:name=".Tracking.Services.LocationFusedApi"
@@ -101,18 +100,25 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".View.Code.CodeBar"
-            android:noHistory="true"
-            android:screenOrientation="landscape" />
-
         <receiver
-            android:name=".SettingsDevice.Broadcast.BootSettings">
+            android:name=".Tracking.Broadcast.AlarmLocation"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver android:name=".SettingsDevice.Broadcast.BootSettings">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED">
-                    <category android:name="android.intent.category.HOME">
-                    </category>
+                    <category android:name="android.intent.category.HOME"></category>
                 </action>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".BravoPapa.BravoPapaReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
             </intent-filter>
         </receiver>
     </application>

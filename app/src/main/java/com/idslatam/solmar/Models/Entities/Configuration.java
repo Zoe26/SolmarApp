@@ -14,7 +14,8 @@ public class Configuration {
     public static final String KEY_NumeroCel = "NumeroCel";
     public static final String KEY_Token = "Token";
     public static final String KEY_EstadoAprobado = "EstadoAprobado";
-    public static final String KEY_OutApp = "OutApp";
+    public static final String KEY_BPFechaInicio = "BPFechaInicio";
+    public static final String KEY_BPFechaFin = "BPFechaFin";
     public static final String KEY_IntervaloTracking = "IntervaloTracking";
     public static final String KEY_AsistenciaId= "AsistenciaId";
     public static final String KEY_CodigoEmpleado= "CodigoEmpleado";
@@ -27,7 +28,6 @@ public class Configuration {
     public static final String KEY_FechaMarcacionBp = "FechaMarcacionBp";
     public static final String KEY_FechaLimite = "FechaLimite";
     public static final String KEY_IntervaloTrackingEmergencia = "IntervaloTrackingEmergencia";
-    public static final String KEY_OutPrecision = "OutPrecision";
     public static final String KEY_Precision = "Precision";
     public static final String KEY_ContadorLocation = "ContadorLocation";
     public static final String KEY_ContadorProvider = "ContadorProvider";
@@ -46,7 +46,8 @@ public class Configuration {
     public String EstaAcceso;
     public String NumeroCel;
     public String Token;
-    public String OutApp;
+    public String BPFechaInicio;
+    public String BPFechaFin;
     public String EstadoAprobado;
     public int IntervaloTracking;
     public String AsistenciaId;

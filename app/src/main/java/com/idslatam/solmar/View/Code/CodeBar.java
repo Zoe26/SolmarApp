@@ -3,6 +3,8 @@ package com.idslatam.solmar.View.Code;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
+import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Bienvenido;
 import com.idslatam.solmar.View.MenuPrincipal;
@@ -31,7 +34,7 @@ public class CodeBar extends Activity {
     Spinner spinner_tipo;
     Calendar currenCodeBar;
 
-    String valor,formato;
+    String valor,formato, NumeroCel, GuidDipositivo, CodigoEmpleado;
 
     protected String URL_API;
 
@@ -50,6 +53,7 @@ public class CodeBar extends Activity {
         valor = intent.getExtras().getString("epuzzle");
         formato = intent.getExtras().getString("format");
         currenCodeBar = Calendar.getInstance();
+
 
         spinner_tipo = (Spinner) findViewById(R.id.spinner_solgis);
 
@@ -80,11 +84,31 @@ public class CodeBar extends Activity {
     }
 
     public void enviarCode(View view) {
-        String tipo = spinner_tipo.getSelectedItem().toString();
+        int t = spinner_tipo.getSelectedItemPosition()+1;  //SelectedItem().toString();
         String fecha = formatoGuardar.format(currenCodeBar.getTime());
+        String tipo = String.valueOf(t);
 
-        new PostAsync().execute(tipo, valor, fecha, formato);
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, CodigoEmpleado FROM Configuration";
+            Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
+
+            if (cConfiguration.moveToFirst()) {
+                NumeroCel = cConfiguration.getString(cConfiguration.getColumnIndex("NumeroCel"));
+                GuidDipositivo = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
+                CodigoEmpleado = cConfiguration.getString(cConfiguration.getColumnIndex("CodigoEmpleado"));
+
+            }
+            cConfiguration.close();
+            dbConfiguration.close();
+
+        } catch (Exception e) {}
+
         Log.e("---! Send: TIPO "+tipo, " ! VALOR "+valor + " ! FECHA "+fecha+" ! FORMATO "+formato);
+
+        new PostAsync().execute(NumeroCel, GuidDipositivo, CodigoEmpleado, tipo, valor, fecha, formato);
 
     }
 
@@ -97,7 +121,7 @@ public class CodeBar extends Activity {
 
         private ProgressDialog pDialog;
 
-        private final String URL = URL_API.concat("api/dispositivo");
+        private final String URL = URL_API.concat("api/CodigoBarra");
         private static final String TAG_SUCCESS = "success";
         private static final String TAG_MESSAGE = "message";
 
@@ -118,10 +142,13 @@ public class CodeBar extends Activity {
 
                 HashMap<String, String> params = new HashMap<>();
 
-                params.put("Tipo", args[0]);
-                params.put("Valor", args[1]);
-                params.put("Fecha", args[2]);
-                params.put("Formato", args[3]);
+                params.put("Numero", args[0]);
+                params.put("DispositivoId", args[1]);
+                params.put("CodigoEmpleado", args[2]);
+                params.put("CodigoBarraTipoDocumentoID", args[3]);
+                params.put("Valor", args[4]);
+                params.put("Fecha", args[5]);
+                params.put("Formato", args[6]);
                 Log.d("request", "starting");
 
                 JSONObject json = jsonParser.makeHttpRequest(

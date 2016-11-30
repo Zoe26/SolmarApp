@@ -30,7 +30,6 @@ public class ConfigurationCrud {
         values.put(Configuration.KEY_GuidDipositivo, configuration.GuidDispositivo);
         values.put(Configuration.KEY_EstaAcceso, configuration.EstaAcceso);
         values.put(Configuration.KEY_NumeroCel, configuration.NumeroCel);
-        values.put(Configuration.KEY_OutPrecision, 0);
 
         long ConfigurationId = db.insert(Configuration.TABLE_CONFIGURATION, null, values);
         db.close();
@@ -46,7 +45,6 @@ public class ConfigurationCrud {
         values.put(Configuration.KEY_EstaAcceso, configuration.EstaAcceso);
         values.put(Configuration.KEY_GuidDipositivo, configuration.GuidDispositivo);
         values.put(Configuration.KEY_IntervaloTrackingSinConex, configuration.IntervaloTrackingSinConex);
-        values.put(Configuration.KEY_OutApp, configuration.OutApp);
         values.put(Configuration.KEY_IntervaloTracking, configuration.IntervaloTracking);
 
         db.update(Configuration.TABLE_CONFIGURATION, values, Configuration.KEY_ID_CONFIGURATION + "=" + configuration.ConfigurationId, null);
@@ -116,17 +114,6 @@ public class ConfigurationCrud {
 
     }
 
-    public void updateoutApp(Configuration configuration) {
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put(Configuration.KEY_OutApp, configuration.OutApp);
-
-        db.update(Configuration.TABLE_CONFIGURATION, values, Configuration.KEY_ID_CONFIGURATION + "=" + configuration.ConfigurationId, null);
-        db.close();
-
-    }
 
     public void updateReistalacion(Configuration configuration) {
 
