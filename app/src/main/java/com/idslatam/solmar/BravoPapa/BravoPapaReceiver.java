@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 
 import com.idslatam.solmar.Api.Http.Constants;
@@ -27,9 +28,9 @@ public class BravoPapaReceiver extends BroadcastReceiver {
 
     Context mContext;
 
-    int segIntervalo, vFirst, vLast;
+    int vFirst, vLast;
 
-    int i;
+    int i, prueA, prueB;
 
     String sCurrentLast;
 
@@ -68,7 +69,14 @@ public class BravoPapaReceiver extends BroadcastReceiver {
             c.close();
             sqlVolumen.close();
 
-        }catch (Exception e){}
+        }catch (Exception e){
+            Log.e("-- |Exception| ", e.getMessage());
+        }
+
+        if(vFirst == 0){
+            Log.e("-- |VOL| ", "");
+        }
+
 
         //IF DE PRIMER REGISTRO DE VOLUMEN
         if(vLast==0){
@@ -106,27 +114,15 @@ public class BravoPapaReceiver extends BroadcastReceiver {
             long diffMinutos =  Math.abs (diff/(1000));
             i = (int) diffMinutos;
 
-            Log.e("-- |DIF| ", String.valueOf(i));
-            if(i==4){
-                Log.e("********|SEND| ", "***|BP|********");
+            Log.e("-- |DIFERENCIA| ", String.valueOf(i));
+            if(i>=6){
                 i=0;
+                //currentLast = currentComparacion;
+                sendBP();
+                Log.e("********|SEND| ", "***|BP|********");
             }
         }
 
-
-/*
-        if(vFirst == 0){
-            currentLast = Calendar.getInstance();
-            try {
-                currentLast.setTime(formatoIso.parse(sCurrentLast));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            Log.e("-- |cLast| ", formatoIso.format(currentLast.getTime()));
-            Log.e("-- |cComp| ", formatoIso.format(currentComparacion.getTime()));
-        }
-*/
         //ACTUALIZAR VOLUMEN
         try {
             DBHelper dbHelperAlarm = new DBHelper(mContext);
@@ -138,8 +134,6 @@ public class BravoPapaReceiver extends BroadcastReceiver {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                Log.e("**** |UPDATE VOLUMEN| ", "****");
 
                 try {
                     DBHelper dbHelperAlarm = new DBHelper(mContext);
@@ -154,32 +148,40 @@ public class BravoPapaReceiver extends BroadcastReceiver {
 
     public void sendBP (){
 
+        try{
+
+            DBHelper dbHelperVolumen = new DBHelper(mContext);
+            SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
+            String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo FROM Configuration";
+            Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
+
+            if (c.moveToFirst()) {
+                Numero = c.getString(c.getColumnIndex("NumeroCel"));
+                Latitud = c.getString(c.getColumnIndex("Latitud"));
+                Longitud = c.getString(c.getColumnIndex("Longitud"));
+                Velocidad = "0";
+                DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
+            }
+
+            c.close();
+            sqlVolumen.close();
+
+        }catch (Exception e){
+            Log.e("-- |EXCEPTION | ", e.getMessage());
+        }
+
+        Calendar now = Calendar.getInstance();
+
         try {
+            FechaDispositivo = formatoGuardar.format(now.getTime());
+        } catch (Exception e){};
 
-            try{
-
-                DBHelper dbHelperVolumen = new DBHelper(mContext);
-                SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-                String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo FROM Configuration";
-                Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
-
-                if (c.moveToFirst()) {
-                    Numero = c.getString(c.getColumnIndex("NumeroCel"));
-                    Latitud = "-7,139408";//c.getString(c.getColumnIndex("Latitud"));
-                    Longitud = "-78.525768"; //c.getString(c.getColumnIndex("Longitud"));
-                    Velocidad = "0.0";
-                    DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
-                }
-                c.close();
-                sqlVolumen.close();
-
-            }catch (Exception e){}
-
-            Calendar now = Calendar.getInstance();
-
-            FechaDispositivo = formatoGuardar.format(now);
-
-        }catch (Exception e){}
+        Log.e("-- |Numero | ", Numero);
+        Log.e("-- |Latitud | ", Latitud);
+        Log.e("-- |Longitud | ", Longitud);
+        Log.e("-- |Velocidad | ", Velocidad);
+        Log.e("-- |FechaDispositivo | ", FechaDispositivo);
+        Log.e("-- |DispositivoId | ", DispositivoId);
 
         new PostAsync().execute(Numero, Latitud, Longitud, Velocidad, FechaDispositivo, DispositivoId);
 
@@ -190,7 +192,7 @@ public class BravoPapaReceiver extends BroadcastReceiver {
 
         JsonParser jsonParser = new JsonParser();
 
-        private final String URL = URL_API.concat("/api/BravoPapa");
+        private final String URL = URL_API.concat("api/BravoPapa");
 
         private static final String TAG_SUCCESS = "success";
         private static final String TAG_MESSAGE = "message";
@@ -202,19 +204,22 @@ public class BravoPapaReceiver extends BroadcastReceiver {
         @Override
         protected JSONObject doInBackground(String... args) {
 
+            Log.e("-- |URL | ", URL);
+
+
             try {
 
                 HashMap<String, String> params = new HashMap<>();
 
                 params.put("Numero", args[0]);
-                params.put("Latitud", args[1]);
-                params.put("Longitud", args[2]);
-                params.put("Velocidad", args[3]);
-                params.put("FechaDispositivo", args[4]);
+                params.put("FechaDispositivo", args[1]);
+                params.put("Latitud", args[2]);
+                params.put("Longitud", args[3]);
+                params.put("Velocidad", args[4]);
                 params.put("DispositivoId", args[5]);
 
                 Log.d("request", "starting");
-
+                Log.e("-- |POST | ", "ASINC");
                 JSONObject json = jsonParser.makeHttpRequest(URL, "POST", params);
 
                 if (json != null) {
@@ -233,6 +238,9 @@ public class BravoPapaReceiver extends BroadcastReceiver {
             int success = 0;
             String message = "";
             if (json != null) {
+
+                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(1000 * 3);
 
                 try {
                     success = json.getInt(TAG_SUCCESS);
