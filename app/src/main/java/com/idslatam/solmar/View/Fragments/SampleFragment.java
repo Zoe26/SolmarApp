@@ -1,13 +1,9 @@
 package com.idslatam.solmar.View.Fragments;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -24,13 +20,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.AlertCrud;
-import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,12 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,6 +82,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     int ValorTemporal;
     private static final float BEEP_VOLUME = 0.10f;
+
     public static SampleFragment newInstance(String text) {
         Bundle args = new Bundle();
         args.putString("", text);
@@ -431,8 +421,13 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         int minHoraActual = horaActual.get(Calendar.MINUTE);
         int minBotonActivo = horaIni.get(Calendar.MINUTE);
 
-        int difBoton = minBotonActivo - minHoraActual;
+        int segHoraActual = horaActual.get(Calendar.SECOND);
+        int segBotonActivo = horaIni.get(Calendar.SECOND);
 
+        int difBoton = minBotonActivo - minHoraActual;
+        int difseg = segHoraActual - segBotonActivo;
+
+        int difsegBoton = 59 - difseg;
         if(dia!=diaFin){
             flagMostrarFecha = true;
         }
@@ -470,7 +465,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } else {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
-            btnMarcacion.setText("Activaci\u00F3n en " + difBoton+ " min.");
+            btnMarcacion.setText(difBoton+ ":"+difsegBoton);
             btnMarcacion.setEnabled(false);
             btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
         }
@@ -987,7 +982,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         ValorTemporal = 0;
         //int Intervalo = tiempoEnvio; //Intervalo de tiempo para enviar Alertas.
 
-        if (minuto >= tiempoEnvio) {
+        if (minuto > tiempoEnvio) {
 
             int resto = minuto%tiempoEnvio;
 
@@ -1065,7 +1060,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         int ValorTemporal = 0;
         //int Intervalo = tiempoEnvio; //Intervalo de tiempo para enviar Alertas.
 
-        if (minuto >= tiempoEnvio) {
+        if (minuto > tiempoEnvio) {
             int resto = minuto%tiempoEnvio;
             ValorTemporal = tiempoEnvio-resto;
         } else {
@@ -1196,11 +1191,13 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        runnable.run();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        runnable.run();
     }
 
     @Override

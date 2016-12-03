@@ -271,7 +271,7 @@ public class MenuPrincipal extends  ActionBarActivity {
     public void showDialog() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setMessage("¿Est\u00e1 seguro que desea salir?");
+        builder.setMessage("\u00BFEst\u00e1 seguro que desea salir?");
 
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 
