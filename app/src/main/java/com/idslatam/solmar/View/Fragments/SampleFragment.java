@@ -428,6 +428,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         int difseg = segHoraActual - segBotonActivo;
 
         int difsegBoton = 59 - difseg;
+
         if(dia!=diaFin){
             flagMostrarFecha = true;
         }
@@ -465,7 +466,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } else {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
-            btnMarcacion.setText(difBoton+ ":"+difsegBoton);
+            if(difsegBoton>9){
+                btnMarcacion.setText(difBoton+ ":"+difsegBoton);
+            } else {
+                btnMarcacion.setText(difBoton+ ":0"+difsegBoton);
+            }
+
             btnMarcacion.setEnabled(false);
             btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
         }
