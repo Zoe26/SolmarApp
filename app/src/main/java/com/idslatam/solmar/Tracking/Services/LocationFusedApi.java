@@ -59,13 +59,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected GoogleApiClient mGoogleApiClient;
     protected LocationRequest mLocationRequest;
     Location locationLastSend = null;
-    Location locationForced = null;
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
-    String lastActividad=null, firstActividad=null;
-    Calendar currentIsoSend = null;
-    Calendar currentSend = null, currentForced=null;
-    Boolean flagSend = false, flagUpdate = false, flagDelay = false;
+    String lastActividad=null;
+    Calendar currentSend = null;
+    Boolean flagSend = false, flagDelay = false;
     int contador =0, intervalSend=0;
     int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0;
     protected double nivelBateria=0;
@@ -73,9 +71,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private boolean mBound = false;
 
-    String sFechaSend, sCurrendInicioIso, sCurrentSendIso, sFechaAlarmaIso, sFlagUpdate;
+    String sFlagUpdate, sFlagIsGuardar;
 
-    Calendar currentSend5, cCurrendInicioIso, cCurrentSendIso, cFechaAlarmaIso, currentPrecision;
+    Calendar currentPrecision;
 
     final Handler handler = new Handler();
 
@@ -337,7 +335,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, Actividad, FechaEjecucionAlarm, Precision FROM Configuration";
+            String selectQueryconfiguration = "SELECT NumeroCel, GuidDipositivo, Actividad, FechaEjecucionAlarm, Precision, FlagSave FROM Configuration";
             Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
             if (cConfiguration.moveToFirst()) {
@@ -345,6 +343,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 actividadsql = cConfiguration.getString(cConfiguration.getColumnIndex("Actividad"));
                 number = cConfiguration.getString(cConfiguration.getColumnIndex("NumeroCel"));
                 guidDispositivo = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
+                sFlagIsGuardar  = cConfiguration.getString(cConfiguration.getColumnIndex("FlagSave"));
 
                 if(sFlagUpdate.equalsIgnoreCase("true")){
                     precision = cConfiguration.getInt(cConfiguration.getColumnIndex("Precision"));
@@ -355,6 +354,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             dbConfiguration.close();
 
         } catch (Exception e) {}
+
+        if(sFlagIsGuardar == null) {sFlagIsGuardar = "false";}
 
         if(precision==0){precision=24;}
 
@@ -453,15 +454,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             //return null;
 
         }
-        /*
-        else {
-
-            locationLastSend = location;
-            if(contador == 0){
-                valido = "true";
-            }
-        }
-        */
 
         if(contador>0){
 
@@ -478,18 +470,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             contadorTest = 0;
             valido = "true";
         }
-        //***********
-//        if (currentDate.after(currentForced)){
-//            currentForced = currentSend;
-//            currentForced.add(Calendar.SECOND, 30);
-//            location = locationForced;
-//            Log.e("-- locationForced ", locationForced.toString());
-//        }
-        //***********
-
-//        Log.e("-- !! Contador Last ", String.valueOf(contador));
-
-        // y velocidades mayores a 14
 
         locationLastSend = location;
         lastActividad = actividadsql;
@@ -545,10 +525,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             tracking.Intervalo = "0";
         }
 
-        try {
-            _TrackingSave_Id = trackingCRUD.insertAll(tracking);
-            eliminarRegistro();
-        }catch (Exception e){}
+        if(sFlagIsGuardar.equalsIgnoreCase("true")){
+            try {
+
+                _TrackingSave_Id = trackingCRUD.insertAll(tracking);
+                eliminarRegistro();
+
+            }catch (Exception e){}
+        }
 
         if(valido =="true" && flagSend == true) {
 

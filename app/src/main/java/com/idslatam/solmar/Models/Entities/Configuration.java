@@ -39,6 +39,7 @@ public class Configuration {
     public static final String KEY_FechaSendIso = "FechaSendIso";
     public static final String KEY_FechaAlarmaIso = "FechaAlarmaIso";
     public static final String KEY_FlagUpdate = "FlagUpdate";
+    public static final String KEY_FlagSave = "FlagSave";
 
 
     public int ConfigurationId;

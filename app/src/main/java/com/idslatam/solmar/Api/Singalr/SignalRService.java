@@ -35,7 +35,7 @@ import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
  * Created by ronaldsalazar on 10/21/16.
  */
 
-public class SignalRService extends Service {
+public class  SignalRService extends Service {
     @Nullable
 
     private HubConnection mHubConnection;
@@ -43,7 +43,7 @@ public class SignalRService extends Service {
     private Handler mHandler; // to display Toast message
     private final IBinder mBinder = new LocalBinder(); // Binder given to client
     private int countConex=0, _Tracking_Id=0;
-    int intervalSend=0;
+    String sFlagIsGuardar;
     Context mContext;
     int pre=0;
 
@@ -153,12 +153,33 @@ public class SignalRService extends Service {
 
             try {
 
-                TrackingCrud trackingCRUD = new TrackingCrud(this);
-                marker.EstadoEnvio = "false";
-                marker.TrackingId = _Tracking_Id;
-                _Tracking_Id = trackingCRUD.insert(marker);
+                DBHelper dataBaseHelper = new DBHelper(this);
+                SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+                String selectQueryconfiguration = "SELECT FlagSave FROM Configuration";
+                Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
-            }catch (Exception e){}
+                if (cConfiguration.moveToFirst()) {
+                    sFlagIsGuardar  = cConfiguration.getString(cConfiguration.getColumnIndex("FlagSave"));
+                }
+                cConfiguration.close();
+                dbConfiguration.close();
+
+            } catch (Exception e) {}
+
+            if(sFlagIsGuardar == null) {sFlagIsGuardar = "false";}
+
+            if(sFlagIsGuardar.equalsIgnoreCase("false")) {
+
+                try {
+
+                    TrackingCrud trackingCRUD = new TrackingCrud(this);
+                    marker.EstadoEnvio = "false";
+                    marker.TrackingId = _Tracking_Id;
+                    _Tracking_Id = trackingCRUD.insert(marker);
+
+                }catch (Exception e){}
+
+            }
         }
     }
 
