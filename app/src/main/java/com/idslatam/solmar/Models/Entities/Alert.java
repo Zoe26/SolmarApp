@@ -9,7 +9,7 @@ public class Alert {
 
     // Labels Table Columns names
     public static final String KEY_ID_ALERT = "AlertId";
-    public static final String KEY_NumeroA = "Numero";
+    public static final String KEY_NumeroA = "NumeroCel";
     public static final String KEY_FechaMarcacion = "FechaMarcacion";
     public static final String KEY_FechaEsperada = "FechaEsperada";
     public static final String KEY_FechaProxima = "FechaProxima";

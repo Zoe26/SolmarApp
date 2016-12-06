@@ -143,7 +143,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 Log.e("--- runnable ", "Exception " + e.getMessage());
             }
 
-            handler.postDelayed(runnable, 500);
+            handler.postDelayed(runnable, 1000);
         }
     };
 

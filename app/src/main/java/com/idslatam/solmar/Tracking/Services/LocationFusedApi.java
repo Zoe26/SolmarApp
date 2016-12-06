@@ -628,7 +628,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbN = dataBaseHelper.getWritableDatabase();
-            String selectQueryBuscaN = "SELECT Numero FROM Tracking WHERE EstadoEnvio = 'false'";
+            String selectQueryBuscaN = "SELECT NumeroCel FROM Tracking WHERE EstadoEnvio = 'false'";
             Cursor cbuscaN = dbN.rawQuery(selectQueryBuscaN, new String[]{}, null);
             int contador = cbuscaN.getCount();
             cbuscaN.close();
@@ -654,7 +654,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
-            String selectQuery = "SELECT TrackingId, Numero, DispositivoId, FechaCelular, Latitud, Longitud, EstadoCoordenada, " +
+            String selectQuery = "SELECT TrackingId, NumeroCel, DispositivoId, FechaCelular, Latitud, Longitud, EstadoCoordenada, " +
                     "OrigenCoordenada, Velocidad, Bateria, Precision, SenialCelular, GpsHabilitado, WifiHabilitado, " +
                     "DatosHabilitado, ModeloEquipo, Imei, VersionApp, FechaAlarma, Time, ElapsedRealtimeNanos, " +
                     "Altitude, Bearing, Extras, Classx, Actividad, Valido, Intervalo, EstadoEnvio FROM Tracking WHERE EstadoEnvio = 'false'";
@@ -665,7 +665,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
                     _TrackingUpdateRee_Id = c.getInt(c.getColumnIndex("TrackingId"));
 
-                    trackingPos.Numero = c.getString(c.getColumnIndex("Numero"));
+                    trackingPos.Numero = c.getString(c.getColumnIndex("NumeroCel"));
                     trackingPos.DispositivoId = c.getString(c.getColumnIndex("DispositivoId"));
                     trackingPos.FechaCelular = c.getString(c.getColumnIndex("FechaCelular"));
                     trackingPos.Latitud = c.getString(c.getColumnIndex("Latitud"));
@@ -764,7 +764,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             String fechaActual = fchActual.format(new Date());
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-            db.execSQL("DELETE FROM Tracking WHERE FechaIso < datetime('"+fechaActual+"','-120 minutes')");
+            db.execSQL("DELETE FROM Tracking WHERE FechaIso < datetime('"+fechaActual+"','-360 minutes')");
             db.close();
 
         }catch (Exception e){}

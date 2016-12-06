@@ -11,7 +11,7 @@ public class Tracking {
     public static final String TABLE = "Tracking";
 
     public static final String KEY_ID = "TrackingId";
-    public static final String KEY_Numero = "Numero";
+    public static final String KEY_Numero = "NumeroCel";
     public static final String KEY_DispositivoId = "DispositivoId";
     public static final String KEY_FechaCelular = "FechaCelular";
     public static final String KEY_Latitud = "Latitud";
