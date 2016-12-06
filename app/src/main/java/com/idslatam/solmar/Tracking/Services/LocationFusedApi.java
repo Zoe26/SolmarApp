@@ -48,6 +48,7 @@ import com.idslatam.solmar.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class LocationFusedApi extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -546,6 +547,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         try {
             _TrackingSave_Id = trackingCRUD.insertAll(tracking);
+            eliminarRegistro();
         }catch (Exception e){}
 
         if(valido =="true" && flagSend == true) {
@@ -751,6 +753,22 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             MobileHabilitado = "0";
             return true;
         }
+    }
+
+
+    public void eliminarRegistro(){
+
+        try {
+
+            SimpleDateFormat fchActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String fechaActual = fchActual.format(new Date());
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("DELETE FROM Tracking WHERE FechaIso < datetime('"+fechaActual+"','-120 minutes')");
+            db.close();
+
+        }catch (Exception e){}
+
     }
 
     // FIN DE METODOS PARA ACCESO A CONFIGURACIONES **************************************************************************

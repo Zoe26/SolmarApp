@@ -143,7 +143,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 Log.e("--- runnable ", "Exception " + e.getMessage());
             }
 
-            handler.postDelayed(runnable, 100);
+            handler.postDelayed(runnable, 500);
         }
     };
 
@@ -424,7 +424,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         int segHoraActual = horaActual.get(Calendar.SECOND);
         int segBotonActivo = horaIni.get(Calendar.SECOND);
 
-        int difBoton = Math.abs(minBotonActivo - minHoraActual);
+        int difBoton = Math.abs(minBotonActivo - minHoraActual)
+                ;
         int difseg = segHoraActual - segBotonActivo;
 
         int difsegBoton = 59 - difseg;
