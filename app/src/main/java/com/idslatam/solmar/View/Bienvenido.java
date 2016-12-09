@@ -37,6 +37,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -59,6 +61,10 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -133,6 +139,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     String numero;
 
     String cNumero, cGuidDispositivo, cToken, cOutApp, cIntervaloTracking, cIntervaloAlert, cMargenAlert;
+    boolean flagIsFused = false, flagIsPlaySevice = true, flagIsUpdate = false;
 
     int buscaN;
     int busca;
@@ -148,6 +155,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     String estado, RequiereNumero, Id;
     TextView txtApro;
 
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final int MY_READ_PHONE_STATE = 1 ;
     private static final int MY_ACCESS_FINE_LOCATION = 2 ;
     private static final int MY_ACCESS_COARSE_LOCATION = 3 ;
@@ -192,7 +200,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         //*********************************************************************************************************************
-
 
 
 
@@ -551,9 +558,48 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         Log.e("--FABRCANTE ", String.valueOf(fabricante));
         Log.e("--VERSION ", String.valueOf(versionO));
 
-        new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
+        if (!checkPlayServices()) {
+            flagIsPlaySevice = false;
+            //Toast.makeText(this, "Instalar PlayStore", Toast.LENGTH_SHORT).show();
+        }
+
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if(status != ConnectionResult.SUCCESS) {
+            if(status == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED){
+                DialgActualizarPlaySerice();
+                //Toast.makeText(this,"Por favor actualizar su google play service",Toast.LENGTH_LONG).show();
+            }
+            else {
+                DialgDescargarPlaySerice();
+                //Toast.makeText(this, "Por favor descargar google play service", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            flagIsUpdate = true;
+        }
+
+        if (flagIsPlaySevice == true && flagIsUpdate == true){
+            new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
+        }
+
+        //new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
 
 
+    }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                //Toast.makeText(this, "Play store NO Soportado", Toast.LENGTH_LONG).show();
+                //finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -750,6 +796,31 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) { }
 
+    public void DialgDescargarPlaySerice(){
+
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("Intalar Play Services");
+            builder.setMessage("Por favor instale Play Services para un optimo funcionamiento del aplicativo");
+            builder.setPositiveButton("Aceptar", null);
+            builder.show();
+        } catch (Exception e){}
+    }
+
+    public void DialgActualizarPlaySerice(){
+
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("Actualizar Play Services");
+            builder.setMessage("Por favor actualice su Play Services para un optimo funcionamiento del aplicativo");
+            builder.setPositiveButton("Aceptar", null);
+            builder.show();
+        } catch (Exception e){}
+    }
     //----------------------------------------------------------------------------------------------
     class PostAsync extends AsyncTask<String, String, JSONObject> {
         JsonParser jsonParser = new JsonParser();
@@ -932,6 +1003,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
 
-        Toast.makeText(this, "Activando Datos..", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Activando Datos..", Toast.LENGTH_SHORT).show();
     }
 }
