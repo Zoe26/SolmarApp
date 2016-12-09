@@ -178,7 +178,6 @@ public class  SignalRService extends Service {
                     _Tracking_Id = trackingCRUD.insert(marker);
 
                 }catch (Exception e){}
-
             }
         }
     }

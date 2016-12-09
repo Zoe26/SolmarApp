@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -30,6 +31,9 @@ import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
 import com.idslatam.solmar.View.Bienvenido;
 import com.idslatam.solmar.View.Login;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -57,6 +61,20 @@ public class AlarmLocation extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         this.mContext = context;
+
+        try {
+            setMobileDataEnabled(mContext, true);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
 
         // INTENTI AL SERVICIO ----------------------------------------------------------------------
         Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
@@ -254,4 +272,21 @@ public class AlarmLocation extends BroadcastReceiver {
             return true;
         }
     }
+
+    private void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        final ConnectivityManager conman = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final Class conmanClass = Class.forName(conman.getClass().getName());
+        final Field connectivityManagerField = conmanClass.getDeclaredField("mService");
+        connectivityManagerField.setAccessible(true);
+        final Object connectivityManager = connectivityManagerField.get(conman);
+        final Class connectivityManagerClass =  Class.forName(connectivityManager.getClass().getName());
+        final Method setMobileDataEnabledMethod = connectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+        setMobileDataEnabledMethod.setAccessible(true);
+
+        setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
+
+        Log.e("--| ACTIVANDO ","DATOS.....");
+        //Toast.makeText(this, "Activando Datos..", Toast.LENGTH_SHORT).show();
+    }
+
 }
