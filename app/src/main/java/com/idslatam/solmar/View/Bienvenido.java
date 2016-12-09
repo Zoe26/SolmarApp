@@ -318,6 +318,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                             // All location settings are satisfied. The client can
                             // initialize location
                             // requests here.
+                            flagIsFused = true;
                             Log.e("Request SUCCESS ",String.valueOf(status));
                             break;
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -534,30 +535,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         } catch (Exception e) {}
 
 
-        //validacion = "true";
-        // ************************************* VALIDACIONES **************************************
-        Log.e("--! busca " + String.valueOf(busca), "! validacion " + validacion);
-        if(busca!=0 && validacion.equals("true")){
-            startActivity(new Intent(getBaseContext(), Login.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-            finish();
-
-            return;
-        }
-
-        if(validacion=="true"){
-            txtApro.setVisibility(View.INVISIBLE);
-        }
-
-        Log.e("--NUMERO ", String.valueOf(numero));
-        Log.e("--ID ", String.valueOf(androidId));
-        Log.e("--IMEI ", String.valueOf(imei));
-        Log.e("--MODELO ", String.valueOf(modelo));
-        Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
-        Log.e("--SERIE SIM ", String.valueOf(serieSIM));
-        Log.e("--FABRCANTE ", String.valueOf(fabricante));
-        Log.e("--VERSION ", String.valueOf(versionO));
-
         if (!checkPlayServices()) {
             flagIsPlaySevice = false;
             //Toast.makeText(this, "Instalar PlayStore", Toast.LENGTH_SHORT).show();
@@ -576,6 +553,35 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         } else {
             flagIsUpdate = true;
         }
+
+        //validacion = "true";
+        // ************************************* VALIDACIONES **************************************
+        Log.e("--! busca " + String.valueOf(busca), "! validacion " + validacion);
+
+        if (flagIsPlaySevice == true && flagIsUpdate == true){
+            if(busca!=0 && validacion.equals("true")){
+                startActivity(new Intent(getBaseContext(), Login.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                finish();
+
+                return;
+            }
+        }
+
+        if(validacion=="true"){
+            txtApro.setVisibility(View.INVISIBLE);
+        }
+
+        Log.e("--NUMERO ", String.valueOf(numero));
+        Log.e("--ID ", String.valueOf(androidId));
+        Log.e("--IMEI ", String.valueOf(imei));
+        Log.e("--MODELO ", String.valueOf(modelo));
+        Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
+        Log.e("--SERIE SIM ", String.valueOf(serieSIM));
+        Log.e("--FABRCANTE ", String.valueOf(fabricante));
+        Log.e("--VERSION ", String.valueOf(versionO));
+
+        Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
 
         if (flagIsPlaySevice == true && flagIsUpdate == true){
             new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
