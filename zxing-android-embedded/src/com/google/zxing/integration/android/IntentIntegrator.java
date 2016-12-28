@@ -22,6 +22,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.CaptureActivity;

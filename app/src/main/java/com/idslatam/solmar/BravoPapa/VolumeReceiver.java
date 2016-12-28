@@ -75,7 +75,7 @@ public class VolumeReceiver extends BroadcastReceiver {
                 dba.close();
             } catch (Exception e){}
 
-            return;
+            //return;
         }
 
 
