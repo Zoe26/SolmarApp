@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 public class VolumeReceiver extends BroadcastReceiver {
 
-    int vFirst, contador = 0;
+    int vFirst, vLast, contador = 0;
     Context mContext;
 
     String Estado = null, DispositivoId;
@@ -42,6 +42,45 @@ public class VolumeReceiver extends BroadcastReceiver {
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
+
+        vFirst = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
+        Log.e("--- VOLUME", String.valueOf(vFirst));
+
+
+        try{
+
+            DBHelper dbHelperVolumen = new DBHelper(mContext);
+            SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
+            String selectQuery = "SELECT NivelVolumen FROM Configuration";
+            Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
+
+            if (c.moveToFirst()) {
+                vLast = c.getInt(c.getColumnIndex("NivelVolumen"));
+            }
+
+            c.close();
+            sqlVolumen.close();
+
+        }catch (Exception e){
+            Log.e("-- |Exception| ", e.getMessage());
+        }
+
+        //IF DE PRIMER REGISTRO DE VOLUMEN
+        if(vLast==0){
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+vFirst+"'");
+                dba.close();
+            } catch (Exception e){}
+
+            return;
+        }
+
+
+        //*******************************************************************************
+
 
 
         try{
@@ -61,11 +100,18 @@ public class VolumeReceiver extends BroadcastReceiver {
             Log.e("-- |Exception| ", e.getMessage());
         }
 
-        contador ++;
+        Log.e("-- |vFirst| ", String.valueOf(vFirst));
+        Log.e("-- |vLast| ", String.valueOf(vLast));
 
-        Log.e("---", "onReceive " + String.valueOf(contador));
-        vFirst = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
-        Log.e("--- VOLUME", String.valueOf(vFirst));
+        if(vFirst < vLast){
+            contador ++;
+            Log.e("-- |contador| ", String.valueOf(contador));
+
+        } else if (vFirst == 0) {
+            contador ++;
+            Log.e("--- VOLUME = 0 ", String.valueOf(vFirst));
+            Log.e("-- |contador| ", String.valueOf(contador));
+        }
 
         try {
             DBHelper dbHelperAlarm = new DBHelper(mContext);
@@ -75,35 +121,43 @@ public class VolumeReceiver extends BroadcastReceiver {
         } catch (Exception e){}
 
 
-        if(contador>=3){
+        if(contador>=2){
 
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
-                    try {
-                        DBHelper dbHelperAlarm = new DBHelper(mContext);
-                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                        dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
-                        dba.close();
-                    } catch (Exception e){}
+                    resetCuenta();
+
                 }
             }, 1000*3);
         }
 
         if(contador==5){
 
-            try {
-                DBHelper dbHelperAlarm = new DBHelper(mContext);
-                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
-                dba.close();
-            } catch (Exception e){}
+            resetCuenta();
 
-            //currentLast = currentComparacion;
             sendBP();
             Log.e("********|SEND| ", "***|BP|********");
         }
+
+        try {
+            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+vFirst+"'");
+            dba.close();
+        } catch (Exception e){}
+    }
+
+    public void resetCuenta(){
+
+        try {
+            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+            dba.close();
+        } catch (Exception e){}
+
     }
 
     public void sendBP (){
