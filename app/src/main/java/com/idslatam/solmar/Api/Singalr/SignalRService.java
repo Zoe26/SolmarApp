@@ -192,7 +192,7 @@ public class  SignalRService extends Service {
             }
         };*/
 
-        String serverUrl = "http://solmar.azurewebsites.net/";
+        String serverUrl = "http://190.116.178.163:85/webapi/";
         mHubConnection = new HubConnection(serverUrl);
         //mHubConnection.setCredentials(credentials);
         String SERVER_HUB_CHAT = "trackingHub";
