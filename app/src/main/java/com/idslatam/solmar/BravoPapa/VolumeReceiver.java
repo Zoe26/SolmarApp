@@ -97,7 +97,6 @@ public class VolumeReceiver extends BroadcastReceiver {
             sqlVolumen.close();
 
         }catch (Exception e){
-            Log.e("-- |Exception| ", e.getMessage());
         }
 
         Log.e("-- |vFirst| ", String.valueOf(vFirst));
