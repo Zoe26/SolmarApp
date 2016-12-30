@@ -510,7 +510,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
-        tracking.FechaCelular = formatoGuardar.format(currentDate.getTime());
+        tracking.FechaCelular = formatoGuardar.format(location.getTime());
         tracking.Latitud = Double.toString(location.getLatitude());
         tracking.Longitud = Double.toString(location.getLongitude());
         if(flagDelay==true){

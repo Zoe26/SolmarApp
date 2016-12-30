@@ -9,7 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -24,8 +28,11 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import org.apache.http.entity.mime.content.FileBody;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
+import com.idslatam.solmar.Image.AndroidMultiPartEntity;
+import com.idslatam.solmar.Image.ScalingUtilities;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Pruebas.Fragments.AdapterAlrmTrackF;
 import com.idslatam.solmar.Pruebas.Fragments.AdapterTrackingF;
@@ -41,12 +48,23 @@ import com.roughike.bottombar.OnTabSelectedListener;
 
 import com.idslatam.solmar.R;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MenuPrincipal extends  ActionBarActivity {
     private BottomBar bottomBar;
@@ -55,6 +73,13 @@ public class MenuPrincipal extends  ActionBarActivity {
     String fotocheckCod;
     Bundle b;
     Context mContext;
+
+    private Uri fileUri;
+    private String filePath = null;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
+    long totalSize = 0;
+    String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,17 +144,21 @@ public class MenuPrincipal extends  ActionBarActivity {
             public void onItemSelected(int position) {
                 FragmentManager fragmentManager = getFragmentManager();
                 switch (position) {
+
+                    case 1:
+                        // Item 1 Selected
+                        try {
+                            captureImage();
+                            bottomBar.setDefaultTabPosition(0);
+                        } catch (Exception e){}
+                        break;
+
                     case 4:
                         // Item 4 Selected
-
                         try {
-
                             scanBarcode();
                             bottomBar.setDefaultTabPosition(0);
-
                         } catch (Exception e){}
-
-
                         break;
 
                 }
@@ -531,10 +560,301 @@ public class MenuPrincipal extends  ActionBarActivity {
         }
     }
 
+    //****************************************************************************
+    //IMAGE
+    public void captureImage() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+        // start the image capture Intent
+        startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // save file url in bundle as it will be null on screen orientation
+        // changes
+        outState.putParcelable("file_uri", fileUri);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // get the file url
+        fileUri = savedInstanceState.getParcelable("file_uri");
+    }
+
+
+    private void launchUploadActivity(boolean isImage){
+        filePath = fileUri.getPath();
+
+//        Intent i = new Intent(mainPerfil.this, UploadActivity.class);
+//        i.putExtra("filePath", fileUri.getPath());
+//        i.putExtra("isImage", isImage);
+//        startActivity(i);
+        new UploadFileToServer().execute();
+    }
+
+    /**
+     * Creating file uri to store image/video
+     */
+    public Uri getOutputMediaFileUri(int type) {
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /**
+     * returning image / video
+     */
+    private static File getOutputMediaFile(int type) {
+
+        // External sdcard location
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Fotos Solgis");
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.d("", "Oops! Failed create "+ "Fotos Solgis" + " directory");
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(new Date());
+        File mediaFile;
+
+        if (type == MEDIA_TYPE_IMAGE) {
+
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "SOLGIS" + timeStamp + ".jpg");
+
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
+
+    //-- METODO QUE ENVIA IMAGEN--------------------------------------------------------------------
+
+    private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
+
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+
+            dialog = new ProgressDialog(MenuPrincipal.this);
+            dialog.setMessage("Enviando Foto...");
+            dialog.setIndeterminate(false);
+            dialog.setCancelable(false);
+            dialog.show();
+
+            //do initialization of required objects objects here
+        };
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {}
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return uploadFile();
+        }
+
+        @SuppressWarnings("deprecation")
+        private String uploadFile() {
+            String responseString = null;
+
+            final String URL = URL_API.concat("/api/Image/file");
+
+            try{
+
+                DBHelper dbHelperVolumen = new DBHelper(mContext);
+                SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
+                String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo FROM Configuration";
+                Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
+
+                if (c.moveToFirst()) {
+                    NumeroFile = c.getString(c.getColumnIndex("NumeroCel"));
+                    LatitudFile = c.getString(c.getColumnIndex("Latitud"));
+                    LongitudFile = c.getString(c.getColumnIndex("Longitud"));
+                    DispositivoIdFile = c.getString(c.getColumnIndex("GuidDipositivo"));
+                }
+
+                c.close();
+                sqlVolumen.close();
+
+            }catch (Exception e){
+                Log.e("-- |EXCEPTION | ", e.getMessage());
+            }
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(URL);
+
+            try {
+                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
+                        new AndroidMultiPartEntity.ProgressListener() {
+
+                            @Override
+                            public void transferred(long num) {
+                                publishProgress((int) ((num / (float) totalSize) * 100));
+                            }
+                        });
+
+                filePath = fileUri.getPath();
+
+                Log.e(" filePath ", String.valueOf(filePath));
+
+                String filePathAux = decodeFile(filePath,660, 880);
+                Log.e(" filePathAux ", String.valueOf(filePathAux));
+
+                File sourceFile = new File(filePathAux);
+
+                entity.addPart("file", new FileBody(sourceFile));
+                entity.addPart("Id", new StringBody(DispositivoIdFile));
+                entity.addPart("Latitud", new StringBody(LatitudFile));
+                entity.addPart("Longitud", new StringBody(LongitudFile));
+                entity.addPart("Longitud", new StringBody(NumeroFile));
+
+                Log.e(" Entity---- ", String.valueOf(entity));
+                httppost.setEntity(entity);
+
+                // Making server call
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity r_entity = response.getEntity();
+
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == 200) {
+                    // Server response
+                    responseString = EntityUtils.toString(r_entity);
+                    Log.e(" responseString ", String.valueOf(responseString));
+                } else {
+                    responseString = "Error de Servidor! Http Status Code: "
+                            + statusCode;
+                }
+
+            } catch (Exception e) {
+                responseString = e.toString();
+            }
+
+            return responseString;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            try {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+            }catch (Exception e){}
+
+            Log.e("", "Response from server: " + result);
+
+            showAlert(result);
+
+            super.onPostExecute(result);
+        }
+    }
+
+    private void showAlert(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message).setTitle("Respuesta de Servidor")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // do nothing
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String decodeFile(String path,int DESIREDWIDTH, int DESIREDHEIGHT) {
+        String strMyImagePath = null;
+        Bitmap scaledBitmap = null;
+
+        try {
+            // Part 1: Decode image
+            Bitmap unscaledBitmap = ScalingUtilities.decodeFile(path, DESIREDWIDTH, DESIREDHEIGHT, ScalingUtilities.ScalingLogic.FIT);
+
+            if (!(unscaledBitmap.getWidth() <= DESIREDWIDTH && unscaledBitmap.getHeight() <= DESIREDHEIGHT)) {
+                // Part 2: Scale image
+                scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, DESIREDWIDTH, DESIREDHEIGHT, ScalingUtilities.ScalingLogic.FIT);
+            } else {
+                unscaledBitmap.recycle();
+                return path;
+            }
+
+            // Store to tmp file
+
+            String extr = Environment.getExternalStorageDirectory().toString();
+            File mFolder = new File(extr + "/TMMFOLDER");
+            if (!mFolder.exists()) {
+                mFolder.mkdir();
+            }
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+
+            String s = "tmp_"+timeStamp+".png";
+
+            File f = new File(mFolder.getAbsolutePath(), s);
+
+            strMyImagePath = f.getAbsolutePath();
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(f);
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 20, fos);
+                fos.flush();
+                fos.close();
+            } catch (FileNotFoundException e) {
+
+                e.printStackTrace();
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+
+            scaledBitmap.recycle();
+        } catch (Throwable e) {
+        }
+
+        if (strMyImagePath == null) {
+            return path;
+        }
+        return strMyImagePath;
+
+    }
+
     //**********************************************************************************************
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        // if the result is capturing Image
+        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                launchUploadActivity(true);
+
+
+            } else if (resultCode == RESULT_CANCELED) {
+
+                // user cancelled Image capture
+                Toast.makeText(getApplicationContext(),
+                        "Se canceló la captura de imagen", Toast.LENGTH_SHORT)
+                        .show();
+
+            } else {
+                // failed to capture image
+                Toast.makeText(getApplicationContext(),
+                        "Lo sentimos! Falló captura de imagen", Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+        }
+
         if(result != null) {
             if(result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();

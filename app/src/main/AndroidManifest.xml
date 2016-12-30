@@ -76,7 +76,8 @@
             android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".View.MenuPrincipal"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+         </activity>
         <activity
             android:name=".View.Settings.AccessSettings"
             android:noHistory="true"
