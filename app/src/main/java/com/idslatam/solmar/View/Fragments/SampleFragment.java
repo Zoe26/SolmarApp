@@ -172,8 +172,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         } catch (Exception e) {}
 
-        tiempoGuardado = 5;
-
         if(tiempoGuardado == 0){
             // Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
             return  false;
@@ -1060,7 +1058,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         }catch (Exception e){}
 
-        tiempoEnvio = 5;
         Log.e("ALTERN tiempoEnvio : ", String.valueOf(tiempoEnvio));
 
         choraEsperadaG = Calendar.getInstance();//Fecha Actual
