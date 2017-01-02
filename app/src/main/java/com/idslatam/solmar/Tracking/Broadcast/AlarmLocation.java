@@ -160,7 +160,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         if(intervalo == 0){ intervalo = 1;}
 
-        Log.e("-- INTERVALO ALARM ", String.valueOf(intervalo));
+        Log.e("-- PRUEBA INT ALARM ", String.valueOf(intervalo));
 
         if(intervalo < 2){
 
@@ -248,6 +248,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         } catch (Exception e) {}
 
+        Log.e("-- PRUEBA ALARM ", formatoIso.format(currentDate.getTime()));
 
         AlarmTrackCrud alarmTrackCrud = new AlarmTrackCrud(mContext);
         AlarmTrack alarmTrack = new AlarmTrack();

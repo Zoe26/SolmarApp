@@ -60,8 +60,8 @@ public class AlertCrud {
         values.put(Alert.KEY_FechaProxima, alert.FechaProxima);
         values.put(Alert.KEY_FlagTiempo, alert.FlagTiempo);
         values.put(Alert.KEY_MargenAceptado, alert.MargenAceptado);
-        values.put(Alert.KEY_LatitudA, alert.LatitudA);
-        values.put(Alert.KEY_LongitudA, alert.LongitudA);
+        //values.put(Alert.KEY_LatitudA, alert.LatitudA);
+        //values.put(Alert.KEY_LongitudA, alert.LongitudA);
         values.put(Alert.KEY_EstadoA, alert.EstadoA);
         values.put(Alert.KEY_EstadoBoton, alert.EstadoBoton);
         values.put(Alert.KEY_FechaEsperadaIso, alert.FechaEsperadaIso);

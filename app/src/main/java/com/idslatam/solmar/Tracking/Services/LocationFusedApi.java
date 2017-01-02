@@ -510,7 +510,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         tracking.Numero = number;
         tracking.DispositivoId = guidDispositivo;
-        tracking.FechaCelular = formatoGuardar.format(location.getTime());
+        tracking.FechaCelular = formatoGuardar.format(currentDate.getTime());
+        Log.e("-- FechaCelular Service", formatoGuardar.format(currentDate.getTime()));
         tracking.Latitud = Double.toString(location.getLatitude());
         tracking.Longitud = Double.toString(location.getLongitude());
         if(flagDelay==true){
@@ -547,13 +548,15 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             tracking.Intervalo = "0";
         }
 
-        if(sFlagIsGuardar.equalsIgnoreCase("true")){
+        if(valido =="true") {
+
             try {
 
                 _TrackingSave_Id = trackingCRUD.insertAll(tracking);
                 eliminarRegistro();
 
             }catch (Exception e){}
+
         }
 
         if(valido =="true" && flagSend == true) {
@@ -582,7 +585,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
 
             mService.sendMessage(tracking);
-            //consultaSinConexion();
+            consultaSinConexion();
 
             try {
 
@@ -699,7 +702,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                     trackingPos.Valido = c.getString(c.getColumnIndex("Valido"));
                     trackingPos.Intervalo = c.getString(c.getColumnIndex("Intervalo"));
 
-                    //deleteTracking(_TrackingUpdateRee_Id);
+                    deleteTracking(_TrackingUpdateRee_Id);
 
                     mService.sendMessage(trackingPos);
 

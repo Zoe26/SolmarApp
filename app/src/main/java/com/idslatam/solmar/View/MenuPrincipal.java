@@ -716,7 +716,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 entity.addPart("Id", new StringBody(DispositivoIdFile));
                 entity.addPart("Latitud", new StringBody(LatitudFile));
                 entity.addPart("Longitud", new StringBody(LongitudFile));
-                entity.addPart("Longitud", new StringBody(NumeroFile));
+                entity.addPart("Numero", new StringBody(NumeroFile));
 
                 Log.e(" Entity---- ", String.valueOf(entity));
                 httppost.setEntity(entity);
