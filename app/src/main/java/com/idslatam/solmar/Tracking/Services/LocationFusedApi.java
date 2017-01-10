@@ -634,6 +634,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     public Boolean consultaSinConexion(){
 
+        Log.e("-- COSULTA SIN ", "--|CONEXION|--");
+
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbN = dataBaseHelper.getWritableDatabase();
@@ -643,8 +645,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             cbuscaN.close();
             dbN.close();
 
+            Log.e("-- POR SEND ", String.valueOf(contador));
+
             if (contador>0) {
                 sendSave();
+                Log.e("-- if ", "--||--");
             }
 
         }catch (Exception e){
@@ -657,7 +662,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public void sendSave() {
 
         int i =0;
-        Log.e("--! Reenvio ", "sendSave");
+        Log.e("--|| Reenvio ", "sendSave ||");
 
         try {
 

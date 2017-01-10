@@ -99,6 +99,7 @@ public class  SignalRService extends Service {
 //        String SERVER_METHOD_SEND = "addMarker";
 //        mHubProxy.invoke(SERVER_METHOD_SEND, marker);
 //        Log.e("Tracking", marker.Longitud.toString() );
+
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
@@ -107,9 +108,16 @@ public class  SignalRService extends Service {
             db.close();
         } catch (Exception e) {}
 
-        Log.e("SimpleSignalR", mHubConnection.getState().toString());
+        Log.e("|SimpleSignalR state|", mHubConnection.getState().toString());
 
-        if (mHubConnection.getState().toString() == "Disconnected"){
+        if (mHubConnection.getState().toString() == "Reconnecting"){
+            try {
+                mHubConnection.stop();
+                Log.e("|SimpleSignalR|", mHubConnection.getState().toString());
+            } catch (Exception e) {}
+        }
+
+        if (mHubConnection.getState().toString() != "Connected"){
             try {
                 startSignalR();
             } catch (Exception e) {}
@@ -149,7 +157,7 @@ public class  SignalRService extends Service {
                 }
             });
 
-        } else if(mHubConnection.getState().toString() == "Disconnected"){
+        } else if(mHubConnection.getState().toString() != "Connected"){
 
             try {
 
