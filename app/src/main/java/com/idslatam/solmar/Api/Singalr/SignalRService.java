@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -110,16 +111,11 @@ public class  SignalRService extends Service {
 
         Log.e("|SimpleSignalR state|", mHubConnection.getState().toString());
 
-        if (mHubConnection.getState().toString() == "Reconnecting"){
-            try {
-                mHubConnection.stop();
-                Log.e("|SimpleSignalR|", mHubConnection.getState().toString());
-            } catch (Exception e) {}
-        }
 
         if (mHubConnection.getState().toString() != "Connected"){
             try {
-                startSignalR();
+                //startSignalR();
+                new reconnectPulling().execute();
             } catch (Exception e) {}
         }
 
@@ -236,6 +232,26 @@ public class  SignalRService extends Service {
                     }
                 }
                 , Tracking.class);*/
+    }
+
+    private class reconnectPulling extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            for (int i = 0; i < 5; i++) {
+                try {
+                    if (mHubConnection.getState().toString() != "Connected") {
+                        startSignalR();
+                        Log.e("- HILO -", "Reconnect To Server...");
+                        Thread.sleep(5000);
+                    }
+                } catch (InterruptedException e) {
+                    Thread.interrupted();
+                }
+
+            }
+            return null;
+        }
     }
 
 }
