@@ -1,12 +1,15 @@
 package com.idslatam.solmar.View.Code;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,6 +27,8 @@ import com.idslatam.solmar.View.Settings.AccessSettings;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -108,8 +113,11 @@ public class CodeBar extends Activity {
 
         Log.e("---! Send: TIPO "+tipo, " ! VALOR "+valor + " ! FECHA "+fecha+" ! FORMATO "+formato);
 
-        new PostAsync().execute(NumeroCel, GuidDipositivo, CodigoEmpleado, tipo, valor, fecha, formato);
-
+        if (isOnlineNet()){
+            new PostAsync().execute(NumeroCel, GuidDipositivo, CodigoEmpleado, tipo, valor, fecha, formato);
+        } else {
+            pingRespuesta();
+        }
     }
 
     public void scanBarcode() {
@@ -180,9 +188,7 @@ public class CodeBar extends Activity {
 
                 try {
 
-                        startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                        finish();
+                    dialogoRespuesta(json);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -197,4 +203,62 @@ public class CodeBar extends Activity {
         }
 
     }
+
+    public void dialogoRespuesta(JSONObject jsonObject){
+
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            if(jsonObject.getString("Mensaje").equalsIgnoreCase("true")){
+                builder.setTitle(Html.fromHtml("<font color='#4CAF50'>Respuesta de Servidor</font>"));
+            } else {
+                builder.setTitle(Html.fromHtml("<font color='#F44336'>Respuesta de Servidor</font>"));
+            }
+
+            //builder.setTitle("Respuesta de Servidor");
+            builder.setMessage(jsonObject.getString("Mensaje"));
+            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                    finish();
+
+                }
+            });
+            builder.show();
+
+        } catch (Exception e){}
+    }
+
+    public Boolean isOnlineNet() {
+
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
+
+            int val           = p.waitFor();
+            boolean reachable = (val == 0);
+            return reachable;
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void pingRespuesta(){
+
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Conexión de Internet");
+            builder.setMessage("Sin conexión a Internet. Por favor asegurese de tener conexión a internet");
+            builder.setPositiveButton("Aceptar", null);
+            builder.show();
+
+        } catch (Exception e){}
+    }
+
 }

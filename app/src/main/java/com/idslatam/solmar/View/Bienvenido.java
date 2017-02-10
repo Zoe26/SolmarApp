@@ -59,6 +59,7 @@ import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -175,8 +176,10 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_bienvenido);
+
+        Intent i = new Intent(Intent.ACTION_MAIN, null);
+        i.addCategory(Intent.CATEGORY_LAUNCHER);
 
         dataAccessSettings();
 
@@ -234,12 +237,12 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             }
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED) {
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_NETWORK_STATE)) {
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, MY_ACCESS_NETWORK_STATE);
             }
-        }
+        }*/
 
         // PERMISO DEL SENSOR DE VIBRACION
 
@@ -903,8 +906,13 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             }
 
             if (json != null) {
+                /*Toast.makeText(Bienvenido.this, json.toString(),
+                        Toast.LENGTH_LONG).show();*/
 
                 try {
+
+                    success = json.getInt(TAG_SUCCESS);
+                    message = json.getString(TAG_MESSAGE);
 
                     if (estado.equals("true") && RequiereNumero =="false"){
 
@@ -924,18 +932,18 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                         }
                     }
 
-                } catch (Exception e) {
+
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
             if (success == 1) {
-                Log.d("Hecho!", message);
-            }else {
-                Log.d("Falló", message);
+                Log.e("-- ººººº Success! ++++ ", message);
+            }else{
+                Log.e("-- ºººº Failure ++++ ", message);
             }
         }
-
     }
 
     public  Boolean actualizarConfiguracion(){

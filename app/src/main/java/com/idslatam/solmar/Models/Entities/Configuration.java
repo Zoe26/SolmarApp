@@ -40,6 +40,7 @@ public class Configuration {
     public static final String KEY_FechaAlarmaIso = "FechaAlarmaIso";
     public static final String KEY_FlagUpdate = "FlagUpdate";
     public static final String KEY_FlagSave = "FlagSave";
+    public static final String KEY_EstadoSignalr = "EstadoSignalr";
     public static final String KEY_ContadorPulsacion = "ContadorPulsacion";
 
 
@@ -72,6 +73,7 @@ public class Configuration {
     public String Longitud;
     public String FechaInicioIso;
     public String FechaSendIso;
+    public String EstadoSignalr;
     public String FechaAlarmaIso;
     public int ContadorPulsacion;
 

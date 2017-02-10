@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:alertDialogStyle">@style/DialogStyle</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -44,6 +45,24 @@
     <style name="MySpinner" parent="Base.Widget.AppCompat.Spinner">
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:textColor">@color/icons</item>
+    </style>
+
+
+    <style name="DialogStyle" parent="@android:style/Theme.Dialog">
+    <!-- changing these background stuff works fine -->
+
+        <!-- panelBackground is not getting set to null, there is something squarish around it -->
+        <item name="android:panelBackground">@null</item>
+
+        <!-- Setting this textColor doesn't seem to have any effect at all. Messages, title, button text color, whatever; nothing changes. -->
+        <item name="android:textColor">#F44336</item>
+
+        <!-- Also tried with textAppearance, as follows. Didn't work -->
+        <item name="android:textAppearance">?android:attr/textColorPrimaryInverse</item>
+
+        <!-- Also tried changing textAppearancePrimary, to no avail -->
+        <item name="android:textColorPrimary">#F44336</item>
+
     </style>
 
 </resources>

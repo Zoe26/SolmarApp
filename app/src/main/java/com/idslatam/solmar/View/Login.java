@@ -295,7 +295,11 @@ public class Login extends AppCompatActivity implements
 
         JsonParser jsonParser = new JsonParser();
         private ProgressDialog pDialog;
+
         private final String URL = URL_API.concat("token");//"https://solmar.azurewebsites.net/token";
+
+        private static final String TAG_SUCCESS = "success";
+        private static final String TAG_MESSAGE = "message";
 
         @Override
         protected void onPreExecute() {
@@ -316,7 +320,7 @@ public class Login extends AppCompatActivity implements
                 params.put("username", args[1]);
                 params.put("password", args[2]);
 
-                Log.d("request", "starting");
+                Log.e("request", "starting");
 
                 JSONObject json = jsonParser.makeHttpRequest(
                         URL, "POST",  params);
@@ -353,7 +357,8 @@ public class Login extends AppCompatActivity implements
 
         protected void onPostExecute(JSONObject json) {
 
-
+            int success = 0;
+            String message = "";
 
             if (json != null) {
                 String token=null;
@@ -385,6 +390,12 @@ public class Login extends AppCompatActivity implements
 
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
+            }
+
+            if (success == 1) {
+                Log.e("-- ººººº Success! ++++ ", message);
+            }else{
+                Log.e("-- ºººº Failure ++++ ", message);
             }
         }
     }

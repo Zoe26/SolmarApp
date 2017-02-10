@@ -57,9 +57,16 @@ public class JsonParser {
                 urlObj = new URL(url);
 
                 conn = (HttpURLConnection) urlObj.openConnection();
+
                 conn.setDoOutput(true);
+
                 conn.setRequestMethod("POST");
+
                 conn.setRequestProperty("Accept-Charset", charset);
+
+                conn.setReadTimeout(1000*5);
+                conn.setConnectTimeout(1000*7);
+
                 conn.connect();
 
                 paramsString = sbParams.toString();
@@ -71,7 +78,6 @@ public class JsonParser {
 
             } catch (IOException e) {
                 e.printStackTrace();
-
             }
         }
         else if(method.equals("GET")){
@@ -85,14 +91,21 @@ public class JsonParser {
                 urlObj = new URL(url);
 
                 conn = (HttpURLConnection) urlObj.openConnection();
+
                 conn.setDoOutput(false);
+
                 conn.setRequestMethod("GET");
+
                 conn.setRequestProperty("Accept-Charset", charset);
+
+                conn.setConnectTimeout(1000*7);
+
                 conn.connect();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
 
         try {
@@ -113,13 +126,14 @@ public class JsonParser {
 
         conn.disconnect();
 
-        // Estring del Objeto JSON string to a JSON object
+        // try parse the string to a JSON object
         try {
             jObj = new JSONObject(result.toString());
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
 
+        // return JSON Object
         return jObj;
     }
 }

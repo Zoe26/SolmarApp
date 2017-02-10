@@ -133,15 +133,18 @@ public class  SignalRService extends Service {
 
                             DBHelper dataBaseHelper = new DBHelper(mContext);
                             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+
                             db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + arrayParametros[0] + "'");
                             db.execSQL("UPDATE Configuration SET Precision = '" + arrayParametros[1] + "'");
+                            db.execSQL("UPDATE Configuration SET EstadoSignalr = 'Connected'");
+
                             db.close();
 
                         Log.e("Signal R", s);
 
                         pre = Integer.parseInt(arrayParametros[0].toString());
 
-                        if(pre>2){stopService(new Intent(mContext, LocationFusedApi.class));}
+                        //if(pre>2){stopService(new Intent(mContext, LocationFusedApi.class));}
 
                     } catch (Exception e) {}
                     //Log.e("SimpleSignalR", mHubConnection.getState().toString());
@@ -154,6 +157,15 @@ public class  SignalRService extends Service {
             });
 
         } else if(mHubConnection.getState().toString() != "Connected"){
+
+            try {
+
+                DBHelper dataBaseHelper = new DBHelper(mContext);
+                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                db.execSQL("UPDATE Configuration SET EstadoSignalr = '"+mHubConnection.getState().toString()+"'");
+                db.close();
+
+            } catch (Exception e) {}
 
             try {
 

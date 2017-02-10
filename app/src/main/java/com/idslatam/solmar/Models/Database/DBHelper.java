@@ -93,6 +93,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_FechaAlarmaIso + " TEXT,"
                 + Configuration.KEY_FlagUpdate + " TEXT,"
                 + Configuration.KEY_FlagSave + " TEXT,"
+                + Configuration.KEY_EstadoSignalr + " TEXT,"
                 + Configuration.KEY_ContadorPulsacion + " INTEGER,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 

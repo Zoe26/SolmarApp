@@ -162,7 +162,8 @@ public class AlarmLocation extends BroadcastReceiver {
 
         Log.e("-- PRUEBA INT ALARM ", String.valueOf(intervalo));
 
-        if(intervalo < 2){
+
+        if(intervalo <= 1){
 
             try {
                 DBHelper dataBaseHelperA = new DBHelper(mContext);
