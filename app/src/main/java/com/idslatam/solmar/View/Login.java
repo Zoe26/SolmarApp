@@ -40,6 +40,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
@@ -50,6 +52,9 @@ import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.Tracking.Broadcast.AlarmLocation;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,6 +79,7 @@ public class Login extends AppCompatActivity implements
     Context context;
     String authorization;
     String pass;
+    String user;
     protected String URL_API;
     int _Asistencia_id = 0;
     String Numero, DispositivoId, FechaInicioCelular;
@@ -278,17 +284,71 @@ public class Login extends AppCompatActivity implements
                 String type = "password";
                 pass = password.getText().toString();
                 Fotoch = pass;
-                String user = pass.concat("@gruposolmar.com.pe");
+                user = pass.concat("@gruposolmar.com.pe");
 
                 if(pass.matches("")){
                     Toast.makeText(this, "Ingrese Codigo", Toast.LENGTH_SHORT).show();
                 } else {
-                    new PostAsync().execute(type, user, pass);
+                    //new PostAsync().execute(type, user, pass);
+                    getCredentials();
                 }
 
 
                 break;
         }
+    }
+
+    String accessToken;
+    private void getCredentials() {
+
+        String URL = URL_API.concat("token");
+
+        /*JsonObject json = new JsonObject();
+        json.addProperty("grant_type", "password");
+        json.addProperty("username", user);
+        json.addProperty("password", pass);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> result) {
+
+                        Log.e("JsonObject ", String.valueOf(result.getResult()));
+
+                        if(result.getHeaders().code()==200){
+                            JsonObject r = result.getResult();
+                            accessToken = r.get("access_token").getAsString();
+                        }
+
+                    }
+                });*/
+
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setBodyParameter("grant_type", "password")
+                .setBodyParameter("username", user)
+                .setBodyParameter("password", pass)
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> result) {
+                        // print the response code, ie, 200
+
+                        if(result.getHeaders().code()==200){
+
+                        }
+
+                            //accessToken = result.get("access_token").getAsString();
+
+                        Log.e("JsonObject ", result.getResult());
+                    }
+                });
     }
 
     class PostAsync extends AsyncTask<String, String, JSONObject> {

@@ -192,7 +192,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         }
     }
 
-
     public void loadPost(){
 
         new getCountDown().execute();
@@ -284,7 +283,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             case R.id.btn_marcacion:
 
                 btnMarcacion.setEnabled(false);
-                //btnMarcacion.setBackgroundColor(Color.WHITE);
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
                 btnMarcacion.setTextColor(Color.WHITE);
 
@@ -592,7 +590,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 DBHelper dataBaseHelper = new DBHelper(mContext);
                 SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
                 // si aun no termina sesion y presionó boton
-                String selectQueryA = "SELECT FechaEsperada FROM Alert WHERE FinTurno = 'false' AND EstadoBoton = 'true'";
+                String selectQueryA = "SELECT FechaEsperada FROM Alert WHERE FinTurno = 'false'"; // AND EstadoBoton = 'true
                 Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
 
                 if (cA.moveToLast()) {
@@ -608,9 +606,13 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             }
             Calendar cExiste = Calendar.getInstance();
             Calendar horaCur = Calendar.getInstance();
-            DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+
+            //DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+
+            Log.e("**** fchExiste ", fchExiste);
+
             try {
-                cExiste.setTime(df.parse(fchExiste));
+                cExiste.setTime(formatoGuardar.parse(fchExiste));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -618,10 +620,20 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             long fE = cExiste.getTimeInMillis();
             long fC = horaCur.getTimeInMillis();
 
+            Calendar e = Calendar.getInstance();
+            Calendar h = Calendar.getInstance();
+
+            e.setTimeInMillis(fE);
+            h.setTimeInMillis(fC);
+
+            Log.e("**** fC ", formatoIso.format(h.getTime()));
+            Log.e("**** fE ", formatoIso.format(e.getTime()));
+
+
             if (fC <= fE) {
 
                 calendarCurrentG = cExiste;
-                Log.e("****++++++ CONSULTA ", "fC <= fE +++*** EXISTE");
+                Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
 
             }
 
@@ -651,6 +663,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } else { // SI minuto es menor que tiempoGuardado
 
             aux = tiempoGuardado - minuto;
+
+            if(minuto==0){
+                aux = 0;
+            }
         }
 
         int minutoT = aux + minuto;
@@ -1083,10 +1099,4 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } catch (Exception e){}
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mostrarHora();
-        updateCountDown();
-    }
 }

@@ -40,12 +40,15 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.R;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -66,10 +69,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected String URL_API;
     String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
     String lastActividad=null;
+    String versionAp="1.0";
     Calendar currentSend = null;
     Boolean flagSend = false, flagDelay = false;
     int contador =0, intervalSend=0;
-    int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0;
+    int contadorTest=0, _TrackingUpdateRee_Id = 0, _TrackingSave_Id = 0, _Tracking_Id_Pos = 0;
     protected double nivelBateria=0;
     protected SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss"),
             formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -120,9 +124,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         Log.e("-- LocationFusedApi ", " onCreate");
 
-        Intent intent = new Intent();
-        intent.setClass(mContext, SignalRService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        //Intent intent = new Intent();
+        //intent.setClass(mContext, SignalRService.class);
+        //bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
@@ -528,12 +532,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         tracking.DatosHabilitado = MobileHabilitado;
         tracking.ModeloEquipo = Build.MODEL;
         tracking.Imei = telephonyManager.getDeviceId();
-        tracking.VersionApp = Integer.toString(Build.VERSION.SDK_INT);
+        tracking.VersionApp = versionAp;
         tracking.FechaAlarma = fechaAlarma;
         tracking.Time = formatoGuardar.format(location.getTime());
         tracking.ElapsedRealtimeNanos = Long.toString(location.getElapsedRealtimeNanos());
-        tracking.Altitude = Double.toString(location.getAltitude());;
-        tracking.Bearing = Double.toString(location.getBearing());;
+        tracking.Altitude = Double.toString(location.getAltitude());
+        tracking.Bearing = Double.toString(location.getBearing());
         tracking.Extras = "Tracking@5246.Solmar";
         tracking.Classx = "Location";
         tracking.Actividad = actividadsql;
@@ -583,8 +587,70 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             }
 
-            mService.sendMessage(tracking);
+            //mService.sendMessage(tracking);
             consultaSinConexion();
+
+
+            String URL = URL_API.concat("api/Tracking");
+
+            JsonObject json = new JsonObject();
+            json.addProperty("Numero", number);
+            json.addProperty("DispositivoId", guidDispositivo);
+            json.addProperty("FechaCelular", formatoGuardar.format(currentDate.getTime()));
+            json.addProperty("Latitud", Double.toString(location.getLatitude()));
+            json.addProperty("Longitud", Double.toString(location.getLongitude()));
+            if(flagDelay==true){
+                json.addProperty("EstadoCoordenada", "DELAY");
+            } else {
+                json.addProperty("EstadoCoordenada", "OK");
+            }
+            json.addProperty("OrigenCoordenada", "fused");
+            json.addProperty("Velocidad", Double.toString(location.getSpeed()));
+            json.addProperty("Bateria", Double.toString(nivelBateria));
+            json.addProperty("Precision", Double.toString(location.getAccuracy()));
+            json.addProperty("SenialCelular", "5");
+            json.addProperty("GpsHabilitado", GPSHabilitado);
+            json.addProperty("WifiHabilitado", NetworkHabilitado);
+            json.addProperty("DatosHabilitado", MobileHabilitado);
+            json.addProperty("ModeloEquipo", Build.MODEL);
+            json.addProperty("Imei", telephonyManager.getDeviceId());
+            json.addProperty("VersionApp", versionAp);
+            json.addProperty("FechaAlarma", fechaAlarma);
+            json.addProperty("Time", formatoGuardar.format(location.getTime()));
+            json.addProperty("ElapsedRealtimeNanos", Long.toString(location.getElapsedRealtimeNanos()));
+            json.addProperty("Altitude", Double.toString(location.getAltitude()));
+            json.addProperty("Bearing", Double.toString(location.getBearing()));
+            //json.addProperty("Extras", "Tracking@5246.Solmar");
+            //json.addProperty("Classx", "Location");
+            json.addProperty("Actividad", actividadsql);
+            json.addProperty("Valido", valido);
+            if(valido =="true") {
+                json.addProperty("Intervalo", Integer.toString(intervalSend));
+            } else {
+                json.addProperty("Intervalo", "0");
+            }
+
+            Ion.with(this)
+                    .load("POST", URL)
+                    .setJsonObjectBody(json)
+                    .asJsonObject()
+                    .setCallback(new FutureCallback<JsonObject>() {
+                        @Override
+                        public void onCompleted(Exception e, JsonObject result) {
+                            // do stuff with the result or error
+                            //Log.e("Exception ", e.getMessage());
+                            //Log.e("JsonObject ", result.toString());
+
+                            if(result!=null){
+                                Log.e("JsonObject ", result.toString());
+
+                            } else  {
+                                saveError(tracking);
+                                Log.e("Exception ", "Finaliza SaveError");
+                            }
+
+                        }
+                    });
 
             try {
 
@@ -616,9 +682,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                        IBinder service) {
             try {
                 // We've bound to SignalRService, cast the IBinder and get SignalRService instance
-                SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
-                mService = binder.getService();
-                mBound = true;
+                //SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
+                //mService = binder.getService();
+                //mBound = true;
 
             } catch (Exception e){}
 
@@ -627,7 +693,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             Log.e("Close SignalR", "Closed Yeah");
-            mBound = false;
+            //mBound = false;
         }
     };
 
@@ -708,7 +774,60 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
                     deleteTracking(_TrackingUpdateRee_Id);
 
-                    mService.sendMessage(trackingPos);
+                    //mService.sendMessage(trackingPos);
+                    String URL = URL_API.concat("api/Tracking");
+
+                    JsonObject json = new JsonObject();
+                    json.addProperty("Numero", c.getString(c.getColumnIndex("NumeroCel")));
+                    json.addProperty("DispositivoId", c.getString(c.getColumnIndex("DispositivoId")));
+                    json.addProperty("FechaCelular", c.getString(c.getColumnIndex("FechaCelular")));
+                    json.addProperty("Latitud", c.getString(c.getColumnIndex("Latitud")));
+                    json.addProperty("Longitud", c.getString(c.getColumnIndex("Longitud")));
+                    json.addProperty("EstadoCoordenada", c.getString(c.getColumnIndex("EstadoCoordenada")));
+                    json.addProperty("OrigenCoordenada", "fused");
+                    json.addProperty("Velocidad", c.getString(c.getColumnIndex("Velocidad")));
+                    json.addProperty("Bateria", c.getString(c.getColumnIndex("Bateria")));
+                    json.addProperty("Precision", c.getString(c.getColumnIndex("Precision")));
+                    json.addProperty("SenialCelular", "5");
+                    json.addProperty("GpsHabilitado", c.getString(c.getColumnIndex("GpsHabilitado")));
+                    json.addProperty("WifiHabilitado", c.getString(c.getColumnIndex("WifiHabilitado")));
+                    json.addProperty("DatosHabilitado", c.getString(c.getColumnIndex("DatosHabilitado")));
+                    json.addProperty("ModeloEquipo", c.getString(c.getColumnIndex("ModeloEquipo")));
+                    json.addProperty("Imei", c.getString(c.getColumnIndex("Imei")));
+                    json.addProperty("VersionApp", c.getString(c.getColumnIndex("VersionApp")));
+                    json.addProperty("FechaAlarma", c.getString(c.getColumnIndex("FechaAlarma")));
+                    json.addProperty("Time", c.getString(c.getColumnIndex("Time")));
+                    json.addProperty("ElapsedRealtimeNanos", c.getString(c.getColumnIndex("ElapsedRealtimeNanos")));
+                    json.addProperty("Altitude", c.getString(c.getColumnIndex("Altitude")));
+                    json.addProperty("Bearing", c.getString(c.getColumnIndex("Bearing")));
+                    //json.addProperty("Extras", "Tracking@5246.Solmar");
+                    //json.addProperty("Classx", "Location");
+                    json.addProperty("Actividad", c.getString(c.getColumnIndex("Actividad")));
+                    json.addProperty("Valido", c.getString(c.getColumnIndex("Valido")));
+                    json.addProperty("Intervalo", c.getString(c.getColumnIndex("Intervalo")));
+
+                    Ion.with(this)
+                            .load("POST", URL)
+                            .setJsonObjectBody(json)
+                            .asJsonObject()
+                            .setCallback(new FutureCallback<JsonObject>() {
+                                @Override
+                                public void onCompleted(Exception e, JsonObject result) {
+                                    // do stuff with the result or error
+                                    //Log.e("Exception ", e.getMessage());
+                                    //Log.e("JsonObject ", result.toString());
+
+                                    if(result!=null){
+                                        Log.e("JsonObject ", result.toString());
+
+                                    } else  {
+
+                                        saveError(trackingPos);
+                                        Log.e("Exception ", "Finaliza");
+                                    }
+
+                                }
+                            });
 
                     i++;
 
@@ -721,6 +840,25 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         } catch (Exception e){}
 
     }
+
+    public void saveError(Tracking marker){
+
+        Log.e("-- INGRESÓ ", "saveError");
+
+        try {
+
+            TrackingCrud trackingCRUD = new TrackingCrud(this);
+            marker.EstadoEnvio = "false";
+            marker.TrackingId = _Tracking_Id_Pos;
+            _Tracking_Id_Pos = trackingCRUD.insert(marker);
+
+        }catch (Exception e){}
+
+    }
+
+
+
+
 
     public  Boolean deleteTracking(int id) {
         DBHelper dbgelperDeete = new DBHelper(this);

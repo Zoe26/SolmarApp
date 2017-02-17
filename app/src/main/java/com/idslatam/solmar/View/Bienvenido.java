@@ -51,6 +51,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
@@ -58,6 +59,8 @@ import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -177,9 +180,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bienvenido);
-
-        Intent i = new Intent(Intent.ACTION_MAIN, null);
-        i.addCategory(Intent.CATEGORY_LAUNCHER);
 
         dataAccessSettings();
 
@@ -489,9 +489,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         String androidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         numero = tm.getLine1Number();
 
-        SimOtorgaNumero = "true";
-        if (numero.equals("")) {SimOtorgaNumero = "false";}
-
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
@@ -589,11 +586,93 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
 
         if (flagIsPlaySevice == true && flagIsUpdate == true){
-            new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
+            //new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
+
+            String URL = URL_API.concat("api/dispositivo");
+
+            JsonObject json = new JsonObject();
+            json.addProperty("Numero", numero);
+            json.addProperty("HWID", androidId);
+            json.addProperty("HWIMEI", imei);
+            json.addProperty("Modelo", modelo);
+            json.addProperty("SIMOtorgaNumero", SimOtorgaNumero);
+            json.addProperty("SIMSerie", serieSIM);
+            json.addProperty("Fabricante", fabricante);
+            json.addProperty("VersionOS", versionO);
+
+            final ProgressDialog pDialog;
+
+            pDialog = new ProgressDialog(Bienvenido.this);
+            pDialog.setMessage("Obteniendo C\u00f3digo...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+            Ion.with(this)
+                    .load("POST", URL)
+                    .setJsonObjectBody(json)
+                    .asJsonObject()
+                    .setCallback(new FutureCallback<JsonObject>() {
+                        @Override
+                        public void onCompleted(Exception e, JsonObject result) {
+
+                            if(result!=null){
+                                Log.e("JsonObject ", result.toString());
+
+                                //    estado = result.("Estado");
+                                estado = result.get("Estado").getAsString();
+                                RequiereNumero = result.get("RequiereNumero").getAsString();
+                                Id = result.get("Id").getAsString();
+
+                                if(result.get("Numero").isJsonNull()){
+                                    NumeroReinstlado = null;
+                                    Log.e("NumeroReinstlado ", "INGRESÓ");
+                                } else {
+                                    NumeroReinstlado = result.get("Numero").getAsString();
+                                }
+
+                                //*********************************
+                                actualizarConfiguracion();
+                                //*********************************
+
+                                if (estado.equals("true")){
+                                    actualizarNumero();
+                                }
+
+                                if (estado.equals("true") && RequiereNumero =="false"){
+
+                                    startActivity(new Intent(getBaseContext(), Login.class)
+                                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                    return;
+
+
+                                }else {
+
+                                    if(RequiereNumero =="true"){
+
+                                        Intent intent = new Intent(Bienvenido.this, RegisterNumber.class);
+                                        intent.putExtra("Id", Id);
+                                        startActivity(intent);
+
+                                    }
+                                }
+
+
+                            } else  {
+                                Log.e("Exception ", "Finaliza" );
+                            }
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+
+                        }
+                    });
         }
-
-        //new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
-
 
     }
 
@@ -832,120 +911,8 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             builder.show();
         } catch (Exception e){}
     }
+
     //----------------------------------------------------------------------------------------------
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
-        JsonParser jsonParser = new JsonParser();
-
-        private ProgressDialog pDialog;
-
-        private final String URL = URL_API.concat("api/dispositivo");
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-
-            pDialog = new ProgressDialog(Bienvenido.this);
-            pDialog.setMessage("Obteniendo C\u00f3digo...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-
-                params.put("Numero", args[0]);
-                params.put("HWID", args[1]);
-                params.put("HWIMEI", args[2]);
-                params.put("Modelo", args[3]);
-                params.put("SIMOtorgaNumero", args[4]);
-                params.put("SIMSerie", args[5]);
-                params.put("Fabricante", args[6]);
-                params.put("VersionOS", args[7]);
-                Log.d("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        URL, "POST", params);
-
-                if (json != null) {
-
-                    estado = json.getString("Estado");
-                    RequiereNumero = json.getString("RequiereNumero");
-                    Id = json.getString("Id");
-                    NumeroReinstlado = json.getString("Numero");
-                    //*********************************
-                    actualizarConfiguracion();
-                    //*********************************
-
-                    if (estado.equals("true")){
-                        actualizarNumero();
-                    }
-                    Log.e("VerificarAcceso", json.toString());
-
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
-            if (json != null) {
-                /*Toast.makeText(Bienvenido.this, json.toString(),
-                        Toast.LENGTH_LONG).show();*/
-
-                try {
-
-                    success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
-
-                    if (estado.equals("true") && RequiereNumero =="false"){
-
-                        startActivity(new Intent(getBaseContext(), Login.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                        finish();
-
-
-                    }else {
-
-                        if(RequiereNumero =="true" && NumeroReinstlado !=null){
-
-                            Intent intent = new Intent(Bienvenido.this, RegisterNumber.class);
-                            intent.putExtra("Id", Id);
-                            startActivity(intent);
-
-                        }
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (success == 1) {
-                Log.e("-- ººººº Success! ++++ ", message);
-            }else{
-                Log.e("-- ºººº Failure ++++ ", message);
-            }
-        }
-    }
-
     public  Boolean actualizarConfiguracion(){
 
         try {

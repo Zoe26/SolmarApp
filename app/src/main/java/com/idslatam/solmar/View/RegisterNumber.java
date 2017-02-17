@@ -15,6 +15,8 @@ import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,86 +64,32 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
             configuration.ConfigurationId = 1;
             configurationCRUD.updateNumero(configuration);
 
-            new PostAsync().execute(Id, Num);
+            String URL = URL_API.concat("Dispositivo/PutNumber");
+
+            Log.e("Id ", Id);
+            Log.e("Numero ", Num);
+
+            Ion.with(this)
+                    .load("POST", URL)
+                    .setBodyParameter("Id", Id)
+                    .setBodyParameter("Numero", Num)
+                    .asString()
+                    .setCallback(new FutureCallback<String>() {
+                        @Override
+                        public void onCompleted(Exception e, String result) {
+                            if(result!=null){
+                                Log.e("JsonObject ", result.toString());
+
+                                Intent i = new Intent(getApplicationContext(), Bienvenido.class );
+                                startActivity(i);
+
+                            } else  {
+                                Log.e("Exception ", "Finaliza "  + e.getMessage());
+                            }
+                        }
+                    });
 
         } catch (Exception e){}
-    }
-
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
-        JsonParser jsonParser = new JsonParser();
-
-        private ProgressDialog pDialog;
-
-
-        private final String URL = URL_API.concat("Dispositivo/PutNumber");//; "http://solmar.azurewebsites.net//Dispositivo/PutNumber";
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-            pDialog = new ProgressDialog(RegisterNumber.this);
-            pDialog.setMessage("Gracias, en inst\u00E1ntes nos comunicar\u00E9mos contigo!");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-                params.put("Id", args[0]);
-                params.put("Numero", args[1]);
-
-                Log.d("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        URL, "POST", params);
-
-                if (json != null) {
-
-                    Log.d("JSON result", json.toString());
-
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-            Intent i = new Intent(getApplicationContext(), Bienvenido.class );
-            startActivity(i);
-
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
-            if (json != null) {
-
-                try {
-                    success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (success == 1) {
-                Log.d("Hecho!", message);
-            }else{
-                Log.d("Falló", message);
-            }
-        }
-
     }
 
 }
