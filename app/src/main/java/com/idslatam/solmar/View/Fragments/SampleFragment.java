@@ -3,6 +3,7 @@ package com.idslatam.solmar.View.Fragments;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.AlertCrud;
@@ -44,6 +46,12 @@ import java.util.concurrent.TimeUnit;
 
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.R;
+import com.idslatam.solmar.View.Bienvenido;
+import com.idslatam.solmar.View.Login;
+import com.idslatam.solmar.View.RegisterNumber;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -104,6 +112,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     Calendar calendarCurrentG = null;
 
+    String scalendarCurrentG;
+
 
     public static SampleFragment newInstance(String text) {
         Bundle args = new Bundle();
@@ -120,7 +130,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         this.mContext = container.getContext();
-        //--------------------------------------------------------------------
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
@@ -137,16 +146,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         btnMarcacion = (Button) myView.findViewById(R.id.btn_marcacion);
         btnMarcacion.setOnClickListener(this);
-
-        /*btnMarcacion.setEnabled(false);
-        btnMarcacion.setBackgroundColor(Color.WHITE);*/
-
         btnMarcacion.setEnabled(false);
         btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
         btnMarcacion.setTextColor(Color.WHITE);
 
         Log.e("onCreate Alert", "Ingresó");
-        //obtenerDatos();
+
         load();
 
         return myView;
@@ -155,22 +160,20 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public void load(){
 
-        //Log.e("alertload", alertload.FechaMarcacion.toString());
-        //new getDatos().execute();
-
         Alert alertload = ultimoRegistro();
 
         if(obtenerDatos() == true){
 
             if(!alertload.FechaMarcacion.isEmpty()){
-                calendarCurrentG = fechaEsperada();
-                Log.e("Alert Data", alertload.FechaMarcacion);
-            }else{
+                //calendarCurrentG = fechaEsperada();
+                Log.e("Alert Data", alertload.FechaEsperada);
+                Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
+            } else {
                 calendarCurrentG = Calendar.getInstance();
+                crearRegistro();
                 Log.e("Alert Vacio", "Sin datos en Alert");
             }
 
-            crearRegistro();
             mostrarHora();
             updateCountDown();
 
@@ -183,7 +186,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public Boolean obtenerDatos(){
 
-        Log.e("--- Ingresó ", "obtenerDatos");
+        //Log.e("--- Ingresó ", "obtenerDatos");
 
         try {
 
@@ -236,12 +239,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             return  false;
         }
 
-        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-        Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
-        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
-        Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
+        //Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+        //Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
+        //Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+        //Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
 
-        Log.e("--- obtenerDatos ", "Fin");
+        //Log.e("--- obtenerDatos ", "Fin");
 
         return true;
     }
@@ -348,17 +351,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 aux = tiempoGuardado - resto;
             }
 
-        } else if(minuto == tiempoGuardado){
-
-            aux = tiempoGuardado;
-
         } else { // SI minuto es menor que tiempoGuardado
 
             aux = tiempoGuardado - minuto;
 
-            if(minuto==0){
-                aux = 0;
-            }
         }
 
         int minutoT = aux + minuto;
@@ -367,9 +363,16 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         Log.e("--- AUX ", String.valueOf(aux));
         Log.e("--- MINUTO T ", String.valueOf(minutoT));
 
-
         Calendar choraEsperadaGL = Calendar.getInstance();
         Calendar choraEsperadaIsoGL = Calendar.getInstance();
+
+        int hour = calendarCurrentG.get(Calendar.HOUR_OF_DAY);
+        int hourAct = choraEsperadaGL.get(Calendar.HOUR_OF_DAY);
+
+        if (hour>hourAct){
+            choraEsperadaGL.set(Calendar.HOUR_OF_DAY, hour);
+            choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, hour);
+        }
 
         choraEsperadaGL.set(Calendar.MINUTE, minutoT);
         choraEsperadaGL.set(Calendar.SECOND, 00);
@@ -397,12 +400,13 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         horaEsperadaIsoFinG = formatoIso.format(choraEsperadaIsoGL.getTime());
 
+        Log.e("------------- REGISTRO ", " CREADO -------------");
+
         Log.e("--- H. ESP G ", String.valueOf(horaEsperadaG));
         Log.e("--- H. ESP ISO ", String.valueOf(horaEsperadaIsoG));
         Log.e("--- H. FIN ", String.valueOf(horaEsperadaIsoFinG));
 
-        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+        Log.e("--------- FIN REGISTRO ", " CREADO -------------");
 
 
         try {
@@ -509,84 +513,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         Log.e("--- MostrarHora ", " FIN ");
     }
 
-
-
-
-    class getDatos extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... args) {
-
-            try {
-                if(obtenerDatos() == true){
-
-                    if(cantidadRegistros() == 0){
-                        //Creacion de primero registro
-                        crearRegistro();
-                        updateCountDown();
-                        mostrarHora();
-
-                    }
-
-                    Log.e(" Completando ","Datos...");
-
-                } else {
-                    //load();
-                }
-
-            } catch (Exception e) {e.printStackTrace();}
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-
-            //Log.e(" Datos ","Completados! ");
-
-        }
-    }
-
-    public void loadPost(){
-
-        new getCountDown().execute();
-    }
-
-    class getCountDown extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... args) {
-
-            try {
-                if(obtenerDatos() == true){
-
-                    if(cantidadRegistros() != 0){
-                        crearRegistro();
-                        mostrarHora();
-                        updateCountDown();
-
-                    }
-
-                    Log.e(" Completando ","Datos...");
-
-                } else {
-                    loadPost();
-                    Log.e(" ----- ERROR "," ++++++ getCountDown +++++");
-                }
-
-            } catch (Exception e) {e.printStackTrace();}
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-
-            //Log.e(" Datos ","Completados! ");
-
-        }
-    }
-
     public void onClick(View v) {
 
         switch (v.getId()) {
@@ -598,30 +524,83 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 btnMarcacion.setTextColor(Color.WHITE);
 
                 try {
+
                     enviarMarcacion();
+
                 }catch (Exception e){
                     Log.e("--- ++EXCEPTION++ ", " +++ enviarMarcacion+++");
                 }
 
-                try {
+                Alert alertload = ultimoRegistro();
 
-                    if(obtenerDatos() == true){
+                if(obtenerDatos() == true){
+
+                    if(!alertload.FechaMarcacion.isEmpty()){
+                        //calendarCurrentG = fechaEsperada();
+                        //Log.e("Alert Data", alertload.FechaEsperada);
+                        //Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
+
+                        Calendar cExiste = Calendar.getInstance();
+                        Calendar horaCur = Calendar.getInstance();
+
+                        try {
+
+                            cExiste.setTime(formatoIso.parse(alertload.FechaEsperadaIso));
+                            cExiste.add(Calendar.MINUTE, tiempoIntervalo);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        long fE = cExiste.getTimeInMillis();
+                        long fC = horaCur.getTimeInMillis();
+
+                        Calendar e = Calendar.getInstance();
+                        Calendar h = Calendar.getInstance();
+
+                        e.setTimeInMillis(fE);
+                        h.setTimeInMillis(fC);
+
+                        Log.e("**** f Current ", formatoIso.format(horaCur.getTime()));
+                        Log.e("**** f Esperad ", formatoIso.format(cExiste.getTime()));
+
+
+                        if (horaCur.before(cExiste)) {
+
+                            try {
+
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+                                String dateInString = formatoIso.format(cExiste.getTime());
+
+                                Log.e("+++++ dateInString ", dateInString);
+
+                                Date date = sdf.parse(dateInString);
+
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(date);
+
+                                calendarCurrentG.setTime(date);
+
+                            } catch (Exception e6){
+                                Log.e("+++++ Exception ", "a6");
+                            }
+
+                            Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
+
+                        } else {
+
+                        }
 
                         crearRegistro();
+
                         mostrarHora();
+                        updateCountDown();
 
                     }
 
-                }catch (Exception e){
-                    Log.e("--- Boton EXCEPTION ", "obtenerDatos() == true ");
-                }
+                } else {
 
-                try {
-                    //loadPost();
-                    //new getCountDown().execute();
-                    //updateCountDown();
-                }catch (Exception e){
-                    Log.e("--- ++EXCEPTION++ ", " +++ updateCountDown +++");
+                    Toast.makeText(mContext, "Error al obtener datos de configuración", Toast.LENGTH_LONG).show();
                 }
 
                 break;
@@ -670,7 +649,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             alert.AlertId = _AlertUpdate_Id;
             alertCrud.update(alert);
 
-            Log.e("--- TRUE ", " Alert update");
+            //Log.e("--- TRUE ", " Alert update");
 
         } catch (Exception e){
             Log.e("--- BOTON Exception ", "update");
@@ -696,7 +675,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 CodigoEmpleadoE = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
 
             }
-            Log.e("--- TRUE ", " Alert Select");
+            //Log.e("--- TRUE ", " Alert Select");
             cA.close();
             dbA.close();
 
@@ -708,22 +687,18 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         try {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase dbtracking = dataBaseHelper.getWritableDatabase();
-            String selectQueryTracking = "SELECT Latitud, Longitud FROM Tracking";
+            String selectQueryTracking = "SELECT Latitud, Longitud FROM Configuration";
             Cursor ctracking = dbtracking.rawQuery(selectQueryTracking, new String[]{});
 
             if (ctracking.moveToLast()) {
-                LatitudG = ctracking.getString(ctracking.getColumnIndex("Latitud"));
-                LongitudG = ctracking.getString(ctracking.getColumnIndex("Longitud"));
+                LatitudE = ctracking.getString(ctracking.getColumnIndex("Latitud"));
+                LongitudE = ctracking.getString(ctracking.getColumnIndex("Longitud"));
             }
 
             ctracking.close();
             dbtracking.close();
 
         } catch (Exception e) {}
-
-
-        LatitudE = "-7.13957357406617";
-        LongitudE = "-7.13960790634156";
 
 
         Log.e("-----------SEND  ","ALERT-----------");
@@ -737,129 +712,111 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         Log.e("--- LongitudE ", LongitudE);
         Log.e("--- DispositivoIdE ", DispositivoIdE);
         Log.e("--- CodigoEmpleadoE ", CodigoEmpleadoE);
-
-        new PostAsync().execute(NumeroE, FechaMarcacionE, FechaEsperadaE, FechaProximaE, FlagTiempoE, MargenAceptadoE, LatitudE, LongitudE, DispositivoIdE, CodigoEmpleadoE);
-
-        return true;
-    }
-
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
-        JsonParser jsonParser = new JsonParser();
-
-        private final String URL = URL_API.concat("api/alert"); //"http://solmar.azurewebsites.net/api/alert";
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {}
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-                params.put("Numero", args[0]);
-                params.put("FechaMarcacion", args[1]);
-                params.put("FechaEsperada", args[2]);
-                params.put("FechaProxima", args[3]);
-                params.put("FlagTiempo", args[4]);
-                params.put("MargenAceptado", args[5]);
-                params.put("Latitud", args[6]);
-                params.put("Longitud", args[7]);
-                params.put("DispositivoId", args[8]);
-                params.put("CodigoEmpleado", args[9]);
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        URL, "POST", params);
-
-                Log.e(" -- | FIRST ALERT ", json.toString());
-
-                if (json != null) {
-
-                    Log.e(" -- | ALERT ", json.toString());
-
-                    String Configuracion = json.getString("Configuracion");
-                    String estadoEnvio = json.getString("Estado");
-
-                    try {
-
-                        AlertCrud alertCrud = new AlertCrud(mContext);
-
-                        Alert alert = new Alert();
-                        alert.EstadoA = estadoEnvio;
-                        alert.AlertId = _AlertUpdate_Id;
-                        alertCrud.updateEstado(alert);
-
-                    } catch (Exception e){}
+        Log.e("--------- FIN SEND  ","ALERT---------");
 
 
-                    JSONArray jsonA = new JSONArray(Configuracion);
+        String URL = URL_API.concat("api/alert");
 
-                    int a=0, b=0;
-                    int []valores = new int[2];
+        JsonObject json = new JsonObject();
+        json.addProperty("Numero", NumeroE);
+        json.addProperty("FechaMarcacion", FechaMarcacionE);
+        json.addProperty("FechaEsperada", FechaEsperadaE);
+        json.addProperty("FechaProxima", FechaProximaE);
+        json.addProperty("FlagTiempo", FlagTiempoE);
+        json.addProperty("MargenAceptado", MargenAceptadoE);
+        json.addProperty("Latitud", LatitudE);
+        json.addProperty("Longitud", LongitudE);
+        json.addProperty("DispositivoId", DispositivoIdE);
+        json.addProperty("CodigoEmpleado", CodigoEmpleadoE);
 
-                    for(int i=0;i<jsonA.length();i++){
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                        JSONObject c = jsonA.getJSONObject(i);
-                        valores[i] = c.getInt("Valor");
-                        if(c.getInt("ConfiguracionId")==3){
-//                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-//                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + c.getInt("Valor") + "'");
-//                            db.close();
+                        if (response.getHeaders().code() == 200) {
 
-                            a = c.getInt("Valor");
+                            Log.e("JsonObject ", response.getResult().toString());
+
+                            JSONObject j = null;
+                            try {
+                                j = new JSONObject(response.getResult().toString());
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+
+                            String Configuracion = null;
+                            try {
+                                Configuracion = j.getString("Configuracion");
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+
+                            JSONArray jsonA = null;
+
+                            try {
+                                jsonA = new JSONArray(Configuracion);
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+
+                            int a=0, b=0;
+                            int []valores = new int[2];
+
+                            for(int i=0;i<jsonA.length();i++){
+
+                                JSONObject c = null;
+
+                                try {
+                                    c = jsonA.getJSONObject(i);
+
+                                    valores[i] = c.getInt("Valor");
+                                    if(c.getInt("ConfiguracionId")==3){
+                                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                        db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + c.getInt("Valor") + "'");
+                                        db.close();
+
+                                        a = c.getInt("Valor");
 //                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
-                        }
+                                    }
 
-                        if(c.getInt("ConfiguracionId")==4){
-//                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-//                            db.execSQL("UPDATE Configuration SET IntervaloTrackingSinConex = '" + c.getInt("Valor") + "'");
-//                            db.close();
+                                    if(c.getInt("ConfiguracionId")==4){
+                                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                        db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + c.getInt("Valor") + "'");
+                                        db.close();
 
-                            b = c.getInt("Valor");
+                                        b = c.getInt("Valor");
 //                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
+                                    }
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                            int te = a;
+                            int tes = b;
+
+                            Log.e("AlerF Interv/ Toleranc ", String.valueOf(te)+"| "+String.valueOf(tes));
+
+                        } else {
+
+                            AlertCrud alertCrud = new AlertCrud(mContext);
+                            Alert alert = new Alert();
+                            alert.EstadoA = "false";
+                            alert.AlertId = _AlertUpdate_Id;
+                            alertCrud.updateEstado(alert);
+
                         }
                     }
+                });
 
-                    int te = a;
-                    int tes = b;
-
-                    Log.e("AlerF Interv/ Toleranc ", String.valueOf(te)+"| "+String.valueOf(tes));
-
-
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-
-            if (json != null) {
-
-                try {
-                    success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (success == 1) {
-                Log.d("Success!", message);
-            }else{
-                Log.d("Failure", message);
-            }
-        }
+        return true;
     }
 
     public Alert ultimoRegistro(){
@@ -878,10 +835,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
             String selectQueryconfiguration = "SELECT NumeroCel, FechaMarcacion, FechaEsperada, " +
-                    "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado FROM Alert";
+                    "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado, " +
+                    "FechaEsperadaIso FROM Alert";
             Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
 
-            Log.e("Consulta ", "If");
+            //Log.e("Consulta ", "If");
 
             if(alert.FechaMarcacion == "")
                 Log.e("Alert ", alert.FechaMarcacion);
@@ -898,6 +856,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 alert.MargenAceptado = cA.getString(cA.getColumnIndex("MargenAceptado"));
                 alert.DispositivoId = cA.getString(cA.getColumnIndex("DispositivoId"));
                 alert.CodigoEmpleado = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
+                alert.FechaEsperadaIso = cA.getString(cA.getColumnIndex("FechaEsperadaIso"));
 
             }
 

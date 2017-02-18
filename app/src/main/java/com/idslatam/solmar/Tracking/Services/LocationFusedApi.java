@@ -554,6 +554,14 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         if(valido =="true") {
 
             try {
+                DBHelper dataBaseHelper = new DBHelper(this);
+                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                db.execSQL("UPDATE Configuration SET Longitud = '" + Double.toString(location.getLongitude()) + "'");
+                db.execSQL("UPDATE Configuration SET Latitud = '" + Double.toString(location.getLatitude()) + "'");
+                db.close();
+            } catch (Exception e) {}
+
+            try {
 
                 _TrackingSave_Id = trackingCRUD.insertAll(tracking);
                 eliminarRegistro();
