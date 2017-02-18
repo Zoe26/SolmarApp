@@ -683,8 +683,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 FechaMarcacionE = cA.getString(cA.getColumnIndex("FechaMarcacion"));
                 FechaEsperadaE = cA.getString(cA.getColumnIndex("FechaEsperada"));
                 FechaProximaE = cA.getString(cA.getColumnIndex("FechaProxima"));
-                FlagTiempoE = "1"; //cA.getString(cA.getColumnIndex("FlagTiempo"));
-                MargenAceptadoE = "1"; //cA.getString(cA.getColumnIndex("MargenAceptado"));
+                FlagTiempoE =  cA.getString(cA.getColumnIndex("FlagTiempo"));
+                MargenAceptadoE = cA.getString(cA.getColumnIndex("MargenAceptado"));
                 DispositivoIdE = cA.getString(cA.getColumnIndex("DispositivoId"));
                 CodigoEmpleadoE = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
 
