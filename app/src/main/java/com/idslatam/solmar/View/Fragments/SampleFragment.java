@@ -112,7 +112,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     Calendar calendarCurrentG = null;
 
-    String scalendarCurrentG;
+    boolean flagCancel = false;
 
 
     public static SampleFragment newInstance(String text) {
@@ -175,7 +175,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             }
 
             mostrarHora();
-            updateCountDown();
+
+            if (!flagCancel){
+                updateCountDown();
+            }
 
         } else {
 
@@ -589,11 +592,17 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                         } else {
 
+                            calendarCurrentG =Calendar.getInstance();
                         }
 
                         crearRegistro();
 
                         mostrarHora();
+
+                        if (flagCancel){
+                            cdt5.cancel();
+                        }
+
                         updateCountDown();
 
                     }
@@ -871,7 +880,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public void updateCountDown(){
 
-
         Log.e("--- Ingresó ", "updateCountDown");
 
         String Fecha = null;
@@ -932,6 +940,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                             public void onTick(long startTime) {
                                 // TODO Auto-generated method stub
 
+                                flagCancel = true;
                                 int seconds = (int) (startTime / 1000) % 60 ;
                                 int minutes = (int) ((startTime / (1000*60)) % 60);
                                 int hours   = (int) ((startTime / (1000*60*60)) % 24);
@@ -941,7 +950,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                             @Override
                             public void onFinish() {
-
+                                flagCancel = false;
                                 btnMarcacion.setEnabled(true);
                                 btnMarcacion.setText("Marcaci\u00F3n");
                                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
@@ -1163,4 +1172,46 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } catch (Exception e){}
     }
 
+
+    @Override
+    public void onResume() {
+
+        if (flagCancel){
+            cdt5.cancel();
+            updateCountDown();
+        }
+
+        mostrarHora();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+
+        if (flagCancel){
+            cdt5.cancel();
+            updateCountDown();
+        }
+
+        mostrarHora();
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        if (flagCancel){
+            cdt5.cancel();
+            updateCountDown();
+        }
+        mostrarHora();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (flagCancel){
+            cdt5.cancel();
+        }
+        super.onDestroy();
+    }
 }
