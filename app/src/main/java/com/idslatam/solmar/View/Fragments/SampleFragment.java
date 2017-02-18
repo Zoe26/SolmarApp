@@ -105,7 +105,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     int ValorTemporal;
     private static final float BEEP_VOLUME = 0.10f;
 
-    CountDownTimer cdt5;
+    CountDownTimer cdt5, cdtBtn;
 
 
     //+++++++++++++++++++
@@ -113,6 +113,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     Calendar calendarCurrentG = null;
 
     boolean flagCancel = false;
+    boolean flagCancelBtn = false;
 
 
     public static SampleFragment newInstance(String text) {
@@ -599,6 +600,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                         mostrarHora();
 
+                        if (flagCancelBtn){
+                            cdtBtn.onFinish();
+                        }
+
                         if (flagCancel){
                             cdt5.cancel();
                         }
@@ -957,6 +962,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                                 btnMarcacion.setTextColor(Color.WHITE);
                                 //btnMarcacion.setText("Time's Up!");
 
+                                if (flagCancelBtn){
+                                    cdtBtn.cancel();
+                                }
+                                botomCountDown();
+
                             }
                         }.start();
                     }
@@ -966,6 +976,91 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             }catch (Exception e){
                 Log.e("EXCEPTION "," count "+ e.getMessage());
             }
+
+    }
+
+    public void botomCountDown(){
+
+        Log.e("--- Ingresó ", "botomCountDown");
+
+        String Fecha = null;
+
+        // CONSULTA DE DATOS DEL SQLITE PARA ENVIO AL SERVIDOR
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
+            String selectQueryA = "SELECT FechaEsperadaIso FROM Alert";
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToLast()) {
+                Fecha = cA.getString(cA.getColumnIndex("FechaEsperadaIso"));
+            }
+            cA.close();
+            dbA.close();
+
+        }catch (Exception e){
+            Log.e("--- Exception ", "Fecha");
+        }
+
+        Calendar horaAux = Calendar.getInstance();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        int minBtn = tiempoEnvio+2;
+
+        try {
+            horaAux.setTime(sdf.parse(Fecha));
+            horaAux.add(Calendar.MINUTE, minBtn);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Calendar c = Calendar.getInstance();
+
+        long startTime = horaAux.getTimeInMillis() - c.getTimeInMillis();
+
+        Log.e(" --- startTime Lim --- ",String.valueOf(startTime));
+        Log.e(" -- fechaLimite -- ",formatoIso.format(horaAux.getTime()));
+
+
+        try {
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    cdtBtn  = new CountDownTimer(startTime,1000) {
+
+                        @Override
+                        public void onTick(long startTime) {
+                            // TODO Auto-generated method stub
+
+                            FlagTiempo="1";
+                            MargenAceptado="1";
+
+                        }
+
+                        @Override
+                        public void onFinish() {
+
+                            FlagTiempo = "0";
+                            MargenAceptado = "1";
+
+                            btnMarcacion.setEnabled(true);
+                            btnMarcacion.setText("Marcaci\u00F3n");
+                            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
+                            btnMarcacion.setTextColor(Color.WHITE);
+
+                            Log.e(" ---- cdtBtn ----- "," FIN");
+
+                        }
+                    }.start();
+                }
+            });
+
+
+        }catch (Exception e){
+            Log.e("EXCEPTION "," count "+ e.getMessage());
+        }
 
     }
 
@@ -1176,6 +1271,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     @Override
     public void onResume() {
 
+        if (flagCancelBtn){
+            cdtBtn.cancel();
+        }
+
         if (flagCancel){
             cdt5.cancel();
             updateCountDown();
@@ -1188,6 +1287,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     @Override
     public void onPause() {
 
+        if (flagCancelBtn){
+            cdtBtn.cancel();
+        }
+
         if (flagCancel){
             cdt5.cancel();
             updateCountDown();
@@ -1199,6 +1302,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     @Override
     public void onStop() {
+
+        if (flagCancelBtn){
+            cdtBtn.cancel();
+        }
+
         if (flagCancel){
             cdt5.cancel();
             updateCountDown();
@@ -1209,6 +1317,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     @Override
     public void onDestroy() {
+
+        if (flagCancelBtn){
+            cdtBtn.cancel();
+        }
+
         if (flagCancel){
             cdt5.cancel();
         }
