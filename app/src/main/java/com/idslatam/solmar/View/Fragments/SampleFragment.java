@@ -167,6 +167,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             if(!alertload.FechaMarcacion.isEmpty()){
                 //calendarCurrentG = fechaEsperada();
+                ultimaMarcacion();
                 Log.e("Alert Data", alertload.FechaEsperada);
                 Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
             } else {
@@ -251,91 +252,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         //Log.e("--- obtenerDatos ", "Fin");
 
         return true;
-    }
-
-    public int cantidadRegistros(){
-
-        int contaRegistro = 0;
-
-        try {
-
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT AlertId FROM Alert";
-            //String selectQueryconfiguration = "SELECT AlertId FROM Alert  WHERE FinTurno = 'false' AND EstadoBoton = 'false'";
-            Cursor cta = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
-            contaRegistro = cta.getCount();
-            cta.close();
-            existeDatos.close();
-
-        } catch (Exception e) {}
-
-        return contaRegistro;
-
-    }
-
-    public Calendar fechaEsperada() {
-
-        Calendar fecha;
-        Log.e("--- Ingreso Comparar ", " compararExisteReg");
-        //**************************************************************************************************
-
-        String fchExiste = null;
-        try {
-
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
-            // si aun no termina sesion y presionó boton
-            String selectQueryA = "SELECT FechaEsperada FROM Alert WHERE FinTurno = 'false'"; // AND EstadoBoton = 'true
-            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
-
-            if (cA.moveToLast()) {
-
-                fchExiste = cA.getString(cA.getColumnIndex("FechaEsperada"));
-            }
-
-            cA.close();
-            dbA.close();
-
-        } catch (Exception e) {
-            Log.e("--- Error Consulta ", e.getMessage());
-        }
-        Calendar cExiste = Calendar.getInstance();
-        Calendar horaCur = Calendar.getInstance();
-
-        //DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-
-        Log.e("**** fchExiste ", fchExiste);
-
-        try {
-            cExiste.setTime(formatoGuardar.parse(fchExiste));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        long fE = cExiste.getTimeInMillis();
-        long fC = horaCur.getTimeInMillis();
-
-        Calendar e = Calendar.getInstance();
-        Calendar h = Calendar.getInstance();
-
-        e.setTimeInMillis(fE);
-        h.setTimeInMillis(fC);
-
-        Log.e("**** fC ", formatoIso.format(h.getTime()));
-        Log.e("**** fE ", formatoIso.format(e.getTime()));
-
-
-        if (fC <= fE) {
-
-            calendarCurrentG = cExiste;
-            Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
-
-        }
-
-        fecha = calendarCurrentG;
-
-        return fecha;
     }
 
     public Boolean crearRegistro(){
@@ -608,7 +524,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                             cdt5.cancel();
                         }
 
+                        compararProximaAlarma();
                         updateCountDown();
+                        ultimaMarcacion();
 
                     }
 
@@ -925,7 +843,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
-            btnMarcacion.setTextColor(Color.WHITE);
+            btnMarcacion.setTextColor(getResources().getColor(R.color.negro_general));
 
             return ;
 
@@ -949,6 +867,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                                 int seconds = (int) (startTime / 1000) % 60 ;
                                 int minutes = (int) ((startTime / (1000*60)) % 60);
                                 int hours   = (int) ((startTime / (1000*60*60)) % 24);
+
+                                btnMarcacion.setTextColor(Color.BLACK);
+
                                 btnMarcacion.setText(minutes+":"+seconds);
 
                             }
@@ -1109,120 +1030,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     }
 
-    public void habilitarBoton(){
-
-        try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
-            String selectQueryA = "SELECT EstadoBoton, FechaEsperadaIso, FechaEsperadaIsoFin, Estado FROM Alert";
-            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
-
-            if (cA.moveToLast()) {
-                EstadoBoton = cA.getString(cA.getColumnIndex("EstadoBoton"));
-                EstadoE  = cA.getString(cA.getColumnIndex("Estado"));
-                FechaEsperadaIso = cA.getString(cA.getColumnIndex("FechaEsperadaIso"));
-                FechaEsperadaIsoFin = cA.getString(cA.getColumnIndex("FechaEsperadaIsoFin"));
-            }
-            cA.close();
-            dbA.close();
-
-        }catch (Exception e){}
-
-        /*Log.e("-- --- --- --- --- : ", "----------------");
-        Log.e("-- FechaEsperadaIso ", FechaEsperadaIso);
-        Log.e("-- FechaEsperadaIsoFin ", FechaEsperadaIsoFin);
-        Log.e("-- --- --- --- --- : ", "----------------");*/
-        // Convertimos la fecha EsperadaIso a Calendar para poder comparar
-        horaIso = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            horaIso.setTime(sdf.parse(FechaEsperadaIso));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        // OBTENGO LA HORA ACTUAL
-        Calendar horaActual = Calendar.getInstance();
-
-        // Agrago el intervalo de tiempo de 3 minutos a la horaIso extraido de la BD
-        horaIni = horaIso;
-
-
-        // ------------------------------------------------------------------------------------
-        // Convertimos la fecha EsperadaIso a Calendar para poder comparar
-        Calendar horaFinPre = Calendar.getInstance();
-        SimpleDateFormat sdfpre = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            horaFinPre.setTime(sdfpre.parse(FechaEsperadaIsoFin));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        horaFin = horaFinPre;
-
-        // COMPARO LA FECHA DEL SISTEMA CON LOS INTERVALOS
-
-        int dia = horaActual.get(Calendar.DAY_OF_MONTH);
-        int diaFin = horaFinPre.get(Calendar.DAY_OF_MONTH);
-
-        int minHoraActual = horaActual.get(Calendar.MINUTE);
-        int minBotonActivo = horaIni.get(Calendar.MINUTE);
-
-        int segHoraActual = horaActual.get(Calendar.SECOND);
-        int segBotonActivo = horaIni.get(Calendar.SECOND);
-
-        int difBoton = Math.abs(minBotonActivo - minHoraActual);
-
-        int difseg = segHoraActual - segBotonActivo;
-
-        int difsegBoton = 59 - difseg;
-
-        if(dia!=diaFin){
-            flagMostrarFecha = true;
-        }
-
-        if(horaActual.after(horaIni) && horaActual.before(horaFin) && EstadoBoton.equals("false")){
-            //Log.e("-- ESTADO : ", EstadoBoton);
-            //playBeepSound();
-
-            try {
-
-                btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcaci\u00F3n");
-                btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
-                btnMarcacion.setTextColor(Color.WHITE);
-                FlagTiempo="1";
-                MargenAceptado="1";
-
-            }catch (Exception e){}
-
-        } else if (EstadoBoton.equals("false") && horaActual.after(horaFin)) {
-
-            try {
-
-                btnMarcacion.setEnabled(true);
-                btnMarcacion.setText("Marcaci\u00F3n");
-                btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
-                btnMarcacion.setTextColor(Color.WHITE);
-                FlagTiempo = "0";
-                MargenAceptado = "1";
-
-            }catch (Exception e){}
-
-        } else {
-            btnMarcacion.setEnabled(true);
-            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
-            if(difsegBoton>9){
-                btnMarcacion.setText(difBoton+ ":"+difsegBoton);
-            } else {
-                btnMarcacion.setText(difBoton+ ":0"+difsegBoton);
-            }
-
-            btnMarcacion.setEnabled(false);
-            btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
-        }
-    }
-
     public void dialogoNoMarco(){
 
         try {
@@ -1265,6 +1072,167 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             builder.setPositiveButton("Aceptar", null);
             builder.show();
         } catch (Exception e){}
+    }
+
+    public void ultimaMarcacion(){
+
+        String horaUltimaMarcacion = null;
+        String estadoMarcacion = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
+
+            String selectQueryAlert = "SELECT FechaEsperada, FlagTiempo FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton ='true'";
+
+            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
+
+            if (calert.moveToLast()) {
+
+                horaUltimaMarcacion = calert.getString(calert.getColumnIndex("FechaEsperada"));
+                estadoMarcacion = calert.getString(calert.getColumnIndex("FlagTiempo"));
+            }
+            calert.close();
+            dbalert.close();
+
+        } catch (Exception e){}
+
+        String ultiHora, ultiHoraFecha;
+
+        DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+        Calendar cal  = Calendar.getInstance(); //--
+        try {
+            cal.setTime(df.parse(horaUltimaMarcacion));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar calf = cal;
+        SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
+
+        ultiHora = formatProx.format(calf.getTime());
+        ultiHoraFecha = formatProxFecha.format(calf.getTime());
+
+
+        int estadoM = Integer.valueOf(estadoMarcacion);
+
+
+
+        if(estadoM==1){
+            textflag_tiempo.setTextColor(getResources().getColor(R.color.negro_general));
+            textflag_tiempo.setText("A tiempo");
+
+            textUltimaMarcacion.setTextColor(getResources().getColor(R.color.negro_general));
+
+            if(flagMostrarFecha==true) {
+                textUltimaMarcacionFecha.setTextColor(getResources().getColor(R.color.negro_general));
+            }
+
+            caritaEstado.setImageResource(R.drawable.ic_feliz);
+
+        }else{
+            textflag_tiempo.setText("A destiempo");
+            textflag_tiempo.setTextColor(getResources().getColor(R.color.red));
+
+            textUltimaMarcacion.setTextColor(getResources().getColor(R.color.red));
+
+            if(flagMostrarFecha==true) {
+                textUltimaMarcacionFecha.setTextColor(getResources().getColor(R.color.red));
+            }
+
+            caritaEstado.setImageResource(R.drawable.ic_triste);
+        }
+
+
+        textUltimaMarcacion.setText(ultiHora);
+        if(flagMostrarFecha==true) {
+            textUltimaMarcacionFecha.setText(ultiHoraFecha);
+        }
+    }
+
+    public int cantidadRegistros(){
+
+        int contaRegistro = 0;
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT AlertId FROM Alert";
+            //String selectQueryconfiguration = "SELECT AlertId FROM Alert  WHERE FinTurno = 'false' AND EstadoBoton = 'false'";
+            Cursor cta = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
+            contaRegistro = cta.getCount();
+            cta.close();
+            existeDatos.close();
+
+        } catch (Exception e) {}
+
+        return contaRegistro;
+
+    }
+
+    public Calendar fechaEsperada() {
+
+        Calendar fecha;
+        Log.e("--- Ingreso Comparar ", " compararExisteReg");
+        //**************************************************************************************************
+
+        String fchExiste = null;
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
+            // si aun no termina sesion y presionó boton
+            String selectQueryA = "SELECT FechaEsperada FROM Alert WHERE FinTurno = 'false'"; // AND EstadoBoton = 'true
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToLast()) {
+
+                fchExiste = cA.getString(cA.getColumnIndex("FechaEsperada"));
+            }
+
+            cA.close();
+            dbA.close();
+
+        } catch (Exception e) {
+            Log.e("--- Error Consulta ", e.getMessage());
+        }
+        Calendar cExiste = Calendar.getInstance();
+        Calendar horaCur = Calendar.getInstance();
+
+        //DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+
+        Log.e("**** fchExiste ", fchExiste);
+
+        try {
+            cExiste.setTime(formatoGuardar.parse(fchExiste));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long fE = cExiste.getTimeInMillis();
+        long fC = horaCur.getTimeInMillis();
+
+        Calendar e = Calendar.getInstance();
+        Calendar h = Calendar.getInstance();
+
+        e.setTimeInMillis(fE);
+        h.setTimeInMillis(fC);
+
+        Log.e("**** fC ", formatoIso.format(h.getTime()));
+        Log.e("**** fE ", formatoIso.format(e.getTime()));
+
+
+        if (fC <= fE) {
+
+            calendarCurrentG = cExiste;
+            Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
+
+        }
+
+        fecha = calendarCurrentG;
+
+        return fecha;
     }
 
 
