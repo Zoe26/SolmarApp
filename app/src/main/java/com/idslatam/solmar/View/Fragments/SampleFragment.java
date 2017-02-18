@@ -44,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.R;
-import com.idslatam.solmar.Tracking.Broadcast.AlarmLocation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,7 +55,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     Context mContext;
 
     Button btnMarcacion;
-    TextView textHora, textUltimaMarcacion, textUltimaMarcacionFecha, textHoraFecha, textintervalo, textflag_tiempo;
+    TextView textHora, textUltimaMarcacion, textUltimaMarcacionFecha, textHoraFecha, texttolerancia, textflag_tiempo;
 
     View myView;
     ImageView caritaEstado;
@@ -101,6 +100,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     CountDownTimer cdt5;
 
 
+    //+++++++++++++++++++
+
+    Calendar calendarCurrentG = null;
+
+
     public static SampleFragment newInstance(String text) {
         Bundle args = new Bundle();
         args.putString("", text);
@@ -124,7 +128,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         myView = inflater.inflate(R.layout.fragment_alert, container, false);
         textHora = (TextView) myView.findViewById(R.id.hora);
         textHoraFecha = (TextView) myView.findViewById(R.id.hora_fecha);
-        textintervalo = (TextView) myView.findViewById(R.id.intervalo);
+        texttolerancia = (TextView) myView.findViewById(R.id.tolerancia);
         textflag_tiempo = (TextView) myView.findViewById(R.id.flag_tiempo);
         caritaEstado = (ImageView) myView.findViewById(R.id.carita);
 
@@ -151,26 +155,95 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public void load(){
 
-        /*Alert alertload = ultimoRegistro();
-        Log.e("alertload", "Ingresó");
-        if(alertload==null){
-            Log.e("Campo NULL "," IF");
-        }*/
-
         //Log.e("alertload", alertload.FechaMarcacion.toString());
         //new getDatos().execute();
 
+        Alert alertload = ultimoRegistro();
+
         if(obtenerDatos() == true){
 
-            if(cantidadRegistros() > 0){
-                updateCountDown();
-                mostrarHora();
+            if(!alertload.FechaMarcacion.isEmpty()){
+                calendarCurrentG = fechaEsperada();
+                Log.e("Alert Data", alertload.FechaMarcacion);
+            }else{
+                calendarCurrentG = Calendar.getInstance();
+                Log.e("Alert Vacio", "Sin datos en Alert");
             }
 
+            crearRegistro();
+            mostrarHora();
+            updateCountDown();
+
         } else {
-            Toast.makeText(mContext, "Error al obtener Configuración", Toast.LENGTH_LONG).show();
+
+            Toast.makeText(mContext, "Error al obtener datos de configuración", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    public Boolean obtenerDatos(){
+
+        Log.e("--- Ingresó ", "obtenerDatos");
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+
+            String selectQuery = "SELECT IntervaloMarcacion, CodigoEmpleado, IntervaloMarcacionTolerancia" +
+                    ",NumeroCel, GuidDipositivo  FROM Configuration";
+
+            Cursor c = db.rawQuery(selectQuery, new String[]{});
+
+            if (c.moveToFirst()) {
+
+                tiempoGuardado = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
+                tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
+                NumeroG = c.getString(c.getColumnIndex("NumeroCel"));
+                DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
+                CodigoEmpleado = c.getString(c.getColumnIndex("CodigoEmpleado"));
+
+            }
+            c.close();
+            db.close();
+
+        } catch (Exception e) {}
+
+        if(tiempoGuardado == 0){
+
+            //tiempoGuardado=30;
+            Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+
+            return  false;
+        }
+
+        if(tiempoIntervalo == 0){
+
+            //tiempoIntervalo=1;
+            Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
+
+            return  false;
+        }
+
+
+        if(CodigoEmpleado==null){
+            Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+            return  false;
+        }
+
+        if(DispositivoId==null){
+            Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
+            return  false;
+        }
+
+        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+        Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
+        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+        Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
+
+        Log.e("--- obtenerDatos ", "Fin");
+
+        return true;
     }
 
     public int cantidadRegistros(){
@@ -193,6 +266,251 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         return contaRegistro;
 
     }
+
+    public Calendar fechaEsperada() {
+
+        Calendar fecha;
+        Log.e("--- Ingreso Comparar ", " compararExisteReg");
+        //**************************************************************************************************
+
+        String fchExiste = null;
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
+            // si aun no termina sesion y presionó boton
+            String selectQueryA = "SELECT FechaEsperada FROM Alert WHERE FinTurno = 'false'"; // AND EstadoBoton = 'true
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToLast()) {
+
+                fchExiste = cA.getString(cA.getColumnIndex("FechaEsperada"));
+            }
+
+            cA.close();
+            dbA.close();
+
+        } catch (Exception e) {
+            Log.e("--- Error Consulta ", e.getMessage());
+        }
+        Calendar cExiste = Calendar.getInstance();
+        Calendar horaCur = Calendar.getInstance();
+
+        //DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+
+        Log.e("**** fchExiste ", fchExiste);
+
+        try {
+            cExiste.setTime(formatoGuardar.parse(fchExiste));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long fE = cExiste.getTimeInMillis();
+        long fC = horaCur.getTimeInMillis();
+
+        Calendar e = Calendar.getInstance();
+        Calendar h = Calendar.getInstance();
+
+        e.setTimeInMillis(fE);
+        h.setTimeInMillis(fC);
+
+        Log.e("**** fC ", formatoIso.format(h.getTime()));
+        Log.e("**** fE ", formatoIso.format(e.getTime()));
+
+
+        if (fC <= fE) {
+
+            calendarCurrentG = cExiste;
+            Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
+
+        }
+
+        fecha = calendarCurrentG;
+
+        return fecha;
+    }
+
+    public Boolean crearRegistro(){
+
+        Log.e("ºººººººººººººººººººººº", "ººººººººººººººººººººººººº");
+        Log.e("--- CREATE REGISTRO ---", " INGRESÓ");
+
+        int aux = 0;
+        int minuto = calendarCurrentG.get(Calendar.MINUTE);
+        int resto;
+
+        if (minuto > tiempoGuardado) {
+            resto = minuto%tiempoGuardado;
+            if(resto==0){
+                aux = 0;
+            } else {
+                aux = tiempoGuardado - resto;
+            }
+
+        } else if(minuto == tiempoGuardado){
+
+            aux = tiempoGuardado;
+
+        } else { // SI minuto es menor que tiempoGuardado
+
+            aux = tiempoGuardado - minuto;
+
+            if(minuto==0){
+                aux = 0;
+            }
+        }
+
+        int minutoT = aux + minuto;
+
+        Log.e("-----------------", "-----------------");
+        Log.e("--- AUX ", String.valueOf(aux));
+        Log.e("--- MINUTO T ", String.valueOf(minutoT));
+
+
+        Calendar choraEsperadaGL = Calendar.getInstance();
+        Calendar choraEsperadaIsoGL = Calendar.getInstance();
+
+        choraEsperadaGL.set(Calendar.MINUTE, minutoT);
+        choraEsperadaGL.set(Calendar.SECOND, 00);
+
+        choraEsperadaIsoGL.set(Calendar.MINUTE, minutoT);
+
+        horaEsperadaG = formatoGuardar.format(choraEsperadaGL.getTime());
+
+        choraProximaG = choraEsperadaGL;
+        choraProximaG.add(Calendar.MINUTE, tiempoGuardado);
+        choraProximaG.set(Calendar.SECOND, 00);
+        horaProximaG = formatoGuardar.format(choraProximaG.getTime());
+
+        choraIso = choraEsperadaIsoGL;
+        choraIso.set(Calendar.MINUTE, minutoT);
+        choraIso.set(Calendar.SECOND, 00);
+        choraIso.add(Calendar.MINUTE, -tiempoIntervalo);
+
+        horaEsperadaIsoG = formatoIso.format(choraEsperadaIsoGL.getTime());
+
+        // --- Hora IsoFin
+        choraIsoFin = choraEsperadaIsoGL; //Calendar.getInstance();
+        choraIsoFin.set(Calendar.MINUTE, minutoT);
+        choraIsoFin.add(Calendar.MINUTE, tiempoIntervalo);
+
+        horaEsperadaIsoFinG = formatoIso.format(choraEsperadaIsoGL.getTime());
+
+        Log.e("--- H. ESP G ", String.valueOf(horaEsperadaG));
+        Log.e("--- H. ESP ISO ", String.valueOf(horaEsperadaIsoG));
+        Log.e("--- H. FIN ", String.valueOf(horaEsperadaIsoFinG));
+
+        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+
+
+        try {
+
+            AlertCrud alertCrud = new AlertCrud(mContext);
+
+            Alert alert = new Alert();
+            alert.NumeroA = NumeroG;//Done
+            alert.FechaMarcacion = "1900,01,01,00,00,00";
+            alert.FechaEsperada = horaEsperadaG;//Done
+            alert.FechaProxima = horaProximaG;//Done
+            alert.FlagTiempo = "0";
+            alert.MargenAceptado = "0";
+            alert.EstadoA = "false";
+            alert.EstadoBoton = "false";
+            alert.FechaEsperadaIso = horaEsperadaIsoG;//Done
+            alert.FechaEsperadaIsoFin = horaEsperadaIsoFinG;//Done
+            alert.DispositivoId = DispositivoId;//Done
+            alert.CodigoEmpleado = CodigoEmpleado;//Done
+            alert.FinTurno = "false";
+
+            _Alert_Id = alertCrud.insert(alert);
+
+        } catch (Exception e) {
+            Log.e("--- Exception Alert ", " GUARDAR ");
+        }
+
+        Log.e("--- FIN ", " CREATE Registro ");
+
+        return true;
+    }
+
+    public void mostrarHora() {
+
+        Log.e("--- MostrarHora ", " INGRESO ");
+
+        // CONSULTA ALERT ---------------------------------------------
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
+            String selectQueryAlert = "SELECT FechaEsperada, FechaProxima, EstadoBoton FROM Alert";
+
+            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
+
+            if (calert.moveToLast()) {
+
+                HoraMarcacionP = calert.getString(calert.getColumnIndex("FechaEsperada"));
+                FechaEsperada = calert.getString(calert.getColumnIndex("FechaEsperada"));
+                FechaProxima = calert.getString(calert.getColumnIndex("FechaProxima"));
+                EstadoBoton = calert.getString(calert.getColumnIndex("EstadoBoton"));
+            }
+            calert.close();
+            dbalert.close();
+
+            String tol = Integer.toString(tiempoIntervalo);
+
+            texttolerancia.setText(tol);
+
+            if (EstadoBoton.equals("false")){
+
+                String proximaFecha;
+
+                DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+                Calendar cal  = Calendar.getInstance();
+                cal.setTime(df.parse(FechaEsperada));
+                Calendar calf = cal;
+                SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
+
+                Proxima = formatProx.format(calf.getTime());
+                proximaFecha = formatProxFecha.format(calf.getTime());
+
+                textHora.setText(Proxima);
+                if(flagMostrarFecha==true){
+                    textHoraFecha.setText(proximaFecha);
+                }
+
+            } else {
+
+                String proximaFecha;
+
+                DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
+                Calendar cal  = Calendar.getInstance(); //--
+                cal.setTime(df.parse(FechaProxima));
+                Calendar calf = cal;
+                SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
+
+                Proxima = formatProx.format(calf.getTime());
+                proximaFecha = formatProxFecha.format(calf.getTime());
+
+                textHora.setText(Proxima);
+
+                if(flagMostrarFecha==true){
+                    textHoraFecha.setText(proximaFecha);
+                }
+            }
+
+        }catch (Exception e){
+            Log.e("--- MostrarHora Except ", e.getMessage());
+        }
+
+
+        Log.e("--- MostrarHora ", " FIN ");
+    }
+
+
+
 
     class getDatos extends AsyncTask<Void, Void, Void> {
 
@@ -267,71 +585,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             //Log.e(" Datos ","Completados! ");
 
         }
-    }
-
-    public Boolean obtenerDatos(){
-
-        Log.e("--- Ingresó ", "obtenerDatos");
-
-        try {
-
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-
-            String selectQuery = "SELECT IntervaloMarcacion, CodigoEmpleado, IntervaloMarcacionTolerancia" +
-                    ",NumeroCel, GuidDipositivo  FROM Configuration";
-
-            Cursor c = db.rawQuery(selectQuery, new String[]{});
-
-            if (c.moveToFirst()) {
-
-                tiempoGuardado = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
-                tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
-                NumeroG = c.getString(c.getColumnIndex("NumeroCel"));
-                DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
-                CodigoEmpleado = c.getString(c.getColumnIndex("CodigoEmpleado"));
-
-            }
-            c.close();
-            db.close();
-
-        } catch (Exception e) {}
-
-        if(tiempoGuardado == 0){
-
-            //tiempoGuardado=30;
-            Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-
-            return  false;
-        }
-
-        if(tiempoIntervalo == 0){
-
-            //tiempoIntervalo=1;
-            Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
-
-            return  false;
-        }
-
-
-        if(CodigoEmpleado==null){
-            Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
-            return  false;
-        }
-
-        if(DispositivoId==null){
-            Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
-            return  false;
-        }
-
-        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-        Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
-        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
-        Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
-
-        Log.e("--- obtenerDatos ", "Fin");
-
-        return true;
     }
 
     public void onClick(View v) {
@@ -657,175 +910,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     }
 
-    public Boolean crearRegistro(){
-
-        Log.e("ºººººººººººººººººººººº", "ººººººººººººººººººººººººº");
-        Log.e("--- CREATE ---", " CANT. DE REGISTROS = "+String.valueOf(cantidadRegistros()));
-
-        Calendar calendarCurrentG = null;
-
-        if(cantidadRegistros()>0){
-
-            Log.e("--- Ingreso Comparar ", " compararExisteReg");
-            //**************************************************************************************************
-
-            String fchExiste = null;
-            try {
-
-                DBHelper dataBaseHelper = new DBHelper(mContext);
-                SQLiteDatabase dbA = dataBaseHelper.getReadableDatabase();
-                // si aun no termina sesion y presionó boton
-                String selectQueryA = "SELECT FechaEsperada FROM Alert WHERE FinTurno = 'false'"; // AND EstadoBoton = 'true
-                Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
-
-                if (cA.moveToLast()) {
-
-                    fchExiste = cA.getString(cA.getColumnIndex("FechaEsperada"));
-                }
-
-                cA.close();
-                dbA.close();
-
-            } catch (Exception e) {
-                Log.e("--- Error Consulta ", e.getMessage());
-            }
-            Calendar cExiste = Calendar.getInstance();
-            Calendar horaCur = Calendar.getInstance();
-
-            //DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-
-            Log.e("**** fchExiste ", fchExiste);
-
-            try {
-                cExiste.setTime(formatoGuardar.parse(fchExiste));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            long fE = cExiste.getTimeInMillis();
-            long fC = horaCur.getTimeInMillis();
-
-            Calendar e = Calendar.getInstance();
-            Calendar h = Calendar.getInstance();
-
-            e.setTimeInMillis(fE);
-            h.setTimeInMillis(fC);
-
-            Log.e("**** fC ", formatoIso.format(h.getTime()));
-            Log.e("**** fE ", formatoIso.format(e.getTime()));
-
-
-            if (fC <= fE) {
-
-                calendarCurrentG = cExiste;
-                Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
-
-            }
-
-        } else {
-            calendarCurrentG = Calendar.getInstance();
-        }
-
-        int aux = 0;
-
-        //Calendar calendarCurrentG = Calendar.getInstance();
-
-        int minuto = calendarCurrentG.get(Calendar.MINUTE);
-        int resto;
-
-        if (minuto > tiempoGuardado) { // SI minuto es mayor que tiempoGuardado
-            resto = minuto%tiempoGuardado;
-            if(resto==0){
-                aux = 0;
-            } else {
-                aux = tiempoGuardado - resto;
-            }
-
-        } else if(minuto == tiempoGuardado){
-
-            aux = tiempoGuardado;
-
-        } else { // SI minuto es menor que tiempoGuardado
-
-            aux = tiempoGuardado - minuto;
-
-            if(minuto==0){
-                aux = 0;
-            }
-        }
-
-        int minutoT = aux + minuto;
-
-        Log.e("-----------------", "-----------------");
-        Log.e("--- AUX ", String.valueOf(aux));
-        Log.e("--- MINUTO T ", String.valueOf(minutoT));
-
-
-        Calendar choraEsperadaGL = Calendar.getInstance();
-        Calendar choraEsperadaIsoGL = Calendar.getInstance();
-
-        choraEsperadaGL.set(Calendar.MINUTE, minutoT);
-        choraEsperadaGL.set(Calendar.SECOND, 00);
-
-        choraEsperadaIsoGL.set(Calendar.MINUTE, minutoT);
-
-        horaEsperadaG = formatoGuardar.format(choraEsperadaGL.getTime());
-
-        choraProximaG = choraEsperadaGL;
-        choraProximaG.add(Calendar.MINUTE, tiempoGuardado);
-        choraProximaG.set(Calendar.SECOND, 00);
-        horaProximaG = formatoGuardar.format(choraProximaG.getTime());
-
-        choraIso = choraEsperadaIsoGL;
-        choraIso.set(Calendar.MINUTE, minutoT);
-        choraIso.set(Calendar.SECOND, 00);
-        choraIso.add(Calendar.MINUTE, -tiempoIntervalo);
-
-        horaEsperadaIsoG = formatoIso.format(choraEsperadaIsoGL.getTime());
-
-        // --- Hora IsoFin
-        choraIsoFin = choraEsperadaIsoGL; //Calendar.getInstance();
-        choraIsoFin.set(Calendar.MINUTE, minutoT);
-        choraIsoFin.add(Calendar.MINUTE, tiempoIntervalo);
-
-        horaEsperadaIsoFinG = formatoIso.format(choraEsperadaIsoGL.getTime());
-
-        Log.e("--- H. ESP G ", String.valueOf(horaEsperadaG));
-        Log.e("--- H. ESP ISO ", String.valueOf(horaEsperadaIsoG));
-        Log.e("--- H. FIN ", String.valueOf(horaEsperadaIsoFinG));
-
-        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
-
-
-        try {
-
-            AlertCrud alertCrud = new AlertCrud(mContext);
-
-            Alert alert = new Alert();
-            alert.NumeroA = NumeroG;//Done
-            alert.FechaMarcacion = "1900,01,01,00,00,00";
-            alert.FechaEsperada = horaEsperadaG;//Done
-            alert.FechaProxima = horaProximaG;//Done
-            alert.FlagTiempo = "0";
-            alert.MargenAceptado = "0";
-            alert.EstadoA = "false";
-            alert.EstadoBoton = "false";
-            alert.FechaEsperadaIso = horaEsperadaIsoG;//Done
-            alert.FechaEsperadaIsoFin = horaEsperadaIsoFinG;//Done
-            alert.DispositivoId = DispositivoId;//Done
-            alert.CodigoEmpleado = CodigoEmpleado;//Done
-            alert.FinTurno = "false";
-
-            _Alert_Id = alertCrud.insert(alert);
-
-        } catch (Exception e) {
-            Log.e("--- Exception Alert ", " GUARDAR ");
-        }
-
-        return true;
-    }
-
     public void updateCountDown(){
 
 
@@ -871,7 +955,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
             btnMarcacion.setTextColor(Color.WHITE);
 
-            return;
+            return ;
 
         }
             Log.e(" ---- startTime ----- ",String.valueOf(startTime));
@@ -960,70 +1044,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         }
         //**************************************************************************************************
 
-    }
-
-    public void mostrarHora() {
-
-        // CONSULTA ALERT ---------------------------------------------
-        try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
-            String selectQueryAlert = "SELECT FechaEsperada, FechaProxima, EstadoBoton FROM Alert";
-
-            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
-
-            if (calert.moveToLast()) {
-
-                HoraMarcacionP = calert.getString(calert.getColumnIndex("FechaEsperada"));
-                FechaEsperada = calert.getString(calert.getColumnIndex("FechaEsperada"));
-                FechaProxima = calert.getString(calert.getColumnIndex("FechaProxima"));
-                EstadoBoton = calert.getString(calert.getColumnIndex("EstadoBoton"));
-            }
-            calert.close();
-            dbalert.close();
-
-
-            if (EstadoBoton.equals("false")){
-
-                String proximaFecha;
-
-                DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-                Calendar cal  = Calendar.getInstance();
-                cal.setTime(df.parse(FechaEsperada));
-                Calendar calf = cal;
-                SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
-                SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
-
-                Proxima = formatProx.format(calf.getTime());
-                proximaFecha = formatProxFecha.format(calf.getTime());
-
-                textHora.setText(Proxima);
-                if(flagMostrarFecha==true){
-                    textHoraFecha.setText(proximaFecha);
-                }
-
-            } else {
-
-                String proximaFecha;
-
-                DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-                Calendar cal  = Calendar.getInstance(); //--
-                cal.setTime(df.parse(FechaProxima));
-                Calendar calf = cal;
-                SimpleDateFormat formatProx = new SimpleDateFormat("HH:mm");
-                SimpleDateFormat formatProxFecha = new SimpleDateFormat("dd-MM-yyyy");
-
-                Proxima = formatProx.format(calf.getTime());
-                proximaFecha = formatProxFecha.format(calf.getTime());
-
-                textHora.setText(Proxima);
-
-                if(flagMostrarFecha==true){
-                    textHoraFecha.setText(proximaFecha);
-                }
-            }
-
-        }catch (Exception e){}
     }
 
     public void habilitarBoton(){
