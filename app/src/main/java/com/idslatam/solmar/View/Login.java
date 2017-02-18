@@ -303,31 +303,6 @@ public class Login extends AppCompatActivity implements
 
         String URL = URL_API.concat("token");
 
-        /*JsonObject json = new JsonObject();
-        json.addProperty("grant_type", "password");
-        json.addProperty("username", user);
-        json.addProperty("password", pass);
-
-        Ion.with(this)
-                .load("POST", URL)
-                .setJsonObjectBody(json)
-                .asJsonObject()
-                .withResponse()
-                .setCallback(new FutureCallback<Response<JsonObject>>() {
-                    @Override
-                    public void onCompleted(Exception e, Response<JsonObject> result) {
-
-                        Log.e("JsonObject ", String.valueOf(result.getResult()));
-
-                        if(result.getHeaders().code()==200){
-                            JsonObject r = result.getResult();
-                            accessToken = r.get("access_token").getAsString();
-                        }
-
-                    }
-                });*/
-
-
         Ion.with(this)
                 .load("POST", URL)
                 .setBodyParameter("grant_type", "password")
@@ -338,15 +313,31 @@ public class Login extends AppCompatActivity implements
                 .setCallback(new FutureCallback<Response<String>>() {
                     @Override
                     public void onCompleted(Exception e, Response<String> result) {
-                        // print the response code, ie, 200
 
                         if(result.getHeaders().code()==200){
 
+                            try {
+
+                                JSONObject j = new JSONObject(result.getResult().toString());
+                                accessToken = j.getString("access_token");
+                                Log.e("j ", j.getString("access_token"));
+
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+
+                            Configuration configuration = new Configuration();
+                            configuration.Token= accessToken;
+                            configuration.CodigoEmpleado = pass;
+                            configuration.ConfigurationId = 1;
+                            configurationCRUD.updateToken(configuration);
+
+                            //new PostAsyncAsistencia().execute(Numero, DispositivoId, FechaInicioCelular);
+                            Intent intent = new Intent(Login.this, MenuPrincipal.class);
+                            intent.putExtra("Fotoch", Fotoch);
+                            startActivity(intent);
+
                         }
-
-                            //accessToken = result.get("access_token").getAsString();
-
-                        Log.e("JsonObject ", result.getResult());
                     }
                 });
     }
@@ -712,13 +703,6 @@ public class Login extends AppCompatActivity implements
         builder.setMessage("Al no aceptar las configuraciones previas Solgis no iniciara de manera correcta. Por favor intente nuevamente");
         builder.setPositiveButton("Ok", null);
         builder.show();
-    }
-
-
-    private void tareaLarga() {
-        try {
-            Thread.sleep(3000);
-        } catch(InterruptedException e) {}
     }
 
 }

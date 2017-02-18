@@ -108,6 +108,7 @@ public class ConfigurationCrud {
         ContentValues values = new ContentValues();
 
         values.put(Configuration.KEY_Token, configuration.Token);
+        values.put(Configuration.KEY_CodigoEmpleado, configuration.CodigoEmpleado);
 
         db.update(Configuration.TABLE_CONFIGURATION, values, Configuration.KEY_ID_CONFIGURATION + "=" + configuration.ConfigurationId, null);
         db.close();

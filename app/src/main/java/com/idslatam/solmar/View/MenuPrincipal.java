@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import org.apache.http.entity.mime.content.FileBody;
@@ -41,6 +42,9 @@ import com.idslatam.solmar.View.Fragments.HomeFragment;
 import com.idslatam.solmar.View.Fragments.ImageFragment;
 import com.idslatam.solmar.View.Fragments.JobsFragment;
 import com.idslatam.solmar.View.Fragments.SampleFragment;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarBadge;
 import com.roughike.bottombar.BottomBarFragment;
@@ -55,6 +59,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,7 +84,7 @@ public class MenuPrincipal extends  ActionBarActivity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     long totalSize = 0;
-    String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile;
+    String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,15 +93,17 @@ public class MenuPrincipal extends  ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.app_bar);
 
         mContext = this;
+
         try {
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT CodigoEmpleado FROM Configuration";
+            String selectQueryconfiguration = "SELECT CodigoEmpleado, GuidDipositivo FROM Configuration";
             Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
             if (cConfiguration.moveToFirst()) {
                 fotocheckCod = cConfiguration.getString(cConfiguration.getColumnIndex("CodigoEmpleado"));
+                DispositivoId = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
             }
             cConfiguration.close();
             dbConfiguration.close();
@@ -122,64 +129,165 @@ public class MenuPrincipal extends  ActionBarActivity {
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
+
         bottomBar = BottomBar.attach(this, savedInstanceState);
 
-        bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
-                new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
-                new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
-                new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
-        );
+        String URL = URL_API.concat("Aplicacion/GetAppByUser?id="+DispositivoId);
 
-        // Setting colors for different tabs when there's more than three of them.
-        bottomBar.mapColorForTab(0, "#3B494C");
-        bottomBar.mapColorForTab(1, "#00796B");
-        bottomBar.mapColorForTab(2, "#7B1FA2");
-        bottomBar.mapColorForTab(3, "#FF5252");
-        bottomBar.mapColorForTab(4, "#3B494C");
 
-        bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
-            @Override
-            public void onItemSelected(int position) {
-                FragmentManager fragmentManager = getFragmentManager();
-                switch (position) {
+        final ProgressDialog pDialog;
 
-                    case 1:
-                        // Item 1 Selected
-                        try {
-                            captureImage();
-                            bottomBar.setDefaultTabPosition(0);
-                        } catch (Exception e){}
-                        break;
+        pDialog = new ProgressDialog(MenuPrincipal.this);
+        pDialog.setMessage("Cargando Configuraci\u00f3n...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
 
-                    case 4:
-                        // Item 4 Selected
-                        try {
-                            scanBarcode();
-                            bottomBar.setDefaultTabPosition(0);
-                        } catch (Exception e){}
-                        break;
+        Ion.with(this)
+                .load("GET", URL)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> response) {
+                        //try catch here for null getHeaders
 
-                }
-            }
-        });
+                            if (response.getHeaders().code() == 200) {
 
-        // Make a Badge for the first tab, with red background color and a value of "4".
-        BottomBarBadge unreadMessages = bottomBar.makeBadgeForTabAt(2, "#E91E63", 4);
+                                try {
 
-        // Control the badge's visibility
-        unreadMessages.show();
-        //unreadMessages.hide();
+                                    JSONObject json = new JSONObject(response.getResult().toString());
+                                    Log.e("JSON GET: Boolean", json.toString());
 
-        // Change the displayed count for this badge.
-        //unreadMessages.setCount(4);
+                                    String Menu = null;
+                                    try {
+                                        Menu = json.getString("Menu");
+                                    } catch (JSONException e2) {
+                                        e.printStackTrace();
+                                    }
 
-        // Change the show / hide animation duration.
-        unreadMessages.setAnimationDuration(200);
+                                    JSONArray jsonA = null;
+                                    try {
+                                        jsonA = new JSONArray(Menu);
+                                    } catch (JSONException e3) {
+                                        e.printStackTrace();
+                                    }
 
-        // If you want the badge be shown always after unselecting the tab that contains it.
-        //unreadMessages.setAutoShowAfterUnSelection(true);
+                                    String []valores = new String[5];
+                                    int []val = new int[5];
+
+                                    try {
+                                        for (int i = 0; i < jsonA.length(); i++) {
+
+                                            JSONObject c = jsonA.getJSONObject(i);
+                                            val[i] = c.getInt("Id");
+                                            valores[i] = c.getString("Configuracion");
+
+                                            JSONArray jsonValores = new JSONArray(valores[i]);
+
+                                            for (int j = 0; j < jsonValores.length(); j++) {
+                                                JSONObject v = jsonValores.getJSONObject(j);
+
+
+                                                if(c.getInt("Id")==2){
+
+                                                    if(v.getInt("ConfiguracionId")==3){
+
+                                                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                                        db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + v.getInt("Valor") + "'");
+                                                        db.close();
+
+                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
+                                                    }
+
+                                                    if(v.getInt("ConfiguracionId")==4){
+
+                                                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                                        db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + v.getInt("Valor")  + "'");
+                                                        db.close();
+                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (Exception e6){
+                                        Log.e("-- Error! ", " al obtener Menu");
+                                    }
+
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+
+                                Log.e("-- Get Menu! ", " Finaliza");
+                                //bottomBar = BottomBar.attach(this, savedInstanceState);
+
+                                bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
+                                        new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
+                                        new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
+                                        new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
+                                        new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
+                                        new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
+                                );
+
+                                // Setting colors for different tabs when there's more than three of them.
+                                bottomBar.mapColorForTab(0, "#3B494C");
+                                bottomBar.mapColorForTab(1, "#00796B");
+                                bottomBar.mapColorForTab(2, "#7B1FA2");
+                                bottomBar.mapColorForTab(3, "#FF5252");
+                                bottomBar.mapColorForTab(4, "#3B494C");
+
+                                bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(int position) {
+                                        FragmentManager fragmentManager = getFragmentManager();
+                                        switch (position) {
+
+                                            case 1:
+                                                // Item 1 Selected
+                                                try {
+                                                    captureImage();
+                                                    bottomBar.setDefaultTabPosition(0);
+                                                } catch (Exception e){}
+                                                break;
+
+                                            case 4:
+                                                // Item 4 Selected
+                                                try {
+                                                    scanBarcode();
+                                                    bottomBar.setDefaultTabPosition(0);
+                                                } catch (Exception e){}
+                                                break;
+
+                                        }
+                                    }
+                                });
+
+                                // Make a Badge for the first tab, with red background color and a value of "4".
+                                BottomBarBadge unreadMessages = bottomBar.makeBadgeForTabAt(2, "#E91E63", 4);
+
+                                // Control the badge's visibility
+                                unreadMessages.show();
+                                //unreadMessages.hide();
+
+                                // Change the displayed count for this badge.
+                                //unreadMessages.setCount(4);
+
+                                // Change the show / hide animation duration.
+                                unreadMessages.setAnimationDuration(200);
+
+                                // If you want the badge be shown always after unselecting the tab that contains it.
+                                //unreadMessages.setAutoShowAfterUnSelection(true);
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+
+                            } else {
+                                Toast.makeText(mContext, "Error de Conexión", Toast.LENGTH_LONG).show();
+                            }
+                    }
+                });
     }
 
     public void scanBarcode() {

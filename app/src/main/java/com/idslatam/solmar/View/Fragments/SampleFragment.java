@@ -141,6 +141,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
         btnMarcacion.setTextColor(Color.WHITE);
 
+        Log.e("onCreate Alert", "Ingresó");
+        //obtenerDatos();
         load();
 
         return myView;
@@ -149,12 +151,47 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public void load(){
 
-        if(cantidadRegistros() != 0){
-            updateCountDown();
-            mostrarHora();
+        /*Alert alertload = ultimoRegistro();
+        Log.e("alertload", "Ingresó");
+        if(alertload==null){
+            Log.e("Campo NULL "," IF");
+        }*/
+
+        //Log.e("alertload", alertload.FechaMarcacion.toString());
+        //new getDatos().execute();
+
+        if(obtenerDatos() == true){
+
+            if(cantidadRegistros() > 0){
+                updateCountDown();
+                mostrarHora();
+            }
+
+        } else {
+            Toast.makeText(mContext, "Error al obtener Configuración", Toast.LENGTH_LONG).show();
         }
 
-        new getDatos().execute();
+    }
+
+    public int cantidadRegistros(){
+
+        int contaRegistro = 0;
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT AlertId FROM Alert";
+            //String selectQueryconfiguration = "SELECT AlertId FROM Alert  WHERE FinTurno = 'false' AND EstadoBoton = 'false'";
+            Cursor cta = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
+            contaRegistro = cta.getCount();
+            cta.close();
+            existeDatos.close();
+
+        } catch (Exception e) {}
+
+        return contaRegistro;
+
     }
 
     class getDatos extends AsyncTask<Void, Void, Void> {
@@ -176,7 +213,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                     Log.e(" Completando ","Datos...");
 
                 } else {
-                    load();
+                    //load();
                 }
 
             } catch (Exception e) {e.printStackTrace();}
@@ -234,6 +271,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public Boolean obtenerDatos(){
 
+        Log.e("--- Ingresó ", "obtenerDatos");
+
         try {
 
             DBHelper dataBaseHelper = new DBHelper(mContext);
@@ -259,19 +298,38 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } catch (Exception e) {}
 
         if(tiempoGuardado == 0){
-            // Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+
+            //tiempoGuardado=30;
+            Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+
             return  false;
         }
 
+        if(tiempoIntervalo == 0){
+
+            //tiempoIntervalo=1;
+            Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
+
+            return  false;
+        }
+
+
         if(CodigoEmpleado==null){
-            //Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+            Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
             return  false;
         }
 
         if(DispositivoId==null){
-            //Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+            Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
             return  false;
         }
+
+        Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
+        Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
+        Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
+        Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
+
+        Log.e("--- obtenerDatos ", "Fin");
 
         return true;
     }
@@ -551,24 +609,51 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         }
     }
 
-    public int cantidadRegistros(){
+    public Alert ultimoRegistro(){
 
-        int contaRegistro = 0;
+        Alert alert = new Alert();
+
+        alert.FechaMarcacion = "";
+
+        if(alert.FechaMarcacion == ""){
+            Log.e("Alert ", alert.FechaMarcacion);
+        }
+
 
         try {
 
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT AlertId FROM Alert";
-            //String selectQueryconfiguration = "SELECT AlertId FROM Alert  WHERE FinTurno = 'false' AND EstadoBoton = 'false'";
-            Cursor cta = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
-            contaRegistro = cta.getCount();
-            cta.close();
+            String selectQueryconfiguration = "SELECT NumeroCel, FechaMarcacion, FechaEsperada, " +
+                    "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado FROM Alert";
+            Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
+
+            Log.e("Consulta ", "If");
+
+            if(alert.FechaMarcacion == "")
+                Log.e("Alert ", alert.FechaMarcacion);
+
+            if (cA.moveToLast()) {
+
+                Log.e("FechaEsperada ", "");
+
+                alert.NumeroA = cA.getString(cA.getColumnIndex("NumeroCel"));
+                alert.FechaMarcacion = cA.getString(cA.getColumnIndex("FechaMarcacion"));
+                alert.FechaEsperada = cA.getString(cA.getColumnIndex("FechaEsperada"));
+                alert.FechaProxima = cA.getString(cA.getColumnIndex("FechaProxima"));
+                alert.FlagTiempo = cA.getString(cA.getColumnIndex("FlagTiempo"));
+                alert.MargenAceptado = cA.getString(cA.getColumnIndex("MargenAceptado"));
+                alert.DispositivoId = cA.getString(cA.getColumnIndex("DispositivoId"));
+                alert.CodigoEmpleado = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
+
+            }
+
+            cA.close();
             existeDatos.close();
 
         } catch (Exception e) {}
 
-        return contaRegistro;
+        return alert;
 
     }
 

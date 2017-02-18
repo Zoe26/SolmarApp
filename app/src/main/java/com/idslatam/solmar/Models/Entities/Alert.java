@@ -28,7 +28,7 @@ public class Alert {
 
     public int AlertId;
     public String NumeroA;
-    public String FechaMarcacion;
+    public String FechaMarcacion = null;
     public String FechaEsperada;
     public String FechaProxima;
     public String FlagTiempo;
