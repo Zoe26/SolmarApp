@@ -34,6 +34,7 @@ import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.AlertCrud;
+import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.idslatam.solmar.Models.Entities.Alert;
+import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Bienvenido;
 import com.idslatam.solmar.View.Login;
@@ -166,12 +168,14 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if(obtenerDatos() == true){
 
             if(!alertload.FechaMarcacion.isEmpty()){
-                //calendarCurrentG = fechaEsperada();
+
                 ultimaMarcacion();
                 Log.e("Alert Data", alertload.FechaEsperada);
                 Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
+
             } else {
                 calendarCurrentG = Calendar.getInstance();
+                sendAsistencia();
                 crearRegistro();
                 Log.e("Alert Vacio", "Sin datos en Alert");
             }
@@ -768,7 +772,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
             String selectQueryconfiguration = "SELECT NumeroCel, FechaMarcacion, FechaEsperada, " +
                     "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado, " +
-                    "FechaEsperadaIso FROM Alert";
+                    "FechaEsperadaIso FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton ='true'";
             Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
 
             //Log.e("Consulta ", "If");
@@ -843,7 +847,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
-            btnMarcacion.setTextColor(getResources().getColor(R.color.negro_general));
+            btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
 
             return ;
 
@@ -1082,7 +1086,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         try {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
-
             String selectQueryAlert = "SELECT FechaEsperada, FlagTiempo FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton ='true'";
 
             Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
@@ -1148,6 +1151,75 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if(flagMostrarFecha==true) {
             textUltimaMarcacionFecha.setText(ultiHoraFecha);
         }
+    }
+
+    public void sendAsistencia(){
+
+        String Num = null, DisId = null;
+        String FechaInicioCelular = formatoGuardar.format(new Date());
+
+        try {
+
+            FechaInicioCelular = formatoGuardar.format(new Date());
+            DBHelper dbhGUID = new DBHelper(mContext);
+            SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
+            String selectQueryA = "SELECT NumeroCel, GuidDipositivo FROM Configuration";
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToFirst()) {
+
+                Num = cA.getString(cA.getColumnIndex("NumeroCel"));
+                DisId = cA.getString(cA.getColumnIndex("GuidDipositivo"));
+
+            }
+            cA.close();
+            dbA.close();
+
+        }catch (Exception e){}
+
+        String URL = URL_API.concat("api/Attendance");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("Numero", Num);
+        json.addProperty("DispositivoId", DisId);
+        json.addProperty("FechaInicioCelular", FechaInicioCelular);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject response) {
+
+                        if(response!=null){
+
+                            String AsistenciaId = null;
+                            //Log.e("JsonObject ", response.toString());
+
+                            AsistenciaId = response.get("AsistenciaId").getAsString();
+                            //AsistenciaId
+                            //String AsistenciaId = json.get("AsistenciaId").getAsString();
+
+                            try {
+
+                                ConfigurationCrud configurationCRUD = new ConfigurationCrud(mContext);
+
+                                Configuration configuration = new Configuration();
+                                configuration.AsistenciaId= AsistenciaId;
+                                //configuration.CodigoEmpleado= pass;
+                                configuration.ConfigurationId = 1;
+                                configurationCRUD.updateAsistencia(configuration);
+
+                            } catch (Exception e5) {}
+                            Log.e("JsonObject ", response.toString());
+
+                        } else  {
+                            Log.e("Exception ", "Finaliza" );
+                        }
+                    }
+                });
+
     }
 
     public int cantidadRegistros(){
@@ -1235,7 +1307,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         return fecha;
     }
 
-
     @Override
     public void onResume() {
 
@@ -1261,10 +1332,10 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         if (flagCancel){
             cdt5.cancel();
-            updateCountDown();
+            //updateCountDown();
         }
 
-        mostrarHora();
+        //mostrarHora();
         super.onPause();
     }
 
@@ -1277,9 +1348,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         if (flagCancel){
             cdt5.cancel();
-            updateCountDown();
+            //updateCountDown();
         }
-        mostrarHora();
+        //mostrarHora();
         super.onStop();
     }
 

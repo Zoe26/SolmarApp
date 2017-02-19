@@ -331,8 +331,6 @@ public class Login extends AppCompatActivity implements
                             configuration.CodigoEmpleado = pass;
                             configuration.ConfigurationId = 1;
                             configurationCRUD.updateToken(configuration);
-
-                            //new PostAsyncAsistencia().execute(Numero, DispositivoId, FechaInicioCelular);
                             Intent intent = new Intent(Login.this, MenuPrincipal.class);
                             intent.putExtra("Fotoch", Fotoch);
                             startActivity(intent);
@@ -340,115 +338,6 @@ public class Login extends AppCompatActivity implements
                         }
                     }
                 });
-    }
-
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
-
-        JsonParser jsonParser = new JsonParser();
-        private ProgressDialog pDialog;
-
-        private final String URL = URL_API.concat("token");//"https://solmar.azurewebsites.net/token";
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-            pDialog = new ProgressDialog(Login.this);
-            pDialog.setMessage("Accediendo..");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-                params.put("grant_type", args[0]);
-                params.put("username", args[1]);
-                params.put("password", args[2]);
-
-                Log.e("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        URL, "POST",  params);
-
-                if (json != null) {
-
-                    try {
-
-                        FechaInicioCelular = formatoGuardar.format(new Date());
-                        DBHelper dbhGUID = new DBHelper(context);
-                        SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
-                        String selectQueryA = "SELECT NumeroCel, GuidDipositivo FROM Configuration";
-                        Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
-
-                        if (cA.moveToFirst()) {
-
-                            Numero = cA.getString(cA.getColumnIndex("NumeroCel"));
-                            DispositivoId = cA.getString(cA.getColumnIndex("GuidDipositivo"));
-
-                        }
-                        cA.close();
-                        dbA.close();
-                        getMenu();
-
-                    }catch (Exception e){}
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-
-            if (json != null) {
-                String token=null;
-                try {
-                    token = json.getString("access_token");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-
-                    Configuration configuration = new Configuration();
-                    configuration.Token= token;
-                    configuration.ConfigurationId = 1;
-                    configurationCRUD.updateToken(configuration);
-
-                } catch (Exception e) {}
-
-
-
-                // GUARDAR DATOS EN LA CLASE ASISTENCIA
-                guardarAsistencia();
-
-                new PostAsyncAsistencia().execute(Numero, DispositivoId, FechaInicioCelular);
-                Intent intent = new Intent(Login.this, MenuPrincipal.class);
-                intent.putExtra("Fotoch", Fotoch);
-                startActivity(intent);
-            }
-
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
-            if (success == 1) {
-                Log.e("-- ººººº Success! ++++ ", message);
-            }else{
-                Log.e("-- ºººº Failure ++++ ", message);
-            }
-        }
     }
 
     public Boolean getMenu(){
@@ -472,6 +361,55 @@ public class Login extends AppCompatActivity implements
             _Asistencia_id = asistenciaCRUD.insert(asistencia);
 
         }catch (Exception e){}
+
+    }
+
+    public void sendAsistencia(){
+
+        String Num = null, DisId = null;
+        String FechaInicioCelular = formatoGuardar.format(new Date());
+
+        try {
+
+            FechaInicioCelular = formatoGuardar.format(new Date());
+            DBHelper dbhGUID = new DBHelper(this);
+            SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
+            String selectQueryA = "SELECT NumeroCel, GuidDipositivo FROM Configuration";
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToFirst()) {
+
+                Num = cA.getString(cA.getColumnIndex("NumeroCel"));
+                DisId = cA.getString(cA.getColumnIndex("GuidDipositivo"));
+
+            }
+            cA.close();
+            dbA.close();
+
+        }catch (Exception e){}
+
+        String URL = URL_API.concat("api/alert");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("Numero", Num);
+        json.addProperty("DispositivoId", DisId);
+        json.addProperty("FechaInicioCelular", FechaInicioCelular);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject response) {
+
+                        if(response!=null){
+                            Log.e("JsonObject ", response.toString());
+                        } else  {
+                            Log.e("Exception ", "Finaliza" );
+                        }
+                    }
+                });
 
     }
 

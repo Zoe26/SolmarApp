@@ -135,7 +135,7 @@ public class ConfigurationCrud {
         ContentValues values = new ContentValues();
 
         values.put(Configuration.KEY_AsistenciaId, configuration.AsistenciaId);
-        values.put(Configuration.KEY_CodigoEmpleado, configuration.CodigoEmpleado);
+        //values.put(Configuration.KEY_CodigoEmpleado, configuration.CodigoEmpleado);
 
         db.update(Configuration.TABLE_CONFIGURATION, values, Configuration.KEY_ID_CONFIGURATION + "=" + configuration.ConfigurationId, null);
         db.close();
