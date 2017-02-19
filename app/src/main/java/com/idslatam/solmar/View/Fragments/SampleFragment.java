@@ -117,6 +117,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     boolean flagCancel = false;
     boolean flagCancelBtn = false;
 
+    int estadoM, estadoMaux;
+
 
     public static SampleFragment newInstance(String text) {
         Bundle args = new Bundle();
@@ -848,7 +850,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
-
+            estadoMaux = 1;
             return ;
 
         }
@@ -948,6 +950,18 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         Calendar c = Calendar.getInstance();
 
         long startTime = horaAux.getTimeInMillis() - c.getTimeInMillis();
+
+        if (startTime<0){
+
+            btnMarcacion.setEnabled(true);
+            btnMarcacion.setText("Marcaci\u00F3n");
+            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
+            btnMarcacion.setTextColor(getResources().getColor(R.color.white));
+
+            estadoMaux = 0;
+            return ;
+
+        }
 
         Log.e(" --- startTime Lim --- ",String.valueOf(startTime));
         Log.e(" -- fechaLimite -- ",formatoIso.format(horaAux.getTime()));
@@ -1121,7 +1135,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         ultiHora = formatProx.format(calf.getTime());
         ultiHoraFecha = formatProxFecha.format(calf.getTime());
 
-        int estadoM = Integer.valueOf(estadoMarcacion);
+        if(estadoMarcacion==null){
+            estadoM = estadoMaux;
+        } else {
+            estadoM = Integer.valueOf(estadoMarcacion);
+        }
 
         if(estadoM==1){
             textflag_tiempo.setTextColor(getResources().getColor(R.color.negro_general));
