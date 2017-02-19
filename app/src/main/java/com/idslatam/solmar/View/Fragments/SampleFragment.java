@@ -896,8 +896,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                             if (flagCancelBtn){
                                 cdtBtn.cancel();
+                                botomCountDown();
                             }
-                            botomCountDown();
 
                         }
                     }.start();
