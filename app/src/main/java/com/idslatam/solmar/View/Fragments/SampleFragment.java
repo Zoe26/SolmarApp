@@ -847,60 +847,65 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
-            btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
+            btnMarcacion.setTextColor(getResources().getColor(R.color.white));
 
             return ;
 
         }
-            Log.e(" ---- startTime ----- ",String.valueOf(startTime));
-            Log.e(" -- fechaEsperada -- ",formatoIso.format(horaAux.getTime()));
+        Log.e(" ---- startTime ----- ",String.valueOf(startTime));
+        Log.e(" -- fechaEsperada -- ",formatoIso.format(horaAux.getTime()));
 
 
-            try {
+        try {
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        cdt5  = new CountDownTimer(startTime,1000) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    cdt5  = new CountDownTimer(startTime,1000) {
 
-                            @Override
-                            public void onTick(long startTime) {
-                                // TODO Auto-generated method stub
+                        @Override
+                        public void onTick(long startTime) {
+                            // TODO Auto-generated method stub
 
-                                flagCancel = true;
-                                int seconds = (int) (startTime / 1000) % 60 ;
-                                int minutes = (int) ((startTime / (1000*60)) % 60);
-                                int hours   = (int) ((startTime / (1000*60*60)) % 24);
+                            flagCancel = true;
+                            int seconds = (int) (startTime / 1000) % 60 ;
+                            int minutes = (int) ((startTime / (1000*60)) % 60);
+                            int hours   = (int) ((startTime / (1000*60*60)) % 24);
 
-                                btnMarcacion.setTextColor(Color.BLACK);
+                            btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
 
+                            if (seconds<10){
+                                btnMarcacion.setText(minutes+":0"+seconds);
+                            } else {
                                 btnMarcacion.setText(minutes+":"+seconds);
-
                             }
 
-                            @Override
-                            public void onFinish() {
-                                flagCancel = false;
-                                btnMarcacion.setEnabled(true);
-                                btnMarcacion.setText("Marcaci\u00F3n");
-                                btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
-                                btnMarcacion.setTextColor(Color.WHITE);
-                                //btnMarcacion.setText("Time's Up!");
 
-                                if (flagCancelBtn){
-                                    cdtBtn.cancel();
-                                }
-                                botomCountDown();
+                        }
 
+                        @Override
+                        public void onFinish() {
+                            flagCancel = false;
+                            btnMarcacion.setEnabled(true);
+                            btnMarcacion.setText("Marcaci\u00F3n");
+                            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
+                            btnMarcacion.setTextColor(Color.WHITE);
+                            //btnMarcacion.setText("Time's Up!");
+
+                            if (flagCancelBtn){
+                                cdtBtn.cancel();
                             }
-                        }.start();
-                    }
-                });
+                            botomCountDown();
+
+                        }
+                    }.start();
+                }
+            });
 
 
-            }catch (Exception e){
-                Log.e("EXCEPTION "," count "+ e.getMessage());
-            }
+        }catch (Exception e){
+            Log.e("EXCEPTION "," count "+ e.getMessage());
+        }
 
     }
 
@@ -1116,10 +1121,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         ultiHora = formatProx.format(calf.getTime());
         ultiHoraFecha = formatProxFecha.format(calf.getTime());
 
-
         int estadoM = Integer.valueOf(estadoMarcacion);
-
-
 
         if(estadoM==1){
             textflag_tiempo.setTextColor(getResources().getColor(R.color.negro_general));
