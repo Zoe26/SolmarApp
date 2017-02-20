@@ -864,10 +864,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     }
 
-
-
-
-
     public  Boolean deleteTracking(int id) {
         DBHelper dbgelperDeete = new DBHelper(this);
         SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();

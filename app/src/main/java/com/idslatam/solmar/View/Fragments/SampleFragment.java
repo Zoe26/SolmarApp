@@ -59,7 +59,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     String EstadoBoton, FechaEsperadaIso, FechaEsperadaIsoFin, EstadoE;
     Calendar horaIni, horaFin, horaIso, horaAuxC;
 
-    String FechaEsperada, FechaProxima, FlagTiempo, MargenAceptado;
+    String FechaEsperada, FechaProxima;
 
 
     String fechaAux = null;
@@ -67,8 +67,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     int tiempoEnvio, tiempoIntervalo, tiempoGuardado, tiempoIntervaloView, countInicial=0;
 
-    int _Alert_Id = 0;
-    private int _AlertUpdate_Id = 0;
+    int _Alert_Id = 0, _Alert_Id_Pos = 0;
+    private int _AlertUpdate_Id = 0, _AlertRee_Id = 0;
     int c = 0;
     Calendar choraProximaG, choraEsperadaG, choraIso, choraIsoFin;
 
@@ -245,12 +245,23 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public Boolean crearRegistro(){
 
-        Log.e("ºººººººººººººººººººººº", "ººººººººººººººººººººººººº");
         Log.e("--- CREATE REGISTRO ---", " INGRESÓ");
+        Log.e("---------------- DATOS", "----------------");
+
+        Log.e("--- F PASADA ", formatoIso.format(calendarCurrentG.getTime()));
 
         int aux = 0;
         int minuto = calendarCurrentG.get(Calendar.MINUTE);
+        Log.e("--- MINUTO ", String.valueOf(minuto));
+
         int resto;
+
+        if(minuto == tiempoGuardado){
+
+            minuto++;
+
+            Log.e("--- MINUTO ++ ", String.valueOf(minuto));
+        }
 
         if (minuto > tiempoGuardado) {
             resto = minuto%tiempoGuardado;
@@ -267,8 +278,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         }
 
         int minutoT = aux + minuto;
-
-        Log.e("-----------------", "-----------------");
         Log.e("--- AUX ", String.valueOf(aux));
         Log.e("--- MINUTO T ", String.valueOf(minutoT));
 
@@ -281,6 +290,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if (hour>hourAct){
             choraEsperadaGL.set(Calendar.HOUR_OF_DAY, hour);
             choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, hour);
+
+            Log.e("--- IF HORA MARCADA > ", " HORA ACTUAL");
+
+            Log.e("--- choraEsperadaGL ", formatoIso.format(choraEsperadaGL.getTime()));
+            Log.e("--- choraEsperadaIsoGL ", formatoIso.format(choraEsperadaIsoGL.getTime()));
+
         }
 
         choraEsperadaGL.set(Calendar.MINUTE, minutoT);
@@ -347,6 +362,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         return true;
     }
+
+
 
     public void mostrarHora() {
 
@@ -435,6 +452,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 try {
 
                     enviarMarcacion();
+                    //consultaSinConexion();
 
                 }catch (Exception e){
                     Log.e("--- ++EXCEPTION++ ", " +++ enviarMarcacion+++");
@@ -470,8 +488,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                         e.setTimeInMillis(fE);
                         h.setTimeInMillis(fC);
 
-                        Log.e("**** f Current ", formatoIso.format(horaCur.getTime()));
-                        Log.e("**** f Esperad ", formatoIso.format(cExiste.getTime()));
+                        Log.e("- F ACTUAL CLICK ", formatoIso.format(horaCur.getTime()));
+                        Log.e("- F EXISTE CLICK ", formatoIso.format(cExiste.getTime()));
 
 
                         if (horaCur.before(cExiste)) {
@@ -481,29 +499,23 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                                 SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
                                 String dateInString = formatoIso.format(cExiste.getTime());
 
-                                Log.e("+++++ dateInString ", dateInString);
+                                calendarCurrentG.setTimeInMillis(cExiste.getTimeInMillis());
+                                Log.e("-- EXISTE ACT < ", formatoIso.format(calendarCurrentG.getTime()));
 
-                                Date date = sdf.parse(dateInString);
-
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(date);
-
-                                calendarCurrentG.setTime(date);
+                                crearRegistro();
+                                mostrarHora();
 
                             } catch (Exception e6){
                                 Log.e("+++++ Exception ", "a6");
                             }
 
-                            Log.e("+++++ CONSULTA ", "fC <= fE + EXISTE");
 
                         } else {
 
-                            calendarCurrentG =Calendar.getInstance();
+                            calendarCurrentG = Calendar.getInstance();
+                            crearRegistro();
+                            mostrarHora();
                         }
-
-                        crearRegistro();
-
-                        mostrarHora();
 
                         if (flagCancelBtn){
                             cdtBtn.onFinish();
@@ -561,14 +573,21 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         }catch (Exception e){}
 
+        if(FlagTiempoE==null){
+            FlagTiempoE = "1";
+        }
+        if(MargenAceptadoE==null){
+            MargenAceptadoE = "1";
+        }
+
         try {
 
             AlertCrud alertCrud = new AlertCrud(mContext);
 
             Alert alert = new Alert();
             alert.FechaMarcacion = horaActual;
-            alert.FlagTiempo = FlagTiempo;
-            alert.MargenAceptado = MargenAceptado;
+            alert.FlagTiempo = FlagTiempoE;
+            alert.MargenAceptado = MargenAceptadoE;
             alert.EstadoBoton = "true";
             alert.AlertId = _AlertUpdate_Id;
             alertCrud.update(alert);
@@ -837,8 +856,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
             estadoMaux = 1;
-            FlagTiempo="1";
-            MargenAceptado="1";
+            FlagTiempoE="1";
+            MargenAceptadoE="1";
             return ;
 
         }
@@ -946,8 +965,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
 
-            FlagTiempo = "0";
-            MargenAceptado = "1";
+            FlagTiempoE = "0";
+            MargenAceptadoE = "1";
 
             estadoMaux = 0;
             return ;
@@ -969,16 +988,16 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                         public void onTick(long startTime) {
                             // TODO Auto-generated method stub
 
-                            FlagTiempo="1";
-                            MargenAceptado="1";
+                            FlagTiempoE = "1";
+                            MargenAceptadoE ="1";
 
                         }
 
                         @Override
                         public void onFinish() {
 
-                            FlagTiempo = "0";
-                            MargenAceptado = "1";
+                            FlagTiempoE = "0";
+                            MargenAceptadoE = "1";
 
                             btnMarcacion.setEnabled(true);
                             btnMarcacion.setText("Marcaci\u00F3n");
@@ -1000,6 +1019,133 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     }
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    public void saveError(Alert marker){
+
+        Log.e("-- INGRESÓ ", "saveError");
+
+        try {
+
+            AlertCrud alertCRUD = new AlertCrud(mContext);
+            marker.EstadoA = "false";
+            marker.AlertId = _Alert_Id_Pos;
+            _Alert_Id_Pos = alertCRUD.insert(marker);
+
+        }catch (Exception e){}
+
+    }
+
+    public  Boolean deleteAlert(int id) {
+        DBHelper dbgelperDeete = new DBHelper(mContext);
+        SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
+        sqldbDelete.execSQL("DELETE FROM  Alert WHERE AlertId = "+id);
+        sqldbDelete.close();
+        return true;
+    }
+
+    public void sendSave() {
+
+        int i =0;
+        Log.e("--|| Reenvio ", "sendSave ||");
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+            String selectQuery = "SELECT AlertId, NumeroCel, FechaMarcacion, FechaEsperada, FechaProxima, FlagTiempo, " +
+                    "MargenAceptado, Latitud, Longitud, DispositivoId, CodigoEmpleado  FROM Alert WHERE Estado = 'false'";
+            Cursor c = db.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                do {
+                    Alert alertPos = new Alert();
+                    _AlertRee_Id = c.getInt(c.getColumnIndex("AlertId"));
+
+                    alertPos.NumeroA = c.getString(c.getColumnIndex("NumeroCel"));
+                    alertPos.FechaMarcacion = c.getString(c.getColumnIndex("FechaMarcacion"));
+                    alertPos.FechaEsperada = c.getString(c.getColumnIndex("FechaEsperada"));
+                    alertPos.FechaProxima = c.getString(c.getColumnIndex("FechaProxima"));
+                    alertPos.FlagTiempo = c.getString(c.getColumnIndex("FlagTiempo"));
+                    alertPos.MargenAceptado = c.getString(c.getColumnIndex("MargenAceptado"));
+                    alertPos.LatitudA = c.getString(c.getColumnIndex("Latitud"));
+                    alertPos.LongitudA = c.getString(c.getColumnIndex("Longitud"));
+                    alertPos.DispositivoId = c.getString(c.getColumnIndex("DispositivoId"));
+                    alertPos.CodigoEmpleado = c.getString(c.getColumnIndex("CodigoEmpleado"));
+
+                    deleteAlert(_AlertRee_Id);
+
+                    String URL = URL_API.concat("api/alert");
+
+                    JsonObject json = new JsonObject();
+                    json.addProperty("Numero", NumeroE);
+                    json.addProperty("FechaMarcacion", FechaMarcacionE);
+                    json.addProperty("FechaEsperada", FechaEsperadaE);
+                    json.addProperty("FechaProxima", FechaProximaE);
+                    json.addProperty("FlagTiempo", FlagTiempoE);
+                    json.addProperty("MargenAceptado", MargenAceptadoE);
+                    json.addProperty("Latitud", LatitudE);
+                    json.addProperty("Longitud", LongitudE);
+                    json.addProperty("DispositivoId", DispositivoIdE);
+                    json.addProperty("CodigoEmpleado", CodigoEmpleadoE);
+
+                    Ion.with(this)
+                            .load("POST", URL)
+                            .setJsonObjectBody(json)
+                            .asJsonObject()
+                            .withResponse()
+                            .setCallback(new FutureCallback<Response<JsonObject>>() {
+                                @Override
+                                public void onCompleted(Exception e, Response<JsonObject> response) {
+
+                                    if (response.getHeaders().code() == 200) {
+
+                                        Log.e("JsonObject ", response.getResult().toString());
+
+                                    } else {
+
+                                        saveError(alertPos);
+                                        Log.e("Exception ", "Finaliza SaveError");
+
+                                    }
+                                }
+                            });
+                    i++;
+
+                } while(c.moveToNext() && i<30);
+
+            }
+            c.close();
+            db.close();
+
+        } catch (Exception e){}
+
+    }
+
+    public Boolean consultaSinConexion(){
+
+        Log.e("-- COSULTA SIN ", "--|CONEXION|--");
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbN = dataBaseHelper.getWritableDatabase();
+            String selectQueryBuscaN = "SELECT NumeroCel FROM Alert WHERE Estado = 'false'";
+            Cursor cbuscaN = dbN.rawQuery(selectQueryBuscaN, new String[]{}, null);
+            int contador = cbuscaN.getCount();
+            cbuscaN.close();
+            dbN.close();
+
+            //Log.e("-- POR SEND ", String.valueOf(contador));
+
+            if (contador>0) {
+                sendSave();
+                Log.e("-- if ", "--||--");
+            }
+
+        }catch (Exception e){
+            Log.e("-- Error Reenvio Track", e.getMessage());
+        }
+
+        return true;
+    }
 
     public void compararProximaAlarma(){
 
