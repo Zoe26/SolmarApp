@@ -1,24 +1,14 @@
 package com.idslatam.solmar.View.Fragments;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,25 +22,18 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.AlertCrud;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
-import com.idslatam.solmar.View.Bienvenido;
-import com.idslatam.solmar.View.Login;
-import com.idslatam.solmar.View.RegisterNumber;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
@@ -532,6 +515,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                         compararProximaAlarma();
                         updateCountDown();
+
+                        //Alert alertult = ultimoRegistro();
+
                         ultimaMarcacion();
 
                     }
@@ -851,6 +837,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
             estadoMaux = 1;
+            FlagTiempo="1";
+            MargenAceptado="1";
             return ;
 
         }
@@ -957,6 +945,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
+
+            FlagTiempo = "0";
+            MargenAceptado = "1";
 
             estadoMaux = 0;
             return ;
@@ -1099,8 +1090,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public void ultimaMarcacion(){
 
-        String horaUltimaMarcacion = null;
-        String estadoMarcacion = null;
+        String horaUltimaMarcacion = null; // = a.FechaEsperada; //null;
+        String estadoMarcacion = null; // = a.FlagTiempo; //= null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(mContext);
