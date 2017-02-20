@@ -119,7 +119,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             } catch (Exception e){}
 
-//            fotocheckCod = Fotoch;
         }
 
 
@@ -521,23 +520,16 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         } catch (Exception e){}
 
-
-
-
-//        DBHelper dataBaseHelper = new DBHelper(this);
-
         return true;
     }
 
     public Boolean Asistencia(){
 
-        DBHelper dataBaseHelper = new DBHelper(this);
-
         int idUp = 0;
         String statusBoton = null, statusFinTurno = null;
         try {
-//            DBHelper dataBaseHelper = new DBHelper(this);
-            SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+            DBHelper dataBaseHelperA = new DBHelper(this);
+            SQLiteDatabase dbConfiguration = dataBaseHelperA.getReadableDatabase();
             String selectQueryconfiguration = "SELECT AlertId, EstadoBoton, FinTurno FROM Alert";
             Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
@@ -559,8 +551,8 @@ public class MenuPrincipal extends  ActionBarActivity {
         if(statusBoton.equals("false") && statusFinTurno.equals("true")){
 
             try {
-
-                SQLiteDatabase dbU = dataBaseHelper.getWritableDatabase();
+                DBHelper dataBaseHelperB = new DBHelper(this);
+                SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
                 dbU.execSQL("DELETE FROM  Alert WHERE AlertId = "+idUp);
 //            dbU.execSQL("UPDATE Alert SET FinTurno = 'false' WHERE AlertId = "+idUp);
                 dbU.close();
@@ -572,6 +564,14 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         }
 
+        cerrarSesion();
+
+        return true;
+    }
+
+    public void cerrarSesion(){
+
+
         //******************************************************************************************
 
         String AsistenciaId = null, DispositivoId=null, FechaTerminoCelular=null;
@@ -580,7 +580,7 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
             FechaTerminoCelular = sdf.format(new Date());
-//            DBHelper dataBaseHelper = new DBHelper(this);
+            DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT AsistenciaId, GuidDipositivo FROM Configuration";
             Cursor c = db.rawQuery(selectQuery, new String[]{});
@@ -596,76 +596,29 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         }catch (Exception e){}
 
-        new PostAsyncAsistencia().execute(AsistenciaId, DispositivoId, FechaTerminoCelular);
+        String URL = URL_API.concat("Attendance/end");
 
-        return true;
-    }
+        JsonObject json = new JsonObject();
+        json.addProperty("AsistenciaId", AsistenciaId);
+        json.addProperty("DispositivoId", DispositivoId);
+        json.addProperty("FechaTerminoCelular", FechaTerminoCelular);
 
-    class PostAsyncAsistencia extends AsyncTask<String, String, JSONObject> {
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject response) {
 
-        JsonParser jsonParser = new JsonParser();
+                        if(response!=null){
+                            Log.e("JsonObject Salida ", response.toString());
+                        } else  {
+                            Log.e("Exception ", "Finaliza" );
+                        }
+                    }
+                });
 
-        private ProgressDialog pDialog;
-
-        private final String URL = URL_API.concat("Attendance/end");//"http://solmar.azurewebsites.net/Attendance/end";
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-                params.put("AsistenciaId", args[0]);
-                params.put("DispositivoId", args[1]);
-                params.put("FechaTerminoCelular", args[2]);
-
-                Log.d("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        URL, "POST",  params);
-
-                if (json != null) {
-
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-
-            if (json != null) {
-
-                Log.e("ASISTENCIA SALIDA ", json.toString());
-
-                try {
-                    success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (success == 1) {
-                Log.d("Hecho!", message);
-            }else{
-                Log.d("Falló", message);
-            }
-        }
     }
 
     //****************************************************************************
