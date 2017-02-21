@@ -49,6 +49,11 @@ import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -642,15 +647,76 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                     .load("POST", URL)
                     .setJsonObjectBody(json)
                     .asJsonObject()
-                    .setCallback(new FutureCallback<JsonObject>() {
+                    .withResponse()
+                    .setCallback(new FutureCallback<Response<JsonObject>>() {
                         @Override
-                        public void onCompleted(Exception e, JsonObject result) {
-                            // do stuff with the result or error
-                            //Log.e("Exception ", e.getMessage());
-                            //Log.e("JsonObject ", result.toString());
+                        public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            if(result!=null){
-                                Log.e("JsonObject ", result.toString());
+                            if (response.getHeaders().code() == 200) {
+
+                                Log.e("JsonObject ", response.getResult().toString());
+
+                                /*JSONObject j = null;
+                                try {
+                                    j = new JSONObject(response.getResult().toString());
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+
+                                String Configuracion = null;
+                                try {
+                                    Configuracion = j.getString("Configuracion");
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+
+                                JSONArray jsonA = null;
+
+                                try {
+                                    jsonA = new JSONArray(Configuracion);
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+
+                                int a=0, b=0;
+                                int []valores = new int[2];
+
+                                JSONObject c;
+
+                                for(int i=0;i<jsonA.length();i++){
+
+                                    try {
+                                        c = jsonA.getJSONObject(i);
+
+                                        valores[i] = c.getInt("Valor");
+                                        if(c.getInt("ConfiguracionId")==7){
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                            db.execSQL("UPDATE Configuration SET Precision = '" + c.getInt("Valor") + "'");
+                                            db.close();
+
+                                            a = c.getInt("Valor");
+//                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
+                                        }
+
+                                        if(c.getInt("ConfiguracionId")==1){
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + c.getInt("Valor") + "'");
+                                            db.close();
+
+                                            b = c.getInt("Valor");
+//                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
+                                        }
+                                    } catch (JSONException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+
+                                int te = a;
+                                int tes = b;
+
+                                Log.e("AlerF Interv/ Toleranc ", String.valueOf(te)+"| "+String.valueOf(tes));*/
 
                             } else  {
                                 saveError(tracking);

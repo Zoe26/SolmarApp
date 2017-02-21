@@ -80,18 +80,16 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    boolean flagMostrarFecha = false;
+    boolean flagMostrarFecha = false, flagClick = false;
 
     protected String URL_API;
 
     String FechaMarcacionE, FechaEsperadaE, FechaProximaE, FlagTiempoE, MargenAceptadoE, LatitudE, LongitudE, NumeroE;
     String DispositivoIdE, CodigoEmpleadoE;
 
-    int ValorTemporal;
     private static final float BEEP_VOLUME = 0.10f;
 
     CountDownTimer cdt5, cdtBtn;
-
 
     //+++++++++++++++++++
 
@@ -154,22 +152,30 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             if(!alertload.FechaMarcacion.isEmpty()){
 
-                ultimaMarcacion();
+                crearRegistro();
+                mostrarHora();
+                ultimaMarcacion(alertload);
+
+                if (!flagCancel){
+                    updateCountDown();
+                }
+
                 Log.e("Alert Data", alertload.FechaEsperada);
                 Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
 
             } else {
-                calendarCurrentG = Calendar.getInstance();
-                sendAsistencia();
+
                 crearRegistro();
+                mostrarHora();
+
+                if (!flagCancel){
+                    updateCountDown();
+                }
+
+                sendAsistencia();
                 Log.e("Alert Vacio", "Sin datos en Alert");
             }
 
-            mostrarHora();
-
-            if (!flagCancel){
-                updateCountDown();
-            }
 
         } else {
 
@@ -247,6 +253,16 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         Log.e("--- CREATE REGISTRO ---", " INGRESÓ");
         Log.e("---------------- DATOS", "----------------");
+        Log.e("-- flagClick ", String.valueOf(flagClick));
+
+        calendarCurrentG = Calendar.getInstance();
+
+        if (flagClick){
+            calendarCurrentG.add(Calendar.MINUTE, tiempoIntervalo);
+            flagClick = false;
+            Log.e("-- flagClick ", "IF");
+        }
+
 
         Log.e("--- F PASADA ", formatoIso.format(calendarCurrentG.getTime()));
 
@@ -265,11 +281,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         if (minuto > tiempoGuardado) {
             resto = minuto%tiempoGuardado;
-            if(resto==0){
-                aux = 0;
-            } else {
+            //if(resto==0){
+            //    aux = 0;
+            //} else {
                 aux = tiempoGuardado - resto;
-            }
+            //}
 
         } else { // SI minuto es menor que tiempoGuardado
 
@@ -363,8 +379,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         return true;
     }
 
-
-
     public void mostrarHora() {
 
         Log.e("--- MostrarHora ", " INGRESO ");
@@ -449,25 +463,39 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
                 btnMarcacion.setTextColor(Color.WHITE);
 
+                flagClick = true;
+
+                if (flagCancelBtn){
+                    cdtBtn.onFinish();
+                }
+
+                if (flagCancel){
+                    cdt5.cancel();
+                }
+                compararProximaAlarma();
+
                 try {
 
                     enviarMarcacion();
+
                     //consultaSinConexion();
 
                 }catch (Exception e){
                     Log.e("--- ++EXCEPTION++ ", " +++ enviarMarcacion+++");
                 }
 
-                Alert alertload = ultimoRegistro();
+                load();
+                //Alert alertload = ultimoRegistro();
 
-                if(obtenerDatos() == true){
+                //if(obtenerDatos() == true){
 
-                    if(!alertload.FechaMarcacion.isEmpty()){
+                    //if(!alertload.FechaMarcacion.isEmpty()){
                         //calendarCurrentG = fechaEsperada();
                         //Log.e("Alert Data", alertload.FechaEsperada);
                         //Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
 
-                        Calendar cExiste = Calendar.getInstance();
+
+                        /*Calendar cExiste = Calendar.getInstance();
                         Calendar horaCur = Calendar.getInstance();
 
                         try {
@@ -515,29 +543,24 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                             calendarCurrentG = Calendar.getInstance();
                             crearRegistro();
                             mostrarHora();
-                        }
+                        }*/
 
-                        if (flagCancelBtn){
-                            cdtBtn.onFinish();
-                        }
+                    //ultimaMarcacion(alertload);
 
-                        if (flagCancel){
-                            cdt5.cancel();
-                        }
+                        //crearRegistro();
+                        //mostrarHora();
 
-                        compararProximaAlarma();
-                        updateCountDown();
+
+                        //updateCountDown();
 
                         //Alert alertult = ultimoRegistro();
 
-                        ultimaMarcacion();
+                    //}
 
-                    }
+                //} else {
 
-                } else {
-
-                    Toast.makeText(mContext, "Error al obtener datos de configuración", Toast.LENGTH_LONG).show();
-                }
+                    //Toast.makeText(mContext, "Error al obtener datos de configuración", Toast.LENGTH_LONG).show();
+                //}
 
                 break;
         }
@@ -851,6 +874,15 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         if (startTime<0){
 
+            if (flagCancelBtn){
+                cdtBtn.onFinish();
+            }
+
+            if (flagCancel){
+                cdt5.onFinish();
+            }
+
+
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
@@ -858,6 +890,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             estadoMaux = 1;
             FlagTiempoE="1";
             MargenAceptadoE="1";
+
+            botomCountDown();
+
             return ;
 
         }
@@ -899,7 +934,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                             btnMarcacion.setText("Marcaci\u00F3n");
                             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
                             btnMarcacion.setTextColor(Color.WHITE);
-                            //btnMarcacion.setText("Time's Up!");
 
                             if (flagCancelBtn){
                                 cdtBtn.cancel();
@@ -960,6 +994,14 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         long startTime = horaAux.getTimeInMillis() - c.getTimeInMillis();
 
         if (startTime<0){
+
+            if (flagCancelBtn){
+                cdtBtn.onFinish();
+            }
+
+            if (flagCancel){
+                cdt5.onFinish();
+            }
 
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
@@ -1235,12 +1277,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         } catch (Exception e){}
     }
 
-    public void ultimaMarcacion(){
+    public void ultimaMarcacion(Alert a){
 
-        String horaUltimaMarcacion = null; // = a.FechaEsperada; //null;
-        String estadoMarcacion = null; // = a.FlagTiempo; //= null;
+        String horaUltimaMarcacion = a.FechaEsperada; //null;
+        String estadoMarcacion = a.FlagTiempo; //= null;
 
-        try {
+        /*try {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
             String selectQueryAlert = "SELECT FechaEsperada, FlagTiempo FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton ='true'";
@@ -1255,7 +1297,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             calert.close();
             dbalert.close();
 
-        } catch (Exception e){}
+        } catch (Exception e){}*/
 
         String ultiHora, ultiHoraFecha;
 
