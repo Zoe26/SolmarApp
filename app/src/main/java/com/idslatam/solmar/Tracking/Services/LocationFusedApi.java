@@ -566,16 +566,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 db.close();
             } catch (Exception e) {}
 
+        }
+
+        if(valido =="true" && flagSend == true) {
+
             try {
 
                 _TrackingSave_Id = trackingCRUD.insertAll(tracking);
                 eliminarRegistro();
 
             }catch (Exception e){}
-
-        }
-
-        if(valido =="true" && flagSend == true) {
 
             Log.e("-- |*** UPDATE ***", "| -- ");
 
@@ -600,7 +600,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             }
 
-            //mService.sendMessage(tracking);
             consultaSinConexion();
 
 
@@ -658,7 +657,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
                                     Log.e("JsonObject ", response.getResult().toString());
 
-                                /*JSONObject j = null;
+                                JSONObject j = null;
                                 try {
                                     j = new JSONObject(response.getResult().toString());
                                 } catch (JSONException e1) {
@@ -672,6 +671,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                     e1.printStackTrace();
                                 }
 
+                                    //Log.e(" Configuracion", Configuracion);
+
                                 JSONArray jsonA = null;
 
                                 try {
@@ -681,7 +682,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                 }
 
                                 int a=0, b=0;
-                                int []valores = new int[2];
+                                int []valores = new int[3];
 
                                 JSONObject c;
 
@@ -718,7 +719,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                 int te = a;
                                 int tes = b;
 
-                                Log.e("AlerF Interv/ Toleranc ", String.valueOf(te)+"| "+String.valueOf(tes));*/
+                                //Log.e("Tracking Tol/ Inter ", String.valueOf(te)+"| "+String.valueOf(tes));
 
                                 } else  {
                                     saveError(tracking);
