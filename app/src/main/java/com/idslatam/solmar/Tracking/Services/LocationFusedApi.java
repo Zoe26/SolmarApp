@@ -652,9 +652,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                         @Override
                         public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            if (response.getHeaders().code() == 200) {
+                            if(response!=null){
 
-                                Log.e("JsonObject ", response.getResult().toString());
+                                if (response.getHeaders().code() == 200) {
+
+                                    Log.e("JsonObject ", response.getResult().toString());
 
                                 /*JSONObject j = null;
                                 try {
@@ -717,6 +719,11 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                 int tes = b;
 
                                 Log.e("AlerF Interv/ Toleranc ", String.valueOf(te)+"| "+String.valueOf(tes));*/
+
+                                } else  {
+                                    saveError(tracking);
+                                    Log.e("Exception ", "Finaliza SaveError");
+                                }
 
                             } else  {
                                 saveError(tracking);

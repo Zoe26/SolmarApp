@@ -129,7 +129,8 @@ public class MenuPrincipal extends  ActionBarActivity {
         URL_API = globalClass.getURL();
 
 
-        bottomBar = BottomBar.attach(this, savedInstanceState);
+        //bottomBar = BottomBar.attach(this, savedInstanceState);
+
 
         String URL = URL_API.concat("Aplicacion/GetAppByUser?id="+DispositivoId);
 
@@ -150,6 +151,8 @@ public class MenuPrincipal extends  ActionBarActivity {
                     @Override
                     public void onCompleted(Exception e, Response<JsonObject> response) {
                         //try catch here for null getHeaders
+
+                        if(response!=null){
 
                             if (response.getHeaders().code() == 200) {
 
@@ -220,73 +223,89 @@ public class MenuPrincipal extends  ActionBarActivity {
                                 }
 
                                 Log.e("-- Get Menu! ", " Finaliza");
-                                //bottomBar = BottomBar.attach(this, savedInstanceState);
 
-                                bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
-                                        new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
-                                        new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
-                                        new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
-                                        new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
-                                        new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
-                                );
+                                generarMenu(savedInstanceState);
 
-                                // Setting colors for different tabs when there's more than three of them.
-                                bottomBar.mapColorForTab(0, "#3B494C");
-                                bottomBar.mapColorForTab(1, "#00796B");
-                                bottomBar.mapColorForTab(2, "#7B1FA2");
-                                bottomBar.mapColorForTab(3, "#FF5252");
-                                bottomBar.mapColorForTab(4, "#3B494C");
-
-                                bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
-                                    @Override
-                                    public void onItemSelected(int position) {
-                                        FragmentManager fragmentManager = getFragmentManager();
-                                        switch (position) {
-
-                                            case 1:
-                                                // Item 1 Selected
-                                                try {
-                                                    captureImage();
-                                                    bottomBar.setDefaultTabPosition(0);
-                                                } catch (Exception e){}
-                                                break;
-
-                                            case 4:
-                                                // Item 4 Selected
-                                                try {
-                                                    scanBarcode();
-                                                    bottomBar.setDefaultTabPosition(0);
-                                                } catch (Exception e){}
-                                                break;
-
-                                        }
-                                    }
-                                });
-
-                                // Make a Badge for the first tab, with red background color and a value of "4".
-                                BottomBarBadge unreadMessages = bottomBar.makeBadgeForTabAt(2, "#E91E63", 4);
-
-                                // Control the badge's visibility
-                                unreadMessages.show();
-                                //unreadMessages.hide();
-
-                                // Change the displayed count for this badge.
-                                //unreadMessages.setCount(4);
-
-                                // Change the show / hide animation duration.
-                                unreadMessages.setAnimationDuration(200);
-
-                                // If you want the badge be shown always after unselecting the tab that contains it.
-                                //unreadMessages.setAutoShowAfterUnSelection(true);
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
 
                             } else {
-                                Toast.makeText(mContext, "Error de Conexión", Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext, "Error de Servidor", Toast.LENGTH_LONG).show();
                             }
+
+                        } else {
+                            Toast.makeText(mContext, "Error de Conexión", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
+
+
+        //generarMenu();
+
+    }
+
+
+    public void generarMenu(Bundle s){
+
+        bottomBar = BottomBar.attach(this, s);
+        bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
+                new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
+                new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
+                new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
+                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
+                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
+        );
+
+        // Setting colors for different tabs when there's more than three of them.
+        bottomBar.mapColorForTab(0, "#3B494C");
+        bottomBar.mapColorForTab(1, "#00796B");
+        bottomBar.mapColorForTab(2, "#7B1FA2");
+        bottomBar.mapColorForTab(3, "#FF5252");
+        bottomBar.mapColorForTab(4, "#3B494C");
+
+        bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
+            @Override
+            public void onItemSelected(int position) {
+                FragmentManager fragmentManager = getFragmentManager();
+                switch (position) {
+
+                    case 1:
+                        // Item 1 Selected
+                        try {
+                            captureImage();
+                            bottomBar.setDefaultTabPosition(0);
+                        } catch (Exception e){}
+                        break;
+
+                    case 4:
+                        // Item 4 Selected
+                        try {
+                            scanBarcode();
+                            bottomBar.setDefaultTabPosition(0);
+                        } catch (Exception e){}
+                        break;
+
+                }
+            }
+        });
+
+        // Make a Badge for the first tab, with red background color and a value of "4".
+        BottomBarBadge unreadMessages = bottomBar.makeBadgeForTabAt(2, "#E91E63", 4);
+
+        // Control the badge's visibility
+        unreadMessages.show();
+        //unreadMessages.hide();
+
+        // Change the displayed count for this badge.
+        //unreadMessages.setCount(4);
+
+        // Change the show / hide animation duration.
+        unreadMessages.setAnimationDuration(200);
+
+        // If you want the badge be shown always after unselecting the tab that contains it.
+        //unreadMessages.setAutoShowAfterUnSelection(true);
+
     }
 
     public void scanBarcode() {
@@ -454,14 +473,11 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             } catch (Exception e){}
 
-
-//            Intent intent = new Intent(mainPerfil.this, LoginActivity.class);
-//            startActivity(intent);
-
             try {
 
-                startActivity(new Intent(MenuPrincipal.this, Login.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                //startActivity(new Intent(MenuPrincipal.this, Login.class)
+                //        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                //finish();
 
             } catch (Exception e){}
 
@@ -476,9 +492,14 @@ public class MenuPrincipal extends  ActionBarActivity {
         protected void onPostExecute(Void result)
         {
             try {
+
+                Intent intent = new Intent(MenuPrincipal.this, Login.class);
+                startActivity(intent);
+
                 if (dialog.isShowing()) {
                     dialog.dismiss();
                 }
+                finish();
             }catch (Exception e){}
         }
     }

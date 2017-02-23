@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -142,6 +143,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         return myView;
     }
+
 
 
     public void load(){
@@ -466,7 +468,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 flagClick = true;
 
                 if (flagCancelBtn){
-                    cdtBtn.onFinish();
+                    cdtBtn.cancel();
                 }
 
                 if (flagCancel){
@@ -477,7 +479,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 try {
 
                     enviarMarcacion();
-
                     //consultaSinConexion();
 
                 }catch (Exception e){
@@ -485,82 +486,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 }
 
                 load();
-                //Alert alertload = ultimoRegistro();
-
-                //if(obtenerDatos() == true){
-
-                    //if(!alertload.FechaMarcacion.isEmpty()){
-                        //calendarCurrentG = fechaEsperada();
-                        //Log.e("Alert Data", alertload.FechaEsperada);
-                        //Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
-
-
-                        /*Calendar cExiste = Calendar.getInstance();
-                        Calendar horaCur = Calendar.getInstance();
-
-                        try {
-
-                            cExiste.setTime(formatoIso.parse(alertload.FechaEsperadaIso));
-                            cExiste.add(Calendar.MINUTE, tiempoIntervalo);
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        long fE = cExiste.getTimeInMillis();
-                        long fC = horaCur.getTimeInMillis();
-
-                        Calendar e = Calendar.getInstance();
-                        Calendar h = Calendar.getInstance();
-
-                        e.setTimeInMillis(fE);
-                        h.setTimeInMillis(fC);
-
-                        Log.e("- F ACTUAL CLICK ", formatoIso.format(horaCur.getTime()));
-                        Log.e("- F EXISTE CLICK ", formatoIso.format(cExiste.getTime()));
-
-
-                        if (horaCur.before(cExiste)) {
-
-                            try {
-
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-                                String dateInString = formatoIso.format(cExiste.getTime());
-
-                                calendarCurrentG.setTimeInMillis(cExiste.getTimeInMillis());
-                                Log.e("-- EXISTE ACT < ", formatoIso.format(calendarCurrentG.getTime()));
-
-                                crearRegistro();
-                                mostrarHora();
-
-                            } catch (Exception e6){
-                                Log.e("+++++ Exception ", "a6");
-                            }
-
-
-                        } else {
-
-                            calendarCurrentG = Calendar.getInstance();
-                            crearRegistro();
-                            mostrarHora();
-                        }*/
-
-                    //ultimaMarcacion(alertload);
-
-                        //crearRegistro();
-                        //mostrarHora();
-
-
-                        //updateCountDown();
-
-                        //Alert alertult = ultimoRegistro();
-
-                    //}
-
-                //} else {
-
-                    //Toast.makeText(mContext, "Error al obtener datos de configuración", Toast.LENGTH_LONG).show();
-                //}
 
                 break;
         }
@@ -875,13 +800,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if (startTime<0){
 
             if (flagCancelBtn){
-                cdtBtn.onFinish();
+                cdtBtn.cancel();
             }
 
             if (flagCancel){
-                cdt5.onFinish();
+                cdt5.cancel();
             }
-
 
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
@@ -896,6 +820,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             return ;
 
         }
+
         Log.e(" ---- startTime ----- ",String.valueOf(startTime));
         Log.e(" -- fechaEsperada -- ",formatoIso.format(horaAux.getTime()));
 
@@ -996,22 +921,23 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if (startTime<0){
 
             if (flagCancelBtn){
-                cdtBtn.onFinish();
+                cdtBtn.cancel();
             }
 
             if (flagCancel){
-                cdt5.onFinish();
+                cdt5.cancel();
             }
 
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
-            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
+            btnMarcacion.setBackgroundColor(getView().getResources().getColor(R.color.red));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
 
             FlagTiempoE = "0";
             MargenAceptadoE = "1";
 
             estadoMaux = 0;
+
             return ;
 
         }
@@ -1029,8 +955,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                         @Override
                         public void onTick(long startTime) {
+                            flagCancelBtn = true;
                             // TODO Auto-generated method stub
-
                             FlagTiempoE = "1";
                             MargenAceptadoE ="1";
 
@@ -1039,14 +965,15 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                         @Override
                         public void onFinish() {
 
+                            flagCancelBtn = false;
+
                             FlagTiempoE = "0";
                             MargenAceptadoE = "1";
 
                             btnMarcacion.setEnabled(true);
                             btnMarcacion.setText("Marcaci\u00F3n");
-                            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
+                            btnMarcacion.setBackgroundColor(getContext().getResources().getColor(R.color.red));
                             btnMarcacion.setTextColor(Color.WHITE);
-
                             Log.e(" ---- cdtBtn ----- "," FIN");
 
                         }
@@ -1059,6 +986,17 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             Log.e("EXCEPTION "," count "+ e.getMessage());
         }
 
+    }
+
+    @Override
+    public Context getContext() {
+        return super.getContext();
+    }
+
+    @Override
+    public void onStart() {
+
+        super.onStart();
     }
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1226,8 +1164,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if (horaAct.after(cal)) {
             dialogoNoMarco();
             //createNewAlert();
-        } else {
-            //createNewAlert();
         }
         //**************************************************************************************************
 
@@ -1274,7 +1210,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
             builder.setMessage("\u00C9sta marcaci\u00F3n corresponde a las "+hora+" del d\u00EDa "+fecha+"");
             builder.setPositiveButton("Aceptar", null);
             builder.show();
+
         } catch (Exception e){}
+
     }
 
     public void ultimaMarcacion(Alert a){
@@ -1479,6 +1417,9 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         if (flagCancel){
             cdt5.cancel();
         }
+
         super.onDestroy();
     }
+
+
 }
