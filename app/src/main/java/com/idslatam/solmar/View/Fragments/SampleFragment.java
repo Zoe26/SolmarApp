@@ -843,12 +843,18 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                             btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
 
+                            StringBuilder sb = new StringBuilder();
+
                             if (seconds<10){
-                                btnMarcacion.setText(minutes+":0"+seconds);
+                                sb.append("0");
+                                sb.append(seconds);
                             } else {
-                                btnMarcacion.setText(minutes+":"+seconds);
+                                sb.append("");
+                                sb.append(seconds);
                             }
 
+                            String seg = sb.toString();
+                            btnMarcacion.setText(minutes+":"+seg);
 
                         }
 
@@ -1163,6 +1169,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
         if (horaAct.after(cal)) {
             dialogoNoMarco();
+            flagMostrarFecha = true;
             //createNewAlert();
         }
         //**************************************************************************************************
