@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ar\\values-ar.xml",
+        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ar\\values-ar.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 112
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,
@@ -30,7 +30,7 @@
                     "endOffset": 162
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 4,
@@ -49,7 +49,7 @@
                     "endOffset": 295
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
@@ -68,7 +68,88 @@
                     "endOffset": 405
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-ar\\values-ar.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 300,
+                        "endColumn": 109,
+                        "endOffset": 405
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values-ar/values-ar.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 61,
+                    "endOffset": 112
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/bundles/debug/res/values-ar/values-ar.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 55,
+                        "endColumn": 61,
+                        "endOffset": 112
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 117,
+                    "endColumn": 49,
+                    "endOffset": 162
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/bundles/debug/res/values-ar/values-ar.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 117,
+                        "endColumn": 49,
+                        "endOffset": 162
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 167,
+                    "endColumn": 132,
+                    "endOffset": 295
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/bundles/debug/res/values-ar/values-ar.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 167,
+                        "endColumn": 132,
+                        "endOffset": 295
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 300,
+                    "endColumn": 109,
+                    "endOffset": 405
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/bundles/debug/res/values-ar/values-ar.xml",
                     "position": {
                         "startLine": 5,
                         "startColumn": 4,

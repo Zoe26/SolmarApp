@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-pt\\values-pt.xml",
+        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values-pt/values-pt.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 109
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-pt/zxing_strings.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -30,7 +30,7 @@
                     "endOffset": 156
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-pt/zxing_strings.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -49,7 +49,7 @@
                     "endOffset": 312
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-pt/zxing_strings.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -68,7 +68,88 @@
                     "endOffset": 419
                 },
                 "from": {
-                    "file": "D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-pt/zxing_strings.xml",
+                    "position": {
+                        "startLine": 20,
+                        "startColumn": 2,
+                        "startOffset": 888,
+                        "endColumn": 104,
+                        "endOffset": 990
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-pt\\values-pt.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 58,
+                    "endOffset": 109
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "position": {
+                        "startLine": 17,
+                        "startColumn": 2,
+                        "startOffset": 632,
+                        "endColumn": 56,
+                        "endOffset": 686
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 114,
+                    "endColumn": 46,
+                    "endOffset": 156
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "position": {
+                        "startLine": 18,
+                        "startColumn": 2,
+                        "startOffset": 689,
+                        "endColumn": 44,
+                        "endOffset": 731
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 161,
+                    "endColumn": 155,
+                    "endOffset": 312
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
+                    "position": {
+                        "startLine": 19,
+                        "startColumn": 2,
+                        "startOffset": 734,
+                        "endColumn": 153,
+                        "endOffset": 885
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 317,
+                    "endColumn": 106,
+                    "endOffset": 419
+                },
+                "from": {
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/D:\\IDS Latam\\ProyectosIDSLatam\\Proyectos Moviles\\SolmarApp\\SolmarApp\\zxing-android-embedded\\res-orig\\values-pt\\zxing_strings.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,

@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="D:\IDS Latam\ProyectosIDSLatam\Proyectos Moviles\SolmarApp\SolmarApp\zxing-android-embedded\src\main\shaders"/></dataSet><dataSet config="release"><source path="D:\IDS Latam\ProyectosIDSLatam\Proyectos Moviles\SolmarApp\SolmarApp\zxing-android-embedded\src\release\shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/src/main/shaders"/></dataSet><dataSet config="release"><source path="/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/src/release/shaders"/></dataSet></merger>
