@@ -24,6 +24,7 @@ import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Settings.AccessSettings;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -70,8 +71,9 @@ public class ServiceAccessSettings extends Service {
 
             List<ActivityManager.RunningTaskInfo> alltasks = am.getRunningTasks(1);
             for (ActivityManager.RunningTaskInfo aTask : alltasks) {
-//                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
+                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
                 String g = aTask.topActivity.getClassName();
+
 
                 try {
 
@@ -139,6 +141,7 @@ public class ServiceAccessSettings extends Service {
 
         } catch (Exception e){}
     }
+
 
     // FIN DE METODOS PARA ACCESO A CONFIGURACIONES **************************************************************************
 }

@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.idslatam.solmar.Tracking.Broadcast.AlarmLocation;
 import com.idslatam.solmar.View.Bienvenido;
+import com.idslatam.solmar.View.LauncherSolmar;
 
 public class BootSettings extends BroadcastReceiver {
     public BootSettings() {
@@ -47,7 +48,7 @@ public class BootSettings extends BroadcastReceiver {
         try {
 
             Log.e("Auto Arranque ", " App!");
-            Intent i = new Intent(context, Bienvenido.class);
+            Intent i = new Intent(context, LauncherSolmar.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
 

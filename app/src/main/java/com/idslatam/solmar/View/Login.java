@@ -59,6 +59,8 @@ import com.koushikdutta.ion.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,6 +68,9 @@ import java.util.HashMap;
 public class Login extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks
         ,GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
+
+    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
 
     private GoogleApiClient mGoogleApiClient;
     final static int REQUEST_LOCATION = 199;
@@ -641,6 +646,70 @@ public class Login extends AppCompatActivity implements
         builder.setMessage("Al no aceptar las configuraciones previas Solgis no iniciara de manera correcta. Por favor intente nuevamente");
         builder.setPositiveButton("Ok", null);
         builder.show();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        try
+        {
+            if(!hasFocus)
+            {
+                Object service  = getSystemService("statusbar");
+                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                Method collapse;
+
+                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                if (currentApiVersion <= 16) {
+                    collapse = statusbarManager.getMethod("collapse");
+                    collapse.invoke(service);
+                    collapse .setAccessible(true);
+                    collapse .invoke(service);
+
+                } else {
+                    collapse = statusbarManager.getMethod("collapsePanels");
+                    collapse.invoke(service);
+                    collapse.setAccessible(true);
+                    collapse.invoke(service);
+
+                }
+
+
+                //Method collapse = statusbarManager.getMethod("collapse");
+
+            }
+        }
+        catch(Exception ex)
+        {
+            if(!hasFocus)
+            {
+                try {
+
+                    Object service  = getSystemService("statusbar");
+                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    Method collapse;
+
+                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    if (currentApiVersion <= 16) {
+                        collapse = statusbarManager.getMethod("collapse");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    } else {
+                        collapse = statusbarManager.getMethod("collapsePanels");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    }
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                ex.printStackTrace();
+            }
+        }
     }
 
 }

@@ -66,6 +66,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,6 +86,9 @@ public class MenuPrincipal extends  ActionBarActivity {
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     long totalSize = 0;
     String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId;
+
+    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -953,5 +957,70 @@ public class MenuPrincipal extends  ActionBarActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        try
+        {
+            if(!hasFocus)
+            {
+                Object service  = getSystemService("statusbar");
+                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                Method collapse;
+
+                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                if (currentApiVersion <= 16) {
+                    collapse = statusbarManager.getMethod("collapse");
+                    collapse.invoke(service);
+                    collapse .setAccessible(true);
+                    collapse .invoke(service);
+
+                } else {
+                    collapse = statusbarManager.getMethod("collapsePanels");
+                    collapse.invoke(service);
+                    collapse.setAccessible(true);
+                    collapse.invoke(service);
+
+                }
+
+
+                //Method collapse = statusbarManager.getMethod("collapse");
+
+            }
+        }
+        catch(Exception ex)
+        {
+            if(!hasFocus)
+            {
+                try {
+
+                    Object service  = getSystemService("statusbar");
+                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    Method collapse;
+
+                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    if (currentApiVersion <= 16) {
+                        collapse = statusbarManager.getMethod("collapse");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    } else {
+                        collapse = statusbarManager.getMethod("collapsePanels");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    }
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                ex.printStackTrace();
+            }
+        }
+    }
+
 
 }

@@ -485,7 +485,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         int versionOS = Build.VERSION.SDK_INT;
         Integer dObjsdk = new Integer(versionOS);
         String versionO = dObjsdk.toString();
-        String imei = tm.getDeviceId();
         String androidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         numero = tm.getLine1Number();
 
@@ -573,6 +572,11 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         if(validacion=="true"){
             txtApro.setVisibility(View.INVISIBLE);
         }
+
+        if(imei == null){
+            imei = androidId;
+        }
+
 
         Log.e("--NUMERO ", String.valueOf(numero));
         Log.e("--ID ", String.valueOf(androidId));
