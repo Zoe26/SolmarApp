@@ -4,22 +4,22 @@
     android:id="@+id/activity_launcher_solmar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:paddingBottom="25dp"
-    android:paddingLeft="25dp"
-    android:paddingRight="25dp"
-    android:paddingTop="25dp"
+    android:background="@color/colorLaunch"
+    android:paddingBottom="15dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="15dp"
     tools:context="com.idslatam.solmar.View.LauncherSolmar">
 
     <GridView
         android:id="@+id/grid_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:columnWidth="100dp"
+        android:columnWidth="90dp"
         android:gravity="center"
-        android:horizontalSpacing="20dp"
+        android:horizontalSpacing="10dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="20dp" />
+        android:verticalSpacing="10dp" />
 
 </RelativeLayout>
