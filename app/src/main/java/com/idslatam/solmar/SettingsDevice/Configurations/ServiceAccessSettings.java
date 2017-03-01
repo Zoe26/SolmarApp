@@ -71,7 +71,7 @@ public class ServiceAccessSettings extends Service {
 
             List<ActivityManager.RunningTaskInfo> alltasks = am.getRunningTasks(1);
             for (ActivityManager.RunningTaskInfo aTask : alltasks) {
-                Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
+                //Log.e("aTask ", String.valueOf(aTask.topActivity.getClassName()));
                 String g = aTask.topActivity.getClassName();
 
 

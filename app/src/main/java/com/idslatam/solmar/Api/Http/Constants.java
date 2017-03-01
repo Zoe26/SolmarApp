@@ -12,7 +12,7 @@ import com.idslatam.solmar.R;
 
 public class Constants {
 
-    public String URL = "http://190.116.178.163:85/webapi/";// "http://solmar.azurewebsites.net/"; http://mdmwebapi2.azurewebsites.net/
+    public String URL = "http://solmar.azurewebsites.net/WebApi/";//"http://190.116.178.163:85/webapi/";// "http://solmar.azurewebsites.net/"; http://mdmwebapi2.azurewebsites.net/
 
     public static final String PACKAGE_NAME = "com.google.android.gms.location.activityrecognition";
 

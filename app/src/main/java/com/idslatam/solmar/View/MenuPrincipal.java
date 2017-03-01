@@ -277,7 +277,14 @@ public class MenuPrincipal extends  ActionBarActivity {
                     case 1:
                         // Item 1 Selected
                         try {
-                            captureImage();
+
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                            // start the image capture Intent
+                            startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
+
+                            //captureImage();
                             bottomBar.setDefaultTabPosition(0);
                         } catch (Exception e){}
                         break;
@@ -674,15 +681,10 @@ public class MenuPrincipal extends  ActionBarActivity {
         fileUri = savedInstanceState.getParcelable("file_uri");
     }
 
-
     private void launchUploadActivity(boolean isImage){
         filePath = fileUri.getPath();
+        uploadImage();
 
-//        Intent i = new Intent(mainPerfil.this, UploadActivity.class);
-//        i.putExtra("filePath", fileUri.getPath());
-//        i.putExtra("isImage", isImage);
-//        startActivity(i);
-        new UploadFileToServer().execute();
     }
 
     /**
@@ -725,123 +727,108 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     //-- METODO QUE ENVIA IMAGEN--------------------------------------------------------------------
 
-    private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
 
-        private ProgressDialog dialog;
+    public void uploadImage(){
 
-        @Override
-        protected void onPreExecute() {
+        ProgressDialog dialog;
 
-            dialog = new ProgressDialog(MenuPrincipal.this);
-            dialog.setMessage("Enviando Foto...");
-            dialog.setIndeterminate(false);
-            dialog.setCancelable(false);
-            dialog.show();
+        dialog = new ProgressDialog(MenuPrincipal.this);
+        dialog.setMessage("Enviando Foto...");
+        dialog.setIndeterminate(false);
+        dialog.setCancelable(false);
+        dialog.show();
 
-            //do initialization of required objects objects here
-        };
+        try{
 
-        @Override
-        protected void onProgressUpdate(Integer... progress) {}
+            DBHelper dbHelperVolumen = new DBHelper(mContext);
+            SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
+            String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo FROM Configuration";
+            Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
 
-        @Override
-        protected String doInBackground(Void... params) {
-            return uploadFile();
-        }
-
-        @SuppressWarnings("deprecation")
-        private String uploadFile() {
-            String responseString = null;
-
-            final String URL = URL_API.concat("/api/Image/file");
-
-            try{
-
-                DBHelper dbHelperVolumen = new DBHelper(mContext);
-                SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-                String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo FROM Configuration";
-                Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
-
-                if (c.moveToFirst()) {
-                    NumeroFile = c.getString(c.getColumnIndex("NumeroCel"));
-                    LatitudFile = c.getString(c.getColumnIndex("Latitud"));
-                    LongitudFile = c.getString(c.getColumnIndex("Longitud"));
-                    DispositivoIdFile = c.getString(c.getColumnIndex("GuidDipositivo"));
-                }
-
-                c.close();
-                sqlVolumen.close();
-
-            }catch (Exception e){
-                Log.e("-- |EXCEPTION | ", e.getMessage());
+            if (c.moveToFirst()) {
+                NumeroFile = c.getString(c.getColumnIndex("NumeroCel"));
+                LatitudFile = c.getString(c.getColumnIndex("Latitud"));
+                LongitudFile = c.getString(c.getColumnIndex("Longitud"));
+                DispositivoIdFile = c.getString(c.getColumnIndex("GuidDipositivo"));
             }
 
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(URL);
+            c.close();
+            sqlVolumen.close();
 
-            try {
-                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
-                        new AndroidMultiPartEntity.ProgressListener() {
+        }catch (Exception e){
+            Log.e("-- |EXCEPTION | ", e.getMessage());
+        }
 
-                            @Override
-                            public void transferred(long num) {
-                                publishProgress((int) ((num / (float) totalSize) * 100));
+        try {
+
+            filePath = fileUri.getPath();
+
+            Log.e(" filePath ", String.valueOf(filePath));
+
+            String filePathAux = decodeFile(filePath,660, 880);
+            Log.e(" filePathAux ", String.valueOf(filePathAux));
+
+            String URLB = URL_API.concat("/api/Image/file");
+
+
+            Ion.with(mContext)
+                    .load(URLB)
+                    .setMultipartParameter("DispositivoId", DispositivoIdFile)
+                    .setMultipartParameter("Latitud", LatitudFile)
+                    .setMultipartParameter("Longitud", LongitudFile)
+                    .setMultipartParameter("Numero", NumeroFile)
+
+                    .setMultipartFile("file", new File(filePathAux))
+                    .asString()
+                    .withResponse()
+                    .setCallback(new FutureCallback<Response<String>>() {
+                        @Override
+                        public void onCompleted(Exception e, Response<String> response) {
+
+                            File fdelete = new File(filePathAux);
+
+                            if (fdelete.exists()) {
+                                if (fdelete.delete()) {
+                                    Log.e("file Deleted :", filePathAux);
+                                } else {
+                                    Log.e("file not Deleted :", filePathAux);
+                                }
                             }
-                        });
 
-                filePath = fileUri.getPath();
+                            if(response!=null){
 
-                Log.e(" filePath ", String.valueOf(filePath));
+                                try {
+                                    if (dialog.isShowing()) {
+                                        dialog.dismiss();
+                                    }
+                                }catch (Exception e7){}
 
-                String filePathAux = decodeFile(filePath,660, 880);
-                Log.e(" filePathAux ", String.valueOf(filePathAux));
+                                try {
+                                    JSONObject json = new JSONObject(response.getResult().toString());
 
-                File sourceFile = new File(filePathAux);
+                                    showAlert(json.getString("Mensaje"));
 
-                entity.addPart("file", new FileBody(sourceFile));
-                entity.addPart("Id", new StringBody(DispositivoIdFile));
-                entity.addPart("Latitud", new StringBody(LatitudFile));
-                entity.addPart("Longitud", new StringBody(LongitudFile));
-                entity.addPart("Numero", new StringBody(NumeroFile));
+                                } catch (JSONException edd){
 
-                Log.e(" Entity---- ", String.valueOf(entity));
-                httppost.setEntity(entity);
+                                }
 
-                // Making server call
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity r_entity = response.getEntity();
+                                Log.e("JsonObject ", response.getResult().toString());
+                            } else  {
+                                Toast.makeText(mContext, "Error al enviar imagen. Por favor revise su conexión.", Toast.LENGTH_SHORT).show();
+                                Log.e("Exception ", "Finaliza "+ e.getMessage());
+                            }
 
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == 200) {
-                    // Server response
-                    responseString = EntityUtils.toString(r_entity);
-                    Log.e(" responseString ", String.valueOf(responseString));
-                } else {
-                    responseString = "Error de Servidor! Http Status Code: "
-                            + statusCode;
-                }
+                            try {
+                                if (dialog.isShowing()) {
+                                    dialog.dismiss();
+                                }
+                            }catch (Exception ee){}
+                        }
+                    });
 
-            } catch (Exception e) {
-                responseString = e.toString();
-            }
 
-            return responseString;
-        }
+        } catch (Exception e) {
 
-        @Override
-        protected void onPostExecute(String result) {
-
-            try {
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
-            }catch (Exception e){}
-
-            Log.e("", "Response from server: " + result);
-
-            showAlert(result);
-
-            super.onPostExecute(result);
         }
     }
 
@@ -884,7 +871,7 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
 
-            String s = "tmp_"+timeStamp+".png";
+            String s = "SOLMAR_"+timeStamp+".png";
 
             File f = new File(mFolder.getAbsolutePath(), s);
 
