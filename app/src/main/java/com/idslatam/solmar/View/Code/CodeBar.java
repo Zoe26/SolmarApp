@@ -15,7 +15,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
@@ -24,13 +26,17 @@ import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Bienvenido;
 import com.idslatam.solmar.View.MenuPrincipal;
 import com.idslatam.solmar.View.Settings.AccessSettings;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class CodeBar extends Activity {
@@ -114,7 +120,62 @@ public class CodeBar extends Activity {
         Log.e("---! Send: TIPO "+tipo, " ! VALOR "+valor + " ! FECHA "+fecha+" ! FORMATO "+formato);
 
         if (isOnlineNet()){
-            new PostAsync().execute(NumeroCel, GuidDipositivo, CodigoEmpleado, tipo, valor, fecha, formato);
+
+            String URL = URL_API.concat("api/CodigoBarra");
+
+
+            ProgressDialog pDialog;
+
+            pDialog = new ProgressDialog(CodeBar.this);
+            pDialog.setMessage("Enviando...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+            JsonObject json = new JsonObject();
+            json.addProperty("Numero", NumeroCel);
+            json.addProperty("DispositivoId", GuidDipositivo);
+            json.addProperty("CodigoEmpleado", CodigoEmpleado);
+            json.addProperty("CodigoBarraTipoDocumentoID", tipo);
+            json.addProperty("Valor", valor);
+            json.addProperty("Fecha", fecha);
+            json.addProperty("Formato", formato);
+
+            Ion.with(this)
+                    .load("POST", URL)
+                    .setJsonObjectBody(json)
+                    .asJsonObject()
+                    .setCallback(new FutureCallback<JsonObject>() {
+                        @Override
+                        public void onCompleted(Exception e, JsonObject response) {
+
+                            if(response!=null){
+                                try {
+
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+
+                                    dialogoRespuesta(response.get("Mensaje").getAsString());
+
+                                } catch (Exception edd){
+
+                                }
+                                Log.e("JsonObject Bars ", response.toString());
+
+                            } else  {
+
+                                Toast.makeText(CodeBar.this, "Error al enviar Bars. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                                Log.e("Exception ", "Finaliza" );
+                            }
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+
+                        }
+                    });
+
         } else {
             pingRespuesta();
         }
@@ -124,100 +185,20 @@ public class CodeBar extends Activity {
         new IntentIntegrator(this).initiateScan();
     }
 
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
-        JsonParser jsonParser = new JsonParser();
-
-        private ProgressDialog pDialog;
-
-        private final String URL = URL_API.concat("api/CodigoBarra");
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-
-            pDialog = new ProgressDialog(CodeBar.this);
-            pDialog.setMessage("Enviando...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-
-                params.put("Numero", args[0]);
-                params.put("DispositivoId", args[1]);
-                params.put("CodigoEmpleado", args[2]);
-                params.put("CodigoBarraTipoDocumentoID", args[3]);
-                params.put("Valor", args[4]);
-                params.put("Fecha", args[5]);
-                params.put("Formato", args[6]);
-                Log.d("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        URL, "POST", params);
-
-                if (json != null) {
-
-                    Log.e("CodeBar", json.toString());
-
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-
-            if (pDialog != null && pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
-
-            if (json != null) {
-
-                try {
-
-                    dialogoRespuesta(json);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (success == 1) {
-                Log.d("Hecho!", message);
-            }else {
-                Log.d("Falló", message);
-            }
-        }
-
-    }
-
-    public void dialogoRespuesta(JSONObject jsonObject){
+    public void dialogoRespuesta(String jsonObject){
 
         try {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            if(jsonObject.getString("Mensaje").equalsIgnoreCase("true")){
+            if(jsonObject.equalsIgnoreCase("true")){
                 builder.setTitle(Html.fromHtml("<font color='#4CAF50'>Respuesta de Servidor</font>"));
             } else {
                 builder.setTitle(Html.fromHtml("<font color='#F44336'>Respuesta de Servidor</font>"));
             }
 
             //builder.setTitle("Respuesta de Servidor");
-            builder.setMessage(jsonObject.getString("Mensaje"));
+            builder.setMessage(jsonObject);
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 

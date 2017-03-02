@@ -770,7 +770,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             String URLB = URL_API.concat("/api/Image/file");
 
-
             Ion.with(mContext)
                     .load(URLB)
                     .setMultipartParameter("DispositivoId", DispositivoIdFile)

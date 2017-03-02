@@ -336,6 +336,7 @@ public class Login extends AppCompatActivity implements
                             configuration.CodigoEmpleado = pass;
                             configuration.ConfigurationId = 1;
                             configurationCRUD.updateToken(configuration);
+
                             Intent intent = new Intent(Login.this, MenuPrincipal.class);
                             intent.putExtra("Fotoch", Fotoch);
                             startActivity(intent);

@@ -992,7 +992,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             String fechaActual = fchActual.format(new Date());
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-            db.execSQL("DELETE FROM Tracking WHERE FechaIso < datetime('"+fechaActual+"','-60 minutes')");
+            db.execSQL("DELETE FROM Tracking WHERE EstadoEnvio IS NULL AND FechaIso < datetime('"+fechaActual+"','-10 minutes')");
             db.close();
 
         }catch (Exception e){}

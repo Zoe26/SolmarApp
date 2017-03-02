@@ -138,8 +138,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         btnMarcacion.setTextColor(Color.WHITE);
 
         Log.e("onCreate Alert", "Ingresó");
-
         load();
+
 
         return myView;
     }
@@ -162,11 +162,12 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                     updateCountDown();
                 }
 
-                Log.e("Alert Data", alertload.FechaEsperada);
-                Log.e("Alert Data ISO", alertload.FechaEsperadaIso);
+                Log.e("*** Alert Data *** ", alertload.FechaEsperada);
+                Log.e("*** Alert Data ISO *** ", alertload.FechaEsperadaIso);
 
             } else {
 
+                sendAsistencia();
                 crearRegistro();
                 mostrarHora();
 
@@ -174,8 +175,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                     updateCountDown();
                 }
 
-                sendAsistencia();
-                Log.e("Alert Vacio", "Sin datos en Alert");
+                Log.e("*** Alert Vacio *** ", "Sin datos en Alert");
             }
 
 
@@ -1357,7 +1357,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                                 configurationCRUD.updateAsistencia(configuration);
 
                             } catch (Exception e5) {}
-                            Log.e("JsonObject ", response.toString());
+                            Log.e("JsonObject Frag. Ini ", response.toString());
 
                         } else  {
                             Log.e("Exception ", "Finaliza" );
