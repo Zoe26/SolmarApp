@@ -34,7 +34,9 @@ import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Image.AndroidMultiPartEntity;
 import com.idslatam.solmar.Image.ScalingUtilities;
+import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Pruebas.Fragments.AdapterAlrmTrackF;
 import com.idslatam.solmar.Pruebas.Fragments.AdapterTrackingF;
 import com.idslatam.solmar.View.Code.CodeBar;
@@ -84,10 +86,14 @@ public class MenuPrincipal extends  ActionBarActivity {
     private String filePath = null;
     public static final int MEDIA_TYPE_IMAGE = 1;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
-    long totalSize = 0;
+    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
+            , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId;
 
     private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
+    boolean state;
 
 
     @Override
@@ -114,16 +120,19 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         } catch (Exception e) {}
 
-        if(fotocheckCod==null) {
+        /*if(fotocheckCod==null) {
 
             try {
 
                 b = getIntent().getExtras();
-                fotocheckCod = b.getString("Fotoch");
+                fotocheckCod = b.getString("State");
 
             } catch (Exception e){}
 
-        }
+        }*/
+
+        b = getIntent().getExtras();
+        state = b.getBoolean("State");
 
 
         toolbar.setTitle("Solgis | "+fotocheckCod);
@@ -132,6 +141,18 @@ public class MenuPrincipal extends  ActionBarActivity {
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
+
+        if (state == true) {
+            load(savedInstanceState);
+            sendAsistencia();
+        }else{
+            generarMenu(savedInstanceState);
+        }
+
+
+    }
+
+    public void load(Bundle savedInstanceState){
 
         //bottomBar = BottomBar.attach(this, savedInstanceState);
 
@@ -244,11 +265,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                     }
                 });
 
-
-        //generarMenu();
-
     }
-
 
     public void generarMenu(Bundle s){
 
@@ -1008,5 +1025,74 @@ public class MenuPrincipal extends  ActionBarActivity {
         }
     }
 
+
+    public void sendAsistencia(){
+
+        String Num = null, DisId = null;
+        String FechaInicioCelular = formatoGuardar.format(new Date());
+
+        try {
+
+            FechaInicioCelular = formatoGuardar.format(new Date());
+            DBHelper dbhGUID = new DBHelper(mContext);
+            SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
+            String selectQueryA = "SELECT NumeroCel, GuidDipositivo FROM Configuration";
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToFirst()) {
+
+                Num = cA.getString(cA.getColumnIndex("NumeroCel"));
+                DisId = cA.getString(cA.getColumnIndex("GuidDipositivo"));
+
+            }
+            cA.close();
+            dbA.close();
+
+        }catch (Exception e){}
+
+        String URL = URL_API.concat("api/Attendance");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("Numero", Num);
+        json.addProperty("DispositivoId", DisId);
+        json.addProperty("FechaInicioCelular", FechaInicioCelular);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject response) {
+
+                        if(response!=null){
+
+                            String AsistenciaId = null;
+                            //Log.e("JsonObject ", response.toString());
+
+                            AsistenciaId = response.get("AsistenciaId").getAsString();
+                            //AsistenciaId
+                            //String AsistenciaId = json.get("AsistenciaId").getAsString();
+
+                            try {
+
+                                ConfigurationCrud configurationCRUD = new ConfigurationCrud(mContext);
+
+                                Configuration configuration = new Configuration();
+                                configuration.AsistenciaId= AsistenciaId;
+                                //configuration.CodigoEmpleado= pass;
+                                configuration.ConfigurationId = 1;
+                                configurationCRUD.updateAsistencia(configuration);
+
+                            } catch (Exception e5) {}
+                            Log.e("JsonObject Frag. Ini ", response.toString());
+
+                        } else  {
+                            Log.e("Exception ", "Finaliza" );
+                        }
+                    }
+                });
+
+    }
 
 }

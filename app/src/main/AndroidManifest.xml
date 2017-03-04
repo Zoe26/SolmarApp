@@ -62,6 +62,7 @@
         <activity
             android:name=".View.Bienvenido"
             android:screenOrientation="portrait"
+            android:noHistory="true"
             android:theme="@style/FullscreenTheme">
 
             <intent-filter>

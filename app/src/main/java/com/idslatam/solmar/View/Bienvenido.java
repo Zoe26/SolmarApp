@@ -515,10 +515,10 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '5'");
             db.close();
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            /*if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
                 Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                 startActivity(intent);
-            }
+            }*/
         }
 
         // BUSCA SI EL NUMERO TIENE PERMISOS DE ACCESO
@@ -564,7 +564,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                 startActivity(new Intent(getBaseContext(), Login.class)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                 finish();
-
                 return;
             }
         }
@@ -590,7 +589,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
 
         if (flagIsPlaySevice == true && flagIsUpdate == true){
-            //new PostAsync().execute(numero, androidId, imei, modelo, SimOtorgaNumero, serieSIM, fabricante, versionO);
 
             String URL = URL_API.concat("api/dispositivo");
 

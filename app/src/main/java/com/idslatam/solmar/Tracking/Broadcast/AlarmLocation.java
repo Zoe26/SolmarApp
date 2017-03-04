@@ -77,8 +77,8 @@ public class AlarmLocation extends BroadcastReceiver {
         }
 
         // INTENTI AL SERVICIO ----------------------------------------------------------------------
-        Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
-        mContext.startService(backgroundS);
+        /*Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
+        mContext.startService(backgroundS);*/
         // FIN INTENTI AL SERVICIO ------------------------------------------------------------------
 
         gps = isGPSAvailable();

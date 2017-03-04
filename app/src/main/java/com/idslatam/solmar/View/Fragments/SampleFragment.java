@@ -166,8 +166,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                 Log.e("*** Alert Data ISO *** ", alertload.FechaEsperadaIso);
 
             } else {
-
-                sendAsistencia();
                 crearRegistro();
                 mostrarHora();
 
@@ -253,7 +251,13 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
     public Boolean crearRegistro(){
 
-        Log.e("--- CREATE REGISTRO ---", " INGRESÓ");
+        Log.e("--- CREATE REGISTRO ---", " INGRESÓ "+ ultima() );
+
+        if (ultima()>0){
+            Log.e("--- CREATE REGISTRO ---", " NO GUARDO");
+            return false;
+        }
+
         Log.e("---------------- DATOS", "----------------");
         Log.e("-- flagClick ", String.valueOf(flagClick));
 
@@ -936,7 +940,7 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
-            btnMarcacion.setBackgroundColor(getView().getResources().getColor(R.color.red));
+            btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
             btnMarcacion.setTextColor(getResources().getColor(R.color.white));
 
             FlagTiempoE = "0";
@@ -1298,73 +1302,24 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         }
     }
 
-    public void sendAsistencia(){
 
-        String Num = null, DisId = null;
-        String FechaInicioCelular = formatoGuardar.format(new Date());
+    public int ultima(){
+
+        int count = 0;
 
         try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
+            String selectQueryAlert = "SELECT FechaEsperada FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton = 'false'";
+            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
+            count = calert.getCount();
 
-            FechaInicioCelular = formatoGuardar.format(new Date());
-            DBHelper dbhGUID = new DBHelper(mContext);
-            SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
-            String selectQueryA = "SELECT NumeroCel, GuidDipositivo FROM Configuration";
-            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+            calert.close();
+            dbalert.close();
 
-            if (cA.moveToFirst()) {
+        } catch (Exception e){}
 
-                Num = cA.getString(cA.getColumnIndex("NumeroCel"));
-                DisId = cA.getString(cA.getColumnIndex("GuidDipositivo"));
-
-            }
-            cA.close();
-            dbA.close();
-
-        }catch (Exception e){}
-
-        String URL = URL_API.concat("api/Attendance");
-
-        JsonObject json = new JsonObject();
-        json.addProperty("Numero", Num);
-        json.addProperty("DispositivoId", DisId);
-        json.addProperty("FechaInicioCelular", FechaInicioCelular);
-
-        Ion.with(this)
-                .load("POST", URL)
-                .setJsonObjectBody(json)
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject response) {
-
-                        if(response!=null){
-
-                            String AsistenciaId = null;
-                            //Log.e("JsonObject ", response.toString());
-
-                            AsistenciaId = response.get("AsistenciaId").getAsString();
-                            //AsistenciaId
-                            //String AsistenciaId = json.get("AsistenciaId").getAsString();
-
-                            try {
-
-                                ConfigurationCrud configurationCRUD = new ConfigurationCrud(mContext);
-
-                                Configuration configuration = new Configuration();
-                                configuration.AsistenciaId= AsistenciaId;
-                                //configuration.CodigoEmpleado= pass;
-                                configuration.ConfigurationId = 1;
-                                configurationCRUD.updateAsistencia(configuration);
-
-                            } catch (Exception e5) {}
-                            Log.e("JsonObject Frag. Ini ", response.toString());
-
-                        } else  {
-                            Log.e("Exception ", "Finaliza" );
-                        }
-                    }
-                });
-
+        return count;
     }
 
     @Override

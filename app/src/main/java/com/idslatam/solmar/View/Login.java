@@ -89,6 +89,7 @@ public class Login extends AppCompatActivity implements
     int _Asistencia_id = 0;
     String Numero, DispositivoId, FechaInicioCelular;
 
+
     ConfigurationCrud configurationCRUD = new ConfigurationCrud(this);
     DBHelper dataBaseHelper = new DBHelper(this);
 
@@ -98,6 +99,7 @@ public class Login extends AppCompatActivity implements
 
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
 
+    BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +112,17 @@ public class Login extends AppCompatActivity implements
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         BroadcastReceiver mReceiver = new ScreenReceiver();
-        registerReceiver(mReceiver, filter);
+
+        try {
+            if (mReceiver == null) {
+                this.registerReceiver(mReceiver, filter);
+            }
+        } catch (Exception e) {
+            Log.e("", "broadcastReceiver is already unregistered");
+            //broadcastReceiver = null;
+        }
+
+        //registerReceiver(mReceiver, filter);
         // FIN BP
 
         //**********************************************************************************************************************************
@@ -232,7 +244,8 @@ public class Login extends AppCompatActivity implements
 
             if(buscaToken==0){
                 startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra("State", false));
                 finish();
             } else {
                 password.setEnabled(true);
@@ -338,7 +351,7 @@ public class Login extends AppCompatActivity implements
                             configurationCRUD.updateToken(configuration);
 
                             Intent intent = new Intent(Login.this, MenuPrincipal.class);
-                            intent.putExtra("Fotoch", Fotoch);
+                            intent.putExtra("State", true);
                             startActivity(intent);
 
                         }
