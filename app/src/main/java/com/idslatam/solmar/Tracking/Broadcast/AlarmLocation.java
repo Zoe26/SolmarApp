@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,6 +23,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
+import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Crud.AlarmTrackCrud;
@@ -76,6 +78,11 @@ public class AlarmLocation extends BroadcastReceiver {
             e.printStackTrace();
         }
 
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        BroadcastReceiver mReceiver = new ScreenReceiver();
+        mContext.getApplicationContext().registerReceiver(mReceiver, filter);
         // INTENTI AL SERVICIO ----------------------------------------------------------------------
         /*Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
         mContext.startService(backgroundS);*/
@@ -83,15 +90,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         gps = isGPSAvailable();
 
-        if (!gps){
 
-            Intent i = new Intent(context, Bienvenido.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
-
-            //mContext.startActivity(new Intent(mContext, Login.class)
-              //      .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-        }
 
         //NO TOCAR *****************************************************************************************************************************
         int vApi = Build.VERSION.SDK_INT;

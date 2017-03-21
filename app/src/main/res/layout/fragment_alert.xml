@@ -30,6 +30,8 @@
                 android:background="@drawable/ic_logo_alert"
                 tools:ignore="ContentDescription" />
 
+            <!--android:background="@drawable/ic_logo_alert"-->
+
         </LinearLayout>
 
         <LinearLayout

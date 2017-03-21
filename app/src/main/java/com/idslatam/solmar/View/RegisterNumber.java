@@ -21,6 +21,7 @@ import com.koushikdutta.ion.Ion;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
@@ -35,6 +36,8 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
     EditText edNumero;
     ConfigurationCrud configurationCRUD = new ConfigurationCrud(this);
+
+    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,70 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
                     });
 
         } catch (Exception e){}
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        try
+        {
+            if(!hasFocus)
+            {
+                Object service  = getSystemService("statusbar");
+                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                Method collapse;
+
+                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                if (currentApiVersion <= 16) {
+                    collapse = statusbarManager.getMethod("collapse");
+                    collapse.invoke(service);
+                    collapse .setAccessible(true);
+                    collapse .invoke(service);
+
+                } else {
+                    collapse = statusbarManager.getMethod("collapsePanels");
+                    collapse.invoke(service);
+                    collapse.setAccessible(true);
+                    collapse.invoke(service);
+
+                }
+
+
+                //Method collapse = statusbarManager.getMethod("collapse");
+
+            }
+        }
+        catch(Exception ex)
+        {
+            if(!hasFocus)
+            {
+                try {
+
+                    Object service  = getSystemService("statusbar");
+                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    Method collapse;
+
+                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    if (currentApiVersion <= 16) {
+                        collapse = statusbarManager.getMethod("collapse");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    } else {
+                        collapse = statusbarManager.getMethod("collapsePanels");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    }
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                ex.printStackTrace();
+            }
+        }
     }
 
 }

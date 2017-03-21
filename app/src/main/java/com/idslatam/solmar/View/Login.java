@@ -99,7 +99,7 @@ public class Login extends AppCompatActivity implements
 
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
 
-    BroadcastReceiver mReceiver;
+    //BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,15 +112,16 @@ public class Login extends AppCompatActivity implements
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         BroadcastReceiver mReceiver = new ScreenReceiver();
+        registerReceiver(mReceiver, filter);
 
-        try {
+        /*try {
             if (mReceiver == null) {
                 this.registerReceiver(mReceiver, filter);
             }
         } catch (Exception e) {
             Log.e("", "broadcastReceiver is already unregistered");
             //broadcastReceiver = null;
-        }
+        }*/
 
         //registerReceiver(mReceiver, filter);
         // FIN BP

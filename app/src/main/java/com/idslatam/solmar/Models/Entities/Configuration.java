@@ -41,6 +41,7 @@ public class Configuration {
     public static final String KEY_FlagUpdate = "FlagUpdate";
     public static final String KEY_FlagSave = "FlagSave";
     public static final String KEY_EstadoSignalr = "EstadoSignalr";
+    public static final String KEY_ClienteId = "ClienteId";
     public static final String KEY_ContadorPulsacion = "ContadorPulsacion";
 
 

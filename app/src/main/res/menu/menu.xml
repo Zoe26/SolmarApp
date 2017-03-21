@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.alevsk.materialdesignapp.MainActivity">
     <!-- "Mark Favorite", should appear as action button if possible -->
+
     <item
-        android:id="@+id/action_close"
-        android:icon="@mipmap/ic_close"
-        android:title="Cerrar Sesion"
+        android:id="@+id/action_call"
+        android:icon="@drawable/ic_call_white"
+        android:title="Llamadas"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_tracking"
+    <!--<item android:id="@+id/action_tracking"
         android:title="Ver Tracking"
         app:showAsAction="never"/>
 
@@ -19,7 +20,7 @@
 
     <item android:id="@+id/action_configuration"
         android:title="Configuracion"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/>-->
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_salir"

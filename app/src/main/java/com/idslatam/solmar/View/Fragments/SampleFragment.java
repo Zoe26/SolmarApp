@@ -1302,7 +1302,6 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
         }
     }
 
-
     public int ultima(){
 
         int count = 0;

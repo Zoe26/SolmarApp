@@ -51,13 +51,15 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
-import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
+import com.idslatam.solmar.Models.Crud.ContactosCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
+import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -141,7 +143,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     //---------------------------------------------------------
     private EditText value;
     private Button btn, btnC;
-    private int _Configuration_Id = 0;
+    private int _Configuration_Id = 0, _Contactos_Id = 0;
     TelephonyManager tm;
     String numero;
 
@@ -149,7 +151,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     boolean flagIsFused = false, flagIsPlaySevice = true, flagIsUpdate = false;
 
     int buscaN;
-    int busca;
+    int busca, buscaCont;
 
     ConfigurationCrud configurationCRUD = new ConfigurationCrud(this);
 
@@ -157,10 +159,12 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
     String SimOtorgaNumero="false";
     String validacion;
-    String NumeroReinstlado;
+    String NumeroReinstlado, ClienteId;
     protected String URL_API;
     String estado, RequiereNumero, Id;
     TextView txtApro;
+
+    Context mContext;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final int MY_READ_PHONE_STATE = 1 ;
@@ -173,15 +177,22 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     private static final int MY_WRITE_SETTINGS = 7;
     private static final int MY_WRITE_EXTERNAL_STORAGE = 8;
     private static final int MY_PACKAGE_USAGE_STATS = 9;
+    private static final int MY_CALL_PHONE_STATE = 10;
 
     String serieSIM;
     String imei;
+
+    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bienvenido);
 
         dataAccessSettings();
+
+        mContext= this;
 
         txtApro = (TextView)findViewById(R.id.text_aprobacion);
 
@@ -207,6 +218,17 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         //*********************************************************************************************************************
 
 
+
+        // PERMISO DE LLAMADA
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
+            } else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, MY_CALL_PHONE_STATE);
+
+            }
+        }
 
         // PERMISO DE LEER TELEFONO
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED) {
@@ -607,7 +629,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             pDialog = new ProgressDialog(Bienvenido.this);
             pDialog.setMessage("Obteniendo C\u00f3digo...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
 
             Ion.with(this)
@@ -625,6 +647,48 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                                 estado = result.get("Estado").getAsString();
                                 RequiereNumero = result.get("RequiereNumero").getAsString();
                                 Id = result.get("Id").getAsString();
+
+                                if(result.get("ClienteId").isJsonNull()){
+                                    ClienteId = null;
+                                    Log.e("ClienteId ", "INGRESÓ NULL");
+                                } else {
+                                    ClienteId = result.get("ClienteId").getAsString();
+
+                                    try {
+                                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                                        SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+                                        String selectQueryBusca = "SELECT Nombre FROM Contactos WHERE ContactosId = 1";
+                                        Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+                                        buscaCont = cbusca.getCount();
+                                        cbusca.close();
+                                        dbc.close();
+
+                                    } catch (Exception efgre) {}
+
+                                    if(buscaCont==0){
+
+                                        JsonArray jarray = result.getAsJsonArray("ClienteContactos");
+
+                                        //JsonArray paymentsArray = rootObj.getAsJsonArray("payments");
+                                        for (JsonElement pa : jarray) {
+
+                                            JsonObject paymentObj = pa.getAsJsonObject();
+
+                                            ContactosCrud contactosCrud = new ContactosCrud(mContext);
+
+                                            Contactos contactos = new Contactos();
+                                            contactos.Nombre = paymentObj.get("Nombre").getAsString();
+                                            contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
+                                            contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
+                                            contactos.ContactosId = _Contactos_Id;
+                                            _Contactos_Id = contactosCrud.insert(contactos);
+                                        }
+
+                                        Log.e("jarray CLI ", jarray.toString());
+
+                                    }
+
+                                }
 
                                 if(result.get("Numero").isJsonNull()){
                                     NumeroReinstlado = null;
@@ -924,6 +988,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
             dba.execSQL("UPDATE Configuration SET EstaActivado = '"+estado+"'");
             dba.execSQL("UPDATE Configuration SET IntervaloTracking = '1'");
             dba.execSQL("UPDATE Configuration SET GuidDipositivo = '"+Id+"'");
+            dba.execSQL("UPDATE Configuration SET ClienteId = '"+ClienteId+"'");
             dba.execSQL("UPDATE Configuration SET FlagUpdate = 'true'");
             dba.close();
 
@@ -990,4 +1055,99 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         //Toast.makeText(this, "Activando Datos..", Toast.LENGTH_SHORT).show();
     }
+
+    public void contacts() {
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+            String selectQueryBusca = "SELECT Nombre FROM Contactos WHERE ContactosId = 1";
+            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+            buscaCont = cbusca.getCount();
+            cbusca.close();
+            dbc.close();
+
+        } catch (Exception e) {}
+
+        if(buscaCont==0){
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("INSERT INTO Contactos (ContactosId, Nombre, PrimerNumero, SegundoNumero) " +
+                    "VALUES (1,'Luis Calua','942269173','987654321')");
+
+            db.execSQL("INSERT INTO Contactos (ContactosId, Nombre, PrimerNumero, SegundoNumero) " +
+                    "VALUES (2,'Luis Calua','988977701','942269173')");
+
+            db.execSQL("INSERT INTO Contactos (ContactosId, Nombre, PrimerNumero, SegundoNumero) " +
+                    "VALUES (3,'Elvis Calua','987213999','988977701')");
+
+            db.close();
+        }
+
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        try
+        {
+            if(!hasFocus)
+            {
+                Object service  = getSystemService("statusbar");
+                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                Method collapse;
+
+                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                if (currentApiVersion <= 16) {
+                    collapse = statusbarManager.getMethod("collapse");
+                    collapse.invoke(service);
+                    collapse .setAccessible(true);
+                    collapse .invoke(service);
+
+                } else {
+                    collapse = statusbarManager.getMethod("collapsePanels");
+                    collapse.invoke(service);
+                    collapse.setAccessible(true);
+                    collapse.invoke(service);
+
+                }
+
+
+                //Method collapse = statusbarManager.getMethod("collapse");
+
+            }
+        }
+        catch(Exception ex)
+        {
+            if(!hasFocus)
+            {
+                try {
+
+                    Object service  = getSystemService("statusbar");
+                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    Method collapse;
+
+                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    if (currentApiVersion <= 16) {
+                        collapse = statusbarManager.getMethod("collapse");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    } else {
+                        collapse = statusbarManager.getMethod("collapsePanels");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    }
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                ex.printStackTrace();
+            }
+        }
+    }
+
 }

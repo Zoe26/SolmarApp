@@ -12,7 +12,7 @@ public class ScreenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.e("---", "Screen");
+        Log.e("--- INGRESÓ ", "Screen");
 
         if ("android.intent.action.SCREEN_OFF".equals(intent.getAction()))
         {

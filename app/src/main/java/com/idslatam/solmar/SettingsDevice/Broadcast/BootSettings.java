@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.idslatam.solmar.Tracking.Broadcast.AlarmLocation;
 import com.idslatam.solmar.View.Bienvenido;
-import com.idslatam.solmar.View.LauncherSolmar;
 
 public class BootSettings extends BroadcastReceiver {
     public BootSettings() {
@@ -19,6 +18,21 @@ public class BootSettings extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+
+        if (intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(intent.getAction())){
+
+            try {
+                Log.e("Auto Arranque ", " App!");
+                Intent i = new Intent(context, Bienvenido.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i);
+
+            } catch (Exception e) {
+                Log.e("Auto Arranque ", " Falló!");
+            }
+
+        }
 
         // METODO QUE INICIA EL SERVICIO LOCATION ***************************************************
         Intent alarm = new Intent(context, AlarmLocation.class);
@@ -45,15 +59,5 @@ public class BootSettings extends BroadcastReceiver {
 
         // FIN METODO QUE INICIA EL SERVICIO LOCATION ***********************************************
 
-        try {
-
-            Log.e("Auto Arranque ", " App!");
-            Intent i = new Intent(context, LauncherSolmar.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
-
-        } catch (Exception e) {
-            Log.e("Auto Arranque ", " Falló!");
-        }
     }
 }

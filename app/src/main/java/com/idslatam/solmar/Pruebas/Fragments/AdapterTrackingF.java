@@ -310,8 +310,6 @@ public class AdapterTrackingF extends android.app.Fragment implements  View.OnCl
         });
 
     }
-
-
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 }

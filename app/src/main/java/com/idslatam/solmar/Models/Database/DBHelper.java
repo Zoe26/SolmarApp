@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Configuration;
+import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
@@ -94,6 +95,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_FlagUpdate + " TEXT,"
                 + Configuration.KEY_FlagSave + " TEXT,"
                 + Configuration.KEY_EstadoSignalr + " TEXT,"
+                + Configuration.KEY_ClienteId + " TEXT,"
                 + Configuration.KEY_ContadorPulsacion + " INTEGER,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 
@@ -134,12 +136,20 @@ public class DBHelper extends SQLiteOpenHelper {
                 + AlarmTrack.KEY_FechaAlarm + " TEXT,"
                 + AlarmTrack.KEY_Estado + " TEXT)";
 
+        String CREATE_TABLE_CONTACTOS = "CREATE TABLE " + Contactos.TABLE_CONTACTOS + "("
+                + Contactos.KEY_ID_CONTACTOS + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Contactos.KEY_Nombre + " TEXT,"
+                + Contactos.KEY_PrimerNumero + " INTEGER,"
+                + Contactos.KEY_SegundoNumero + " INTEGER)";
+
+
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
         db.execSQL(CREATE_TABLE_ASISTENCIA);
         db.execSQL(CREATE_TABLE_ALERT);
         db.execSQL(CREATE_TABLE_SETTING_PERMISSION);
         db.execSQL(CREATE_TABLE_ALARM_TRACK);
+        db.execSQL(CREATE_TABLE_CONTACTOS);
     }
 
     @Override
@@ -161,6 +171,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + AlarmTrack.TABLE_ALARM_TRACK);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + Contactos.TABLE_CONTACTOS);
         onCreate(db);
 
     }

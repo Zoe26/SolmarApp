@@ -1,5 +1,6 @@
 package com.idslatam.solmar.View;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -7,31 +8,41 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.desmond.squarecamera.CameraActivity;
+import com.desmond.squarecamera.ImageUtility;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import org.apache.http.entity.mime.content.FileBody;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
+import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.Image.AndroidMultiPartEntity;
 import com.idslatam.solmar.Image.ScalingUtilities;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
@@ -74,6 +85,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+
+
 public class MenuPrincipal extends  ActionBarActivity {
     private BottomBar bottomBar;
     protected String URL_API;
@@ -94,6 +107,11 @@ public class MenuPrincipal extends  ActionBarActivity {
     private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
     boolean state;
+
+
+    private static final int REQUEST_CAMERA = 0;
+    private static final int REQUEST_CAMERA_PERMISSION = 1;
+    private Point mSize;
 
 
     @Override
@@ -119,6 +137,10 @@ public class MenuPrincipal extends  ActionBarActivity {
             dbConfiguration.close();
 
         } catch (Exception e) {}
+
+        Display display = getWindowManager().getDefaultDisplay();
+        mSize = new Point();
+        display.getSize(mSize);
 
         /*if(fotocheckCod==null) {
 
@@ -272,7 +294,7 @@ public class MenuPrincipal extends  ActionBarActivity {
         bottomBar = BottomBar.attach(this, s);
         bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
                 new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
-                new BottomBarFragment(ImageFragment.newInstance(""), R.mipmap.ic_image, "Image"),
+                new BottomBarFragment(ImageFragment.newInstance(""), R.drawable.ic_image, "Image"),
                 new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
                 new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
                 new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
@@ -295,11 +317,13 @@ public class MenuPrincipal extends  ActionBarActivity {
                         // Item 1 Selected
                         try {
 
-                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            requestForCameraPermission();
+
+                            /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                             // start the image capture Intent
-                            startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
+                            startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);*/
 
                             //captureImage();
                             bottomBar.setDefaultTabPosition(0);
@@ -357,14 +381,27 @@ public class MenuPrincipal extends  ActionBarActivity {
         FragmentManager fragmentManager = getFragmentManager();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_close) {
+
+        if (id == R.id.action_call) {
+            try {
+
+                startActivity(new Intent(this, ContactosActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        /*if (id == R.id.action_close) {
             try {
                 showDialog();
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return true;
-        }
+        }*/
 
         if (id == R.id.action_salir) {
             try {
@@ -375,7 +412,7 @@ public class MenuPrincipal extends  ActionBarActivity {
             return true;
         }
 
-        if (id == R.id.action_tracking) {
+        /*if (id == R.id.action_tracking) {
             try {
 
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -446,7 +483,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 e.printStackTrace();
             }
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -672,25 +709,25 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     //****************************************************************************
     //IMAGE
-    public void captureImage() {
+    /*public void captureImage() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
         // start the image capture Intent
         startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // save file url in bundle as it will be null on screen orientation
         // changes
         outState.putParcelable("file_uri", fileUri);
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
@@ -702,18 +739,18 @@ public class MenuPrincipal extends  ActionBarActivity {
         filePath = fileUri.getPath();
         uploadImage();
 
-    }
+    }*/
 
     /**
      * Creating file uri to store image/video
      */
-    public Uri getOutputMediaFileUri(int type) {
+    /*public Uri getOutputMediaFileUri(int type) {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
-    /**
+    *//**
      * returning image / video
-     */
+     *//*
     private static File getOutputMediaFile(int type) {
 
         // External sdcard location
@@ -740,10 +777,9 @@ public class MenuPrincipal extends  ActionBarActivity {
         }
 
         return mediaFile;
-    }
+    }*/
 
     //-- METODO QUE ENVIA IMAGEN--------------------------------------------------------------------
-
 
     public void uploadImage(){
 
@@ -782,8 +818,8 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             Log.e(" filePath ", String.valueOf(filePath));
 
-            String filePathAux = decodeFile(filePath,660, 880);
-            Log.e(" filePathAux ", String.valueOf(filePathAux));
+            String filePathAux = filePath; //decodeFile(filePath,660, 880);
+            //Log.e(" filePathAux ", String.valueOf(filePathAux));
 
             String URLB = URL_API.concat("/api/Image/file");
 
@@ -861,7 +897,7 @@ public class MenuPrincipal extends  ActionBarActivity {
         alert.show();
     }
 
-    private String decodeFile(String path,int DESIREDWIDTH, int DESIREDHEIGHT) {
+    /*private String decodeFile(String path,int DESIREDWIDTH, int DESIREDHEIGHT) {
         String strMyImagePath = null;
         Bitmap scaledBitmap = null;
 
@@ -915,15 +951,17 @@ public class MenuPrincipal extends  ActionBarActivity {
         }
         return strMyImagePath;
 
-    }
+    }*/
 
     //**********************************************************************************************
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
+        Log.e("MENUPRINCIPAL", "RESULT");
+
         // if the result is capturing Image
-        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
+        /*if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 launchUploadActivity(true);
 
@@ -942,7 +980,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                         .show();
             }
 
-        }
+        }*/
 
         if(result != null) {
             if(result.getContents() == null) {
@@ -955,10 +993,27 @@ public class MenuPrincipal extends  ActionBarActivity {
                 startActivity(i);
                 //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
             }
-        } else {
-            // This is important, otherwise the result will not be passed to the fragment
-            super.onActivityResult(requestCode, resultCode, data);
         }
+        // This is important, otherwise the result will not be passed to the fragment
+        if (resultCode != RESULT_OK) return;
+
+        if (requestCode == REQUEST_CAMERA) {
+            Log.e("MENUPRINCIPAL", "REQUEST_CAMERA");
+            Uri photoUri = data.getData();
+            // Get the bitmap in according to the width of the device
+            //Bitmap bitmap = ImageUtility.decodeSampledBitmapFromPath(photoUri.getPath(), mSize.x, mSize.x);
+            //((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
+            Log.e("MENUPRINCIPAL", "REQUEST_CAMERA FIN " + String.valueOf(photoUri));
+            fileUri = photoUri;
+
+            uploadImage();
+
+        }
+
+        Log.e("MENUPRINCIPAL", "RESULT FIN");
+
+        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
@@ -1024,7 +1079,6 @@ public class MenuPrincipal extends  ActionBarActivity {
             }
         }
     }
-
 
     public void sendAsistencia(){
 
@@ -1092,7 +1146,75 @@ public class MenuPrincipal extends  ActionBarActivity {
                         }
                     }
                 });
+    }
 
+    private void showPermissionRationaleDialog(final String message, final String permission) {
+        new android.support.v7.app.AlertDialog.Builder(MenuPrincipal.this)
+                .setMessage(message)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        MenuPrincipal.this.requestForPermission(permission);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void requestForPermission(final String permission) {
+        ActivityCompat.requestPermissions(MenuPrincipal.this, new String[]{permission}, REQUEST_CAMERA_PERMISSION);
+    }
+
+
+    public void requestForCameraPermission() {
+        Log.e("MENUPRINCIPAL", "requestForCameraPermission");
+
+        final String permission = Manifest.permission.CAMERA;
+        if (ContextCompat.checkSelfPermission(MenuPrincipal.this, permission)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MenuPrincipal.this, permission)) {
+                showPermissionRationaleDialog("Test", permission);
+                Log.e("MENUPRINCIPAL", "ActivityCompat");
+            } else {
+                requestForPermission(permission);
+            }
+        } else {
+            launch();
+            Log.e("MENUPRINCIPAL ", "launch");
+        }
+
+        Log.e("MENUPRINCIPAL", "requestForCameraPermission FIN");
+    }
+
+    private void launch() {
+        Log.e("launch","launch.....");
+        Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+        startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
+
+        Log.e("launch","launch FIN.....");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION:
+                final int numOfRequest = grantResults.length;
+                final boolean isGranted = numOfRequest == 1
+                        && PackageManager.PERMISSION_GRANTED == grantResults[numOfRequest - 1];
+                if (isGranted) {
+                    launch();
+                }
+                break;
+
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
 }

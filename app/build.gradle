@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.1"
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.idslatam.solmar"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         jackOptions {
             enabled true
         }
@@ -85,6 +85,8 @@ dependencies {
     compile files('libs/signalr-client-sdk.jar')
     compile(name: 'signalr-client-sdk-android-release', ext: 'aar')
     compile project(':zxing-android-embedded')
+    compile project(':squarecamera')
+
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
@@ -98,6 +100,7 @@ dependencies {
     compile 'com.roughike:bottom-bar:1.2.1'
     compile 'com.koushikdutta.ion:ion:2.+'
     testCompile 'junit:junit:4.12'
+
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
