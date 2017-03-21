@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -164,13 +165,46 @@ public class MenuPrincipal extends  ActionBarActivity {
         URL_API = globalClass.getURL();
 
 
+
         if (state == true) {
             load(savedInstanceState);
+
+            Fragment fragment = null;
+            Class fragmentClass;
+
+            fragmentClass = HomeFragment.class;
+
+
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Insert the fragment by replacing any existing fragment
+            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+
             sendAsistencia();
         }else{
-            generarMenu(savedInstanceState);
-        }
+            //generarMenu(savedInstanceState);
 
+            Fragment fragment = null;
+            Class fragmentClass;
+
+                    fragmentClass = HomeFragment.class;
+
+
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Insert the fragment by replacing any existing fragment
+            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+        }
 
     }
 
@@ -271,7 +305,7 @@ public class MenuPrincipal extends  ActionBarActivity {
 
                                 Log.e("-- Get Menu! ", " Finaliza");
 
-                                generarMenu(savedInstanceState);
+                                //generarMenu(savedInstanceState);
 
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
@@ -289,14 +323,18 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     }
 
+    public void Prueba(View v){
+
+    }
+
     public void generarMenu(Bundle s){
 
         bottomBar = BottomBar.attach(this, s);
         bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
-                new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
-                new BottomBarFragment(ImageFragment.newInstance(""), R.drawable.ic_image, "Image"),
-                new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
                 new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
+                new BottomBarFragment(ImageFragment.newInstance(""), R.drawable.ic_image, "Image"),
+                new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
+                new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
                 new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
         );
 
@@ -382,7 +420,7 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
 
-        if (id == R.id.action_call) {
+        /*if (id == R.id.action_call) {
             try {
 
                 startActivity(new Intent(this, ContactosActivity.class)
@@ -392,7 +430,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 e.printStackTrace();
             }
             return true;
-        }
+        }*/
 
         /*if (id == R.id.action_close) {
             try {
@@ -436,7 +474,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 e.printStackTrace();
             }
             return true;
-        }
+        }*/
 
         if (id == R.id.action_configuration) {
             try {
@@ -462,11 +500,9 @@ public class MenuPrincipal extends  ActionBarActivity {
                         } else {
                             String pin = mPIN.getText().toString();
                             if(pin.equals("s2016")){
-                                DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                dba.execSQL("UPDATE SettingsPermissions SET Estado = 'true'");
-                                dba.close();
-                                Toast.makeText(MenuPrincipal.this, "Desbloqueado!", Toast.LENGTH_SHORT).show();
+
+                                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                                //Toast.makeText(MenuPrincipal.this, "Desbloqueado!", Toast.LENGTH_SHORT).show();
 
                             } else  {
                                 mPIN.setText("");
@@ -483,7 +519,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                 e.printStackTrace();
             }
             return true;
-        }*/
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -1171,7 +1207,6 @@ public class MenuPrincipal extends  ActionBarActivity {
         ActivityCompat.requestPermissions(MenuPrincipal.this, new String[]{permission}, REQUEST_CAMERA_PERMISSION);
     }
 
-
     public void requestForCameraPermission() {
         Log.e("MENUPRINCIPAL", "requestForCameraPermission");
 
@@ -1217,4 +1252,22 @@ public class MenuPrincipal extends  ActionBarActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = null;
+        Class fragmentClass;
+
+        fragmentClass = HomeFragment.class;
+
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Insert the fragment by replacing any existing fragment
+        android.support.v4.app.FragmentManager fragmentManager = this.getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+    }
 }
