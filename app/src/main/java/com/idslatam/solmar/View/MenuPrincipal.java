@@ -1270,4 +1270,51 @@ public class MenuPrincipal extends  ActionBarActivity {
         android.support.v4.app.FragmentManager fragmentManager = this.getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
     }
+
+    public void clickSetting(View view){
+
+        try {
+
+        View mView = getLayoutInflater().inflate(R.layout.dialog_active_setting, null);
+        EditText mPIN = (EditText) mView.findViewById(R.id.editTextPIN);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MenuPrincipal.this);
+        mBuilder.setTitle("ACCESO CONFIGURACIONES");
+        mBuilder.setMessage("Ingrese PIN de desbloqueo de configuraciones del tel\u00e9fono");
+        mBuilder.setNegativeButton("SALIR", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface d, int arg1) {
+                d.cancel();
+            };
+        });
+
+        mBuilder.setPositiveButton("ACTIVAR", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface d, int arg1) {
+                if(mPIN.getText().toString().isEmpty()){
+                    Toast.makeText(MenuPrincipal.this, "Ingrese PIN", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String pin = mPIN.getText().toString();
+                    if(pin.equals("s2016")){
+
+                        startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                        //Toast.makeText(MenuPrincipal.this, "Desbloqueado!", Toast.LENGTH_SHORT).show();
+
+                    } else  {
+                        mPIN.setText("");
+                        Toast.makeText(MenuPrincipal.this, "PIN Incorrecto!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    }
+
 }

@@ -11,7 +11,11 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.idslatam.solmar.R;
 
+import java.lang.reflect.Method;
+
 public class Scan extends Activity {
+
+    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,4 +58,69 @@ public class Scan extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        try
+        {
+            if(!hasFocus)
+            {
+                Object service  = getSystemService("statusbar");
+                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                Method collapse;
+
+                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                if (currentApiVersion <= 16) {
+                    collapse = statusbarManager.getMethod("collapse");
+                    collapse.invoke(service);
+                    collapse .setAccessible(true);
+                    collapse .invoke(service);
+
+                } else {
+                    collapse = statusbarManager.getMethod("collapsePanels");
+                    collapse.invoke(service);
+                    collapse.setAccessible(true);
+                    collapse.invoke(service);
+
+                }
+
+
+                //Method collapse = statusbarManager.getMethod("collapse");
+
+            }
+        }
+        catch(Exception ex)
+        {
+            if(!hasFocus)
+            {
+                try {
+
+                    Object service  = getSystemService("statusbar");
+                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    Method collapse;
+
+                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    if (currentApiVersion <= 16) {
+                        collapse = statusbarManager.getMethod("collapse");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    } else {
+                        collapse = statusbarManager.getMethod("collapsePanels");
+                        collapse.invoke(service);
+                        collapse.setAccessible(true);
+                        collapse.invoke(service);
+
+                    }
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                ex.printStackTrace();
+            }
+        }
+    }
+
 }
