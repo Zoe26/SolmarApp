@@ -491,6 +491,8 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
 
                 load();
 
+                updateCountDown();
+
                 break;
         }
     }
@@ -845,7 +847,11 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                             int minutes = (int) ((startTime / (1000*60)) % 60);
                             int hours   = (int) ((startTime / (1000*60*60)) % 24);
 
-                            btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
+                            try {
+                                btnMarcacion.setTextColor(getResources().getColor(R.color.black_overlay));
+                            } catch (Exception e){
+
+                            }
 
                             StringBuilder sb = new StringBuilder();
 
@@ -857,8 +863,14 @@ public class SampleFragment extends Fragment implements  View.OnClickListener {
                                 sb.append(seconds);
                             }
 
-                            String seg = sb.toString();
-                            btnMarcacion.setText(minutes+":"+seg);
+                            try {
+                                String seg = sb.toString();
+                                btnMarcacion.setText(minutes+":"+seg);
+                            } catch (Exception e){
+
+                            }
+
+
 
                         }
 

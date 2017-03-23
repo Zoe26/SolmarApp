@@ -123,7 +123,7 @@ public class CodeBar extends Activity {
 
         Log.e("---! Send: TIPO "+tipo, " ! VALOR "+valor + " ! FECHA "+fecha+" ! FORMATO "+formato);
 
-        if (isOnlineNet()){
+        if (true){
 
             String URL = URL_API.concat("api/CodigoBarra");
 
@@ -181,7 +181,7 @@ public class CodeBar extends Activity {
                     });
 
         } else {
-            pingRespuesta();
+            //pingRespuesta();
         }
     }
 
@@ -220,7 +220,7 @@ public class CodeBar extends Activity {
     public Boolean isOnlineNet() {
 
         try {
-            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
+            Process p = java.lang.Runtime.getRuntime().exec("ping 190.116.178.163:85");
 
             int val           = p.waitFor();
             boolean reachable = (val == 0);
