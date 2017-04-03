@@ -8,45 +8,72 @@
     android:orientation="vertical"
     tools:context="com.idslatam.solmar.Dialer.ContactosActivity">
 
-    <TextView
+    <LinearLayout
+        android:background="@color/primary_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:gravity="center|left"
-        android:textColor="@color/negro_general"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Lista de Contáctos"
-        android:textStyle="bold"
-        android:textSize="16dp"/>
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center|left"
+            android:textColor="@color/white"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Lista de Contáctos"
+            android:textStyle="bold"
+            android:textSize="16dp"/>
+
+        <ImageButton
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/squarecamera__transparent"
+            android:layout_height="match_parent"
+            android:onClick="updateAgenda"
+            android:src="@drawable/ic_sync_black"
+            />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:orientation="horizontal"
         android:background="@color/white"
-        android:layout_height="48dp">
+        android:padding="10dp"
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/edt_buscar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/negro_general"
             android:textSize="16dp"
-            android:hint="Buscar.." />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:hint="Buscar..                    " />
 
         <ImageButton
             android:id="@+id/btnFiltrar"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/ic_search"
-            android:layout_weight="0"
-
-            tools:ignore="HardcodedText" />
+            android:background="@color/colorPrimary"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_search" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#C8C9CB" />
 
     <ListView
         android:layout_width="match_parent"
