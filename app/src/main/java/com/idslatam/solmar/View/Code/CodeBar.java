@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -160,7 +161,7 @@ public class CodeBar extends Activity {
                                         pDialog.dismiss();
                                     }
 
-                                    dialogoRespuesta(response.get("Mensaje").getAsString());
+                                    dialogoRespuesta(response.get("Estado").getAsString(),response.get("Header").getAsString(),response.get("Mensaje").getAsString());
 
                                 } catch (Exception edd){
 
@@ -189,20 +190,22 @@ public class CodeBar extends Activity {
         new IntentIntegrator(this).initiateScan();
     }
 
-    public void dialogoRespuesta(String jsonObject){
+    public void dialogoRespuesta(String Estado, String Header, String Mensaje){
 
         try {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            if(jsonObject.equalsIgnoreCase("true")){
-                builder.setTitle(Html.fromHtml("<font color='#4CAF50'>Respuesta de Servidor</font>"));
+            if(Estado.equalsIgnoreCase("true")){
+                builder.setTitle(Html.fromHtml("<font background='#4CAF50' color='#4CAF50'>"+Header+"</font>"));
+                builder.setMessage(Html.fromHtml("<font background='#4CAF50' color='#4CAF50'>"+Mensaje+"</font>"));
             } else {
-                builder.setTitle(Html.fromHtml("<font color='#F44336'>Respuesta de Servidor</font>"));
+                builder.setTitle(Html.fromHtml("<font color='#F44336'>"+Header+"</font>"));
+                builder.setMessage(Html.fromHtml("<font background='#4CAF50' color='#4CAF50'>"+Mensaje+"</font>"));
             }
 
             //builder.setTitle("Respuesta de Servidor");
-            builder.setMessage(jsonObject);
+
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 

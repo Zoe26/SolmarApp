@@ -55,7 +55,7 @@ public class Image extends Activity {
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId;
+    String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId,CodigoEmpleado;
 
     private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
@@ -167,7 +167,7 @@ public class Image extends Activity {
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-            String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo FROM Configuration";
+            String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo,CodigoEmpleado FROM Configuration";
             Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
@@ -175,6 +175,7 @@ public class Image extends Activity {
                 LatitudFile = c.getString(c.getColumnIndex("Latitud"));
                 LongitudFile = c.getString(c.getColumnIndex("Longitud"));
                 DispositivoIdFile = c.getString(c.getColumnIndex("GuidDipositivo"));
+                CodigoEmpleado = c.getString(c.getColumnIndex("CodigoEmpleado"));
             }
 
             c.close();
@@ -201,6 +202,7 @@ public class Image extends Activity {
                     .setMultipartParameter("Latitud", LatitudFile)
                     .setMultipartParameter("Longitud", LongitudFile)
                     .setMultipartParameter("Numero", NumeroFile)
+                    .setMultipartParameter("CodigoEmpleado", CodigoEmpleado)
 
                     .setMultipartFile("file", new File(filePathAux))
                     .asString()
