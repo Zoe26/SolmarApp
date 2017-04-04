@@ -203,7 +203,6 @@ public class Image extends Activity {
                     .setMultipartParameter("Longitud", LongitudFile)
                     .setMultipartParameter("Numero", NumeroFile)
                     .setMultipartParameter("CodigoEmpleado", CodigoEmpleado)
-
                     .setMultipartFile("file", new File(filePathAux))
                     .asString()
                     .withResponse()
@@ -211,7 +210,7 @@ public class Image extends Activity {
                         @Override
                         public void onCompleted(Exception e, Response<String> response) {
 
-                            File fdelete = new File(filePathAux);
+                            /*File fdelete = new File(filePathAux);
 
                             if (fdelete.exists()) {
                                 if (fdelete.delete()) {
@@ -219,7 +218,7 @@ public class Image extends Activity {
                                 } else {
                                     Log.e("file not Deleted :", filePathAux);
                                 }
-                            }
+                            }*/
 
                             if(response!=null){
 
@@ -251,7 +250,7 @@ public class Image extends Activity {
                             }catch (Exception ee){}
 
 
-                            finish();
+                            //finish();
                         }
                     });
 
@@ -297,7 +296,7 @@ public class Image extends Activity {
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // do nothing
+                        finish();
                     }
                 });
         AlertDialog alert = builder.create();

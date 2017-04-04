@@ -14,6 +14,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -192,13 +193,51 @@ public class CodeBar extends Activity {
 
     public void dialogoRespuesta(String Estado, String Header, String Mensaje){
 
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CodeBar.this);
+
+        if(Estado.equalsIgnoreCase("true")){
+
+            mView = getLayoutInflater().inflate(R.layout.dialog_bars_ok, null);
+
+        } else {
+
+            mView = getLayoutInflater().inflate(R.layout.dialog_bars_failed, null);
+        }
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.title_bars_ok);
+        TextView texMje = (TextView)mView.findViewById(R.id.mje_bars_ok);
+
+        txtTitle.setText(Header);
+        texMje.setText(Mensaje);
+
         try {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                    finish();
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /*try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
 
             if(Estado.equalsIgnoreCase("true")){
-                builder.setTitle(Html.fromHtml("<font background='#4CAF50' color='#4CAF50'>"+Header+"</font>"));
-                builder.setMessage(Html.fromHtml("<font background='#4CAF50' color='#4CAF50'>"+Mensaje+"</font>"));
+                builder.setTitle(Html.fromHtml("<font background-color='#FFFFFF' color='#FFFFF'>"+Header+"</font>"));
+                builder.setMessage(Html.fromHtml("<font background-color='#FFFFF' color='#FFFFF'>"+Mensaje+"</font>"));
             } else {
                 builder.setTitle(Html.fromHtml("<font color='#F44336'>"+Header+"</font>"));
                 builder.setMessage(Html.fromHtml("<font background='#4CAF50' color='#4CAF50'>"+Mensaje+"</font>"));
@@ -217,7 +256,7 @@ public class CodeBar extends Activity {
             });
             builder.show();
 
-        } catch (Exception e){}
+        } catch (Exception e){}*/
     }
 
     public Boolean isOnlineNet() {

@@ -37,8 +37,8 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     public static final String CAMERA_FLASH_KEY = "flash_mode";
     public static final String IMAGE_INFO = "image_info";
 
-    private static final int PICTURE_SIZE_MAX_WIDTH = 1280;
-    private static final int PREVIEW_SIZE_MAX_WIDTH = 900;
+    private static final int PICTURE_SIZE_MAX_WIDTH = 640;//1280;
+    private static final int PREVIEW_SIZE_MAX_WIDTH = 1280;//640;
 
     private int mCameraID;
     private String mFlashMode;
@@ -112,8 +112,8 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
                     mImageParameters.mCoverWidth = mImageParameters.mCoverHeight
                             = mImageParameters.calculateCoverWidthHeight();
 
-//                    Log.d(TAG, "parameters: " + mImageParameters.getStringValues());
-//                    Log.d(TAG, "cover height " + topCoverView.getHeight());
+                    Log.e(TAG, "parameters: " + mImageParameters.getStringValues());
+                    Log.e(TAG, "cover height " + topCoverView.getHeight());
                     resizeTopAndBtmCover(topCoverView, btnCoverView);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -199,13 +199,13 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     private void resizeTopAndBtmCover( final View topCover, final View bottomCover) {
         ResizeAnimation resizeTopAnimation
                 = new ResizeAnimation(topCover, mImageParameters);
-        resizeTopAnimation.setDuration(800);
+        resizeTopAnimation.setDuration(500);
         resizeTopAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
         topCover.startAnimation(resizeTopAnimation);
 
         ResizeAnimation resizeBtmAnimation
                 = new ResizeAnimation(bottomCover, mImageParameters);
-        resizeBtmAnimation.setDuration(800);
+        resizeBtmAnimation.setDuration(500);
         resizeBtmAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
         bottomCover.startAnimation(resizeBtmAnimation);
     }
@@ -371,16 +371,32 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         int numOfSizes = sizes.size();
         for (int i = 0; i < numOfSizes; i++) {
             size = sizes.get(i);
-            boolean isDesireRatio = (size.width / 4) == (size.height / 3);
+            boolean isDesireRatio = (size.width / 3) == (size.height / 4);
             boolean isBetterSize = (bestSize == null) || size.width > bestSize.width;
 
+            if (bestSize!=null){
+
+                Log.e(TAG, "R " + String.valueOf(size.width / 3) +" = "+ (size.height / 4));
+                Log.e(TAG, "B " + String.valueOf(size.width +" > "+ bestSize.width));
+            }
+
             if (isDesireRatio && isBetterSize) {
-                bestSize = size;
+
+                    bestSize = size;
+
+                    if (bestSize!=null){
+
+                        Log.e(TAG, "------------");
+                        Log.e(TAG, "F R " + String.valueOf(size.width / 3) +" = "+ (size.height / 4));
+                        Log.e(TAG, "F S " + String.valueOf(size.width +" > "+ bestSize.width));
+                        Log.e(TAG, "------------");
+                    }
+
             }
         }
 
         if (bestSize == null) {
-            Log.d(TAG, "cannot find the best camera size");
+            Log.e(TAG, "cannot find the best camera size");
             return sizes.get(sizes.size() - 1);
         }
 
@@ -572,4 +588,5 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             return mRememberedNormalOrientation;
         }
     }
+
 }

@@ -13,15 +13,13 @@
     <View
         android:id="@+id/cover_top_view"
         android:layout_width="@dimen/squarecamera__cover_start_width"
-        android:layout_height="match_parent"
-        android:layout_alignLeft="@id/camera_preview_view"
+        android:layout_height="2dp"
         android:background="@android:color/black"/>
 
     <View
         android:id="@+id/cover_bottom_view"
         android:layout_width="@dimen/squarecamera__cover_start_width"
-        android:layout_height="match_parent"
-        android:layout_alignRight="@id/camera_preview_view"
+        android:layout_height="2dp"
         android:background="@android:color/black"/>
 
     <LinearLayout

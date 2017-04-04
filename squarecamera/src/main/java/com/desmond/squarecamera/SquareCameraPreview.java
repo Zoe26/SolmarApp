@@ -99,14 +99,6 @@ public class SquareCameraPreview extends SurfaceView {
         setMeasuredDimension(width, height);
     }
 
-    public int getViewWidth() {
-        return getWidth();
-    }
-
-    public int getViewHeight() {
-        return getHeight();
-    }
-
     public void setCamera(Camera camera) {
         mCamera = camera;
 
@@ -175,7 +167,7 @@ public class SquareCameraPreview extends SurfaceView {
         List<String> supportedFocusModes = params.getSupportedFocusModes();
         if (supportedFocusModes != null
                 && supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
-            Log.d(TAG, mFocusAreas.size() + "");
+            Log.e(TAG, mFocusAreas.size() + "");
             params.setFocusAreas(mFocusAreas);
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             mCamera.setParameters(params);

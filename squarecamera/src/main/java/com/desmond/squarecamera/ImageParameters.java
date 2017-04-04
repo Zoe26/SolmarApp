@@ -2,6 +2,7 @@ package com.desmond.squarecamera;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * Created by desmond on 9/8/15.
@@ -31,7 +32,10 @@ public class ImageParameters implements Parcelable {
     public ImageParameters() {}
 
     public int calculateCoverWidthHeight() {
-       return Math.abs(mPreviewHeight - mPreviewWidth) / 2;
+
+        Log.e("RETUR COVER W H : ", String.valueOf(Math.abs(mPreviewHeight - mPreviewWidth)));
+
+       return Math.abs(mPreviewHeight - mPreviewWidth);
     }
 
     public int getAnimationParameter() {

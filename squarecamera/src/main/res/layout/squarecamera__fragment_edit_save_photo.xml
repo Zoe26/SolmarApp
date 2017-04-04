@@ -8,14 +8,14 @@
     <View
         android:id="@+id/topView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="1dp"/>
 
     <com.desmond.squarecamera.SquareImageView
         android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topView"
-        android:scaleType="centerCrop"/>
+        />
 
     <ImageButton
         android:id="@+id/save_photo"
@@ -31,7 +31,7 @@
         android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="5dp"
         android:src="@drawable/squarecamera__cancel_drawable"
         android:background="@android:color/transparent"
         android:onClick="onCancel"/>

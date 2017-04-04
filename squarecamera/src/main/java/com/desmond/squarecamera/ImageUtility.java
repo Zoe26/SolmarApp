@@ -28,32 +28,9 @@ public class ImageUtility {
 
     public static String convertBitmapToString(Bitmap bitmap) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 
         return Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
-    }
-
-    public static byte[] convertBitmapStringToByteArray(String bitmapByteString) {
-        return Base64.decode(bitmapByteString, Base64.DEFAULT);
-    }
-
-    public static Bitmap rotatePicture(Context context, int rotation, byte[] data) {
-        Bitmap bitmap = decodeSampledBitmapFromByte(context, data);
-
-        if (rotation != 0) {
-            Bitmap oldBitmap = bitmap;
-
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotation);
-
-            bitmap = Bitmap.createBitmap(
-                    oldBitmap, 0, 0, oldBitmap.getWidth(), oldBitmap.getHeight(), matrix, false
-            );
-
-            oldBitmap.recycle();
-        }
-
-        return bitmap;
     }
 
     public static Uri savePicture(Context context, Bitmap bitmap) {
@@ -101,24 +78,6 @@ public class ImageUtility {
         return fileContentUri;
     }
 
-    public static Bitmap decodeSampledBitmapFromPath(String path, int reqWidth, int reqHeight) {
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inMutable = true;
-        options.inBitmap = BitmapFactory.decodeFile(path, options);
-
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        options.inScaled = true;
-        options.inDensity = options.outWidth;
-        options.inTargetDensity = reqWidth * options.inSampleSize;
-
-        options.inJustDecodeBounds = false;
-        options.inPurgeable = true;
-        options.inInputShareable = true;
-
-        return BitmapFactory.decodeFile(path, options);
-    }
     /**
      * Decode and sample down a bitmap from a byte stream
      */

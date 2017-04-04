@@ -181,15 +181,20 @@
             -->
 
         </activity>
-        <activity android:name="com.desmond.squarecamera.CameraActivity" />
+        <activity android:name="com.desmond.squarecamera.CameraActivity"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".Dialer.ContactosActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Dialer.ContactosDetalles"
             android:screenOrientation="portrait" />
+
         <activity android:name=".ImageClass.Image" />
+
         <activity android:name=".View.Code.Scan"></activity>
+
     </application>
 
 </manifest>
