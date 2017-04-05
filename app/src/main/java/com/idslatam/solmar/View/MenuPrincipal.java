@@ -44,8 +44,6 @@ import org.apache.http.entity.mime.content.FileBody;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Dialer.ContactosActivity;
-import com.idslatam.solmar.Image.AndroidMultiPartEntity;
-import com.idslatam.solmar.Image.ScalingUtilities;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
@@ -66,13 +64,6 @@ import com.roughike.bottombar.OnTabSelectedListener;
 
 import com.idslatam.solmar.R;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

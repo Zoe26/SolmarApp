@@ -130,7 +130,7 @@ public class Image extends Activity {
 
     private void launch() {
         Log.e("launch","launch.....");
-        Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+        Intent startCustomCameraIntent = new Intent(Image.this, CameraActivity.class);
         startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
 
         Log.e("launch","launch FIN.....");
@@ -302,7 +302,6 @@ public class Image extends Activity {
         AlertDialog alert = builder.create();
         alert.show();
     }
-
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
