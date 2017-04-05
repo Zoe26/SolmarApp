@@ -262,7 +262,7 @@ public class CodeBar extends Activity {
     public Boolean isOnlineNet() {
 
         try {
-            Process p = java.lang.Runtime.getRuntime().exec("ping 190.116.178.163:85");
+            Process p = Runtime.getRuntime().exec("ping 190.116.178.163:85");
 
             int val           = p.waitFor();
             boolean reachable = (val == 0);
