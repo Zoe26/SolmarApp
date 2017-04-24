@@ -643,7 +643,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                             if(result!=null){
                                 Log.e("JsonObject ", result.toString());
 
-                                //    estado = result.("Estado");
                                 estado = result.get("Estado").getAsString();
                                 RequiereNumero = result.get("RequiereNumero").getAsString();
                                 Id = result.get("Id").getAsString();
