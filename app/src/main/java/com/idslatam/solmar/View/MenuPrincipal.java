@@ -807,7 +807,6 @@ public class MenuPrincipal extends  ActionBarActivity {
     }*/
 
     //-- METODO QUE ENVIA IMAGEN--------------------------------------------------------------------
-
     public void uploadImage(){
 
         ProgressDialog dialog;

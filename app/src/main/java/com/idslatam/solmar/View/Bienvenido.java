@@ -169,7 +169,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final int MY_READ_PHONE_STATE = 1 ;
     private static final int MY_ACCESS_FINE_LOCATION = 2 ;
-    private static final int MY_ACCESS_COARSE_LOCATION = 3 ;
     private static final int MY_INTERNET = 3 ;
     private static final int MY_ACCESS_NETWORK_STATE = 4;
     private static final int MY_VIBRATE = 5;
@@ -193,9 +192,7 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         dataAccessSettings();
 
         mContext= this;
-
         txtApro = (TextView)findViewById(R.id.text_aprobacion);
-
         //**********************************************************************************************************************
 
         try {

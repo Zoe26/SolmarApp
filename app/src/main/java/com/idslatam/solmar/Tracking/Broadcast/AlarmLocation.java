@@ -18,21 +18,12 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Models.Database.DBHelper;
-import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Crud.AlarmTrackCrud;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
-import com.idslatam.solmar.SettingsDevice.Configurations.ServiceAccessSettings;
 import com.idslatam.solmar.Tracking.Services.LocationFusedApi;
-import com.idslatam.solmar.View.Bienvenido;
-import com.idslatam.solmar.View.Login;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,10 +42,8 @@ public class AlarmLocation extends BroadcastReceiver {
     int intervalo;
 
     //+++++++++++++++++++++
-    private SignalRService mService;
-    private boolean mBound = false;
     private Context mContext;
-    int _TrackingUpdateRee_Id = 0, _AlarmTrack_Id = 0;
+    int _AlarmTrack_Id = 0;
 
     //--------------------------------------------------------
     boolean gps;
@@ -78,19 +67,12 @@ public class AlarmLocation extends BroadcastReceiver {
             e.printStackTrace();
         }
 
-
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         BroadcastReceiver mReceiver = new ScreenReceiver();
         mContext.getApplicationContext().registerReceiver(mReceiver, filter);
-        // INTENTI AL SERVICIO ----------------------------------------------------------------------
-        /*Intent backgroundS = new Intent(context, ServiceAccessSettings.class);
-        mContext.startService(backgroundS);*/
-        // FIN INTENTI AL SERVICIO ------------------------------------------------------------------
 
         gps = isGPSAvailable();
-
-
 
         //NO TOCAR *****************************************************************************************************************************
         int vApi = Build.VERSION.SDK_INT;
@@ -115,7 +97,6 @@ public class AlarmLocation extends BroadcastReceiver {
                 Toast.makeText(mContext, "Excepcion Start Service", Toast.LENGTH_LONG).show();
             }
 
-
         } else {
 
             Log.e("Alarm Api < 19", "Execute");
@@ -139,7 +120,6 @@ public class AlarmLocation extends BroadcastReceiver {
 
         }
         //*************************************************************************************************************************************
-
 
         try {
 
