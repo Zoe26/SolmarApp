@@ -580,9 +580,7 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     public void cerrarSesion(){
 
-
         //******************************************************************************************
-
         String AsistenciaId = null, DispositivoId=null, FechaTerminoCelular=null;
 
         try {
@@ -842,66 +840,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        try
-        {
-            if(!hasFocus)
-            {
-                Object service  = getSystemService("statusbar");
-                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                Method collapse;
-
-                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                if (currentApiVersion <= 16) {
-                    collapse = statusbarManager.getMethod("collapse");
-                    collapse.invoke(service);
-                    collapse .setAccessible(true);
-                    collapse .invoke(service);
-
-                } else {
-                    collapse = statusbarManager.getMethod("collapsePanels");
-                    collapse.invoke(service);
-                    collapse.setAccessible(true);
-                    collapse.invoke(service);
-
-                }
-            }
-        }
-        catch(Exception ex)
-        {
-            if(!hasFocus)
-            {
-                try {
-
-                    Object service  = getSystemService("statusbar");
-                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                    Method collapse;
-
-                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                    if (currentApiVersion <= 16) {
-                        collapse = statusbarManager.getMethod("collapse");
-                        collapse.invoke(service);
-                        collapse.setAccessible(true);
-                        collapse.invoke(service);
-
-                    } else {
-                        collapse = statusbarManager.getMethod("collapsePanels");
-                        collapse.invoke(service);
-                        collapse.setAccessible(true);
-                        collapse.invoke(service);
-
-                    }
-
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                ex.printStackTrace();
-            }
-        }
     }
 
     public void sendAsistencia(){

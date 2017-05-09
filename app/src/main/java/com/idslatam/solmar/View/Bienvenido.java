@@ -15,8 +15,10 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.PixelFormat;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -31,8 +33,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -189,6 +194,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
         mContext= this;
         txtApro = (TextView)findViewById(R.id.text_aprobacion);
+
         //**********************************************************************************************************************
 
         try {
@@ -1042,70 +1048,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             db.close();
         }
 
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        try
-        {
-            if(!hasFocus)
-            {
-                Object service  = getSystemService("statusbar");
-                Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                Method collapse;
-
-                //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                if (currentApiVersion <= 16) {
-                    collapse = statusbarManager.getMethod("collapse");
-                    collapse.invoke(service);
-                    collapse .setAccessible(true);
-                    collapse .invoke(service);
-
-                } else {
-                    collapse = statusbarManager.getMethod("collapsePanels");
-                    collapse.invoke(service);
-                    collapse.setAccessible(true);
-                    collapse.invoke(service);
-
-                }
-
-
-                //Method collapse = statusbarManager.getMethod("collapse");
-
-            }
-        }
-        catch(Exception ex)
-        {
-            if(!hasFocus)
-            {
-                try {
-
-                    Object service  = getSystemService("statusbar");
-                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                    Method collapse;
-
-                    //Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-                    if (currentApiVersion <= 16) {
-                        collapse = statusbarManager.getMethod("collapse");
-                        collapse.invoke(service);
-                        collapse.setAccessible(true);
-                        collapse.invoke(service);
-
-                    } else {
-                        collapse = statusbarManager.getMethod("collapsePanels");
-                        collapse.invoke(service);
-                        collapse.setAccessible(true);
-                        collapse.invoke(service);
-
-                    }
-
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                ex.printStackTrace();
-            }
-        }
     }
 
 }

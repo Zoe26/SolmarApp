@@ -183,7 +183,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             cConfiguration.close();
             dbConfiguration.close();
 
-            //data.add(new Item("Bars", getResources().getDrawable(R.mipmap.ic_barsa)));
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));
@@ -279,8 +278,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         //String message = "Clicked : " + data.get(position).getTitle();
         //Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
     }
-
-
 
     public void load(Bundle savedInstanceState){
 
