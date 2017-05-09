@@ -669,7 +669,10 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                                                 Contactos contactos = new Contactos();
                                                 contactos.Nombre = paymentObj.get("Nombre").getAsString();
                                                 contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
-                                                contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
+                                                if (!paymentObj.get("Numero1").isJsonNull()){
+                                                    contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
+                                                }
+
                                                 contactos.ContactosId = _Contactos_Id;
                                                 _Contactos_Id = contactosCrud.insert(contactos);
                                             }
