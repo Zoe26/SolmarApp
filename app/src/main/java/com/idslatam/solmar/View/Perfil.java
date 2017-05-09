@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -59,26 +60,13 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
     Bundle b;
     Context mContext;
 
-    private Uri fileUri;
-    private String filePath = null;
     int _Menu_Id = 0;
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
-    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
-            , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId;
-
-    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
-
+    String DispositivoId;
     boolean state;
 
-
-    private static final int REQUEST_CAMERA = 0;
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
     private Point mSize;
 
-    boolean isFragment = false;
+    private PackageManager packageManager = null;
 
     GridView gridview;
     GridViewAdapter gridviewAdapter;
@@ -201,6 +189,9 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
     @Override
     public void onItemClick(final AdapterView<?> arg0, final View view, final int position, final long id)
     {
+
+        packageManager = getPackageManager();
+
         if (data.get(position).getTitle().equalsIgnoreCase("Alert")){
             startActivity(new Intent(mContext, AlertActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
@@ -227,7 +218,10 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         }
 
         if (data.get(position).getTitle().equalsIgnoreCase("Mensajes")){
-
+            Intent intent = packageManager.getLaunchIntentForPackage("com.android.mms");
+            if (null != intent) {
+                startActivity(intent);
+            }
         }
 
         if (data.get(position).getTitle().equalsIgnoreCase("Configuración")){
@@ -483,6 +477,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                             if(pin.equals("s2016")){
 
                                 startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+
 
                             } else  {
                                 mPIN.setText("");

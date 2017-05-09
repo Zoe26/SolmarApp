@@ -912,7 +912,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     }
 
     //************************************************************************************************************************
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("INGRESO  ", "onActivityResult");
