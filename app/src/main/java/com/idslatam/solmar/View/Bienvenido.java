@@ -520,7 +520,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
         }
 
-        //isWIFIAvailable();
+        isWIFIAvailable();
 
         //**********************DESPUES DE VALIDAR SIN SE OBTIENE DATOS DEL TELEFONO************************************
         String modelo = Build.MODEL;
