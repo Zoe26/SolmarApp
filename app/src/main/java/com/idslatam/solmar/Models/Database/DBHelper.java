@@ -8,6 +8,7 @@ import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
+import com.idslatam.solmar.Models.Entities.Menu;
 import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
@@ -142,6 +143,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Contactos.KEY_PrimerNumero + " INTEGER,"
                 + Contactos.KEY_SegundoNumero + " INTEGER)";
 
+        String CREATE_TABLE_MENU = "CREATE TABLE " + Menu.TABLE_MENU + "("
+                + Menu.KEY_ID_Menu + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Menu.KEY_Code + " TEXT,"
+                + Menu.KEY_Nombre + " TEXT)";
+
 
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
@@ -150,6 +156,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_SETTING_PERMISSION);
         db.execSQL(CREATE_TABLE_ALARM_TRACK);
         db.execSQL(CREATE_TABLE_CONTACTOS);
+        db.execSQL(CREATE_TABLE_MENU);
     }
 
     @Override
@@ -174,6 +181,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + Contactos.TABLE_CONTACTOS);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + Menu.TABLE_MENU);
         onCreate(db);
 
     }

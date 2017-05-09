@@ -40,6 +40,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
@@ -651,85 +654,49 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                         @Override
                         public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            if(response!=null){
+                            if(response == null){
+
+                                saveError(tracking);
+                                Log.e("¡ERROR DE RED! ", " -- Tracking saveError --");
+
+                                return;
+                            }
 
                                 if (response.getHeaders().code() == 200) {
 
-                                    Log.e("JsonObject ", response.getResult().toString());
+                                    Gson gson = new Gson();
+                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                JSONObject j = null;
-                                try {
-                                    j = new JSONObject(response.getResult().toString());
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
-                                }
+                                    Log.e("JsonObject ", result.toString());
 
-                                String Configuracion = null;
-                                try {
-                                    Configuracion = j.getString("Configuracion");
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
-                                }
+                                    JsonArray jarray = result.getAsJsonArray("Configuracion");
 
-                                    //Log.e(" Configuracion", Configuracion);
+                                    for (JsonElement pa : jarray) {
+                                        JsonObject paymentObj = pa.getAsJsonObject();
 
-                                JSONArray jsonA = null;
-
-                                try {
-                                    jsonA = new JSONArray(Configuracion);
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
-                                }
-
-                                int a=0, b=0;
-                                int []valores = new int[3];
-
-                                JSONObject c;
-
-                                for(int i=0;i<jsonA.length();i++){
-
-                                    try {
-                                        c = jsonA.getJSONObject(i);
-
-                                        valores[i] = c.getInt("Valor");
-                                        if(c.getInt("ConfiguracionId")==7){
+                                        if(paymentObj.get("ConfiguracionId").getAsString().equalsIgnoreCase("7")){
                                             DBHelper dataBaseHelper = new DBHelper(mContext);
                                             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                            db.execSQL("UPDATE Configuration SET Precision = '" + c.getInt("Valor") + "'");
+                                            db.execSQL("UPDATE Configuration SET Precision = '" + paymentObj.get("Valor").getAsString() + "'");
                                             db.close();
-
-                                            a = c.getInt("Valor");
-//                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
                                         }
 
-                                        if(c.getInt("ConfiguracionId")==1){
+                                        if(paymentObj.get("ConfiguracionId").getAsString().equalsIgnoreCase("1")){
                                             DBHelper dataBaseHelper = new DBHelper(mContext);
                                             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + c.getInt("Valor") + "'");
+                                            db.execSQL("UPDATE Configuration SET IntervaloTracking = '" + paymentObj.get("Valor").getAsString() + "'");
                                             db.close();
-
-                                            b = c.getInt("Valor");
-//                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
                                         }
-                                    } catch (JSONException e1) {
-                                        e1.printStackTrace();
+
+                                        Log.e(" ConfiguracionId", paymentObj.get("ConfiguracionId").getAsString());
+                                        Log.e(" Valor", paymentObj.get("Valor").getAsString());
+
                                     }
-                                }
-
-                                int te = a;
-                                int tes = b;
-
-                                //Log.e("Tracking Tol/ Inter ", String.valueOf(te)+"| "+String.valueOf(tes));
 
                                 } else  {
                                     saveError(tracking);
-                                    Log.e("Exception ", "Finaliza SaveError");
+                                    Log.e("¡ERROR DE SERVER! ", " -- Tracking saveError --");
                                 }
-
-                            } else  {
-                                saveError(tracking);
-                                Log.e("Exception ", "Finaliza SaveError");
-                            }
 
                         }
                     });
@@ -892,20 +859,20 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                             .load("POST", URL)
                             .setJsonObjectBody(json)
                             .asJsonObject()
-                            .setCallback(new FutureCallback<JsonObject>() {
+                            .withResponse()
+                            .setCallback(new FutureCallback<Response<JsonObject>>() {
                                 @Override
-                                public void onCompleted(Exception e, JsonObject result) {
-                                    // do stuff with the result or error
-                                    //Log.e("Exception ", e.getMessage());
-                                    //Log.e("JsonObject ", result.toString());
+                                public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                                    if(result!=null){
-                                        Log.e("JsonObject ", result.toString());
-
-                                    } else  {
-
+                                    if(response == null){
                                         saveError(trackingPos);
-                                        Log.e("Exception ", "Finaliza");
+                                        Log.e("¡ERROR DE RED! ", " -- Tracking saveError --");
+
+                                        return;
+                                    }
+
+                                    if (response.getHeaders().code() != 200) {
+                                        saveError(trackingPos);
                                     }
 
                                 }

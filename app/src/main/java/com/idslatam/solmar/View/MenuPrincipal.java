@@ -3,7 +3,6 @@ package com.idslatam.solmar.View;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,12 +10,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -26,41 +22,27 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.desmond.squarecamera.CameraActivity;
-import com.desmond.squarecamera.ImageUtility;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import org.apache.http.entity.mime.content.FileBody;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
-import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
+import com.idslatam.solmar.Models.Entities.Menu;
+import com.idslatam.solmar.Models.Crud.MenuCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
-import com.idslatam.solmar.Pruebas.Fragments.AdapterAlrmTrackF;
-import com.idslatam.solmar.Pruebas.Fragments.AdapterTrackingF;
 import com.idslatam.solmar.View.Code.CodeBar;
 import com.idslatam.solmar.View.Fragments.HomeFragment;
-import com.idslatam.solmar.View.Fragments.ImageFragment;
-import com.idslatam.solmar.View.Fragments.JobsFragment;
-import com.idslatam.solmar.View.Fragments.SampleFragment;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.BottomBarBadge;
-import com.roughike.bottombar.BottomBarFragment;
-import com.roughike.bottombar.OnTabSelectedListener;
 
 import com.idslatam.solmar.R;
 
@@ -69,14 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-
 
 
 public class MenuPrincipal extends  ActionBarActivity {
@@ -89,6 +66,7 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     private Uri fileUri;
     private String filePath = null;
+    int _Menu_Id = 0;
     public static final int MEDIA_TYPE_IMAGE = 1;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
@@ -133,17 +111,6 @@ public class MenuPrincipal extends  ActionBarActivity {
         Display display = getWindowManager().getDefaultDisplay();
         mSize = new Point();
         display.getSize(mSize);
-
-        /*if(fotocheckCod==null) {
-
-            try {
-
-                b = getIntent().getExtras();
-                fotocheckCod = b.getString("State");
-
-            } catch (Exception e){}
-
-        }*/
 
         b = getIntent().getExtras();
         state = b.getBoolean("State");
@@ -203,7 +170,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         //bottomBar = BottomBar.attach(this, savedInstanceState);
 
-
         String URL = URL_API.concat("Aplicacion/GetAppByUser?id="+DispositivoId);
 
 
@@ -241,6 +207,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                                     }
 
                                     JSONArray jsonA = null;
+
                                     try {
                                         jsonA = new JSONArray(Menu);
                                     } catch (JSONException e3) {
@@ -256,6 +223,15 @@ public class MenuPrincipal extends  ActionBarActivity {
                                             JSONObject c = jsonA.getJSONObject(i);
                                             val[i] = c.getInt("Id");
                                             valores[i] = c.getString("Configuracion");
+
+                                            MenuCrud menuCrud = new MenuCrud(mContext);
+
+                                            com.idslatam.solmar.Models.Entities.Menu menu = new Menu();
+                                            menu.Nombre = c.getString("Nombre");
+                                            menu.MenuId = _Menu_Id;
+                                            _Menu_Id = menuCrud.insert(menu);
+
+                                            Log.e("-- Nombre -- ", c.getString("Nombre"));
 
                                             JSONArray jsonValores = new JSONArray(valores[i]);
 
@@ -314,87 +290,8 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     }
 
-    public void Prueba(View v){
-
-    }
-
-    public void generarMenu(Bundle s){
-
-        bottomBar = BottomBar.attach(this, s);
-        bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.fragmentContainer,
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_home, "Home"),
-                new BottomBarFragment(ImageFragment.newInstance(""), R.drawable.ic_image, "Image"),
-                new BottomBarFragment(SampleFragment.newInstance(""), R.mipmap.ic_alert, "Alert"),
-                new BottomBarFragment(JobsFragment.newInstance(""), R.mipmap.ic_jobs, "Jobs"),
-                new BottomBarFragment(HomeFragment.newInstance(""), R.mipmap.ic_barcode, "Bars")
-        );
-
-        // Setting colors for different tabs when there's more than three of them.
-        bottomBar.mapColorForTab(0, "#3B494C");
-        bottomBar.mapColorForTab(1, "#00796B");
-        bottomBar.mapColorForTab(2, "#7B1FA2");
-        bottomBar.mapColorForTab(3, "#FF5252");
-        bottomBar.mapColorForTab(4, "#3B494C");
-
-        bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
-            @Override
-            public void onItemSelected(int position) {
-                FragmentManager fragmentManager = getFragmentManager();
-                switch (position) {
-
-                    case 1:
-                        // Item 1 Selected
-                        try {
-
-                            requestForCameraPermission();
-
-                            /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-                            // start the image capture Intent
-                            startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);*/
-
-                            //captureImage();
-                            bottomBar.setDefaultTabPosition(0);
-                        } catch (Exception e){}
-                        break;
-
-                    case 4:
-                        // Item 4 Selected
-                        try {
-                            scanBarcode();
-                            bottomBar.setDefaultTabPosition(0);
-                        } catch (Exception e){}
-                        break;
-
-                }
-            }
-        });
-
-        // Make a Badge for the first tab, with red background color and a value of "4".
-        BottomBarBadge unreadMessages = bottomBar.makeBadgeForTabAt(2, "#E91E63", 4);
-
-        // Control the badge's visibility
-        unreadMessages.show();
-        //unreadMessages.hide();
-
-        // Change the displayed count for this badge.
-        //unreadMessages.setCount(4);
-
-        // Change the show / hide animation duration.
-        unreadMessages.setAnimationDuration(200);
-
-        // If you want the badge be shown always after unselecting the tab that contains it.
-        //unreadMessages.setAutoShowAfterUnSelection(true);
-
-    }
-
-    public void scanBarcode() {
-        new IntentIntegrator(this).initiateScan();
-    }
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
@@ -551,7 +448,6 @@ public class MenuPrincipal extends  ActionBarActivity {
             dialog.setIndeterminate(false);
             dialog.setCancelable(false);
             dialog.show();
-
             //do initialization of required objects objects here
         };
         @Override
@@ -734,78 +630,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     }
 
-    //****************************************************************************
-    //IMAGE
-    /*public void captureImage() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-        // start the image capture Intent
-        startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
-    }*/
-
-    /*@Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // save file url in bundle as it will be null on screen orientation
-        // changes
-        outState.putParcelable("file_uri", fileUri);
-    }*/
-
-    /*@Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        // get the file url
-        fileUri = savedInstanceState.getParcelable("file_uri");
-    }
-
-    private void launchUploadActivity(boolean isImage){
-        filePath = fileUri.getPath();
-        uploadImage();
-
-    }*/
-
-    /**
-     * Creating file uri to store image/video
-     */
-    /*public Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    *//**
-     * returning image / video
-     *//*
-    private static File getOutputMediaFile(int type) {
-
-        // External sdcard location
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Fotos Solgis");
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d("", "Oops! Failed create "+ "Fotos Solgis" + " directory");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(new Date());
-        File mediaFile;
-
-        if (type == MEDIA_TYPE_IMAGE) {
-
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "SOLGIS" + timeStamp + ".jpg");
-
-        } else {
-            return null;
-        }
-
-        return mediaFile;
-    }*/
-
     //-- METODO QUE ENVIA IMAGEN--------------------------------------------------------------------
     public void uploadImage(){
 
@@ -986,28 +810,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
         Log.e("MENUPRINCIPAL", "RESULT");
 
-        // if the result is capturing Image
-        /*if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                launchUploadActivity(true);
-
-
-            } else if (resultCode == RESULT_CANCELED) {
-
-                // user cancelled Image capture
-                Toast.makeText(getApplicationContext(),
-                        "Se canceló la captura de imagen", Toast.LENGTH_SHORT)
-                        .show();
-
-            } else {
-                // failed to capture image
-                Toast.makeText(getApplicationContext(),
-                        "Lo sentimos! Falló captura de imagen", Toast.LENGTH_SHORT)
-                        .show();
-            }
-
-        }*/
-
         if(result != null) {
             if(result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
@@ -1066,10 +868,6 @@ public class MenuPrincipal extends  ActionBarActivity {
                     collapse.invoke(service);
 
                 }
-
-
-                //Method collapse = statusbarManager.getMethod("collapse");
-
             }
         }
         catch(Exception ex)

@@ -12,9 +12,13 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -183,76 +187,47 @@ public class BravoPapaReceiver extends BroadcastReceiver {
         Log.e("-- |FechaDispositivo | ", FechaDispositivo);
         Log.e("-- |DispositivoId | ", DispositivoId);
 
-        new PostAsync().execute(Numero, Latitud, Longitud, Velocidad, FechaDispositivo, DispositivoId);
+        String URL = URL_API.concat("api/BravoPapa");
 
-    }
+        Ion.with(mContext)
+                .load("POST", URL)
+                .setBodyParameter("Numero", Numero)
+                .setBodyParameter("Latitud", Latitud)
+                .setBodyParameter("Longitud", Longitud)
+                .setBodyParameter("Velocidad", Velocidad)
+                .setBodyParameter("FechaDispositivo", FechaDispositivo)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> result) {
 
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
+                        if (e!=null){
+                            return;
+                        }
 
-        JsonParser jsonParser = new JsonParser();
+                        if(result.getHeaders().code()==200){
 
-        private final String URL = URL_API.concat("api/BravoPapa");
+                            String stringBP = result.getResult();
+                            Log.e("JSON result BP ", stringBP);
 
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
+                            try {
 
-        @Override
-        protected void onPreExecute() {
-        }
+                                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                                vibrator.vibrate(1000 * 2);
 
-        @Override
-        protected JSONObject doInBackground(String... args) {
+                            } catch (Exception eewf) {
+                                eewf.printStackTrace();
+                            }
 
-            Log.e("-- |URL | ", URL);
+                        } else {
 
+                            Log.e("¡Pánico NO enviado! ", "");
+                            //Toast.makeText(mContext, "¡Pánico no enviado! ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-
-                params.put("Numero", args[0]);
-                params.put("FechaDispositivo", args[1]);
-                params.put("Latitud", args[2]);
-                params.put("Longitud", args[3]);
-                params.put("Velocidad", args[4]);
-                params.put("DispositivoId", args[5]);
-
-                Log.d("request", "starting");
-                Log.e("-- |POST | ", "ASINC");
-                JSONObject json = jsonParser.makeHttpRequest(URL, "POST", params);
-
-                if (json != null) {
-                    Log.d("JSON result", json.toString());
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-            if (json != null) {
-
-                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(1000 * 3);
-
-                try {
-                    success = json.getInt(TAG_SUCCESS);
-                    message = json.getString(TAG_MESSAGE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (success == 0) {
-                Log.d("Hecho!", message);
-
-            }
-        }
     }
 }

@@ -67,10 +67,16 @@ public class AlarmLocation extends BroadcastReceiver {
             e.printStackTrace();
         }
 
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        BroadcastReceiver mReceiver = new ScreenReceiver();
-        mContext.getApplicationContext().registerReceiver(mReceiver, filter);
+        try {
+            IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            BroadcastReceiver mReceiver = new ScreenReceiver();
+
+            mContext.getApplicationContext().registerReceiver(mReceiver, filter);
+
+        } catch (IllegalArgumentException e) {
+            Log.e("EXCEPTION REGISTER ", e.getMessage());
+        }
 
         gps = isGPSAvailable();
 

@@ -51,6 +51,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -63,6 +64,7 @@ import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,8 +82,7 @@ import java.util.HashMap;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class Bienvenido extends AppCompatActivity implements View.OnClickListener
-        ,GoogleApiClient.ConnectionCallbacks
+public class Bienvenido extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks
         , GoogleApiClient.OnConnectionFailedListener{
 
     private static final boolean AUTO_HIDE = true;
@@ -144,10 +145,8 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
     private EditText value;
     private Button btn, btnC;
     private int _Configuration_Id = 0, _Contactos_Id = 0;
-    TelephonyManager tm;
     String numero;
 
-    String cNumero, cGuidDispositivo, cToken, cOutApp, cIntervaloTracking, cIntervaloAlert, cMargenAlert;
     boolean flagIsFused = false, flagIsPlaySevice = true, flagIsUpdate = false;
 
     int buscaN;
@@ -183,13 +182,10 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
     private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bienvenido);
-
-        dataAccessSettings();
 
         mContext= this;
         txtApro = (TextView)findViewById(R.id.text_aprobacion);
@@ -214,8 +210,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
 
         //*********************************************************************************************************************
 
-
-
         // PERMISO DE LLAMADA
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED) {
 
@@ -239,7 +233,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         // PERMISO DE GPS
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
@@ -248,7 +241,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         // PERMISO DE INTERNET
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) {
             } else {
@@ -264,7 +256,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }*/
 
         // PERMISO DEL SENSOR DE VIBRACION
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.VIBRATE)) {
             } else {
@@ -273,7 +264,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         // PERMISO DE LA CAMARA
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
             } else {
@@ -282,7 +272,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         // PERMISO DE MEDIO EXTERNO
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             } else {
@@ -291,20 +280,10 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
 
         // PERMISO DE LA CONFIGURACION
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_SETTINGS)) {
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_SETTINGS}, MY_WRITE_SETTINGS);
-            }
-        }
-
-        // PERMISO DE LA APP
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.PACKAGE_USAGE_STATS)!= PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.PACKAGE_USAGE_STATS)) {
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.PACKAGE_USAGE_STATS}, MY_PACKAGE_USAGE_STATS);
             }
         }
 
@@ -633,100 +612,114 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
                     .load("POST", URL)
                     .setJsonObjectBody(json)
                     .asJsonObject()
-                    .setCallback(new FutureCallback<JsonObject>() {
+                    .withResponse()
+                    .setCallback(new FutureCallback<Response<JsonObject>>() {
                         @Override
-                        public void onCompleted(Exception e, JsonObject result) {
+                        public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            if(result!=null){
-                                Log.e("JsonObject ", result.toString());
+                            if(response == null){
 
-                                estado = result.get("Estado").getAsString();
-                                RequiereNumero = result.get("RequiereNumero").getAsString();
-                                Id = result.get("Id").getAsString();
+                                Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
 
-                                if(result.get("ClienteId").isJsonNull()){
-                                    ClienteId = null;
-                                    Log.e("ClienteId ", "INGRESÓ NULL");
-                                } else {
-                                    ClienteId = result.get("ClienteId").getAsString();
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                                return;
+                            }
 
-                                    try {
-                                        DBHelper dataBaseHelper = new DBHelper(mContext);
-                                        SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
-                                        String selectQueryBusca = "SELECT Nombre FROM Contactos WHERE ContactosId = 1";
-                                        Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
-                                        buscaCont = cbusca.getCount();
-                                        cbusca.close();
-                                        dbc.close();
+                                if (response.getHeaders().code() == 200) {
 
-                                    } catch (Exception efgre) {}
+                                    Gson gson = new Gson();
+                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                    if(buscaCont==0){
+                                    Log.e("JsonObject ", result.toString());
 
-                                        JsonArray jarray = result.getAsJsonArray("ClienteContactos");
+                                    estado = result.get("Estado").getAsString();
+                                    RequiereNumero = result.get("RequiereNumero").getAsString();
+                                    Id = result.get("Id").getAsString();
 
-                                        //JsonArray paymentsArray = rootObj.getAsJsonArray("payments");
-                                        for (JsonElement pa : jarray) {
+                                    if(result.get("ClienteId").isJsonNull()){
+                                        ClienteId = null;
+                                        Log.e("ClienteId ", "INGRESÓ NULL");
+                                    } else {
+                                        ClienteId = result.get("ClienteId").getAsString();
 
-                                            JsonObject paymentObj = pa.getAsJsonObject();
+                                        try {
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+                                            String selectQueryBusca = "SELECT Nombre FROM Contactos WHERE ContactosId = 1";
+                                            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+                                            buscaCont = cbusca.getCount();
+                                            cbusca.close();
+                                            dbc.close();
 
-                                            ContactosCrud contactosCrud = new ContactosCrud(mContext);
+                                        } catch (Exception efgre) {}
 
-                                            Contactos contactos = new Contactos();
-                                            contactos.Nombre = paymentObj.get("Nombre").getAsString();
-                                            contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
-                                            contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
-                                            contactos.ContactosId = _Contactos_Id;
-                                            _Contactos_Id = contactosCrud.insert(contactos);
+                                        if(buscaCont==0){
+
+                                            JsonArray jarray = result.getAsJsonArray("ClienteContactos");
+
+                                            //JsonArray paymentsArray = rootObj.getAsJsonArray("payments");
+                                            for (JsonElement pa : jarray) {
+
+                                                JsonObject paymentObj = pa.getAsJsonObject();
+
+                                                ContactosCrud contactosCrud = new ContactosCrud(mContext);
+
+                                                Contactos contactos = new Contactos();
+                                                contactos.Nombre = paymentObj.get("Nombre").getAsString();
+                                                contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
+                                                contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
+                                                contactos.ContactosId = _Contactos_Id;
+                                                _Contactos_Id = contactosCrud.insert(contactos);
+                                            }
+
+                                            Log.e("jarray CLI ", jarray.toString());
+
                                         }
 
-                                        Log.e("jarray CLI ", jarray.toString());
-
                                     }
 
-                                }
+                                    if(result.get("Numero").isJsonNull()){
+                                        NumeroReinstlado = null;
+                                        Log.e("NumeroReinstlado ", "INGRESÓ");
+                                    } else {
+                                        NumeroReinstlado = result.get("Numero").getAsString();
+                                    }
 
-                                if(result.get("Numero").isJsonNull()){
-                                    NumeroReinstlado = null;
-                                    Log.e("NumeroReinstlado ", "INGRESÓ");
+                                    //*********************************
+                                    actualizarConfiguracion();
+                                    //*********************************
+
+                                    if (estado.equals("true")){
+                                        actualizarNumero();
+                                    }
+
+                                    if (estado.equals("true") && RequiereNumero =="false"){
+
+                                        startActivity(new Intent(getBaseContext(), Login.class)
+                                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+
+                                        if (pDialog != null && pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                        }
+                                        return;
+
+
+                                    }else {
+
+                                        if(RequiereNumero =="true"){
+
+                                            Intent intent = new Intent(Bienvenido.this, RegisterNumber.class);
+                                            intent.putExtra("Id", Id);
+                                            startActivity(intent);
+
+                                        }
+                                    }
+
                                 } else {
-                                    NumeroReinstlado = result.get("Numero").getAsString();
+                                    Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
                                 }
-
-                                //*********************************
-                                actualizarConfiguracion();
-                                //*********************************
-
-                                if (estado.equals("true")){
-                                    actualizarNumero();
-                                }
-
-                                if (estado.equals("true") && RequiereNumero =="false"){
-
-                                    startActivity(new Intent(getBaseContext(), Login.class)
-                                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                    return;
-
-
-                                }else {
-
-                                    if(RequiereNumero =="true"){
-
-                                        Intent intent = new Intent(Bienvenido.this, RegisterNumber.class);
-                                        intent.putExtra("Id", Id);
-                                        startActivity(intent);
-
-                                    }
-                                }
-
-
-                            } else  {
-                                Log.e("Exception ", "Finaliza" );
-                            }
 
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
@@ -866,11 +859,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         }
     }
 
-    @Override
-    public void onClick(View v) {
-
-    }
-
     public void simDialogo(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1005,36 +993,6 @@ public class Bienvenido extends AppCompatActivity implements View.OnClickListene
         } catch (Exception e){}
 
         return true;
-    }
-
-    public void dataAccessSettings() {
-        try {
-            DBHelper dataBaseHelper = new DBHelper(this);
-            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
-            String selectQueryBusca = "SELECT Nombre FROM SettingsPermissions WHERE SettingsPermissionsId = 1";
-            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
-            busca = cbusca.getCount();
-            cbusca.close();
-            dbc.close();
-
-        } catch (Exception e) {}
-
-        if(busca==0){
-
-            DBHelper dataBaseHelper = new DBHelper(this);
-            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-            db.execSQL("INSERT INTO SettingsPermissions (SettingsPermissionsId, Nombre, Estado) " +
-                    "VALUES (1,'com.android.settings.Settings','false')");
-
-            db.execSQL("INSERT INTO SettingsPermissions (SettingsPermissionsId, Nombre, Estado) " +
-                    "VALUES (2,'com.android.settings.Settings$DateTimeSettingsActivity','false')");
-
-            db.execSQL("INSERT INTO SettingsPermissions (SettingsPermissionsId, Nombre, Estado) " +
-                    "VALUES (3,'com.android.settings','false')");
-
-            db.close();
-        }
-
     }
 
     private void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {

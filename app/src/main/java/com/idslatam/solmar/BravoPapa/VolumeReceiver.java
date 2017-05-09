@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 public class VolumeReceiver extends BroadcastReceiver {
 
-    int vFirst, vLast, contador = 0;
+    int vFirst, vLast, contador = 0, VecesPresionarVolumen;
     Context mContext;
 
     String Estado = null, DispositivoId;
@@ -87,11 +87,12 @@ public class VolumeReceiver extends BroadcastReceiver {
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-            String selectQuery = "SELECT ContadorPulsacion FROM Configuration";
+            String selectQuery = "SELECT ContadorPulsacion, VecesPresionarVolumen FROM Configuration";
             Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
                 contador = c.getInt(c.getColumnIndex("ContadorPulsacion"));
+                VecesPresionarVolumen = c.getInt(c.getColumnIndex("VecesPresionarVolumen"));
             }
             c.close();
             sqlVolumen.close();
@@ -132,7 +133,7 @@ public class VolumeReceiver extends BroadcastReceiver {
             }, 1000*3);
         }
 
-        if(contador==5){
+        if(contador==VecesPresionarVolumen){
 
             resetCuenta();
 

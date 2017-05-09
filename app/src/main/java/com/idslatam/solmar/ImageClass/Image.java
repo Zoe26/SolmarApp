@@ -241,6 +241,7 @@ public class Image extends Activity {
                             } else  {
                                 Toast.makeText(mContext, "Error al enviar imagen. Por favor revise su conexión.", Toast.LENGTH_SHORT).show();
                                 Log.e("Exception ", "Finaliza "+ e.getMessage());
+                                finish();
                             }
 
                             try {

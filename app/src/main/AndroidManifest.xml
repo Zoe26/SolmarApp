@@ -17,9 +17,9 @@
     <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission
+    <!--<uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
+        tools:ignore="ProtectedPermissions" />-->
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Request permission to use a device camera -->
@@ -157,45 +157,28 @@
                 <action android:name="android.media.VOLUME_CHANGED_ACTION" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".Alert.Broadcast.AlarmAlert"
             android:enabled="true"
             android:exported="true" />
 
         <activity
-            android:name=".View.LauncherSolmar"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="nosensor"
-            android:theme="@style/FullscreenTheme">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-
-        </activity>
-        <activity android:name="com.desmond.squarecamera.CameraActivity"
-            android:screenOrientation="portrait"/>
-
+            android:name="com.desmond.squarecamera.CameraActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Dialer.ContactosActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Dialer.ContactosDetalles"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".ImageClass.Image" />
-
-        <activity android:name=".View.Code.Scan"></activity>
-
+        <activity android:name=".ImageClass.Image"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".View.Code.Scan"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".View.Perfil"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Alert.AlertActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

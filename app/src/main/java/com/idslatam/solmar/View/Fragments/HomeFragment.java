@@ -3,6 +3,8 @@ package com.idslatam.solmar.View.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.Menu.MenuAdapter;
+import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Code.Scan;
 
@@ -36,6 +39,19 @@ public class HomeFragment extends Fragment {
     Context mContext;
 
     boolean isFragment = true;
+
+    GridView androidGridView;
+
+    String[] gridViewString = {
+            "Alert", "Image", "Jobs", "Bars", "Llamadas", "Mensajes",
+    } ;
+
+
+    int[] gridViewImageId = {
+            R.mipmap.aler_ic, R.mipmap.ic_imagea, R.mipmap.ic_imgjobs,
+            R.mipmap.ic_barsa, R.mipmap.ic_llamada, R.mipmap.ic_mje,
+
+    };
 
     public HomeFragment() {
         // Required empty public constructor
@@ -55,11 +71,36 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         this.mContext = container.getContext();
 
         View view = inflater.inflate(R.layout.fragment_home,container,false);
+
+
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Nombre FROM Menu";
+            Cursor c = db.rawQuery(selectQuery, new String[]{});
+
+            Log.e("------- HomeFragment ", " onCreateView ------");
+
+            if (c.moveToFirst()) {
+
+                do {
+
+                    Log.e("-- ITEM ", c.getString(c.getColumnIndex("Nombre")));
+
+                } while(c.moveToNext());
+
+            }
+            c.close();
+            db.close();
+
+        } catch (Exception e) {}
+
 
         MenuAdapter adapterViewAndroid = new MenuAdapter(getActivity(), gridViewString, gridViewImageId);
         androidGridView=(GridView)view.findViewById(R.id.grid_view_image_text);
@@ -77,6 +118,7 @@ public class HomeFragment extends Fragment {
                 if (gridViewString[+i].equalsIgnoreCase("Alert")){
                     isFragment = true;
                     fragmentClass = SampleFragment.class;
+
 
                 } else if (gridViewString[+i].equalsIgnoreCase("Image")){
                     isFragment = false;
@@ -140,6 +182,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        Log.e("------- HomeFragment ", " onCreateView FIN ------");
+
         return view;
     }
 
@@ -148,18 +192,5 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
-
-    GridView androidGridView;
-
-    String[] gridViewString = {
-            "Alert", "Image", "Jobs", "Bars", "Llamadas", "Mensajes",
-    } ;
-
-
-    int[] gridViewImageId = {
-            R.mipmap.aler_ic, R.mipmap.ic_imagea, R.mipmap.ic_imgjobs,
-            R.mipmap.ic_barsa, R.mipmap.ic_llamada, R.mipmap.ic_mje,
-
-    };
 
 }

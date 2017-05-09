@@ -63,21 +63,17 @@
             tools:ignore="UselessParent">
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:ems="10"
+                android:padding="10dp"
                 android:hint="@string/txt_codEmpleado"
                 android:id="@+id/Ed_codEmpleado"
-                tools:ignore="ContentDescription,LabelFor,UnusedAttribute"
-                tools:text="Ingrese código de empleado"
                 android:textColor="@color/black_overlay"
-                android:contentDescription=""
                 android:maxLines="1"
-                android:textAlignment="center"
-                android:elevation="6dp"
-                android:textColorLink="@color/black_overlay"
-                android:textSize="20sp" />
+                android:gravity="center"
+                android:background="@drawable/border_edittext"
+                android:textSize="16sp" />
         </LinearLayout>
     </FrameLayout>
 

@@ -45,7 +45,6 @@ import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
-import com.idslatam.solmar.Models.Crud.AsistenciaCrud;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Asistencia;
@@ -82,24 +81,16 @@ public class Login extends AppCompatActivity implements
 
     EditText password;
     Context context;
-    String authorization;
     String pass;
     String user;
     protected String URL_API;
-    int _Asistencia_id = 0;
-    String Numero, DispositivoId, FechaInicioCelular;
 
 
     ConfigurationCrud configurationCRUD = new ConfigurationCrud(this);
     DBHelper dataBaseHelper = new DBHelper(this);
 
-    String cvalidacion, cNumero, cGuidDispositivo, cToken
-            , cOutApp, cIntervaloTracking, cIntervaloAlert
-            , cMargenAlert, Fotoch;
+    String Fotoch;
 
-    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss");
-
-    //BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,12 +99,17 @@ public class Login extends AppCompatActivity implements
         setContentView(R.layout.activity_login);
         this.context = this;
 
-        /*//REGISTO DE BROACAST PARA BP_---
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        BroadcastReceiver mReceiver = new ScreenReceiver();
-        registerReceiver(mReceiver, filter);
-        // FIN BP*/
+        try {
+            IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            BroadcastReceiver mReceiver = new ScreenReceiver();
+
+            this.getApplicationContext().registerReceiver(mReceiver, filter);
+
+        } catch (IllegalArgumentException e) {
+            Log.e("EXCEPTION REGISTER ", e.getMessage());
+        }
+
 
         //**********************************************************************************************************************************
 
@@ -158,10 +154,10 @@ public class Login extends AppCompatActivity implements
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                             // Location settings are not satisfied. But could be
                             // fixed by showing the user
-                            // a dialog.
+
                             Log.e("RESOLUTION_REQUIRED ",String.valueOf(status));
                             try {
-                                // Show the dialog by calling
+
                                 // startResolutionForResult(),
                                 // and check the result in onActivityResult().
                                 status.startResolutionForResult(Login.this, REQUEST_LOCATION);
@@ -173,7 +169,7 @@ public class Login extends AppCompatActivity implements
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                             // Location settings are not satisfied. However, we have
                             // no way to fix the
-                            // settings so we won't show the dialog.
+
                             Log.e("Request ", "SETTINGS_CHANGE_UNAVAILABLE "+String.valueOf(status));
                             break;
                     }
@@ -187,7 +183,6 @@ public class Login extends AppCompatActivity implements
 
         int vApi = Build.VERSION.SDK_INT;
 
-        //Toast.makeText(getApplicationContext(), "Prender Alarma", Toast.LENGTH_SHORT).show();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarm, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -233,7 +228,7 @@ public class Login extends AppCompatActivity implements
             sqlToken.close();
 
             if(buscaToken==0){
-                startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
+                startActivity(new Intent(getBaseContext(), Perfil.class)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 .putExtra("State", false));
                 finish();
@@ -297,7 +292,6 @@ public class Login extends AppCompatActivity implements
                 if(pass.matches("")){
                     Toast.makeText(this, "Ingrese Codigo", Toast.LENGTH_SHORT).show();
                 } else {
-                    //new PostAsync().execute(type, user, pass);
                     getCredentials();
                 }
 
@@ -308,6 +302,14 @@ public class Login extends AppCompatActivity implements
 
     String accessToken;
     private void getCredentials() {
+
+        final ProgressDialog pDialog;
+
+        pDialog = new ProgressDialog(Login.this);
+        pDialog.setMessage("Cargando Configuraci\u00f3n...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
 
         String URL = URL_API.concat("token");
 
@@ -321,6 +323,17 @@ public class Login extends AppCompatActivity implements
                 .setCallback(new FutureCallback<Response<String>>() {
                     @Override
                     public void onCompleted(Exception e, Response<String> result) {
+
+                        if(result == null){
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+
+                            Toast.makeText(context, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            Log.e("Error de red ", " -- API TOKEN --");
+                            return;
+                        }
 
                         if(result.getHeaders().code()==200){
 
@@ -340,16 +353,27 @@ public class Login extends AppCompatActivity implements
                             configuration.ConfigurationId = 1;
                             configurationCRUD.updateToken(configuration);
 
-                            Intent intent = new Intent(Login.this, MenuPrincipal.class);
+                            Intent intent = new Intent(Login.this, Perfil.class);
                             intent.putExtra("State", true);
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+
                             startActivity(intent);
 
+                        } else {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            Toast.makeText(context, "Hubo un error. Inténtalo otra vez", Toast.LENGTH_LONG).show();
                         }
+
                     }
                 });
     }
-    //----------------------------------------------------------------------------------------------
 
+    //----------------------------------------------------------------------------------------------
 
     public void configuracionRechazada(){
 
@@ -417,7 +441,6 @@ public class Login extends AppCompatActivity implements
                     }
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 ex.printStackTrace();
