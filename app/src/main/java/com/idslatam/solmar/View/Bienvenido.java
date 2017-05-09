@@ -15,7 +15,6 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.PixelFormat;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -31,6 +30,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -74,6 +74,7 @@ import com.koushikdutta.ion.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -168,6 +169,8 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     String estado, RequiereNumero, Id;
     TextView txtApro;
 
+    boolean flagPermisos;
+
     Context mContext;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -177,15 +180,11 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     private static final int MY_ACCESS_NETWORK_STATE = 4;
     private static final int MY_VIBRATE = 5;
     private static final int MY_CAMERA = 6;
-    private static final int MY_WRITE_SETTINGS = 7;
     private static final int MY_WRITE_EXTERNAL_STORAGE = 8;
-    private static final int MY_PACKAGE_USAGE_STATS = 9;
     private static final int MY_CALL_PHONE_STATE = 10;
 
     String serieSIM;
     String imei;
-
-    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,24 +194,27 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         mContext= this;
         txtApro = (TextView)findViewById(R.id.text_aprobacion);
 
-        //**********************************************************************************************************************
+        mVisible = true;
+        mControlsView = findViewById(R.id.fullscreen_content_controls);
+        mContentView = findViewById(R.id.fullscreen_content);
 
-        try {
-            WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            wifi.setWifiEnabled(true);
+        //-------------------------------------------------------------------------------------------------------------------------
 
-            setMobileDataEnabled(this, true);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        mContentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                toggle();
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        //--------------------------------------------------------------------------------------------------------------------------
+        Constants globalClass = new Constants();
+        URL_API = globalClass.getURL();
 
         //*********************************************************************************************************************
 
@@ -222,9 +224,14 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
             } else {
 
+                Log.e("CALL_PHONE"," false");
+                flagPermisos = false;
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, MY_CALL_PHONE_STATE);
 
             }
+        } else {
+            Log.e("CALL_PHONE"," true");
+            flagPermisos = true;
         }
 
         // PERMISO DE LEER TELEFONO
@@ -232,26 +239,40 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
             } else {
-
+                flagPermisos = false;
+                Log.e("READ_PHONE_STATE"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_READ_PHONE_STATE);
 
             }
+        } else {
+            Log.e("READ_PHONE_STATE"," true");
+            flagPermisos = true;
         }
 
         // PERMISO DE GPS
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
+                flagPermisos = false;
+                Log.e("ACCESS_FINE_LOCATION"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_ACCESS_FINE_LOCATION);
             }
+        } else {
+            Log.e("ACCESS_FINE_LOCATION"," true");
+            flagPermisos = true;
         }
 
         // PERMISO DE INTERNET
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) {
             } else {
+                flagPermisos = false;
+                Log.e("INTERNET"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, MY_INTERNET);
             }
+        } else {
+            Log.e("INTERNET"," true");
+            flagPermisos = true;
         }
 
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED) {
@@ -265,36 +286,76 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.VIBRATE)) {
             } else {
+                flagPermisos = false;
+                Log.e("VIBRATE"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.VIBRATE}, MY_VIBRATE);
             }
+        } else {
+            Log.e("VIBRATE"," true");
+            flagPermisos = true;
         }
 
         // PERMISO DE LA CAMARA
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
             } else {
+                flagPermisos = false;
+                Log.e("CAMERA"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA);
             }
+        } else {
+            Log.e("CAMERA"," true");
+            flagPermisos = true;
         }
 
         // PERMISO DE MEDIO EXTERNO
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             } else {
+                flagPermisos = false;
+                Log.e("WRITE_EXTERNAL_STORAGE"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_WRITE_EXTERNAL_STORAGE);
             }
+        } else {
+            Log.e("WRITE_EXTERNAL_STORAGE"," true");
+            flagPermisos = true;
         }
 
-        // PERMISO DE LA CONFIGURACION
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)!= PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_SETTINGS)) {
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_SETTINGS}, MY_WRITE_SETTINGS);
+        if (flagPermisos == false){
+            Log.e("flagPermisos"," return");
+            return;
+        }
+
+        //**********************************************************************************************************************
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            try {
+                setMobileNetworkfromLollipop(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+
+            try {
+                WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                wifi.setWifiEnabled(true);
+
+                setMobileDataEnabled(this, true);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
             }
         }
 
         //**********************************************************************************************************************************
-
         if (mGoogleApiClient== null) {
 
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -355,28 +416,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                 }
             });
         }
-
-        //-------------------------------------------------------------------------------------------------------------------------
-        mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
-
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                toggle();
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            }
-        });
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-
-        //--------------------------------------------------------------------------------------------------------------------------
-        Constants globalClass = new Constants();
-        URL_API = globalClass.getURL();
-
 
         TelephonyManager tm = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
 
@@ -481,7 +520,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
         }
 
-        isWIFIAvailable();
+        //isWIFIAvailable();
 
         //**********************DESPUES DE VALIDAR SIN SE OBTIENE DATOS DEL TELEFONO************************************
         String modelo = Build.MODEL;
@@ -802,7 +841,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     }
 
     //**************************************************************************************************************
-
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
 
@@ -810,7 +848,9 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             case MY_READ_PHONE_STATE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e("CALL_PHONE"," if");
                 } else {
+                    Log.e("CALL_PHONE"," else");
                 }
                 return;
             }
@@ -852,14 +892,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             }
 
             case MY_WRITE_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                }
-                return;
-            }
-
-            case MY_WRITE_SETTINGS: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 } else {
@@ -1018,6 +1050,105 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
 
         //Toast.makeText(this, "Activando Datos..", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void setMobileNetworkfromLollipop(Context context) throws Exception {
+
+        Log.e("setMobileLollipop ", "INGRESÓ");
+
+        String command = null;
+        int state = 0;
+        try {
+            // Get the current state of the mobile network.
+            state = isMobileDataEnabledFromLollipop(context) ? 0 : 1;
+            // Get the value of the "TRANSACTION_setDataEnabled" field.
+            String transactionCode = getTransactionCode(context);
+            // Android 5.1+ (API 22) and later.
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+
+                Log.e("Build ", ">");
+
+                SubscriptionManager mSubscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+                // Loop through the subscription list i.e. SIM list.
+                for (int i = 0; i < mSubscriptionManager.getActiveSubscriptionInfoCountMax(); i++) {
+                    if (transactionCode != null && transactionCode.length() > 0) {
+                        // Get the active subscription ID for a given SIM card.
+                        int subscriptionId = mSubscriptionManager.getActiveSubscriptionInfoList().get(i).getSubscriptionId();
+                        // Execute the command via `su` to turn off
+                        // mobile network for a subscription service.
+                        command = "service call phone " + transactionCode + " i32 " + subscriptionId + " i32 " + state;
+                        executeCommandViaSu(context, "-c", command);
+                    }
+                }
+            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+                Log.e("Build ", "==");
+
+                // Android 5.0 (API 21) only.
+                if (transactionCode != null && transactionCode.length() > 0) {
+                    // Execute the command via `su` to turn off mobile network.
+                    command = "service call phone " + transactionCode + " i32 " + state;
+                    executeCommandViaSu(context, "-c", command);
+                }
+            }
+        } catch(Exception e) {
+            // Oops! Something went wrong, so we throw the exception here.
+            throw e;
+        }
+    }
+
+    private static boolean isMobileDataEnabledFromLollipop(Context context) {
+        boolean state = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            state = Settings.Global.getInt(context.getContentResolver(), "mobile_data", 0) == 1;
+        }
+        return state;
+    }
+
+    private static String getTransactionCode(Context context) throws Exception {
+        try {
+            final TelephonyManager mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            final Class<?> mTelephonyClass = Class.forName(mTelephonyManager.getClass().getName());
+            final Method mTelephonyMethod = mTelephonyClass.getDeclaredMethod("getITelephony");
+            mTelephonyMethod.setAccessible(true);
+            final Object mTelephonyStub = mTelephonyMethod.invoke(mTelephonyManager);
+            final Class<?> mTelephonyStubClass = Class.forName(mTelephonyStub.getClass().getName());
+            final Class<?> mClass = mTelephonyStubClass.getDeclaringClass();
+            final Field field = mClass.getDeclaredField("TRANSACTION_setDataEnabled");
+            field.setAccessible(true);
+            return String.valueOf(field.getInt(null));
+        } catch (Exception e) {
+            // The "TRANSACTION_setDataEnabled" field is not available,
+            // or named differently in the current API level, so we throw
+            // an exception and inform users that the method is not available.
+            throw e;
+        }
+    }
+
+    private static void executeCommandViaSu(Context context, String option, String command) {
+        boolean success = false;
+        String su = "su";
+        for (int i=0; i < 3; i++) {
+            // Default "su" command executed successfully, then quit.
+            if (success) {
+                break;
+            }
+            // Else, execute other "su" commands.
+            if (i == 1) {
+                su = "/system/xbin/su";
+            } else if (i == 2) {
+                su = "/system/bin/su";
+            }
+            try {
+                // Execute command as "su".
+                Runtime.getRuntime().exec(new String[]{su, option, command});
+            } catch (IOException e) {
+                success = false;
+                // Oops! Cannot execute `su` for some reason.
+                // Log error here.
+            } finally {
+                success = true;
+            }
+        }
     }
 
     public void contacts() {

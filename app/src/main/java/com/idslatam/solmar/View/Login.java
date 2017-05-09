@@ -68,16 +68,9 @@ public class Login extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks
         ,GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
 
-    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
-
-
     private GoogleApiClient mGoogleApiClient;
     final static int REQUEST_LOCATION = 199;
-    Button acceso, verConfiguracion;
-
-    private DevicePolicyManager mDevicePolicyManager;
-    private ComponentName mComponentName;
-    private static final int ADMIN_INTENT = 1;
+    Button acceso;
 
     EditText password;
     Context context;
