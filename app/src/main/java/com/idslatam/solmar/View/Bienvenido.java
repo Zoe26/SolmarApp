@@ -224,13 +224,13 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
             } else {
 
-                Log.e("CALL_PHONE"," false");
+                //Log.e("CALL_PHONE"," false");
                 flagPermisos = false;
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, MY_CALL_PHONE_STATE);
 
             }
         } else {
-            Log.e("CALL_PHONE"," true");
+            //Log.e("CALL_PHONE"," true");
             flagPermisos = true;
         }
 
@@ -240,12 +240,12 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
             } else {
                 flagPermisos = false;
-                Log.e("READ_PHONE_STATE"," false");
+                //Log.e("READ_PHONE_STATE"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_READ_PHONE_STATE);
 
             }
         } else {
-            Log.e("READ_PHONE_STATE"," true");
+            //Log.e("READ_PHONE_STATE"," true");
             flagPermisos = true;
         }
 
@@ -254,11 +254,11 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
                 flagPermisos = false;
-                Log.e("ACCESS_FINE_LOCATION"," false");
+              //  Log.e("ACCESS_FINE_LOCATION"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_ACCESS_FINE_LOCATION);
             }
         } else {
-            Log.e("ACCESS_FINE_LOCATION"," true");
+            //Log.e("ACCESS_FINE_LOCATION"," true");
             flagPermisos = true;
         }
 
@@ -267,11 +267,11 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) {
             } else {
                 flagPermisos = false;
-                Log.e("INTERNET"," false");
+              //  Log.e("INTERNET"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, MY_INTERNET);
             }
         } else {
-            Log.e("INTERNET"," true");
+            //Log.e("INTERNET"," true");
             flagPermisos = true;
         }
 
@@ -287,11 +287,11 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.VIBRATE)) {
             } else {
                 flagPermisos = false;
-                Log.e("VIBRATE"," false");
+              //  Log.e("VIBRATE"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.VIBRATE}, MY_VIBRATE);
             }
         } else {
-            Log.e("VIBRATE"," true");
+            //Log.e("VIBRATE"," true");
             flagPermisos = true;
         }
 
@@ -300,11 +300,11 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
             } else {
                 flagPermisos = false;
-                Log.e("CAMERA"," false");
+              //  Log.e("CAMERA"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA);
             }
         } else {
-            Log.e("CAMERA"," true");
+            //Log.e("CAMERA"," true");
             flagPermisos = true;
         }
 
@@ -313,16 +313,16 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             } else {
                 flagPermisos = false;
-                Log.e("WRITE_EXTERNAL_STORAGE"," false");
+              //  Log.e("WRITE_EXTERNAL_STORAGE"," false");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_WRITE_EXTERNAL_STORAGE);
             }
         } else {
-            Log.e("WRITE_EXTERNAL_STORAGE"," true");
+            //Log.e("WRITE_EXTERNAL_STORAGE"," true");
             flagPermisos = true;
         }
 
         if (flagPermisos == false){
-            Log.e("flagPermisos"," return");
+            //Log.e("flagPermisos"," return");
             return;
         }
 
@@ -389,13 +389,13 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                             // initialize location
                             // requests here.
                             flagIsFused = true;
-                            Log.e("Request SUCCESS ",String.valueOf(status));
+                            //Log.e("Request SUCCESS ",String.valueOf(status));
                             break;
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                             // Location settings are not satisfied. But could be
                             // fixed by showing the user
                             // a dialog.
-                            Log.e("RESOLUTION_REQUIRED ",String.valueOf(status));
+                            //Log.e("RESOLUTION_REQUIRED ",String.valueOf(status));
                             try {
                                 // Show the dialog by calling
                                 // startResolutionForResult(),
@@ -403,14 +403,14 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                                 status.startResolutionForResult(Bienvenido.this, REQUEST_LOCATION);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the error.
-                                Log.e("ERROR RESOLUTION ", e.getMessage());
+                               // Log.e("ERROR RESOLUTION ", e.getMessage());
                             }
                             break;
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                             // Location settings are not satisfied. However, we have
                             // no way to fix the
                             // settings so we won't show the dialog.
-                            Log.e("Request ", "SETTINGS_CHANGE_UNAVAILABLE "+String.valueOf(status));
+                            //Log.e("Request ", "SETTINGS_CHANGE_UNAVAILABLE "+String.valueOf(status));
                             break;
                     }
                 }
@@ -422,43 +422,43 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         int networkType = tm.getNetworkType();
         switch (networkType) {
             case (TelephonyManager.NETWORK_TYPE_1xRTT) :
-                Log.e("--NETWORK_TYPE_1xRTT ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_1xRTT ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_CDMA) :
-                Log.e("--PHONE_TYPE_CDMA ", String.valueOf(networkType));
+                //Log.e("--PHONE_TYPE_CDMA ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_EDGE) :
-                Log.e("--NETWORK_TYPE_EDGE ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_EDGE ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_EHRPD) :
-                Log.e("--NETWORK_TYPE_EHRPD ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_EHRPD ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_EVDO_0) :
-                Log.e("--NETWORK_TYPE_EVDO_0 ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_EVDO_0 ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_EVDO_A) :
-                Log.e("--NETWORK_TYPE_EVDO_A ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_EVDO_A ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_EVDO_B) :
-                Log.e("--NETWORK_TYPE_EVDO_B ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_EVDO_B ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_GPRS) :
-                Log.e("--NETWORK_TYPE_GPRS ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_GPRS ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_HSDPA) :
-                Log.e("--NETWORK_TYPE_HSDPA ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_HSDPA ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_HSPA) :
-                Log.e("--NETWORK_TYPE_HSPA ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_HSPA ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_LTE) :
-                Log.e("--NETWORK_TYPE_LTE ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_LTE ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_UMTS) :
-                Log.e("--NETWORK_TYPE_UMTS ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_UMTS ", String.valueOf(networkType));
                 break;
             case (TelephonyManager.NETWORK_TYPE_UNKNOWN) :
-                Log.e("--NETWORK_TYPE_UNKNOWN ", String.valueOf(networkType));
+                //Log.e("--NETWORK_TYPE_UNKNOWN ", String.valueOf(networkType));
                 break;
 
         }
@@ -469,15 +469,15 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         {
             case (TelephonyManager.PHONE_TYPE_CDMA):
                 // your code
-                Log.e("--PHONE_TYPE_CDMA ", String.valueOf(phoneType));
+                //Log.e("--PHONE_TYPE_CDMA ", String.valueOf(phoneType));
                 break;
             case (TelephonyManager.PHONE_TYPE_GSM):
                 // your code
-                Log.e("--PHONE_TYPE_GSM ", String.valueOf(phoneType));
+                //Log.e("--PHONE_TYPE_GSM ", String.valueOf(phoneType));
                 break;
             case (TelephonyManager.PHONE_TYPE_NONE):
                 // your code
-                Log.e("--PHONE_TYPE_NONE ", String.valueOf(phoneType));
+                //Log.e("--PHONE_TYPE_NONE ", String.valueOf(phoneType));
                 break;
         }
 
@@ -486,7 +486,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         {
             case TelephonyManager.SIM_STATE_ABSENT :
                 // your code
-                Log.e("--STATE_ABSENT ", String.valueOf(SIMState));
+                //Log.e("--STATE_ABSENT ", String.valueOf(SIMState));
 
                 //serieSIM = "8951061121515203889f";
                 //imei = "014578003254447";
@@ -505,17 +505,17 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                 SimOtorgaNumero = "true";
                 if (numero.equals("")) {SimOtorgaNumero = "false";}
 
-                Log.e("--STATE_READY ", String.valueOf(SIMState));
-                Log.e("--Country ", String.valueOf(tm.getSimCountryIso()));
-                Log.e("--OperatorCode ", String.valueOf(tm.getSimOperator()));
-                Log.e("--OperatorName ", String.valueOf(tm.getSimOperatorName()));
-                Log.e("--simSerial ", String.valueOf(tm.getSimSerialNumber()));
+                //Log.e("--STATE_READY ", String.valueOf(SIMState));
+                //Log.e("--Country ", String.valueOf(tm.getSimCountryIso()));
+                //Log.e("--OperatorCode ", String.valueOf(tm.getSimOperator()));
+                //Log.e("--OperatorName ", String.valueOf(tm.getSimOperatorName()));
+                //Log.e("--simSerial ", String.valueOf(tm.getSimSerialNumber()));
 
                 break;
 
             case TelephonyManager.SIM_STATE_UNKNOWN :
                 // your code
-                Log.e("--STATE_UNKNOWN ", String.valueOf(SIMState));
+                //Log.e("--STATE_UNKNOWN ", String.valueOf(SIMState));
                 break;
 
         }
@@ -620,16 +620,16 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         }
 
 
-        Log.e("--NUMERO ", String.valueOf(numero));
-        Log.e("--ID ", String.valueOf(androidId));
-        Log.e("--IMEI ", String.valueOf(imei));
-        Log.e("--MODELO ", String.valueOf(modelo));
-        Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
-        Log.e("--SERIE SIM ", String.valueOf(serieSIM));
-        Log.e("--FABRCANTE ", String.valueOf(fabricante));
-        Log.e("--VERSION ", String.valueOf(versionO));
+        //Log.e("--NUMERO ", String.valueOf(numero));
+        //Log.e("--ID ", String.valueOf(androidId));
+        //Log.e("--IMEI ", String.valueOf(imei));
+        //Log.e("--MODELO ", String.valueOf(modelo));
+        //Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
+        //Log.e("--SERIE SIM ", String.valueOf(serieSIM));
+        //Log.e("--FABRCANTE ", String.valueOf(fabricante));
+        //Log.e("--VERSION ", String.valueOf(versionO));
 
-        Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
+        ////Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
 
         if (flagIsPlaySevice == true && flagIsUpdate == true){
 
@@ -670,57 +670,60 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                                     pDialog.dismiss();
                                 }
                                 return;
+
                             }
 
-                                if (response.getHeaders().code() == 200) {
+                            if (response.getHeaders().code() == 200) {
 
-                                    Gson gson = new Gson();
-                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                                Gson gson = new Gson();
+                                JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                    Log.e("JsonObject ", result.toString());
+                                Log.e("JsonObject ", result.toString());
 
-                                    estado = result.get("Estado").getAsString();
-                                    RequiereNumero = result.get("RequiereNumero").getAsString();
-                                    Id = result.get("Id").getAsString();
+                                estado = result.get("Estado").getAsString();
+                                RequiereNumero = result.get("RequiereNumero").getAsString();
+                                Id = result.get("Id").getAsString();
 
-                                    if(result.get("ClienteId").isJsonNull()){
-                                        ClienteId = null;
-                                        Log.e("ClienteId ", "INGRESÓ NULL");
-                                    } else {
-                                        ClienteId = result.get("ClienteId").getAsString();
+                                if(result.get("ClienteId").isJsonNull()){
+                                    ClienteId = null;
+                                    Log.e("ClienteId ", "INGRESÓ NULL");
+                                } else {
+                                    ClienteId = result.get("ClienteId").getAsString();
 
-                                        try {
-                                            DBHelper dataBaseHelper = new DBHelper(mContext);
-                                            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
-                                            String selectQueryBusca = "SELECT Nombre FROM Contactos WHERE ContactosId = 1";
-                                            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
-                                            buscaCont = cbusca.getCount();
-                                            cbusca.close();
-                                            dbc.close();
+                                    try {
 
-                                        } catch (Exception efgre) {}
+                                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                                        SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+                                        String selectQueryBusca = "SELECT Nombre FROM Contactos WHERE ContactosId = 1";
+                                        Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+                                        buscaCont = cbusca.getCount();
+                                        cbusca.close();
+                                        dbc.close();
 
-                                        if(buscaCont==0){
+                                    } catch (Exception efgre) {}
 
-                                            JsonArray jarray = result.getAsJsonArray("ClienteContactos");
+                                    if(buscaCont==0){
 
-                                            //JsonArray paymentsArray = rootObj.getAsJsonArray("payments");
-                                            for (JsonElement pa : jarray) {
+                                        JsonArray jarray = result.getAsJsonArray("ClienteContactos");
 
-                                                JsonObject paymentObj = pa.getAsJsonObject();
+                                        //JsonArray paymentsArray = rootObj.getAsJsonArray("payments");
+                                        for (JsonElement pa : jarray) {
 
-                                                ContactosCrud contactosCrud = new ContactosCrud(mContext);
+                                            JsonObject paymentObj = pa.getAsJsonObject();
 
-                                                Contactos contactos = new Contactos();
-                                                contactos.Nombre = paymentObj.get("Nombre").getAsString();
-                                                contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
-                                                if (!paymentObj.get("Numero1").isJsonNull()){
-                                                    contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
-                                                }
+                                            ContactosCrud contactosCrud = new ContactosCrud(mContext);
 
-                                                contactos.ContactosId = _Contactos_Id;
-                                                _Contactos_Id = contactosCrud.insert(contactos);
+                                            Contactos contactos = new Contactos();
+                                            contactos.Nombre = paymentObj.get("Nombre").getAsString();
+                                            contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
+                                            if (!paymentObj.get("Numero1").isJsonNull()){
+                                                contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
                                             }
+
+                                            contactos.ContactosId = _Contactos_Id;
+                                            _Contactos_Id = contactosCrud.insert(contactos);
+
+                                        }
 
                                             Log.e("jarray CLI ", jarray.toString());
 

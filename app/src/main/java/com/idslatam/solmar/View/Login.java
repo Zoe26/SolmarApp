@@ -129,7 +129,7 @@ public class Login extends AppCompatActivity implements
             PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
                     .checkLocationSettings(mGoogleApiClient, builder.build());
 
-            Log.e("builder Last ",String.valueOf(builder));
+            //Log.e("builder Last ",String.valueOf(builder));
             result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
 
                 @Override
@@ -142,13 +142,13 @@ public class Login extends AppCompatActivity implements
                             // All location settings are satisfied. The client can
                             // initialize location
                             // requests here.
-                            Log.e("Request SUCCESS ",String.valueOf(status));
+                            //Log.e("Request SUCCESS ",String.valueOf(status));
                             break;
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                             // Location settings are not satisfied. But could be
                             // fixed by showing the user
 
-                            Log.e("RESOLUTION_REQUIRED ",String.valueOf(status));
+                            //Log.e("RESOLUTION_REQUIRED ",String.valueOf(status));
                             try {
 
                                 // startResolutionForResult(),
@@ -163,7 +163,7 @@ public class Login extends AppCompatActivity implements
                             // Location settings are not satisfied. However, we have
                             // no way to fix the
 
-                            Log.e("Request ", "SETTINGS_CHANGE_UNAVAILABLE "+String.valueOf(status));
+                            //Log.e("Request ", "SETTINGS_CHANGE_UNAVAILABLE "+String.valueOf(status));
                             break;
                     }
                 }
@@ -245,7 +245,7 @@ public class Login extends AppCompatActivity implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("INGRESO  ", "onActivityResult");
+        //Log.e("INGRESO  ", "onActivityResult");
 //        final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
 
         switch (requestCode) {
@@ -254,7 +254,7 @@ public class Login extends AppCompatActivity implements
                     case Activity.RESULT_OK:
                         // All required changes were successfully made
                         Toast.makeText(context, "¡Configuración éxitosa!", Toast.LENGTH_LONG).show();
-                        Log.e("VerificarAcceso ","RESULT_OK");
+                        //Log.e("VerificarAcceso ","RESULT_OK");
                         break;
                     case Activity.RESULT_CANCELED:
                         // The user was asked to change settings, but chose not to
@@ -318,9 +318,13 @@ public class Login extends AppCompatActivity implements
 
                         if(result == null){
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+                            try {
+
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+
+                            } catch (Exception es){}
 
                             Toast.makeText(context, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
                             Log.e("Error de red ", " -- API TOKEN --");
@@ -348,18 +352,25 @@ public class Login extends AppCompatActivity implements
                             Intent intent = new Intent(Login.this, Perfil.class);
                             intent.putExtra("State", true);
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+                            try {
+
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+
+                            } catch (Exception es){}
 
                             startActivity(intent);
 
-                        } else {
+                        }
+
+                        try {
+
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
                             }
-                            Toast.makeText(context, "Hubo un error. Inténtalo otra vez", Toast.LENGTH_LONG).show();
-                        }
+
+                        } catch (Exception es){}
 
                     }
                 });

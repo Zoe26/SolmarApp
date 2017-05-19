@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,9 +27,13 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Alert.AlertActivity;
 import com.idslatam.solmar.Api.Http.Constants;
+import com.idslatam.solmar.Apps.ApplicationAdapter;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
@@ -49,6 +54,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.R.attr.fragment;
 
@@ -66,11 +72,15 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
     private Point mSize;
 
-    private PackageManager packageManager = null;
-
     GridView gridview;
     GridViewAdapter gridviewAdapter;
     ArrayList<Item> data = new ArrayList<Item>();
+
+
+    //private GridView gridview;
+    private List<ApplicationInfo> applist = null;
+    private PackageManager packageManager = null;
+    private ApplicationAdapter listadaptor = null;
 
 
     @Override
@@ -79,8 +89,9 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         setContentView(R.layout.activity_perfil);
 
         toolbar = (Toolbar) findViewById(R.id.app_bar);
-
         mContext = this;
+
+        packageManager = getPackageManager();
 
         try {
 
@@ -121,8 +132,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             fillData(); // Insert The Data
             setDataAdapter(); // Set the Data Adapter
         }
-
-
 
     }
 
@@ -170,12 +179,13 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
             cConfiguration.close();
             dbConfiguration.close();
-
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));
 
         } catch (Exception e) {}
+
+        //checkForLaunchIntent(packageManager.getInstalledApplications(PackageManager.GET_META_DATA));
 
     }
 
@@ -189,13 +199,11 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
     @Override
     public void onItemClick(final AdapterView<?> arg0, final View view, final int position, final long id)
     {
-
         packageManager = getPackageManager();
 
         if (data.get(position).getTitle().equalsIgnoreCase("Alert")){
             startActivity(new Intent(mContext, AlertActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-
         }
 
         if (data.get(position).getTitle().equalsIgnoreCase("Image")){
@@ -264,6 +272,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                 mBuilder.setView(mView);
                 AlertDialog dialog = mBuilder.create();
                 dialog.show();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -299,135 +308,132 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                             Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_SHORT).show();
 
                             Intent intent = new Intent(Perfil.this, Login.class);
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+
+                            try {
+
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+
+                            } catch (Exception ee){}
+
                             startActivity(intent);
 
                             return;
                         }
 
-                            if (response.getHeaders().code() == 200) {
+                        if (response.getHeaders().code() == 200) {
 
-                                try {
+                                Gson gson = new Gson();
+                                JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                    JSONObject json = new JSONObject(response.getResult().toString());
-                                    Log.e("JSON GET: Boolean", json.toString());
+                                Log.e("JsonObject GET MENU ", result.toString());
 
-                                    String Menu = null;
-                                    try {
-                                        Menu = json.getString("Menu");
-                                    } catch (JSONException e2) {
-                                        e.printStackTrace();
-                                    }
+                                JsonArray jarray = result.getAsJsonArray("Menu");
 
-                                    JSONArray jsonA = null;
+                                for (JsonElement pa : jarray) {
+                                    JsonObject paymentObj = pa.getAsJsonObject();
 
-                                    try {
-                                        jsonA = new JSONArray(Menu);
-                                    } catch (JSONException e3) {
-                                        e.printStackTrace();
-                                    }
+                                    MenuCrud menuCrud = new MenuCrud(mContext);
 
-                                    String []valores = new String[10];
-                                    int []val = new int[10];
+                                    com.idslatam.solmar.Models.Entities.Menu menu = new com.idslatam.solmar.Models.Entities.Menu();
+                                    menu.Nombre = paymentObj.get("Nombre").getAsString();
+                                    menu.Code = paymentObj.get("Id").getAsString();
+                                    menu.MenuId = _Menu_Id;
+                                    _Menu_Id = menuCrud.insert(menu);
 
-                                    try {
-                                        for (int i = 0; i < jsonA.length(); i++) {
+                                    Log.e("-- Nombre -- ", paymentObj.get("Nombre").getAsString());
+                                    Log.e("-- Id -- ", paymentObj.get("Id").getAsString());
 
-                                            JSONObject c = jsonA.getJSONObject(i);
-                                            val[i] = c.getInt("Id");
-                                            valores[i] = c.getString("Configuracion");
+                                    JsonArray jarraconf = paymentObj.getAsJsonArray("Configuracion");
 
-                                            MenuCrud menuCrud = new MenuCrud(mContext);
+                                    for (JsonElement co : jarraconf) {
+                                        JsonObject paymentC = co.getAsJsonObject();
 
-                                            com.idslatam.solmar.Models.Entities.Menu menu = new com.idslatam.solmar.Models.Entities.Menu();
-                                            menu.Nombre = c.getString("Nombre");
-                                            menu.Code = c.getString("Id");
-                                            menu.MenuId = _Menu_Id;
-                                            _Menu_Id = menuCrud.insert(menu);
+                                        // ALERT
+                                        if(paymentObj.get("Id").getAsString().equalsIgnoreCase("2")){
 
+                                            if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("3")){
 
-                                            Log.e("-- Nombre -- ", c.getString("Nombre"));
-                                            Log.e("-- Id -- ", c.getString("Id"));
+                                                DBHelper dataBaseHelper = new DBHelper(mContext);
+                                                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                                db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + paymentC.get("Valor").getAsString() + "'");
+                                                db.close();
 
-                                            JSONArray jsonValores = new JSONArray(valores[i]);
+                                                Log.e("ALERT 3 ", paymentC.get("Valor").getAsString());
 
-                                            for (int j = 0; j < jsonValores.length(); j++) {
-                                                JSONObject v = jsonValores.getJSONObject(j);
+                                            }
 
+                                            if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("4")){
 
-                                                // ALERT
-                                                if(c.getInt("Id")==2){
+                                                DBHelper dataBaseHelper = new DBHelper(mContext);
+                                                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                                db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + paymentC.get("Valor").getAsString()  + "'");
+                                                db.close();
 
-                                                    if(v.getInt("ConfiguracionId")==3){
-
-                                                        DBHelper dataBaseHelper = new DBHelper(mContext);
-                                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                                        db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + v.getInt("Valor") + "'");
-                                                        db.close();
-
-                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
-                                                    }
-
-                                                    if(v.getInt("ConfiguracionId")==4){
-
-                                                        DBHelper dataBaseHelper = new DBHelper(mContext);
-                                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                                        db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + v.getInt("Valor")  + "'");
-                                                        db.close();
-                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
-                                                    }
-                                                }
-
-                                                // BRAVO PAPA
-                                                if(c.getInt("Id")==3){
-
-                                                    if(v.getInt("ConfiguracionId")==5){
-
-                                                        DBHelper dataBaseHelper = new DBHelper(mContext);
-                                                        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                                        db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+v.getInt("Valor")+"'");
-                                                        db.close();
-
-                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
-                                                    }
-                                                }
+                                                Log.e("ALERT 4 ", paymentC.get("Valor").getAsString());
                                             }
                                         }
-                                    } catch (Exception e6){
-                                        Log.e("-- Error! ", " al obtener Menu");
+
+                                        // BRAVO PAPA
+                                        if(paymentObj.get("Id").getAsString().equalsIgnoreCase("3")){
+
+                                            if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("5")){
+
+                                                DBHelper dataBaseHelper = new DBHelper(mContext);
+                                                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                                db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+paymentC.get("Valor").getAsString()+"'");
+                                                db.close();
+
+                                                Log.e("BP 5 ", paymentC.get("Valor").getAsString());
+                                            }
+                                        }
+
                                     }
 
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
                                 }
 
                                 Log.e("-- Get Menu! ", " Finaliza");
-
                                 //generarMenu(savedInstanceState);
                                 initView(); // Initialize the GUI Components
                                 fillData(); // Insert The Data
                                 setDataAdapter(); // Set the Data Adapter
 
+                            try {
+
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
 
+                            } catch (Exception ee){}
 
-                            } else {
-                                Intent intent = new Intent(Perfil.this, Login.class);
+                        } else {
+
+                            Intent intent = new Intent(Perfil.this, Login.class);
+
+                            try {
+
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
-                                startActivity(intent);
 
-                                Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
+                            } catch (Exception ee){}
+
+                            startActivity(intent);
+
+                            Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
+
+                        }
+
+                        try {
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
                             }
 
+                        } catch (Exception ee){}
                     }
                 });
-
     }
 
     @Override
@@ -490,6 +496,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                 mBuilder.setView(mView);
                 AlertDialog dialog = mBuilder.create();
                 dialog.show();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -535,8 +542,9 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             dialog.setIndeterminate(false);
             dialog.setCancelable(false);
             dialog.show();
-            //do initialization of required objects objects here
+
         };
+
         @Override
         protected Void doInBackground(Void... params) {
 
@@ -564,8 +572,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         }
 
         @Override
-        protected void onPostExecute(Void result)
-        {
+        protected void onPostExecute(Void result) {
             try {
 
                 DBHelper dbgelperDeete = new DBHelper(mContext);
@@ -647,7 +654,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             Log.e("Error Elminar U", e.getMessage());
         }
 
-        Log.e("ID "+ String.valueOf(statusBoton) + " | Estado Btn "+ statusBoton, " | Estado Turno "+ statusFinTurno);
+        //Log.e("ID "+ String.valueOf(statusBoton) + " | Estado Btn "+ statusBoton, " | Estado Turno "+ statusFinTurno);
 
         if(statusBoton.equals("false") && statusFinTurno.equals("true")){
 
@@ -721,6 +728,89 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                     }
                 });
 
+    }
+
+    private class LoadApplications extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            applist = checkForLaunchIntent(packageManager.getInstalledApplications(PackageManager.GET_META_DATA));
+            Log.e("list size", String.valueOf(applist.size()));
+            listadaptor = new ApplicationAdapter(Perfil.this, R.layout.list_item, applist);
+            System.out.println("adapter="+listadaptor);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            //gridview.setAdapter(listadaptor);
+            //gridview.setOnItemClickListener(MainActivity.this);
+
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
+    private List<ApplicationInfo> checkForLaunchIntent(List<ApplicationInfo> list) {
+        ArrayList<ApplicationInfo> applist = new ArrayList<ApplicationInfo>();
+        for (ApplicationInfo info : list) {
+            try {
+                if (null != packageManager.getLaunchIntentForPackage(info.packageName)) {
+
+                    Log.e("class name", String.valueOf(info.packageName));
+
+                    /*try {
+
+                        DBHelper dataBaseHelper = new DBHelper(this);
+                        SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+                        String selectQueryconfiguration = "SELECT Nombre, Code FROM Menu";
+                        Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
+
+                        if (cConfiguration.moveToFirst()) {lñ
+
+                            do {
+
+                                if (cConfiguration.getString(cConfiguration.getColumnIndex("Code")).equalsIgnoreCase("com.android.mms")){
+                                    data.add(new Item(info.loadLabel(packageManager).toString(), info.loadIcon(packageManager)));
+                                }
+
+                            } while(cConfiguration.moveToNext());
+
+                        }
+
+                        cConfiguration.close();
+                        dbConfiguration.close();
+
+                    } catch (Exception e) {}*/
+
+
+                    if ( true ){
+                        if (info.packageName.equals("com.android.mms")){
+                            data.add(new Item(info.loadLabel(packageManager).toString(), info.loadIcon(packageManager)));
+                        }
+                    }
+
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return applist;
     }
 
 }

@@ -119,7 +119,7 @@
             android:name=".Tracking.Broadcast.AlarmLocation"
             android:enabled="true"
             android:exported="true" />
-        <receiver android:name=".SettingsDevice.Broadcast.BootSettings">
+        <receiver android:name=".SettingsDevice.BootSettings">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED">
                     <category android:name="android.intent.category.HOME" />

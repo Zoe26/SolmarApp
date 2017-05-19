@@ -156,7 +156,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         } catch (Exception e) {}
 
-        Log.e("-- INTERVALo onCREATE ", String.valueOf(intervalSend));
+        //Log.e("-- INTERVALo onCREATE ", String.valueOf(intervalSend));
 
         buildGoogleApiClient();
 
@@ -334,7 +334,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             boolean requestingUpdates = !getUpdatesRequestedState();
             setUpdatesRequestedState(requestingUpdates);
         } else {
-            Log.e("---| status ", "Error adding or removing activity detection: " + status.getStatusMessage());
+            Log.e("---| status ", "Error adding or removing activity detection: " + "onResult");
         }
     }
 
@@ -662,16 +662,19 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                 return;
                             }
 
-                                if (response.getHeaders().code() == 200) {
+                            if (response.getHeaders().code() == 200) {
 
-                                    Gson gson = new Gson();
-                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                                Gson gson = new Gson();
+                                JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                    Log.e("JsonObject ", result.toString());
+                                Log.e("JsonObject ", result.toString());
+
+                                if (!result.get("Configuracion").isJsonNull()){
 
                                     JsonArray jarray = result.getAsJsonArray("Configuracion");
 
                                     for (JsonElement pa : jarray) {
+
                                         JsonObject paymentObj = pa.getAsJsonObject();
 
                                         if(paymentObj.get("ConfiguracionId").getAsString().equalsIgnoreCase("7")){
@@ -693,10 +696,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
                                     }
 
-                                } else  {
-                                    saveError(tracking);
-                                    Log.e("¡ERROR DE SERVER! ", " -- Tracking saveError --");
+                                } else {
+                                    Log.e("¡Configuration NULL ! ", " -- Tracking saveError --");
                                 }
+
+                            } else  {
+
+                                saveError(tracking);
+                                Log.e("¡ERROR DE SERVER! ", " -- Tracking saveError --");
+
+                            }
 
                         }
                     });
@@ -711,6 +720,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             } catch (Exception e){}
 
         } else {
+
             try {
 
                 DBHelper dbHelperAlarm = new DBHelper(this);
@@ -719,6 +729,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                 dba.close();
 
             } catch (Exception e){}
+
         }
 
         return  true;
@@ -767,7 +778,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             }
 
         }catch (Exception e){
-            Log.e("-- Error Reenvio Track", e.getMessage());
+            Log.e("-- Error Reenvio Track", "EstadoEnvio");
         }
 
         return true;

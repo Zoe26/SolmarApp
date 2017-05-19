@@ -27,6 +27,7 @@ import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Bienvenido;
 import com.idslatam.solmar.View.MenuPrincipal;
+import com.idslatam.solmar.View.Perfil;
 import com.idslatam.solmar.View.Settings.AccessSettings;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -95,7 +96,7 @@ public class CodeBar extends Activity {
     }
 
     public void backmenu(View view) {
-        startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
+        startActivity(new Intent(getBaseContext(), Perfil.class)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         finish();
     }

@@ -75,7 +75,7 @@ public class AlarmLocation extends BroadcastReceiver {
             mContext.getApplicationContext().registerReceiver(mReceiver, filter);
 
         } catch (IllegalArgumentException e) {
-            Log.e("EXCEPTION REGISTER ", e.getMessage());
+            Log.e("EXCEPTION REGISTER ", " ALARM mReceiver");
         }
 
         gps = isGPSAvailable();
@@ -120,7 +120,7 @@ public class AlarmLocation extends BroadcastReceiver {
                 alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent);
 
             } catch (Exception e){
-                Toast.makeText(mContext, "Excepcion Start Service", Toast.LENGTH_LONG).show();
+                Log.e(" pendingIntent ", " ALARM EXEPTION ");
             }
 
 
@@ -272,7 +272,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
 
-        Log.e("--| ACTIVANDO ","DATOS.....");
+        //Log.e("--| ACTIVANDO ","DATOS.....");
         //Toast.makeText(this, "Activando Datos..", Toast.LENGTH_SHORT).show();
     }
 

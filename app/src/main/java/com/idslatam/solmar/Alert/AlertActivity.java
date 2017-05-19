@@ -44,19 +44,15 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
     Button btnMarcacion;
     TextView textHora, textUltimaMarcacion, textUltimaMarcacionFecha, textHoraFecha, texttolerancia, textflag_tiempo;
 
-    View myView;
     ImageView caritaEstado;
 
     String Proxima;
     String HoraMarcacionP;
 
-    String EstadoBoton, FechaEsperadaIso, FechaEsperadaIsoFin, EstadoE;
-    Calendar horaIni, horaFin, horaIso, horaAuxC;
+    String EstadoBoton;
 
     String FechaEsperada, FechaProxima;
 
-
-    String fechaAux = null;
     //**********************************************************************************************
 
     int tiempoEnvio, tiempoIntervalo, tiempoGuardado, tiempoIntervaloView, countInicial=0;
