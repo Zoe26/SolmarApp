@@ -38,8 +38,6 @@ public class VolumeReceiver extends BroadcastReceiver {
 
     protected String URL_API;
 
-    int contadorAux;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -49,9 +47,7 @@ public class VolumeReceiver extends BroadcastReceiver {
         URL_API = globalClass.getURL();
 
         vFirst = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
-        Log.e("--- VOLUME ACTUAL ", String.valueOf(vFirst));
-
-
+        Log.e("--- VOLUME", String.valueOf(vFirst));
 
 
         try{
@@ -82,14 +78,10 @@ public class VolumeReceiver extends BroadcastReceiver {
                 dba.close();
             } catch (Exception e){}
 
-            contador++;
-            return;
+            //return;
         }
 
         //*******************************************************************************
-
-
-
         try{
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
@@ -128,7 +120,7 @@ public class VolumeReceiver extends BroadcastReceiver {
         } catch (Exception e){}
 
 
-        if(contador>=2){
+        if(contador>=3){
 
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -169,6 +161,15 @@ public class VolumeReceiver extends BroadcastReceiver {
 
     public void sendBP (){
 
+        try {
+
+            Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(1000 * 1);
+
+        } catch (Exception eewf) {
+            Log.e(" Exception ","vibrator");
+        }
+
         try{
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
@@ -194,17 +195,8 @@ public class VolumeReceiver extends BroadcastReceiver {
         Calendar now = Calendar.getInstance();
 
         try {
-
             FechaDispositivo = formatoGuardar.format(now.getTime());
-
         } catch (Exception e){};
-
-        now = Calendar.getInstance();
-
-        try {
-            FechaDispositivo = formatoGuardar.format(now.getTime());
-        } catch (Exception e){}
-
 
         if (Numero == null){
             Log.e("-- |Numero | ", " NULL ");
@@ -271,7 +263,7 @@ public class VolumeReceiver extends BroadcastReceiver {
                             try {
 
                                 Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                                vibrator.vibrate(1000 * 2);
+                                vibrator.vibrate(1000 * 5);
 
                             } catch (Exception eewf) {
                                 Log.e(" Exception ","vibrator");
@@ -284,7 +276,68 @@ public class VolumeReceiver extends BroadcastReceiver {
                         }
                     }
                 });
+        //new PostAsync().execute(Numero, Latitud, Longitud, Velocidad, FechaDispositivo, DispositivoId);
+    }
 
+    class PostAsync extends AsyncTask<String, String, JSONObject> {
+
+        JsonParser jsonParser = new JsonParser();
+
+        private final String URL = URL_API.concat("api/BravoPapa");
+
+        private static final String TAG_SUCCESS = "success";
+        private static final String TAG_MESSAGE = "message";
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... args) {
+
+            Log.e("-- |URL | ", URL);
+
+            try {
+
+                HashMap<String, String> params = new HashMap<>();
+
+                params.put("Numero", args[0]);
+                params.put("Latitud", args[1]);
+                params.put("Longitud", args[2]);
+                params.put("Velocidad", args[3]);
+                params.put("FechaDispositivo", args[4]);
+                params.put("DispositivoId", args[5]);
+
+                Log.e("request", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(URL, "POST", params);
+                Log.e("-- |POST | ", "ASINC");
+                if (json != null) {
+                    Log.e("JSON result", json.toString());
+                    return json;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(JSONObject json) {
+
+            int success = 0;
+            String message = "";
+            if (json != null) {
+
+                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(1000 * 3);
+            }
+
+            if (success == 0) {
+                Log.d("Hecho!", message);
+
+            }
+        }
     }
 
 }
