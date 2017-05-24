@@ -3,9 +3,11 @@ package com.idslatam.solmar.View;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -34,6 +36,7 @@ import com.google.gson.JsonObject;
 import com.idslatam.solmar.Alert.AlertActivity;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Apps.ApplicationAdapter;
+import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
@@ -92,6 +95,21 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         mContext = this;
 
         packageManager = getPackageManager();
+
+        //------------------------------------------------------------------------------------------
+        try {
+
+            IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            BroadcastReceiver mReceiver = new ScreenReceiver();
+
+            this.getApplicationContext().registerReceiver(mReceiver, filter);
+
+        } catch (IllegalArgumentException e) {
+            Log.e("EXCEPTION REGISTER ", e.getMessage());
+        }
+        //------------------------------------------------------------------------------------------
+
 
         try {
 

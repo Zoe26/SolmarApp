@@ -38,6 +38,8 @@ public class VolumeReceiver extends BroadcastReceiver {
 
     protected String URL_API;
 
+    int contadorAux;
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -52,7 +54,7 @@ public class VolumeReceiver extends BroadcastReceiver {
 
 
 
-        /*try{
+        try{
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
@@ -80,11 +82,11 @@ public class VolumeReceiver extends BroadcastReceiver {
                 dba.close();
             } catch (Exception e){}
 
-            //return;
+            contador++;
+            return;
         }
 
-
-        /*//*******************************************************************************
+        //*******************************************************************************
 
 
 
@@ -151,7 +153,7 @@ public class VolumeReceiver extends BroadcastReceiver {
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+vFirst+"'");
             dba.close();
-        } catch (Exception e){}*/
+        } catch (Exception e){}
     }
 
     public void resetCuenta(){

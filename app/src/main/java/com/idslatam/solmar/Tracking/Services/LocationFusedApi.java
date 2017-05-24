@@ -3,6 +3,7 @@ package com.idslatam.solmar.Tracking.Services;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
+import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Tracking;
@@ -104,6 +106,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     double deltaAltitud=0;
     float deltaVelocidad=0;
 
+    BroadcastReceiver mReceiver;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -136,6 +140,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         //intent.setClass(mContext, SignalRService.class);
         //bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
+        //------------------------------------------------------------------------------------------
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
@@ -158,6 +163,16 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         //Log.e("-- INTERVALo onCREATE ", String.valueOf(intervalSend));
 
+        try {
+            IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            mReceiver = new ScreenReceiver();
+            this.getApplicationContext().registerReceiver(mReceiver, filter);
+
+        } catch (IllegalArgumentException e) {
+            Log.e("EXCEPTION REGISTER ", e.getMessage());
+        }
+
         buildGoogleApiClient();
 
 
@@ -167,6 +182,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         mGoogleApiClient.connect();
+
         if(!this.isRunning) {this.isRunning = true;}
 //            runnable.run();
 
@@ -175,6 +191,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     @Override
     public void onDestroy() {
+
+        unregisterReceiver(this.mReceiver);
 
         this.isRunning = false;
 

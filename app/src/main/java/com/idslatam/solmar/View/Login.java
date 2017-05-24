@@ -84,6 +84,7 @@ public class Login extends AppCompatActivity implements
 
     String Fotoch;
 
+    BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +93,19 @@ public class Login extends AppCompatActivity implements
         setContentView(R.layout.activity_login);
         this.context = this;
 
+        /*//------------------------------------------------------------------------------------------
+
         try {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
-            BroadcastReceiver mReceiver = new ScreenReceiver();
+            mReceiver = new ScreenReceiver();
 
             this.getApplicationContext().registerReceiver(mReceiver, filter);
 
         } catch (IllegalArgumentException e) {
             Log.e("EXCEPTION REGISTER ", e.getMessage());
-        }
-
+        }*/
+        //------------------------------------------------------------------------------------------
 
         //**********************************************************************************************************************************
 
