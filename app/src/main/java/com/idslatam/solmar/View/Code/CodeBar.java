@@ -245,7 +245,9 @@ public class CodeBar extends Activity {
             mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
-                    startActivity(new Intent(getBaseContext(), MenuPrincipal.class)
+                    //dialog.dismiss();
+
+                    startActivity(new Intent(getBaseContext(), Perfil.class)
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                     finish();
 

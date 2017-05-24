@@ -52,8 +52,6 @@ public class VolumeReceiver extends BroadcastReceiver {
 
 
 
-
-
         /*try{
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
