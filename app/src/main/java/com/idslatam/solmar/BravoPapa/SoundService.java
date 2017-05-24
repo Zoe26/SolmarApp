@@ -21,7 +21,7 @@ public class SoundService extends Service {
 
         public void handleMessage(Message message)
         {
-            Log.e("---", "WakeHandler");
+            //Log.e("---", "WakeHandler");
 
             switch (message.what)
             {
@@ -30,12 +30,16 @@ public class SoundService extends Service {
 
                 case 0: // '\0'
                     Log.e("", "do playback");
+                    stopPlayback();
+                    stopService();
+
                     doPlayback();
                     return;
 
                 case 1: // '\001'
                     Log.e("", "stopPlayback");
                     stopPlayback();
+                    stopService();
                     return;
 
 
@@ -96,7 +100,7 @@ public class SoundService extends Service {
             mp.release();
             mp = null;
         }
-        _L2:
+        //_L2:
         return;
 
     }

@@ -14,6 +14,9 @@ import android.view.KeyEvent;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,10 +47,14 @@ public class VolumeReceiver extends BroadcastReceiver {
         URL_API = globalClass.getURL();
 
         vFirst = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
-        Log.e("--- VOLUME", String.valueOf(vFirst));
+        Log.e("--- VOLUME ACTUAL ", String.valueOf(vFirst));
 
 
-        try{
+
+
+
+
+        /*try{
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
@@ -79,7 +86,7 @@ public class VolumeReceiver extends BroadcastReceiver {
         }
 
 
-        //*******************************************************************************
+        /*//*******************************************************************************
 
 
 
@@ -146,7 +153,7 @@ public class VolumeReceiver extends BroadcastReceiver {
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+vFirst+"'");
             dba.close();
-        } catch (Exception e){}
+        } catch (Exception e){}*/
     }
 
     public void resetCuenta(){
@@ -187,8 +194,47 @@ public class VolumeReceiver extends BroadcastReceiver {
         Calendar now = Calendar.getInstance();
 
         try {
+
             FechaDispositivo = formatoGuardar.format(now.getTime());
+
         } catch (Exception e){};
+
+        now = Calendar.getInstance();
+
+        try {
+            FechaDispositivo = formatoGuardar.format(now.getTime());
+        } catch (Exception e){}
+
+
+        if (Numero == null){
+            Log.e("-- |Numero | ", " NULL ");
+            return;
+        }
+
+        if (Latitud == null){
+            Log.e("-- |Latitud | ", " NULL ");
+            return;
+        }
+
+        if (Longitud == null){
+            Log.e("-- |Longitud | ", " NULL ");
+            return;
+        }
+
+        if (Velocidad == null){
+            Log.e("-- |Velocidad | ", " NULL ");
+            return;
+        }
+
+        if (FechaDispositivo == null){
+            Log.e("-- |FechaDispositivo | ", " NULL ");
+            return;
+        }
+
+        if (DispositivoId == null){
+            Log.e("-- |DispositivoId | ", " NULL ");
+            return;
+        }
 
         Log.e("-- |Numero | ", Numero);
         Log.e("-- |Latitud | ", Latitud);
@@ -197,68 +243,48 @@ public class VolumeReceiver extends BroadcastReceiver {
         Log.e("-- |FechaDispositivo | ", FechaDispositivo);
         Log.e("-- |DispositivoId | ", DispositivoId);
 
-        new PostAsync().execute(Numero, Latitud, Longitud, Velocidad, FechaDispositivo, DispositivoId);
-    }
+        String URL = URL_API.concat("api/BravoPapa");
 
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
+        Ion.with(mContext)
+                .load("POST", URL)
+                .setBodyParameter("Numero", Numero)
+                .setBodyParameter("Latitud", Latitud)
+                .setBodyParameter("Longitud", Longitud)
+                .setBodyParameter("Velocidad", Velocidad)
+                .setBodyParameter("FechaDispositivo", FechaDispositivo)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> result) {
 
-        JsonParser jsonParser = new JsonParser();
+                        if (e!=null){
+                            Log.e("-- |BP | ", e.getMessage());
+                            return;
+                        }
 
-        private final String URL = URL_API.concat("api/BravoPapa");
+                        if(result.getHeaders().code()==200){
 
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
+                            Log.e("JSON result BP ", result.getResult());
 
-        @Override
-        protected void onPreExecute() {
-        }
+                            try {
 
-        @Override
-        protected JSONObject doInBackground(String... args) {
+                                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                                vibrator.vibrate(1000 * 2);
 
-            Log.e("-- |URL | ", URL);
+                            } catch (Exception eewf) {
+                                Log.e(" Exception ","vibrator");
+                            }
 
-            try {
+                        } else {
 
-                HashMap<String, String> params = new HashMap<>();
+                            Log.e("¡Pánico NO enviado! ", "");
+                            //Toast.makeText(mContext, "¡Pánico no enviado! ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
-                params.put("Numero", args[0]);
-                params.put("Latitud", args[1]);
-                params.put("Longitud", args[2]);
-                params.put("Velocidad", args[3]);
-                params.put("FechaDispositivo", args[4]);
-                params.put("DispositivoId", args[5]);
-
-                Log.e("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(URL, "POST", params);
-                Log.e("-- |POST | ", "ASINC");
-                if (json != null) {
-                    Log.e("JSON result", json.toString());
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-            if (json != null) {
-
-                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(1000 * 3);
-            }
-
-            if (success == 0) {
-                Log.d("Hecho!", message);
-
-            }
-        }
     }
 
 }

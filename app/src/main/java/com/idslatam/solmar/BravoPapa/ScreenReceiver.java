@@ -12,7 +12,7 @@ public class ScreenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.e("--- INGRESÓ ", "Screen");
+        //Log.e("--- INGRESÓ ", "Screen");
 
         if ("android.intent.action.SCREEN_OFF".equals(intent.getAction()))
         {
@@ -20,9 +20,8 @@ public class ScreenReceiver extends BroadcastReceiver {
             intent = new Intent(context, SoundService.class);
             intent.putExtra("action", 0);
             context.startService(intent);
-        }
 
-        if ("android.intent.action.SCREEN_ON".equals(intent.getAction()))
+        } else if ("android.intent.action.SCREEN_ON".equals(intent.getAction()))
         {
             Log.e("---", "Screen on");
             intent = new Intent(context, SoundService.class);

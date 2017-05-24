@@ -3,6 +3,7 @@ package com.idslatam.solmar.View.Code;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.idslatam.solmar.Api.Http.Constants;
@@ -31,6 +33,7 @@ import com.idslatam.solmar.View.Perfil;
 import com.idslatam.solmar.View.Settings.AccessSettings;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,11 +61,14 @@ public class CodeBar extends Activity {
 
     private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
+    Context mContex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_code_bar);
+
+        this.mContex = this;
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
@@ -152,18 +158,39 @@ public class CodeBar extends Activity {
                     .load("POST", URL)
                     .setJsonObjectBody(json)
                     .asJsonObject()
-                    .setCallback(new FutureCallback<JsonObject>() {
+                    .withResponse()
+                    .setCallback(new FutureCallback<Response<JsonObject>>() {
                         @Override
-                        public void onCompleted(Exception e, JsonObject response) {
+                        public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            if(response!=null){
+                            if(response == null){
+
+                                Toast.makeText(mContex, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
                                 try {
 
                                     if (pDialog != null && pDialog.isShowing()) {
                                         pDialog.dismiss();
                                     }
 
-                                    dialogoRespuesta(response.get("Estado").getAsString(),response.get("Header").getAsString(),response.get("Mensaje").getAsString());
+                                } catch (Exception edsv){}
+
+                                return;
+
+                            }
+
+                            if(response.getHeaders().code() == 200){
+
+                                Gson gson = new Gson();
+                                JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                try {
+
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+
+                                    dialogoRespuesta(result.get("Estado").getAsString() ,result.get("Header").getAsString(),result.get("Mensaje").getAsString());
 
                                 } catch (Exception edd){
 

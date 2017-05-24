@@ -55,17 +55,15 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
     //**********************************************************************************************
 
-    int tiempoEnvio, tiempoIntervalo, tiempoGuardado, tiempoIntervaloView, countInicial=0;
+    int tiempoEnvio, tiempoIntervalo, tiempoGuardado;
 
     int _Alert_Id = 0, _Alert_Id_Pos = 0;
     private int _AlertUpdate_Id = 0, _AlertRee_Id = 0;
     int c = 0;
-    Calendar choraProximaG, choraEsperadaG, choraIso, choraIsoFin;
-
-    Calendar fechaEsperadaGlobal;
+    Calendar choraProximaG, choraIso, choraIsoFin;
 
     String  horaEsperadaG, horaProximaG, horaEsperadaIsoG, horaEsperadaIsoFinG;
-    String LatitudG, LongitudG, NumeroG, DispositivoId, CodigoEmpleado;
+    String NumeroG, DispositivoId, CodigoEmpleado;
 
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -77,11 +75,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
     String FechaMarcacionE, FechaEsperadaE, FechaProximaE, FlagTiempoE, MargenAceptadoE, LatitudE, LongitudE, NumeroE;
     String DispositivoIdE, CodigoEmpleadoE;
 
-    private static final float BEEP_VOLUME = 0.10f;
-
     CountDownTimer cdt5, cdtBtn;
-
-    //+++++++++++++++++++
 
     Calendar calendarCurrentG = null;
 
@@ -141,6 +135,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                 Log.e("*** Alert Data ISO *** ", alertload.FechaEsperadaIso);
 
             } else {
+
                 crearRegistro();
                 mostrarHora();
 
@@ -261,14 +256,11 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         }
 
         if (minuto > tiempoGuardado) {
-            resto = minuto%tiempoGuardado;
-            //if(resto==0){
-            //    aux = 0;
-            //} else {
-            aux = tiempoGuardado - resto;
-            //}
 
-        } else { // SI minuto es menor que tiempoGuardado
+            resto = minuto%tiempoGuardado;
+            aux = tiempoGuardado - resto;
+
+        } else {
 
             aux = tiempoGuardado - minuto;
 
@@ -458,7 +450,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                 try {
 
                     enviarMarcacion();
-                    //consultaSinConexion();
 
                 }catch (Exception e){
                     Log.e("--- ++EXCEPTION++ ", " +++ enviarMarcacion+++");
@@ -572,6 +563,55 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
         } catch (Exception e) {}
 
+        if (NumeroE == null ) {
+            Toast.makeText(mContext, " NumeroE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (FechaMarcacionE == null ) {
+            Toast.makeText(mContext, " FechaMarcacionE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (FechaEsperadaE == null ) {
+            Toast.makeText(mContext, " FechaEsperadaE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (FechaProximaE == null ) {
+            Toast.makeText(mContext, " FechaProximaE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (FlagTiempoE == null ) {
+            Toast.makeText(mContext, " FlagTiempoE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (MargenAceptadoE == null ) {
+            Toast.makeText(mContext, " MargenAceptadoE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (LatitudE == null ) {
+            Toast.makeText(mContext, " LatitudE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (LongitudE == null ) {
+            Toast.makeText(mContext, " LongitudE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (DispositivoIdE == null ) {
+            Toast.makeText(mContext, " DispositivoIdE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (CodigoEmpleadoE == null ) {
+            Toast.makeText(mContext, " CodigoEmpleadoE NULL ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         Log.e("-----------SEND  ","ALERT-----------");
         Log.e("--- NumeroE ", NumeroE);
@@ -709,7 +749,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         alert.FechaMarcacion = "";
 
         if(alert.FechaMarcacion == ""){
-            Log.e("Alert ", alert.FechaMarcacion);
+            Log.e("Alert NULL ", "alert.FechaMarcacion");
         }
 
 
@@ -724,8 +764,9 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
             //Log.e("Consulta ", "If");
 
-            if(alert.FechaMarcacion == "")
-                Log.e("Alert ", alert.FechaMarcacion);
+            if(alert.FechaMarcacion == ""){
+                Log.e("Alert NULL ", "alert.FechaMarcacion");
+            }
 
             if (cA.moveToLast()) {
 
@@ -768,6 +809,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             if (cA.moveToLast()) {
                 Fecha = cA.getString(cA.getColumnIndex("FechaEsperadaIso"));
             }
+
             cA.close();
             dbA.close();
 
@@ -880,7 +922,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
 
         }catch (Exception e){
-            Log.e("EXCEPTION "," count "+ e.getMessage());
+            Log.e("EXCEPTION "," count "+ "Alert Activity Handler");
         }
 
     }
@@ -1085,14 +1127,11 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                                         return;
                                     }
 
-                                    if (response.getHeaders().code() == 200) {
-
-                                        Log.e("JsonObject ", response.getResult().toString());
-
-                                    } else {
+                                    if (response.getHeaders().code() != 200) {
 
                                         saveError(alertPos);
                                         Log.e("Exception ", "Finaliza SaveError");
+                                        Log.e("JsonObject ", response.getResult().toString());
 
                                     }
                                 }
@@ -1158,7 +1197,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             dbA.close();
 
         } catch (Exception e) {
-            Log.e("--- Error Consulta ", e.getMessage());
+            Log.e("--- Error Consulta ", "FechaProxima");
         }
         Calendar cal = Calendar.getInstance();
         Calendar horaAct = Calendar.getInstance();
@@ -1379,4 +1418,5 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
         super.onDestroy();
     }
+
 }
