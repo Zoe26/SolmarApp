@@ -18,8 +18,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.idslatam.solmar.Api.Singalr.SignalRService;
-import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Pruebas.Crud.AlarmTrackCrud;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;

@@ -43,6 +43,7 @@ public class Configuration {
     public static final String KEY_EstadoSignalr = "EstadoSignalr";
     public static final String KEY_ClienteId = "ClienteId";
     public static final String KEY_ContadorPulsacion = "ContadorPulsacion";
+    public static final String KEY_ContadorAux = "ContadorAux";
 
 
     public int ConfigurationId;

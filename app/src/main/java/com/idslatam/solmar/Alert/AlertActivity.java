@@ -821,6 +821,10 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        if (Fecha == null){
+            return;
+        }
+
         try {
             horaAux.setTime(sdf.parse(Fecha));
         } catch (ParseException e) {
@@ -955,6 +959,10 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         int minBtn = tiempoEnvio+2;
+
+        if (Fecha == null){
+            return;
+        }
 
         try {
             horaAux.setTime(sdf.parse(Fecha));

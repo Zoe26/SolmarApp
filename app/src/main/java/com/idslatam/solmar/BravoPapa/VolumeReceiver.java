@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 public class VolumeReceiver extends BroadcastReceiver {
 
-    int vFirst, vLast, contador = 0, VecesPresionarVolumen;
+    int vFirst, vLast, contador = 0, auxM = 0, auxCero = 0, VecesPresionarVolumen;
     Context mContext;
 
     String Estado = null, DispositivoId;
@@ -86,12 +86,13 @@ public class VolumeReceiver extends BroadcastReceiver {
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-            String selectQuery = "SELECT ContadorPulsacion, VecesPresionarVolumen FROM Configuration";
+            String selectQuery = "SELECT ContadorPulsacion, VecesPresionarVolumen, ContadorAux FROM Configuration";
             Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
                 contador = c.getInt(c.getColumnIndex("ContadorPulsacion"));
                 VecesPresionarVolumen = c.getInt(c.getColumnIndex("VecesPresionarVolumen"));
+                auxCero = c.getInt(c.getColumnIndex("ContadorAux"));
             }
             c.close();
             sqlVolumen.close();
@@ -99,26 +100,49 @@ public class VolumeReceiver extends BroadcastReceiver {
         }catch (Exception e){
         }
 
-        Log.e("-- |vFirst| ", String.valueOf(vFirst));
-        Log.e("-- |vLast| ", String.valueOf(vLast));
+        //Log.e("-- |vFirst| ", String.valueOf(vFirst));
+        //Log.e("-- |vLast| ", String.valueOf(vLast));
+
+        if(vFirst > vLast){
+            resetCuenta();
+        }
 
         if(vFirst < vLast){
             contador ++;
-            Log.e("-- |contador| ", String.valueOf(contador));
 
         } else if (vFirst == 0) {
+            auxCero ++;
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorAux = '"+auxCero+"'");
+                dba.close();
+            } catch (Exception e){}
+
+            Log.e("--- = auxCero ", String.valueOf(auxCero));
+
+            if (auxCero%2 != 0){
+                Log.e("--- return = div ", String.valueOf(vFirst));
+                Log.e("--- return = contador ", String.valueOf(contador));
+                return;
+            }
             contador ++;
             Log.e("--- VOLUME = 0 ", String.valueOf(vFirst));
-            Log.e("-- |contador| ", String.valueOf(contador));
+        } else {
+            resetCuenta();
         }
+
+
+        Log.e("-- |contador| ", String.valueOf(contador));
 
         try {
             DBHelper dbHelperAlarm = new DBHelper(mContext);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
+
             dba.close();
         } catch (Exception e){}
-
 
         if(contador>=3){
 
@@ -130,6 +154,17 @@ public class VolumeReceiver extends BroadcastReceiver {
 
                 }
             }, 1000*3);
+        } else {
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    resetCuenta();
+
+                }
+            }, 1000*VecesPresionarVolumen);
+
         }
 
         if(contador==VecesPresionarVolumen){
@@ -154,8 +189,11 @@ public class VolumeReceiver extends BroadcastReceiver {
             DBHelper dbHelperAlarm = new DBHelper(mContext);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+            dba.execSQL("UPDATE Configuration SET ContadorAux = '0'");
             dba.close();
         } catch (Exception e){}
+
+        auxCero = 0;
 
     }
 
@@ -228,12 +266,12 @@ public class VolumeReceiver extends BroadcastReceiver {
             return;
         }
 
-        Log.e("-- |Numero | ", Numero);
-        Log.e("-- |Latitud | ", Latitud);
-        Log.e("-- |Longitud | ", Longitud);
-        Log.e("-- |Velocidad | ", Velocidad);
-        Log.e("-- |FechaDispositivo | ", FechaDispositivo);
-        Log.e("-- |DispositivoId | ", DispositivoId);
+        //Log.e("-- |Numero | ", Numero);
+        //Log.e("-- |Latitud | ", Latitud);
+        //Log.e("-- |Longitud | ", Longitud);
+        //Log.e("-- |Velocidad | ", Velocidad);
+        //Log.e("-- |FechaDispositivo | ", FechaDispositivo);
+        //Log.e("-- |DispositivoId | ", DispositivoId);
 
         String URL = URL_API.concat("api/BravoPapa");
 
@@ -263,7 +301,7 @@ public class VolumeReceiver extends BroadcastReceiver {
                             try {
 
                                 Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                                vibrator.vibrate(1000 * 5);
+                                vibrator.vibrate(1000 * 3);
 
                             } catch (Exception eewf) {
                                 Log.e(" Exception ","vibrator");
@@ -277,67 +315,6 @@ public class VolumeReceiver extends BroadcastReceiver {
                     }
                 });
         //new PostAsync().execute(Numero, Latitud, Longitud, Velocidad, FechaDispositivo, DispositivoId);
-    }
-
-    class PostAsync extends AsyncTask<String, String, JSONObject> {
-
-        JsonParser jsonParser = new JsonParser();
-
-        private final String URL = URL_API.concat("api/BravoPapa");
-
-        private static final String TAG_SUCCESS = "success";
-        private static final String TAG_MESSAGE = "message";
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... args) {
-
-            Log.e("-- |URL | ", URL);
-
-            try {
-
-                HashMap<String, String> params = new HashMap<>();
-
-                params.put("Numero", args[0]);
-                params.put("Latitud", args[1]);
-                params.put("Longitud", args[2]);
-                params.put("Velocidad", args[3]);
-                params.put("FechaDispositivo", args[4]);
-                params.put("DispositivoId", args[5]);
-
-                Log.e("request", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(URL, "POST", params);
-                Log.e("-- |POST | ", "ASINC");
-                if (json != null) {
-                    Log.e("JSON result", json.toString());
-                    return json;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(JSONObject json) {
-
-            int success = 0;
-            String message = "";
-            if (json != null) {
-
-                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(1000 * 3);
-            }
-
-            if (success == 0) {
-                Log.d("Hecho!", message);
-
-            }
-        }
     }
 
 }

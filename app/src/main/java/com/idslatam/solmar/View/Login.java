@@ -43,8 +43,6 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
-import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Asistencia;
