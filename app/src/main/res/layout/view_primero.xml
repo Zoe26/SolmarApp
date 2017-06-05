@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
+
         android:text=""
         android:layout_below="@id/primero_tracto"
         style="?android:attr/textAppearanceSmall"/>
@@ -68,19 +69,18 @@
                     android:id="@+id/radio_sinCarga"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     android:layout_weight="1"
                     style="?android:attr/textAppearanceSmall"
                     android:text="Sin Carga" />
 
                 <RadioButton
-                    android:id="@+id/radio_conCarga"
+                    android:id="@+id/radio_cargaSuelta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/radio_sinCarga"
                     android:layout_weight="1"
                     style="?android:attr/textAppearanceSmall"
-                    android:text="Con Carga" />
+                    android:text="Carga Suelta" />
 
                 <RadioButton
                     android:id="@+id/radio_vacio"

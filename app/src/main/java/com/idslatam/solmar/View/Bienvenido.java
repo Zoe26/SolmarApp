@@ -563,7 +563,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
             Cargo cargo = new Cargo();
             cargo.Initial = "true";
-            cargo.TipoCarga = "sin carga";
+            cargo.TipoCarga = "1";
             cargo.isLicencia = "true";
             cargo.isCarga = "false";
             cargo.EppCasco = "false";

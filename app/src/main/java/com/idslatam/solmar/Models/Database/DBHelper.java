@@ -164,7 +164,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Cargo.KEY_isLicencia + " TEXT,"
                 + Cargo.KEY_NroOR + " TEXT,"
                 + Cargo.KEY_isIngreso + " TEXT,"
-                + Cargo.KEY_isCarga + " TEXT)";
+                + Cargo.KEY_isCarga + " TEXT,"
+                + Cargo.KEY_fotoDelantera + " TEXT,"
+                + Cargo.KEY_fotoTracera + " TEXT,"
+                + Cargo.KEY_fotoPanoramica + " TEXT)";
 
 
         db.execSQL(CREATE_TABLE_TRACKING);

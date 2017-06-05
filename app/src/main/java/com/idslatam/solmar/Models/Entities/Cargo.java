@@ -22,6 +22,9 @@ public class Cargo {
     public static final String KEY_NroOR = "NroOR";
     public static final String KEY_isCarga = "isCarga";
     public static final String KEY_isIngreso = "isIngreso";
+    public static final String KEY_fotoDelantera = "fotoDelantera";
+    public static final String KEY_fotoTracera = "fotoTracera";
+    public static final String KEY_fotoPanoramica = "fotoPanoramica";
 
     public int CargoId;
     public String Initial;

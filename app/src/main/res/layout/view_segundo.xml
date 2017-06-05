@@ -77,7 +77,7 @@
                 android:layout_weight="1"
                 android:textColor="@color/icons"
                 android:background="@color/verde"
-                android:drawableLeft="@drawable/ic_blanco_persona"
+                android:drawableLeft="@drawable/ic_blanco_carga"
                 android:textSize="10dp"
                 android:text="Carga"/>
 
