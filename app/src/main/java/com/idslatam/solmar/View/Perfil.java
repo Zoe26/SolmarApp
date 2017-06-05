@@ -37,6 +37,7 @@ import com.idslatam.solmar.Alert.AlertActivity;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Apps.ApplicationAdapter;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
+import com.idslatam.solmar.Cargo.CargoActivity;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
@@ -197,6 +198,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
             cConfiguration.close();
             dbConfiguration.close();
+            data.add(new Item("Cargo", getResources().getDrawable(R.mipmap.ic_cargo)));
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));
@@ -248,6 +250,11 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             if (null != intent) {
                 startActivity(intent);
             }
+        }
+
+        if (data.get(position).getTitle().equalsIgnoreCase("Cargo")){
+            startActivity(new Intent(mContext, CargoActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         }
 
         if (data.get(position).getTitle().equalsIgnoreCase("Configuración")){

@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.idslatam.solmar">
 
-
     <uses-permission android:name="android.permission.CALL_PHONE" />
-
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -63,6 +61,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
         <activity android:name=".Api.Singalr.MainActivity" />
         <activity
             android:name=".View.Bienvenido"
@@ -121,16 +120,13 @@
                 </action>
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".BravoPapa.ScreenReceiver">
+        <receiver android:name=".BravoPapa.ScreenReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_ON" />
                 <action android:name="android.intent.action.SCREEN_OFF" />
             </intent-filter>
         </receiver>
-
-        <receiver
-            android:name=".BravoPapa.VolumeReceiver">
+        <receiver android:name=".BravoPapa.VolumeReceiver">
             <intent-filter>
                 <action android:name="android.media.VOLUME_CHANGED_ACTION" />
             </intent-filter>
@@ -150,16 +146,23 @@
         <activity
             android:name=".Dialer.ContactosDetalles"
             android:screenOrientation="portrait" />
-        <activity android:name=".ImageClass.Image"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".View.Code.Scan"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".View.Perfil"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Alert.AlertActivity"
+        <activity
+            android:name=".ImageClass.Image"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".View.Code.Scan"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".View.Perfil"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Alert.AlertActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".Cargo.CargoActivity"
+            android:screenOrientation="portrait">
 
+        </activity>
     </application>
 
 </manifest>

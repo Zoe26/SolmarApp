@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Asistencia;
+import com.idslatam.solmar.Models.Entities.Cargo;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.Models.Entities.Menu;
@@ -150,6 +151,22 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Menu.KEY_Nombre + " TEXT)";
 
 
+        String CREATE_TABLE_CARGO = "CREATE TABLE " + Cargo.TABLE_CARGO + "("
+                + Cargo.KEY_ID_Cargo + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Cargo.KEY_Initial + " TEXT,"
+                + Cargo.KEY_Placa + " TEXT,"
+                + Cargo.KEY_NombrePlaca + " TEXT,"
+                + Cargo.KEY_TipoCarga + " TEXT,"
+                + Cargo.KEY_EppCasco + " TEXT,"
+                + Cargo.KEY_EppChaleco + " TEXT,"
+                + Cargo.KEY_EppBotas + " TEXT,"
+                + Cargo.KEY_Dni + " TEXT,"
+                + Cargo.KEY_isLicencia + " TEXT,"
+                + Cargo.KEY_NroOR + " TEXT,"
+                + Cargo.KEY_isIngreso + " TEXT,"
+                + Cargo.KEY_isCarga + " TEXT)";
+
+
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
         db.execSQL(CREATE_TABLE_ASISTENCIA);
@@ -158,6 +175,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_ALARM_TRACK);
         db.execSQL(CREATE_TABLE_CONTACTOS);
         db.execSQL(CREATE_TABLE_MENU);
+        db.execSQL(CREATE_TABLE_CARGO);
     }
 
     @Override
@@ -185,6 +203,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + Menu.TABLE_MENU);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + Cargo.TABLE_CARGO);
         onCreate(db);
 
     }
