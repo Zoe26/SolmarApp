@@ -20,6 +20,7 @@ public class Cargo {
     public static final String KEY_Dni = "Dni";
     public static final String KEY_isLicencia = "isLicencia";
     public static final String KEY_NroOR = "NroOR";
+    public static final String KEY_CantidadBultos = "CantidadBultos";
     public static final String KEY_isCarga = "isCarga";
     public static final String KEY_isIngreso = "isIngreso";
     public static final String KEY_fotoDelantera = "fotoDelantera";
@@ -34,5 +35,6 @@ public class Cargo {
     public String EppCasco;
     public String EppChaleco;
     public String EppBotas;
+
 
 }

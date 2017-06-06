@@ -65,7 +65,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     EditText primero_edt_tracto, primero_edt_dni;
 
-    EditText segundo_edt_or, segundo_edt_dni;
+    EditText segundo_edt_or, segundo_edt_cta_bultos;
 
     Calendar currenCodeBar;
 
@@ -81,9 +81,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     ImageView imgEstadoDelantera, imgEstadoTrasera, imgEstadoPaniramica;
 
-    CheckBox check_casco, check_chaleco, check_botas;
+    CheckBox check_casco, check_chaleco, check_botas, check_carga;
 
-    Switch isIngreso;
+    Switch isLicencia;
 
 
     boolean fotoDelantera = false, fotoTracera = false, fotoPanoramica = false;
@@ -108,18 +108,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         /*toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);*/
-
-        CargoCrud cargoCrud = new CargoCrud(this);
-        Cargo cargo = new Cargo();
-        cargo.Initial = "true";
-        cargo.TipoCarga = "1";
-        cargo.isLicencia = "true";
-        cargo.isCarga = "false";
-        cargo.EppCasco = "false";
-        cargo.EppChaleco = "false";
-        cargo.EppBotas = "false";
-        cargo.CargoId = _Cargo_Id;
-        _Cargo_Id = cargoCrud.insert(cargo);
 
         mContext = this;
 
@@ -150,12 +138,10 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             check_chaleco = (CheckBox) viewPager.findViewById(R.id.check_chaleco);
             check_botas = (CheckBox) viewPager.findViewById(R.id.check_botas);
 
-            isIngreso = (Switch)findViewById(R.id.switch_licencia);
+            isLicencia = (Switch)findViewById(R.id.switch_licencia);
 
-            isIngreso.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            isLicencia.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    // do something, the isChecked will be
-                    // true if the switch is in the On position
 
                     if (isChecked){
 
@@ -182,17 +168,46 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             });
 
             radiogroup =  (RadioGroup) findViewById(R.id.opciones_carga);
-            Button bt = (Button) findViewById(R.id.segundo_btn_persona);
+            Button bt = (Button) findViewById(R.id.primero_btn_verificar);
 
             bt.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
+
+                    String Placa = null, Dni = null;
+
+                    try {
+                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                        SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                        String selectQuery = "SELECT Placa, Dni FROM Cargo";
+
+                        Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                        if (c.moveToFirst()) {
+                            Placa = c.getString(c.getColumnIndex("Placa"));
+                            Dni = c.getString(c.getColumnIndex("Dni"));
+
+                        }
+                        c.close();
+                        dbst.close();
+
+                    } catch (Exception e) {}
+
+                    if (Placa == null){
+                        Toast.makeText(mContext, "Buscar Placa ", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (Dni == null){
+                        Toast.makeText(mContext, "Buscar DNI", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
                     // get selected radio button from radioGroup
                     int selectedId = radiogroup.getCheckedRadioButtonId();
                     // find the radio button by returned id
                     RadioButton radioButton = (RadioButton) findViewById(selectedId);
-
 
                     if (radioButton.getText().toString().equalsIgnoreCase("Sin Carga")){
                         idRadioButtom = "1";
@@ -231,11 +246,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (position == 1){
 
             segundo_edt_or = (EditText) viewPager.findViewById(R.id.segundo_edt_or);
-            segundo_edt_dni = (EditText) viewPager.findViewById(R.id.segundo_edt_dni);
+            segundo_edt_cta_bultos = (EditText) viewPager.findViewById(R.id.segundo_edt_cta_bultos);
 
             segundo_txt_ingreso_tracto = (TextView) viewPager.findViewById(R.id.segundo_txt_ingreso_tracto);
             segundo_txt_carga = (TextView) viewPager.findViewById(R.id.segundo_txt_carga);
             segundo_txt_dni = (TextView) viewPager.findViewById(R.id.segundo_txt_dni);
+
+            check_carga = (CheckBox) viewPager.findViewById(R.id.sengundo_check_carga);
 
             poblarSegundaVista();
 
@@ -261,17 +278,19 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     public void onPageSelected(int position) {
         Log.e("POSITION ", String.valueOf(position));
 
-        String Placa = null, Dni = null;
+        String Placa = null, Dni = null, NroOR = null, CantidadBultos = null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Placa, Dni FROM Cargo";
+            String selectQuery = "SELECT Placa, Dni, NroOR, CantidadBultos FROM Cargo";
 
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 Placa = c.getString(c.getColumnIndex("Placa"));
                 Dni = c.getString(c.getColumnIndex("Dni"));
+                NroOR = c.getString(c.getColumnIndex("NroOR"));
+                CantidadBultos = c.getString(c.getColumnIndex("CantidadBultos"));
 
             }
             c.close();
@@ -279,20 +298,40 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
+        if (position == 1 && Placa == null){
 
-        if (position == 1 && primero_edt_tracto.getText().toString().matches("")){
+            Toast.makeText(mContext, "Buscar Placa ", Toast.LENGTH_SHORT).show();
+
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
             Log.e("BACK ","0");
+
+            return;
         }
 
-        if (position == 1 && primero_edt_dni.getText().toString().matches("")){
+        if (position == 1 && Dni == null){
+
+            Toast.makeText(mContext, "Buscar DNI", Toast.LENGTH_SHORT).show();
+
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
             Log.e("BACK ","0");
+
+            return;
         }
 
-        if (position == 2 && segundo_edt_or.getText().toString().matches("")){
+        if (position == 2 && NroOR == null){
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
             Log.e("BACK ","1");
+
+            Toast.makeText(mContext, "Ingrese OR/GR", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+
+        if (position == 2 && CantidadBultos == null){
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+            Log.e("BACK ","1");
+            Toast.makeText(mContext, "Ingrese CantidadBultos", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         if (position == 0){
@@ -310,18 +349,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             check_chaleco = (CheckBox) viewPager.findViewById(R.id.check_chaleco);
             check_botas = (CheckBox) viewPager.findViewById(R.id.check_botas);
 
-            isIngreso = (Switch)findViewById(R.id.switch_licencia);
+            isLicencia = (Switch)findViewById(R.id.switch_licencia);
 
         }
 
         if (position == 1){
 
             segundo_edt_or = (EditText) viewPager.findViewById(R.id.segundo_edt_or);
-            segundo_edt_dni = (EditText) viewPager.findViewById(R.id.segundo_edt_dni);
+            segundo_edt_cta_bultos = (EditText) viewPager.findViewById(R.id.segundo_edt_cta_bultos);
 
             segundo_txt_ingreso_tracto = (TextView) viewPager.findViewById(R.id.segundo_txt_ingreso_tracto);
             segundo_txt_carga = (TextView) viewPager.findViewById(R.id.segundo_txt_carga);
             segundo_txt_dni = (TextView) viewPager.findViewById(R.id.segundo_txt_dni);
+
+            check_carga = (CheckBox) viewPager.findViewById(R.id.sengundo_check_carga);
 
         }
 
@@ -375,9 +416,16 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             Log.e("segundo_btn_fotos ","isCarga");
         }
 
-        if (segundo_edt_dni.getText().toString().matches("")){
-            Toast.makeText(mContext, "Ingrese DNI", Toast.LENGTH_SHORT).show();
+        if (segundo_edt_cta_bultos.getText().toString().matches("")){
+            Toast.makeText(mContext, "Ingrese cantidad de bultos", Toast.LENGTH_SHORT).show();
             return;
+
+        } else {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Cargo SET CantidadBultos = "+segundo_edt_cta_bultos.getText().toString()+"");
+            db.close();
+            Log.e("segundo_edt_cta_bultos ","CantidadBultos");
         }
 
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
@@ -587,7 +635,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             } else  {
 
                                 Toast.makeText(CargoActivity.this, "Error. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
-                                Log.e("Exception ", "Finaliza" );
+                                Log.e("ExceptionV ", "Finaliza" );
                             }
 
                             if (pDialog != null && pDialog.isShowing()) {
@@ -647,7 +695,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Log.e("Exception ", "fotoDelantera");
                 }
 
-                imgEstadoDelantera.getResources().getDrawable(R.drawable.ic_estado_ok);
+                imgEstadoDelantera.setImageResource(R.drawable.ic_estado_ok);
 
                 fotoDelantera = false;
 
@@ -664,7 +712,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Log.e("Exception ", "fotoTracera");
                 }
 
-                imgEstadoTrasera.getResources().getDrawable(R.drawable.ic_estado_ok);
+                imgEstadoTrasera.setImageResource(R.drawable.ic_estado_ok);
 
                 fotoTracera = false;
 
@@ -680,8 +728,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Log.e("Exception ", "fotoPanoramica");
                 }
 
-
-                imgEstadoPaniramica.getResources().getDrawable(R.drawable.ic_estado_ok);
+                imgEstadoPaniramica.setImageResource(R.drawable.ic_estado_ok);
 
                 fotoPanoramica = false;
 
@@ -720,6 +767,10 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
+        if (formato==null){
+            formato = "No Scan";
+        }
+
         Log.e("---! Send: TIPO "+tipo, " ! VALOR "+valor + " ! FECHA "+fecha+" ! FORMATO "+formato);
 
 
@@ -754,6 +805,17 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                         @Override
                         public void onCompleted(Exception e, Response<JsonObject> response) {
 
+                            try {
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
+                                dba.close();
+                                Log.e("Dni ","true");
+                            } catch (Exception eew){
+                                Log.e("Exception ", "Dni");
+                            }
+
+
                             if(response == null){
 
                                 Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
@@ -777,16 +839,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
                                 try {
-                                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                    dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
-                                    dba.close();
-                                    Log.e("Dni ","true");
-                                } catch (Exception eew){
-                                    Log.e("Exception ", "Dni");
-                                }
-
-                                try {
 
                                     if (pDialog != null && pDialog.isShowing()) {
                                         pDialog.dismiss();
@@ -799,15 +851,30 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 }
                                 Log.e("JsonObject Bars ", response.toString());
 
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception ecsa){}
+
                             } else  {
 
-                                Toast.makeText(CargoActivity.this, "Error al enviar Bars. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                                Log.e("Error Code DNI ", String.valueOf(response.getHeaders().code()));
+
+                                Toast.makeText(CargoActivity.this, "Error Code " +  response.getHeaders().code(), Toast.LENGTH_LONG).show();
                                 Log.e("Exception ", "Finaliza" );
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception ecsa){}
                             }
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception ecsa){}
                         }
                     });
         }
@@ -886,16 +953,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void finalizarSend(View view){
 
-        final ProgressDialog pDialog;
-        pDialog = new ProgressDialog(CargoActivity.this);
-        pDialog.setMessage("Registrando Cargo...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
         String Numero = null, DispositivoId = null, Placa = null, TipoCarga = null, Casco = null, Chaleco = null, Botas = null,
                 Dni = null, Licencia = null, NroOR = null, Carga = null, Delantera = null, Trasera = null,
-                Panoramica = null, CargoTipoMovimiento = null;
+                Panoramica = null, CargoTipoMovimiento = null, CantidadBultos = null;
 
 
         try {
@@ -916,7 +976,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Placa, TipoCarga, EppCasco, EppChaleco, EppBotas," +
-                    "Dni, isLicencia, NroOR, isCarga, isIngreso, fotoDelantera, fotoTracera, fotoPanoramica FROM Cargo";
+                    "Dni, isLicencia, NroOR, isCarga, CantidadBultos, isIngreso, fotoDelantera, fotoTracera, fotoPanoramica FROM Cargo";
 
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
@@ -933,6 +993,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 Trasera = c.getString(c.getColumnIndex("fotoTracera"));
                 Panoramica = c.getString(c.getColumnIndex("fotoPanoramica"));
                 CargoTipoMovimiento = c.getString(c.getColumnIndex("isIngreso"));
+                CantidadBultos = c.getString(c.getColumnIndex("CantidadBultos"));
 
             }
             c.close();
@@ -947,35 +1008,83 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             CargoTipoMovimiento = "2";
         }
 
+        if (Placa==null){
+            Toast.makeText(mContext, "Datos Incompletos", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        String URL = URL_API.concat("api/Cargo/Create");
+        if (Dni==null){
+            Toast.makeText(mContext, "Datos Incompletos", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        Log.e("DispositivoId ", DispositivoId);
+        if (NroOR==null){
+            Toast.makeText(mContext, "Datos Incompletos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (CantidadBultos==null){
+            Toast.makeText(mContext, "Datos Incompletos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (Delantera==null){
+            Toast.makeText(mContext, "Falta Foto Delantera", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (Trasera==null){
+            Toast.makeText(mContext, "Falta Foto Trasera", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (Panoramica==null){
+            Toast.makeText(mContext, "Falta Foto Panorámica", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        final ProgressDialog pDialog;
+        pDialog = new ProgressDialog(CargoActivity.this);
+        pDialog.setMessage("Registrando Cargo...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String URL = URL_API.concat("api/Cargo/CreateCargaSuelta");
+
         Log.e("Numero ", Numero);
+        Log.e("DispositivoId ", DispositivoId);
         Log.e("Placa ", Placa);
-        Log.e("TipoCarga ", TipoCarga);
+        Log.e("CargoTipoMovimientoId ", CargoTipoMovimiento);
+        Log.e("CargoTipoCargaId ", TipoCarga);
         Log.e("Casco ", Casco);
         Log.e("Chaleco ", Chaleco);
         Log.e("Botas ", Botas);
-        Log.e("Dni", Dni);
-        Log.e("Licencia ", Licencia);
-        Log.e("NroOR ", NroOR);
-        Log.e("Carga ", Carga);
+        Log.e("VigenciaLicencia ", Licencia);
+        Log.e("NroDOI", Dni);
+        Log.e("NroORGR ", NroOR);
+        //Log.e("Carga ", Carga);
+        Log.e("CantidadBultos ", CantidadBultos);
+        Log.e("Delantera ", Delantera);
+        Log.e("Trasera ", Trasera);
+        Log.e("Panoramica ", Panoramica);
 
         Ion.with(mContext)
                 .load(URL)
-                .setMultipartParameter("DispositivoId", DispositivoId)
                 .setMultipartParameter("Numero", Numero)
+                .setMultipartParameter("DispositivoId", DispositivoId)
                 .setMultipartParameter("Placa", Placa)
-                .setMultipartParameter("TipoCarga", TipoCarga)
+                .setMultipartParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
+                .setMultipartParameter("CargoTipoCargaId", TipoCarga)
                 .setMultipartParameter("Casco", Casco)
                 .setMultipartParameter("Chaleco", Chaleco)
                 .setMultipartParameter("Botas", Botas)
-                .setMultipartParameter("Dni", Dni)
-                .setMultipartParameter("Licencia", Licencia)
-                .setMultipartParameter("NroOR", NroOR)
-                .setMultipartParameter("Carga", Carga)
-                .setMultipartParameter("CargoTipoMovimiento", CargoTipoMovimiento)
+                .setMultipartParameter("VigenciaLicenciaConducir", Licencia)
+                .setMultipartParameter("NroDOI", Dni)
+                .setMultipartParameter("NroORGR", NroOR)
+                .setMultipartParameter("CantidadBultos", CantidadBultos)
+                //.setMultipartParameter("Carga", Carga)
                 .setMultipartFile("Delantera", new File(Delantera))
                 .setMultipartFile("Trasera", new File(Trasera))
                 .setMultipartFile("Panoramica", new File(Panoramica))
@@ -1002,31 +1111,36 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             return;
                         }*/
 
-                        //if(response.getHeaders().code()==200){
+                        if(response.getHeaders().code()==200){
 
-                        Gson gson = new Gson();
-                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                        Log.e("JsonObject ", result.toString());
+                            Log.e("JsonObject ", result.toString());
 
-                        Log.e("result SEND ", "200");
-                        Log.e("result SEND ", result.toString());
+                            try {
 
-                        try {
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
+                                dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
+                                dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
+                                dba.execSQL("UPDATE Cargo SET Placa = " + null);
+                                dba.execSQL("UPDATE Cargo SET Dni = " + null);
+                                dba.execSQL("UPDATE Cargo SET NroOR = " + null);
 
-                            DBHelper dbHelperAlarm = new DBHelper(mContext);
-                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                            dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
-                            dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
-                            dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
-                            dba.execSQL("UPDATE Cargo SET Placa = " + null);
-                            dba.execSQL("UPDATE Cargo SET Dni = " + null);
-                            dba.execSQL("UPDATE Cargo SET NroOR = " + null);
+                                dba.close();
 
-                            dba.close();
+                            } catch (Exception eew){}
 
-                        } catch (Exception eew){}
 
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
+                        }
 
                         try {
                             if (pDialog != null && pDialog.isShowing()) {
@@ -1048,7 +1162,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         Log.e("poblarPrimeraVista ", "Ingreso");
 
         String Placa = null, TipoCarga = null, Dni = null, isCarga = null, isIngresoS = null,
-                EppCasco = null, EppChaleco = null, EppBotas = null, isLicencia = null;
+                EppCasco = null, EppChaleco = null, EppBotas = null, isLicenciaL = null;
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
@@ -1060,37 +1174,37 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 TipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
                 Dni = c.getString(c.getColumnIndex("Dni"));
                 isIngresoS = c.getString(c.getColumnIndex("isIngreso"));
-
                 EppCasco = c.getString(c.getColumnIndex("EppCasco"));
                 EppChaleco = c.getString(c.getColumnIndex("EppChaleco"));
                 EppBotas = c.getString(c.getColumnIndex("EppBotas"));
-
-                isLicencia = c.getString(c.getColumnIndex("isLicencia"));
+                isLicenciaL = c.getString(c.getColumnIndex("isLicencia"));
             }
             c.close();
             dbst.close();
 
         } catch (Exception e) {}
 
-        Placa = "A";
+        //Placa = "A";
 
         if (Placa==null){
             return;
         }
-
-        Log.e("Placa ", Placa);
-
         primero_edt_tracto.setText(Placa);
+
+        if (Dni==null){
+            return;
+        }
+        primero_edt_dni.setText(Dni);
+
+        if (isIngresoS==null){
+            return;
+        }
 
         if (isIngresoS.equalsIgnoreCase("true")){
             primero_txt_mje.setText("El Tracto "+Placa+" está Ingresando");
         } else {
             primero_txt_mje.setText("El Tracto "+Placa+" está Saliendo");
         }
-
-        segundo_txt_carga.setText(TipoCarga);
-        segundo_txt_dni.setText("Conductor con DNI "+ Dni + "");
-
 
         if (TipoCarga.equalsIgnoreCase("1")){ radio_sinCarga.setChecked(true);
         } else if (TipoCarga.equalsIgnoreCase("2")){ radio_cargaSuelta.setChecked(true);
@@ -1103,25 +1217,40 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (EppBotas.equalsIgnoreCase("true")){ check_botas.setChecked(true);}
 
-        if (isLicencia.equalsIgnoreCase("false")){ isIngreso.setChecked(true);}
+        if (isLicenciaL.equalsIgnoreCase("false")){ isLicencia.setChecked(true);}
+
+    }
+
+    public void buscarDNI(View view){
+
+        if (primero_edt_dni.getText().toString().matches("")){
+            Toast.makeText(mContext, "Ingrese DNI", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        valor = primero_edt_dni.getText().toString();
+        enviarDNI();
 
     }
 
     public void poblarSegundaVista(){
 
-        String Placa = null, TipoCarga = null,
-                Dni = null, isCarga = null, isIngreso = null;
+        String Placa = null, TipoCarga = null, Dni = null, isCarga = null, isIngreso = null,
+        or = null, ctaBultos = null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso FROM Cargo";
+            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, isCarga, NroOR, CantidadBultos FROM Cargo";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 Placa = c.getString(c.getColumnIndex("Placa"));
                 TipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
                 Dni = c.getString(c.getColumnIndex("Dni"));
                 isIngreso = c.getString(c.getColumnIndex("isIngreso"));
+                isCarga = c.getString(c.getColumnIndex("isCarga"));
+                or = c.getString(c.getColumnIndex("NroOR"));
+                ctaBultos = c.getString(c.getColumnIndex("CantidadBultos"));
             }
             c.close();
             dbst.close();
@@ -1140,10 +1269,31 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             segundo_txt_ingreso_tracto.setText("Salida de Tracto "+Placa);
         }
 
-        segundo_txt_carga.setText(TipoCarga);
+        if (TipoCarga.equalsIgnoreCase("1")){
+            segundo_txt_carga.setText("Sin Carga");
+        } else if (TipoCarga.equalsIgnoreCase("2")){
+            segundo_txt_carga.setText("Carga Suelta");
+        } else if (TipoCarga.equalsIgnoreCase("3")){
+            segundo_txt_carga.setText("Contenedor Vacío");
+        }else {
+            segundo_txt_carga.setText("Contenedor LLeno");
+        }
         segundo_txt_dni.setText("Conductor con DNI "+ Dni + "");
 
-        //segundo_edt_or, segundo_edt_dni
+        if (isCarga.equalsIgnoreCase("true")){
+            check_carga.setChecked(true);
+        }
+
+        if (or == null){
+            return;
+        }
+        segundo_edt_or.setText(or);
+
+        if (ctaBultos == null){
+            return;
+        }
+
+        segundo_edt_cta_bultos.setText(ctaBultos);
 
     }
 
@@ -1180,7 +1330,16 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             tercer_txt_ingreso_tracto.setText("Salida de Tracto "+Placa);
         }
 
-        tercer_txt_carga.setText(TipoCarga);
+        if (TipoCarga.equalsIgnoreCase("1")){
+            tercer_txt_carga.setText("Sin Carga");
+        } else if (TipoCarga.equalsIgnoreCase("2")){
+            tercer_txt_carga.setText("Carga Suelta");
+        } else if (TipoCarga.equalsIgnoreCase("3")){
+            tercer_txt_carga.setText("Contenedor Vacío");
+        }else {
+            tercer_txt_carga.setText("Contenedor LLeno");
+        }
+
         tercer_txt_dni.setText("Conductor con DNI "+ Dni + "");
 
     }
@@ -1269,6 +1428,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             }
         });
         builder.show();
+    }
+
+    public void returnPersona(View view){
+        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+    }
+
+    public void returnCarga(View view){
+        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
     }
 
 }

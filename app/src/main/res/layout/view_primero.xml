@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
-
+        android:textColor="@color/verde"
         android:text=""
         android:layout_below="@id/primero_tracto"
         style="?android:attr/textAppearanceSmall"/>
@@ -69,6 +69,7 @@
                     android:id="@+id/radio_sinCarga"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:layout_weight="1"
                     style="?android:attr/textAppearanceSmall"
                     android:text="Sin Carga" />
@@ -77,6 +78,7 @@
                     android:id="@+id/radio_cargaSuelta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:layout_toRightOf="@id/radio_sinCarga"
                     android:layout_weight="1"
                     style="?android:attr/textAppearanceSmall"
@@ -86,6 +88,7 @@
                     android:id="@+id/radio_vacio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:text="Contenedor Vacío"
                     style="?android:attr/textAppearanceSmall"
                     android:layout_weight="1"/>
@@ -94,6 +97,7 @@
                     android:id="@+id/radio_lleno"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:text="Contenedor Lleno"
                     style="?android:attr/textAppearanceSmall"
                     android:layout_weight="1"/>
@@ -251,7 +255,16 @@
                     android:layout_weight="1"
                     style="@style/Base.TextAppearance.AppCompat.Small"
                     android:singleLine="true"
-                    android:hint="DNI de Conductor"/>
+                    android:hint="DNI"/>
+
+                <Button
+                    android:layout_width="30dp"
+                    android:layout_height="34dp"
+                    android:layout_marginRight="2dp"
+                    android:textColor="@color/icons"
+                    android:onClick="buscarDNI"
+                    android:background="@color/verde"
+                    android:drawableStart="@drawable/ic_buscar" />
 
                 <Button
                     android:layout_width="50dp"
@@ -311,7 +324,7 @@ android:orientation="horizontal"
 android:gravity="center">
 
 <Button
-    android:id="@+id/segundo_btn_persona"
+    android:id="@+id/primero_btn_verificar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"

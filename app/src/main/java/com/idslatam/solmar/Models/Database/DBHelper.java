@@ -165,6 +165,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Cargo.KEY_NroOR + " TEXT,"
                 + Cargo.KEY_isIngreso + " TEXT,"
                 + Cargo.KEY_isCarga + " TEXT,"
+                + Cargo.KEY_CantidadBultos + " TEXT,"
                 + Cargo.KEY_fotoDelantera + " TEXT,"
                 + Cargo.KEY_fotoTracera + " TEXT,"
                 + Cargo.KEY_fotoPanoramica + " TEXT)";
