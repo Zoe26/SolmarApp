@@ -1128,17 +1128,23 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 dba.execSQL("UPDATE Cargo SET Placa = " + null);
                                 dba.execSQL("UPDATE Cargo SET Dni = " + null);
                                 dba.execSQL("UPDATE Cargo SET NroOR = " + null);
+                                dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
 
                                 dba.close();
 
                             } catch (Exception eew){}
-
 
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
+
+                            try {
+                                showDialogSend();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
 
                         }
 
@@ -1148,11 +1154,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             }
                         } catch (Exception edsv){}
 
-                        try {
-                            showDialogSend();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
                     }
                 });
     }
@@ -1416,13 +1417,15 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void showDialogSend() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
+        builder.setCancelable(false);
         builder.setMessage("¡Registro Guardado!");
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                viewPager.setCurrentItem(viewPager.getCurrentItem() - 2);
 
                 dialog.dismiss();
             }
