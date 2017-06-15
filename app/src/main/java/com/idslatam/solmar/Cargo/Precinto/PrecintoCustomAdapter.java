@@ -23,7 +23,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
     // View lookup cache
     private static class ViewHolder {
         TextView txtName;
-        TextView txtDoi;
+        //TextView txtDoi;
     }
 
     public PrecintoCustomAdapter(ArrayList<PrecintoDataModel> data, Context context) {
@@ -48,7 +48,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item_precinto, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.req_nombre);
-            viewHolder.txtDoi = (TextView) convertView.findViewById(R.id.req_doi);
+            //viewHolder.txtDoi = (TextView) convertView.findViewById(R.id.req_doi);
 
 
             result=convertView;
@@ -61,7 +61,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
 
 
         viewHolder.txtName.setText(dataModel.getName());
-        viewHolder.txtDoi.setText(dataModel.getDoi());
+        //viewHolder.txtDoi.setText(dataModel.getDoi());
 
         // Return the completed view to render on screen
         return convertView;

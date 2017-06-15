@@ -63,7 +63,7 @@
                 android:layout_margin="2dp"
                 android:layout_weight="1"
                 android:textColor="@color/verde"
-                android:drawableLeft="@drawable/ic_persona"
+                android:drawableTop="@drawable/ic_persona"
                 android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceSmall"
                 android:onClick="returnPersona"
@@ -78,7 +78,7 @@
                 android:layout_weight="1"
                 android:textColor="@color/icons"
                 android:background="@color/verde"
-                android:drawableLeft="@drawable/ic_blanco_carga"
+                android:drawableTop="@drawable/ic_blanco_carga"
                 style="?android:attr/textAppearanceSmall"
                 android:text="Carga"/>
 
@@ -90,7 +90,7 @@
                 android:layout_margin="2dp"
                 android:layout_weight="1"
                 android:textColor="@color/verde"
-                android:drawableLeft="@drawable/ic_foto"
+                android:drawableTop="@drawable/ic_foto"
                 android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceSmall"
                 android:onClick="segundo_btn_fotos"
