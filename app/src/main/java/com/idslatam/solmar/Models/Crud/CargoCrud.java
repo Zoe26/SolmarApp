@@ -32,6 +32,8 @@ public class CargoCrud {
         values.put(Cargo.KEY_EppCasco, cargo.EppCasco);
         values.put(Cargo.KEY_EppChaleco, cargo.EppChaleco);
         values.put(Cargo.KEY_EppBotas, cargo.EppBotas);
+        values.put(Cargo.KEY_tamanoContenedor, cargo.tamanoContenedor);
+        values.put(Cargo.KEY_tipoDocumento, cargo.tipoDocumento);
 
 
         long CargoId = db.insert(Cargo.TABLE_CARGO, null, values);

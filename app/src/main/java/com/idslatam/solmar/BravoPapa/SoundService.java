@@ -2,6 +2,7 @@ package com.idslatam.solmar.BravoPapa;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -10,6 +11,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
 
 public class SoundService extends Service {
@@ -29,6 +31,7 @@ public class SoundService extends Service {
                     return;
 
                 case 0: // '\0'
+
                     Log.e("", "do playback");
 
                     doPlayback();

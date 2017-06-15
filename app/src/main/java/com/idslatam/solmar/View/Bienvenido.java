@@ -563,12 +563,16 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
             Cargo cargo = new Cargo();
             cargo.Initial = "true";
-            cargo.TipoCarga = "2";
+            cargo.TipoCarga = "1";
             cargo.isLicencia = "true";
             cargo.isCarga = "false";
             cargo.EppCasco = "false";
             cargo.EppChaleco = "false";
             cargo.EppBotas = "false";
+
+            cargo.tamanoContenedor = "20";
+            cargo.tipoDocumento = "1";
+
             cargo.CargoId = _Cargo_Id;
             _Cargo_Id = cargoCrud.insert(cargo);
 
@@ -1032,6 +1036,8 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             dba.execSQL("UPDATE Configuration SET GuidDipositivo = '"+Id+"'");
             dba.execSQL("UPDATE Configuration SET ClienteId = '"+ClienteId+"'");
             dba.execSQL("UPDATE Configuration SET FlagUpdate = 'true'");
+            dba.execSQL("UPDATE Configuration SET NivelVolumen = '-1'");
+            dba.execSQL("UPDATE Configuration SET isScreen = 'true'");
             dba.close();
 
         } catch (Exception e){}

@@ -27,10 +27,10 @@ import java.util.HashMap;
 
 public class VolumeReceiver extends BroadcastReceiver {
 
-    int vFirst, vLast, contador = 0, auxM = 0, auxCero = 0, VecesPresionarVolumen;
+    int volumenInicial, volumenFinal, volumenActual, contador = 0, auxM = 0, auxCero = 0, VecesPresionarVolumen;
     Context mContext;
 
-    String Estado = null, DispositivoId;
+    String Estado = null, DispositivoId, isScreen;
     String Latitud = null, Longitud = null, Numero = null, Velocidad, FechaDispositivo;
 
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
@@ -42,23 +42,25 @@ public class VolumeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         this.mContext = context;
-
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
-        vFirst = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
-        Log.e("--- VOLUME", String.valueOf(vFirst));
-
+        volumenActual = (Integer)intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
 
         try{
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-            String selectQuery = "SELECT NivelVolumen FROM Configuration";
+            String selectQuery = "SELECT NivelVolumen, ContadorPulsacion, VecesPresionarVolumen," +
+                    "ContadorAux, isScreen FROM Configuration";
             Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
-                vLast = c.getInt(c.getColumnIndex("NivelVolumen"));
+                volumenFinal = c.getInt(c.getColumnIndex("NivelVolumen"));
+                contador = c.getInt(c.getColumnIndex("ContadorPulsacion"));
+                VecesPresionarVolumen = c.getInt(c.getColumnIndex("VecesPresionarVolumen"));
+                auxCero = c.getInt(c.getColumnIndex("ContadorAux"));
+                isScreen = c.getString(c.getColumnIndex("isScreen"));
             }
 
             c.close();
@@ -69,80 +71,143 @@ public class VolumeReceiver extends BroadcastReceiver {
         }
 
         //IF DE PRIMER REGISTRO DE VOLUMEN
-        if(vLast==0){
+        if(volumenFinal == -1){
 
-            try {
-                DBHelper dbHelperAlarm = new DBHelper(mContext);
-                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+vFirst+"'");
-                dba.close();
-            } catch (Exception e){}
-
-            //return;
-        }
-
-        //*******************************************************************************
-        try{
-
-            DBHelper dbHelperVolumen = new DBHelper(mContext);
-            SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-            String selectQuery = "SELECT ContadorPulsacion, VecesPresionarVolumen, ContadorAux FROM Configuration";
-            Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
-
-            if (c.moveToFirst()) {
-                contador = c.getInt(c.getColumnIndex("ContadorPulsacion"));
-                VecesPresionarVolumen = c.getInt(c.getColumnIndex("VecesPresionarVolumen"));
-                auxCero = c.getInt(c.getColumnIndex("ContadorAux"));
-            }
-            c.close();
-            sqlVolumen.close();
-
-        }catch (Exception e){
-        }
-
-        //Log.e("-- |vFirst| ", String.valueOf(vFirst));
-        //Log.e("-- |vLast| ", String.valueOf(vLast));
-
-        if(vFirst > vLast){
-            resetCuenta();
-        }
-
-        if(vFirst < vLast){
             contador ++;
-
-        } else if (vFirst == 0) {
             auxCero ++;
 
             try {
                 DBHelper dbHelperAlarm = new DBHelper(mContext);
                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+volumenActual+"'");
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
                 dba.execSQL("UPDATE Configuration SET ContadorAux = '"+auxCero+"'");
                 dba.close();
             } catch (Exception e){}
 
-            Log.e("--- = auxCero ", String.valueOf(auxCero));
+            Log.e("-- |NIVEL DE VOLUMEN | ", " -1 TRUEEEEEEE");
+            Log.e("-- |CONTADOR FINAL | ", String.valueOf(contador));
 
-            if (auxCero%2 != 0){
-                Log.e("--- return = div ", String.valueOf(vFirst));
-                Log.e("--- return = contador ", String.valueOf(contador));
-                return;
-            }
-            contador ++;
-            Log.e("--- VOLUME = 0 ", String.valueOf(vFirst));
-        } else {
-            resetCuenta();
+            return;
         }
 
+        //******************************************************************************************
+        if(contador == 0 && volumenActual == volumenFinal){
 
-        Log.e("-- |contador| ", String.valueOf(contador));
+            contador ++;
+            auxCero ++;
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
+                dba.execSQL("UPDATE Configuration SET ContadorAux = '"+auxCero+"'");
+                dba.close();
+            } catch (Exception e){}
+
+        } else if(volumenActual < volumenFinal){
+
+            contador ++;
+            auxCero ++;
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
+                dba.execSQL("UPDATE Configuration SET ContadorAux = '"+auxCero+"'");
+                dba.close();
+            } catch (Exception e){}
+
+            resetCuenta();
+
+        }  else if(auxCero > 0 && auxCero < 3 && volumenActual == 1) {
+
+            Log.e("-------------------- "," ---------------------");
+            contador --;
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
+                dba.close();
+            } catch (Exception e){}
+
+            Log.e("-- |RETURN| ", " TRUEEEEEE " + String.valueOf(contador));
+
+        } else if(volumenActual > volumenFinal) {
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+                dba.execSQL("UPDATE Configuration SET ContadorAux = '0'");
+                dba.close();
+            } catch (Exception e){}
+
+        } else if(volumenActual == 0){
+
+            Log.e("----------------------P","----------------------");
+            Log.e("-- |volumenFinal| ", String.valueOf(volumenFinal));
+            Log.e("-- |volumenActual| ", String.valueOf(volumenActual));
+            Log.e("-- |volumenAuxiliar| ", String.valueOf(auxCero));
+            Log.e("-- |CONTADOR FINAL | ", String.valueOf(contador));
+            Log.e("----------------------F","----------------------");
+
+
+            if (isScreen.equalsIgnoreCase("true")){
+
+                auxCero ++;
+                if (auxCero%2==0){
+                    contador ++;
+                }
+
+            } else {
+                auxCero ++;
+                contador ++;
+
+            }
+
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
+                dba.execSQL("UPDATE Configuration SET ContadorAux = '"+auxCero+"'");
+                dba.close();
+            } catch (Exception e){}
+
+
+        }
+
+        Log.e("-- |volumenFinal| ", String.valueOf(volumenFinal));
+        Log.e("-- |volumenActual| ", String.valueOf(volumenActual));
+        Log.e("-- |volumenAuxiliar| ", String.valueOf(auxCero));
+        Log.e("-- |CONTADOR FINAL | ", String.valueOf(contador));
+
+        if(contador==VecesPresionarVolumen){
+            try {
+                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+                dba.execSQL("UPDATE Configuration SET ContadorAux = '0'");
+                dba.close();
+            } catch (Exception e){}
+
+            sendBP();
+
+            Log.e("********|INICIO DE |", "***|BP|********");
+        }
 
         try {
             DBHelper dbHelperAlarm = new DBHelper(mContext);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-            dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '"+contador+"'");
-
+            dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+volumenActual+"'");
             dba.close();
         } catch (Exception e){}
+
+
+    }
+
+    public void resetCuenta(){
 
         if(contador>=3){
 
@@ -150,7 +215,13 @@ public class VolumeReceiver extends BroadcastReceiver {
                 @Override
                 public void run() {
 
-                    resetCuenta();
+                    try {
+                        DBHelper dbHelperAlarm = new DBHelper(mContext);
+                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                        dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+                        dba.execSQL("UPDATE Configuration SET ContadorAux = '0'");
+                        dba.close();
+                    } catch (Exception e){}
 
                 }
             }, 1000*3);
@@ -160,38 +231,17 @@ public class VolumeReceiver extends BroadcastReceiver {
                 @Override
                 public void run() {
 
-                    resetCuenta();
+                    try {
+                        DBHelper dbHelperAlarm = new DBHelper(mContext);
+                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                        dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+                        dba.execSQL("UPDATE Configuration SET ContadorAux = '0'");
+                        dba.close();
+                    } catch (Exception e){}
 
                 }
             }, 1000*VecesPresionarVolumen);
-
         }
-
-        if(contador==VecesPresionarVolumen){
-
-            resetCuenta();
-
-            sendBP();
-            Log.e("********|SEND| ", "***|BP|********");
-        }
-
-        try {
-            DBHelper dbHelperAlarm = new DBHelper(mContext);
-            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-            dba.execSQL("UPDATE Configuration SET NivelVolumen = '"+vFirst+"'");
-            dba.close();
-        } catch (Exception e){}
-    }
-
-    public void resetCuenta(){
-
-        try {
-            DBHelper dbHelperAlarm = new DBHelper(mContext);
-            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-            dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
-            dba.execSQL("UPDATE Configuration SET ContadorAux = '0'");
-            dba.close();
-        } catch (Exception e){}
 
         auxCero = 0;
 
@@ -266,13 +316,6 @@ public class VolumeReceiver extends BroadcastReceiver {
             return;
         }
 
-        //Log.e("-- |Numero | ", Numero);
-        //Log.e("-- |Latitud | ", Latitud);
-        //Log.e("-- |Longitud | ", Longitud);
-        //Log.e("-- |Velocidad | ", Velocidad);
-        //Log.e("-- |FechaDispositivo | ", FechaDispositivo);
-        //Log.e("-- |DispositivoId | ", DispositivoId);
-
         String URL = URL_API.concat("api/BravoPapa");
 
         Ion.with(mContext)
@@ -296,6 +339,8 @@ public class VolumeReceiver extends BroadcastReceiver {
 
                         if(result.getHeaders().code()==200){
 
+                            Log.e("********|SEND|", "***|BP|********");
+
                             Log.e("JSON result BP ", result.getResult());
 
                             try {
@@ -308,13 +353,10 @@ public class VolumeReceiver extends BroadcastReceiver {
                             }
 
                         } else {
-
                             Log.e("¡Pánico NO enviado! ", "");
-                            //Toast.makeText(mContext, "¡Pánico no enviado! ", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-        //new PostAsync().execute(Numero, Latitud, Longitud, Velocidad, FechaDispositivo, DispositivoId);
     }
 
 }

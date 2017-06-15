@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -14,7 +15,7 @@
         <LinearLayout
             android:id="@+id/primero_tracto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="40dp">
 
             <EditText
                 android:id="@+id/primero_edt_tracto"
@@ -22,8 +23,11 @@
                 android:layout_height="match_parent"
                 android:hint="Nro de Placa Tracto"
                 android:layout_weight="1"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:singleLine="true" />
+                android:maxLength="9"
+                style="?android:attr/textAppearanceMedium"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -63,13 +67,14 @@
                 android:id="@+id/opciones_carga"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onSelectionRadioGroup"
                 android:layout_below="@+id/view_s">
 
                 <RadioButton
                     android:id="@+id/radio_sinCarga"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
+                    android:onClick="onSelectionRadioGroup"
                     android:layout_weight="1"
                     style="?android:attr/textAppearanceSmall"
                     android:text="Sin Carga" />
@@ -78,7 +83,7 @@
                     android:id="@+id/radio_cargaSuelta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
+                    android:onClick="onSelectionRadioGroup"
                     android:layout_toRightOf="@id/radio_sinCarga"
                     android:layout_weight="1"
                     style="?android:attr/textAppearanceSmall"
@@ -88,7 +93,7 @@
                     android:id="@+id/radio_vacio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
+                    android:onClick="onSelectionRadioGroup"
                     android:text="Contenedor Vacío"
                     style="?android:attr/textAppearanceSmall"
                     android:layout_weight="1"/>
@@ -97,7 +102,7 @@
                     android:id="@+id/radio_lleno"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
+                    android:onClick="onSelectionRadioGroup"
                     android:text="Contenedor Lleno"
                     style="?android:attr/textAppearanceSmall"
                     android:layout_weight="1"/>
@@ -126,39 +131,41 @@
             android:id="@+id/primero_btn_persona"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="2dp"
             android:layout_margin="2dp"
             android:layout_weight="1"
             android:textColor="@color/icons"
             android:background="@color/verde"
             android:drawableLeft="@drawable/ic_blanco_persona"
-            android:textSize="10dp"
+            style="?android:attr/textAppearanceSmall"
             android:text="Persona"/>
 
         <Button
             android:id="@+id/primero_btn_carga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="2dp"
             android:layout_margin="2dp"
             android:layout_weight="1"
             android:textColor="@color/verde"
             android:drawableLeft="@drawable/ic_carga"
             android:background="@drawable/button_bd_border"
-            android:textSize="10dp"
+            style="?android:attr/textAppearanceSmall"
+            android:onClick="primeroViewCarga"
             android:text="Carga"/>
 
         <Button
             android:id="@+id/primero_btn_foto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="2dp"
             android:layout_margin="2dp"
             android:layout_weight="1"
             android:textColor="@color/verde"
+            android:onClick="primeroViewFoto"
             android:drawableLeft="@drawable/ic_foto"
             android:background="@drawable/button_bd_border"
-            android:textSize="10dp"
+            style="?android:attr/textAppearanceSmall"
             android:text="Foto"/>
 
 
@@ -167,14 +174,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_below="@id/buttums"
         android:layout_weight="1">
 
 
         <LinearLayout
-            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -233,19 +239,18 @@
             android:background="#C8C9CB" />
 
         <LinearLayout
-
-            android:layout_marginLeft="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="0.5">
+            android:gravity="left"
+            android:layout_weight="0.4">
 
             <LinearLayout
 
                 android:layout_marginLeft="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_weight="0.5">
 
                 <EditText
@@ -253,31 +258,46 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:maxLength="11"
                     android:singleLine="true"
+                    android:inputType="number"
+                    style="?android:attr/textAppearanceMedium"
                     android:hint="DNI"/>
 
-                <Button
-                    android:layout_width="30dp"
-                    android:layout_height="34dp"
-                    android:layout_marginRight="2dp"
-                    android:textColor="@color/icons"
-                    android:onClick="buscarDNI"
-                    android:background="@color/verde"
-                    android:drawableStart="@drawable/ic_buscar" />
+                <LinearLayout
 
-                <Button
-                    android:layout_width="50dp"
-                    android:layout_height="36dp"
-                    android:textColor="@color/icons"
-                    android:onClick="scanDNI"
-                    android:background="@color/verde"
-                    android:textSize="10dp"
-                    android:text="Scan"/>
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
+
+                    <ImageButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="1dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/icons"
+                        android:onClick="buscarDNI"
+                        android:background="@color/verde"
+                        android:src="@drawable/ic_buscar" />
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="1dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/icons"
+                        android:onClick="scanDNI"
+                        android:background="@color/verde"
+                        android:textSize="12dp"
+                        android:text="Escanear"/>
+                </LinearLayout>
+
 
             </LinearLayout>
 
             <TextView
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -285,17 +305,17 @@
                 android:text="Licencia de conducir"/>
 
             <LinearLayout
+                android:layout_marginLeft="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                >
+                android:layout_weight="1">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Vigente"/>
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/switch_licencia"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -331,6 +351,7 @@ android:gravity="center">
     android:textColor="@color/icons"
     android:drawableLeft="@drawable/ic_blanco_carga"
     android:paddingLeft="10dp"
+    android:onClick="primeroViewCarga"
     android:background="@color/verde"
     style="?android:attr/textAppearanceSmall"
     android:text="Verificar"/>

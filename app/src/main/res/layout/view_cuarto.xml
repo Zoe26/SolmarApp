@@ -13,29 +13,28 @@
         android:padding="@dimen/body">
 
         <TextView
-        android:id="@+id/segundo_txt_ingreso_tracto"
+        android:id="@+id/cuarto_txt_ingreso_tracto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:text=""
         android:textStyle="bold"
-        android:layout_below="@id/primero_tracto"
         style="?android:attr/textAppearanceMedium"/>
 
         <TextView
-        android:id="@+id/segundo_txt_carga"
+        android:id="@+id/cuarto_txt_carga"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:text=""
         android:textStyle="bold"
-        android:layout_below="@id/segundo_txt_ingreso_tracto"
+        android:layout_below="@id/cuarto_txt_ingreso_tracto"
         style="?android:attr/textAppearanceMedium"/>
 
         <TextView
-        android:id="@+id/segundo_txt_dni"
+        android:id="@+id/cuarto_txt_dni"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -43,7 +42,7 @@
         android:text=""
         android:textStyle="bold"
         android:textColor="@color/verde"
-        android:layout_below="@id/segundo_txt_carga"
+        android:layout_below="@id/cuarto_txt_carga"
         style="?android:attr/textAppearanceMedium"/>
 
         <LinearLayout
@@ -52,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_below="@id/segundo_txt_dni"
+            android:layout_below="@id/cuarto_txt_dni"
             android:layout_weight="1">
 
             <Button
@@ -66,11 +65,11 @@
                 android:drawableLeft="@drawable/ic_persona"
                 android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceSmall"
-                android:onClick="returnPersona"
+                android:onClick="returnPersonaCuarto"
                 android:text="Persona"/>
 
             <Button
-                android:id="@+id/primero_btn_carga"
+                android:id="@+id/cuarto_btn_carga"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="2dp"
@@ -80,10 +79,10 @@
                 android:background="@color/verde"
                 android:drawableLeft="@drawable/ic_blanco_carga"
                 style="?android:attr/textAppearanceSmall"
-                android:text="Carga"/>
+                android:text="Contenedor"/>
 
             <Button
-                android:id="@+id/primero_btn_foto"
+                android:id="@+id/cuarto_btn_foto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="2dp"
@@ -93,9 +92,8 @@
                 android:drawableLeft="@drawable/ic_foto"
                 android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceSmall"
-                android:onClick="segundo_btn_fotos"
+                android:onClick="cuarto_btn_fotos"
                 android:text="Foto"/>
-
 
         </LinearLayout>
 
@@ -109,43 +107,114 @@
             android:layout_below="@id/buttums"
             android:layout_weight="1">
 
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/textAppearanceSmall"
+                android:text="Tamaño Contenedor"/>
+
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="20"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/cuarto_switch_tamanoContenedor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="40"/>
+
+            </LinearLayout>
+
             <EditText
-                android:id="@+id/segundo_edt_or"
+                android:id="@+id/cuarto_edt_codContenedor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                style="?android:attr/textAppearanceSmall"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:maxLength="21"
+                android:inputType="number"
+                android:hint="Código Contenedor"/>
+
+            <EditText
+                android:id="@+id/cuarto_edt_precinto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                style="?android:attr/textAppearanceMedium"
+                style="?android:attr/textAppearanceSmall"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:maxLength="20"
+                android:inputType="number"
+                android:hint="Nº de Precinto(s)"/>
+
+            <EditText
+                android:id="@+id/cuarto_edt_origen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                style="?android:attr/textAppearanceSmall"
+                android:singleLine="true"
+                android:maxLength="30"
+                android:hint="Origen/Destino"/>
+
+            <LinearLayout
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Guía Remisión"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/cuarto_switch_tipoDoc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ticket Balance"/>
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/cuarto_edt_or"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                style="?android:attr/textAppearanceSmall"
                 android:singleLine="true"
                 android:maxLength="15"
-                android:hint="Ingrese Nro OR/GR"
+                android:hint="Número"
                 android:numeric="integer"
                 android:inputType="number"/>
-
-            <EditText
-                android:id="@+id/segundo_edt_cta_bultos"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                style="?android:attr/textAppearanceMedium"
-                android:singleLine="true"
-                android:numeric="integer"
-                android:maxLength="10"
-                android:inputType="number"
-                android:hint="Ingrese cantidad de Bultos"/>
-
-            <CheckBox
-                android:id="@+id/sengundo_check_carga"
-                    android:layout_width="wrap_content"
-                android:onClick="onCheckboxClickedSegundo"
-                    android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginTop="10dp"
-                style="?android:attr/textAppearanceMedium"
-                    android:text="Carga Verificada"/>
 
     </LinearLayout>
 
@@ -169,15 +238,15 @@
             android:paddingLeft="10dp"
             android:background="@drawable/button_bd_border"
             style="?android:attr/textAppearanceSmall"
-            android:onClick="returnPersona"
+            android:onClick="returnPersonaCuarto"
             android:text="Persona"/>
 
         <Button
-            android:id="@+id/segundo_btn_fotos"
+            android:id="@+id/cuarto_btn_fotos"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="segundo_btn_fotos"
+            android:onClick="cuarto_btn_fotos"
             android:textColor="@color/verde"
             android:drawableLeft="@drawable/ic_foto"
             android:paddingLeft="10dp"

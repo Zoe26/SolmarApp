@@ -44,6 +44,7 @@ public class Configuration {
     public static final String KEY_ClienteId = "ClienteId";
     public static final String KEY_ContadorPulsacion = "ContadorPulsacion";
     public static final String KEY_ContadorAux = "ContadorAux";
+    public static final String KEY_isScreen = "isScreen";
 
 
     public int ConfigurationId;
@@ -77,6 +78,6 @@ public class Configuration {
     public String FechaSendIso;
     public String EstadoSignalr;
     public String FechaAlarmaIso;
-    public int ContadorPulsacion;
+    public int isScreen;
 
 }

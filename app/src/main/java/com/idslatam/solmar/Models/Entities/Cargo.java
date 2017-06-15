@@ -27,6 +27,15 @@ public class Cargo {
     public static final String KEY_fotoTracera = "fotoTracera";
     public static final String KEY_fotoPanoramica = "fotoPanoramica";
 
+    public static final String KEY_tamanoContenedor = "tamanoContenedor"; //iniciar
+    public static final String KEY_codigoContenedor = "codigoContenedor";
+    public static final String KEY_numeroPrecintos = "numeroPrecintos";
+    public static final String KEY_origenDestino = "origenDestino";
+    public static final String KEY_tipoDocumento = "tipoDocumento";//iniciar
+    public static final String KEY_numeroDocumento = "numeroDocumento";
+
+
+
     public int CargoId;
     public String Initial;
     public String TipoCarga;
@@ -35,6 +44,8 @@ public class Cargo {
     public String EppCasco;
     public String EppChaleco;
     public String EppBotas;
+    public String tamanoContenedor;
+    public String tipoDocumento;
 
 
 }

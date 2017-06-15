@@ -62,5 +62,7 @@
     <string name="red">RED</string>
     <string name="blue">BLUE</string>
     <string name="green">GREEN</string>
+    <string name="brown">BROWN</string>
+    <string name="black">BLACK</string>
 
 </resources>
