@@ -155,17 +155,18 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        String sTipoCarga = null;
+        String sTipoCarga = null, isIngresoV = null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT TipoCarga, fotoPanoramica FROM Cargo";
+            String selectQuery = "SELECT TipoCarga, fotoPanoramica, isIngreso FROM Cargo";
 
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 sTipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
                 sfotoPanoramica = c.getString(c.getColumnIndex("fotoPanoramica"));
+                isIngresoV = c.getString(c.getColumnIndex("isIngreso"));
 
             }
             c.close();
@@ -398,7 +399,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                     if (isChecked){
-
                         try {
                             DBHelper dbHelperAlarm = new DBHelper(mContext);
                             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -420,6 +420,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     }
                 }
             });
+
+            cuarto_switch_tipoDoc.setEnabled(true);
+            if (isIngresoV.equalsIgnoreCase("false") && TipoCarga.equalsIgnoreCase("4")){
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET tipoDocumento = '1'");
+                    dba.close();
+                } catch (Exception eew){}
+                Log.e("tipoDocumento ","guia");
+
+                cuarto_switch_tipoDoc.setEnabled(false);
+                cuarto_switch_tipoDoc.setChecked(false);
+            }
 
             poblarCuartaVista();
 
@@ -446,14 +460,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     public void onPageSelected(int position) {
         Log.e("POSITION ", String.valueOf(position));
 
-        String Placa = null, Dni = null, NroOR = null, CantidadBultos = null, sTipoCarga = null,
+        String Placa = null, Dni = null, NroOR = null, CantidadBultos = null, sTipoCarga = null, isIngresoV = null,
                 codContenedor = null, numeroPrecintos = null, origenDestinoC = null, numeroC = null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Placa, Dni, NroOR, CantidadBultos, TipoCarga, codigoContenedor, " +
-                    "numeroPrecintos, origenDestino, numeroDocumento FROM Cargo";
+                    "numeroPrecintos, origenDestino, numeroDocumento, isIngreso FROM Cargo";
 
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
@@ -467,6 +481,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 numeroPrecintos = c.getString(c.getColumnIndex("numeroPrecintos"));
                 origenDestinoC = c.getString(c.getColumnIndex("origenDestino"));
                 numeroC = c.getString(c.getColumnIndex("numeroDocumento"));
+                isIngresoV = c.getString(c.getColumnIndex("isIngreso"));
 
             }
             c.close();
@@ -661,6 +676,22 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             cuarto_switch_tamanoContenedor = (SwitchCompat) viewPager.findViewById(R.id.cuarto_switch_tamanoContenedor);
             cuarto_switch_tipoDoc = (SwitchCompat) viewPager.findViewById(R.id.cuarto_switch_tipoDoc);
+
+            cuarto_switch_tipoDoc.setEnabled(true);
+            if (isIngresoV.equalsIgnoreCase("false") && sTipoCarga.equalsIgnoreCase("4")){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET tipoDocumento = '1'");
+                    dba.close();
+                } catch (Exception eew){}
+                Log.e("tipoDocumento ","guia");
+
+                cuarto_switch_tipoDoc.setEnabled(false);
+                cuarto_switch_tipoDoc.setChecked(false);
+            }
+
 
         }
 
@@ -2038,6 +2069,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         Log.e("Botas ", Botas);
         Log.e("VigenciaLicencia ", Licencia);
         Log.e("NroDOI", Dni);
+        Log.e("NroORGR ", NroOR);
         Log.e("Delantera ", Delantera);
         Log.e("Panoramica ", Panoramica);
 
@@ -2053,6 +2085,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .setMultipartParameter("Botas", Botas)
                 .setMultipartParameter("VigenciaLicenciaConducir", Licencia)
                 .setMultipartParameter("NroDOI", Dni)
+                .setMultipartParameter("NroORGR", NroOR)
                 .setMultipartFile("Delantera", new File(Delantera))
                 .setMultipartFile("Panoramica", new File(Panoramica))
                 .asString()

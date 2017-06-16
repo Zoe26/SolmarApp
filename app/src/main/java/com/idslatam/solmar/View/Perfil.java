@@ -42,6 +42,7 @@ import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.People.People;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Code.Scan;
 import com.idslatam.solmar.View.Fragments.SampleFragment;
@@ -192,13 +193,20 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                             data.add(new Item("Bars", getResources().getDrawable(R.mipmap.ic_barsa)));
                         }
 
+                        if (cConfiguration.getString(cConfiguration.getColumnIndex("Code")).equalsIgnoreCase("7")){
+                            data.add(new Item("Cargo", getResources().getDrawable(R.mipmap.ic_cargo)));
+                        }
+
+                        if (cConfiguration.getString(cConfiguration.getColumnIndex("Code")).equalsIgnoreCase("8")){
+                            data.add(new Item("People", getResources().getDrawable(R.mipmap.ic_people)));
+                        }
+
                     } while(cConfiguration.moveToNext());
 
                 }
 
             cConfiguration.close();
             dbConfiguration.close();
-            data.add(new Item("Cargo", getResources().getDrawable(R.mipmap.ic_cargo)));
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));
@@ -254,6 +262,11 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         if (data.get(position).getTitle().equalsIgnoreCase("Cargo")){
             startActivity(new Intent(mContext, CargoActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+        }
+
+        if (data.get(position).getTitle().equalsIgnoreCase("People")){
+            startActivity(new Intent(mContext, People.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         }
 

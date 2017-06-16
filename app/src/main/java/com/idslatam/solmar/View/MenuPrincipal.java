@@ -214,8 +214,8 @@ public class MenuPrincipal extends  ActionBarActivity {
                                         e.printStackTrace();
                                     }
 
-                                    String []valores = new String[5];
-                                    int []val = new int[5];
+                                    String []valores = new String[7];
+                                    int []val = new int[7];
 
                                     try {
                                         for (int i = 0; i < jsonA.length(); i++) {
