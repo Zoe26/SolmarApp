@@ -108,6 +108,7 @@
             android:layout_weight="1"
             android:textColor="@color/icons"
             android:paddingLeft="10dp"
+            android:onClick="salir"
             android:background="@color/verde"
             style="?android:attr/textAppearanceSmall"
             android:text="Salir"/>

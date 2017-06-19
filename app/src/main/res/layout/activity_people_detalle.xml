@@ -224,6 +224,7 @@
         android:id="@+id/people_detalle_cuarto"
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
         android:orientation="vertical"
         android:layout_below="@+id/people_detalle_tercero"
         android:layout_height="wrap_content">
@@ -231,7 +232,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             style="?android:attr/textAppearanceSmall"
             android:text="Material Valor"/>
         
@@ -242,11 +242,10 @@
             android:layout_height="wrap_content">
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:gravity="center"
-                android:src="@drawable/ic_foto"/>
+                android:background="@drawable/ic_foto"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -264,6 +263,7 @@
         android:id="@+id/people_detalle_quinto"
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
         android:orientation="vertical"
         android:layout_below="@+id/people_detalle_cuarto"
         android:layout_height="wrap_content">
@@ -271,7 +271,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             style="?android:attr/textAppearanceSmall"
             android:text="Vehículo"/>
 
@@ -282,11 +281,10 @@
             android:layout_height="wrap_content">
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:gravity="center"
-                android:src="@drawable/ic_foto"/>
+                android:background="@drawable/ic_foto"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -312,6 +310,7 @@
             android:layout_weight="1"
             android:textColor="@color/verde"
             android:paddingLeft="10dp"
+            android:onClick="salir"
             android:background="@drawable/button_bd_border"
             style="?android:attr/textAppearanceSmall"
             android:text="Salir"/>
@@ -321,6 +320,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+
             android:textColor="@color/verde"
             android:paddingLeft="10dp"
             android:background="@drawable/button_bd_border"

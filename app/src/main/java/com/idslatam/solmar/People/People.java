@@ -58,4 +58,8 @@ public class People extends AppCompatActivity {
         startActivity(i);
 
     }
+
+    public void salir(View view){
+        finish();
+    }
 }
