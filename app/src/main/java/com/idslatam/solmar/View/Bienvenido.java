@@ -505,6 +505,11 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                 imei = tm.getDeviceId();
                 numero = tm.getLine1Number();
 
+                DBHelper dataBaseHelper = new DBHelper(this);
+                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                db.execSQL("UPDATE Configuration SET SimSerie = '"+serieSIM+"'");
+                db.close();
+
                 SimOtorgaNumero = "true";
                 if (numero.equals("")) {SimOtorgaNumero = "false";}
 
@@ -569,7 +574,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             cargo.EppCasco = "false";
             cargo.EppChaleco = "false";
             cargo.EppBotas = "false";
-
             cargo.tamanoContenedor = "20";
             cargo.tipoDocumento = "1";
 
@@ -629,18 +633,13 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             }
         }
 
-        if(validacion=="true"){
-            txtApro.setVisibility(View.INVISIBLE);
-        }
+        if(validacion=="true"){txtApro.setVisibility(View.INVISIBLE);}
 
-        if(imei == null){
-            imei = androidId;
-        }
-
+        if(imei == null){imei = androidId;}
 
         Log.e("--NUMERO ", String.valueOf(numero));
-        Log.e("--ID ", String.valueOf(androidId));
-        Log.e("--IMEI ", String.valueOf(imei));
+        Log.e("--HWID ", String.valueOf(androidId));
+        Log.e("--HWIMEI ", String.valueOf(imei));
         Log.e("--MODELO ", String.valueOf(modelo));
         Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
         Log.e("--SERIE SIM ", String.valueOf(serieSIM));
@@ -702,6 +701,15 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                                 RequiereNumero = result.get("RequiereNumero").getAsString();
                                 Id = result.get("Id").getAsString();
 
+
+                                /*if(!result.get("Configuracion").isJsonNull()){
+                                    JsonArray jarray = result.getAsJsonArray("Configuracion");
+                                    for (JsonElement pa : jarray) {
+                                        JsonObject paymentObj = pa.getAsJsonObject();
+                                    }
+                                }*/
+
+
                                 if(result.get("ClienteId").isJsonNull()){
                                     ClienteId = null;
                                     Log.e("ClienteId ", "INGRESÓ NULL");
@@ -724,7 +732,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
                                         JsonArray jarray = result.getAsJsonArray("ClienteContactos");
 
-                                        //JsonArray paymentsArray = rootObj.getAsJsonArray("payments");
                                         for (JsonElement pa : jarray) {
 
                                             JsonObject paymentObj = pa.getAsJsonObject();
@@ -797,7 +804,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                         }
                     });
         }
-
     }
 
     private boolean checkPlayServices() {

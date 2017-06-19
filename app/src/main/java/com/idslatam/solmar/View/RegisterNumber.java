@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +20,7 @@ import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
+import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
@@ -37,7 +41,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
     Bundle b;
     String Id;
-    protected String URL_API;
+    protected String URL_API, serieSIM;
 
     Context mContex;
 
@@ -68,6 +72,22 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT SimSerie FROM Configuration";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                serieSIM = c.getString(c.getColumnIndex("SimSerie"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+
         try {
 
             String Num = edNumero.getText().toString();
@@ -85,6 +105,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
             JsonObject json = new JsonObject();
             json.addProperty("Id", Id);
             json.addProperty("Numero", Num);
+            json.addProperty("SIMSerie", serieSIM);
 
             final ProgressDialog pDialog;
 

@@ -46,6 +46,8 @@ public class Configuration {
     public static final String KEY_ContadorAux = "ContadorAux";
     public static final String KEY_isScreen = "isScreen";
 
+    public static final String KEY_SimSerie = "SimSerie";
+
 
     public int ConfigurationId;
     public String GuidDispositivo;
