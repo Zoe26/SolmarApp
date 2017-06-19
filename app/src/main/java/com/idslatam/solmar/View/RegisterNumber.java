@@ -77,7 +77,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
             configuration.ConfigurationId = 1;
             configurationCRUD.updateNumero(configuration);
 
-            String URL = URL_API.concat("Dispositivo/PutNumber");
+            String URL = URL_API.concat("api/Dispositivo/PutNumber");
 
             Log.e("Id ", Id);
             Log.e("Numero ", Num);
@@ -107,9 +107,13 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
                                 Toast.makeText(mContex, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
 
-                                if (pDialog != null && pDialog.isShowing()) {
-                                    pDialog.dismiss();
-                                }
+
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception eew){}
+
                                 return;
 
                             }
@@ -121,10 +125,22 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
                                 Log.e("JsonObject ", result.toString());
 
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception eew){}
+
                                 Intent i = new Intent(getApplicationContext(), Bienvenido.class );
                                 startActivity(i);
 
                             }
+
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception eew){}
                         }
                     });
 

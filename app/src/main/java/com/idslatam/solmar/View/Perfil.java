@@ -207,6 +207,8 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
             cConfiguration.close();
             dbConfiguration.close();
+
+            data.add(new Item("People", getResources().getDrawable(R.mipmap.ic_people)));
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));

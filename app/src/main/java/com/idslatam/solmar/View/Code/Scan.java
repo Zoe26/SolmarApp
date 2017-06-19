@@ -28,7 +28,6 @@ public class Scan extends Activity {
         new IntentIntegrator(this).initiateScan();
     }
 
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 

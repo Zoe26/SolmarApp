@@ -19,8 +19,6 @@
         android:gravity="center"
         android:padding="@dimen/body">
 
-
-
         <!--<View
             android:id="@+id/view_s"
             android:layout_width="match_parent"
@@ -29,8 +27,6 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:background="#C8C9CB" />
-
-
 
         <View
             android:id="@+id/view_f"
@@ -49,11 +45,14 @@
                     android:layout_weight="0.5">
 
                     <EditText
-                        android:id="@+id/primero_edt_dni"
+                        android:id="@+id/people_edt_dni"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/button_bd_border"
+                        android:padding="5dp"
                         android:gravity="center"
                         android:layout_weight="1"
+                        android:layout_marginBottom="5dp"
                         android:maxLength="11"
                         android:singleLine="true"
                         android:inputType="number"
@@ -72,6 +71,7 @@
                             android:layout_marginRight="1dp"
                             android:layout_weight="1"
                             android:textColor="@color/icons"
+                            android:onClick="buscarPeople"
                             android:background="@color/verde"
                             android:src="@drawable/ic_buscar" />
                         <Button
@@ -80,6 +80,7 @@
                             android:layout_marginLeft="1dp"
                             android:layout_weight="1"
                             android:textColor="@color/icons"
+                            android:onClick="scanBarcode"
                             android:background="@color/verde"
                             style="?android:attr/textAppearanceSmall"
                             android:text="Escanear"/>

@@ -638,14 +638,14 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         }
 
 
-        //Log.e("--NUMERO ", String.valueOf(numero));
-        //Log.e("--ID ", String.valueOf(androidId));
-        //Log.e("--IMEI ", String.valueOf(imei));
-        //Log.e("--MODELO ", String.valueOf(modelo));
-        //Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
-        //Log.e("--SERIE SIM ", String.valueOf(serieSIM));
-        //Log.e("--FABRCANTE ", String.valueOf(fabricante));
-        //Log.e("--VERSION ", String.valueOf(versionO));
+        Log.e("--NUMERO ", String.valueOf(numero));
+        Log.e("--ID ", String.valueOf(androidId));
+        Log.e("--IMEI ", String.valueOf(imei));
+        Log.e("--MODELO ", String.valueOf(modelo));
+        Log.e("--OTORGA ", String.valueOf(SimOtorgaNumero));
+        Log.e("--SERIE SIM ", String.valueOf(serieSIM));
+        Log.e("--FABRCANTE ", String.valueOf(fabricante));
+        Log.e("--VERSION ", String.valueOf(versionO));
 
         ////Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
 
@@ -696,7 +696,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                                 Gson gson = new Gson();
                                 JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                Log.e("JsonObject ", result.toString());
+                                Log.e("JsonObject BIENVENIDO ", result.toString());
 
                                 estado = result.get("Estado").getAsString();
                                 RequiereNumero = result.get("RequiereNumero").getAsString();
