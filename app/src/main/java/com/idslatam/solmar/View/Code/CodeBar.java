@@ -8,14 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.renderscript.ScriptIntrinsicYuvToRGB;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,27 +20,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
-import com.idslatam.solmar.View.Bienvenido;
-import com.idslatam.solmar.View.MenuPrincipal;
 import com.idslatam.solmar.View.Perfil;
-import com.idslatam.solmar.View.Settings.AccessSettings;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 
 public class CodeBar extends Activity {
 

@@ -44,13 +44,10 @@ import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
 import com.idslatam.solmar.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

@@ -22,6 +22,8 @@ import android.view.Display;
 import android.widget.Toast;
 
 import com.desmond.squarecamera.CameraActivity;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.idslatam.solmar.Api.Http.Constants;
@@ -33,76 +35,63 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sandrios.sandriosCamera.internal.SandriosCamera;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 
 public class Image extends Activity {
 
     protected String URL_API;
-    private Toolbar toolbar;
-    String fotocheckCod;
-    Bundle b;
     Context mContext;
 
-    private Uri fileUri;
+    private String fileUri;
     private String filePath = null;
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     String DispositivoIdFile, LatitudFile, LongitudFile, NumeroFile, DispositivoId,CodigoEmpleado;
-
-    private int currentApiVersion = android.os.Build.VERSION.SDK_INT;
-
-    boolean state;
-
-
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private Point mSize;
+
+    private static final int CAPTURE_MEDIA = 368;
+
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
 
+        activity = this;
         mContext = this;
 
-        Display display = getWindowManager().getDefaultDisplay();
+        /*Display display = getWindowManager().getDefaultDisplay();
         mSize = new Point();
-        display.getSize(mSize);
+        display.getSize(mSize);*/
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
-
-        requestForCameraPermission();
+        launch();
+        //requestForCameraPermission();
     }
 
 
     public void requestForCameraPermission() {
-        Log.e("MENUPRINCIPAL", "requestForCameraPermission");
-
         final String permission = Manifest.permission.CAMERA;
         if (ContextCompat.checkSelfPermission(Image.this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(Image.this, permission)) {
                 showPermissionRationaleDialog("Test", permission);
-                Log.e("MENUPRINCIPAL", "ActivityCompat");
             } else {
                 requestForPermission(permission);
             }
         } else {
             launch();
-            Log.e("MENUPRINCIPAL ", "launch");
         }
-
-        Log.e("MENUPRINCIPAL", "requestForCameraPermission FIN");
     }
 
     private void showPermissionRationaleDialog(final String message, final String permission) {
@@ -129,10 +118,16 @@ public class Image extends Activity {
     }
 
     private void launch() {
-        Log.e("launch","launch.....");
-        Intent startCustomCameraIntent = new Intent(Image.this, CameraActivity.class);
-        startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
 
+        new SandriosCamera(activity, CAPTURE_MEDIA)
+                .setShowPicker(false)
+                .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_MEDIUM)
+                .enableImageCropping(false)
+                .launchCamera();
+
+        /*Intent startCustomCameraIntent = new Intent(Image.this, CameraActivity.class);
+        startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);*/
         Log.e("launch","launch FIN.....");
     }
 
@@ -187,8 +182,6 @@ public class Image extends Activity {
 
         try {
 
-            filePath = fileUri.getPath();
-
             Log.e(" filePath ", String.valueOf(filePath));
 
             String filePathAux = filePath; //decodeFile(filePath,660, 880);
@@ -198,6 +191,7 @@ public class Image extends Activity {
 
             Ion.with(mContext)
                     .load(URLB)
+                    .setTimeout(1000*10)
                     .setMultipartParameter("DispositivoId", DispositivoIdFile)
                     .setMultipartParameter("Latitud", LatitudFile)
                     .setMultipartParameter("Longitud", LongitudFile)
@@ -210,6 +204,48 @@ public class Image extends Activity {
                         @Override
                         public void onCompleted(Exception e, Response<String> response) {
 
+                            if (e != null){
+                                try {
+                                    if (dialog.isShowing()) {
+                                        dialog.dismiss();
+                                    }
+                                }catch (Exception e7){}
+
+                                Log.e("Excepction ", " --- ");
+                                return;
+                            }
+
+                            if(response.getHeaders().code()==200){
+                                Gson gson = new Gson();
+                                JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                showAlert(result.get("Mensaje").getAsString());
+
+                                try {
+                                    if (dialog.isShowing()) {
+                                        dialog.dismiss();
+                                    }
+                                }catch (Exception e7){}
+
+                            } else {
+
+                                try {
+                                    if (dialog != null && dialog.isShowing()) {
+                                        dialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                Toast.makeText(mContext, "Error al enviar imagen. Por favor revise su conexión.", Toast.LENGTH_SHORT).show();
+                                Log.e("Exception ", "Finaliza "+ e.getMessage());
+                                finish();
+                            }
+
+                            try {
+                                if (dialog != null && dialog.isShowing()) {
+                                    dialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
                             /*File fdelete = new File(filePathAux);
 
                             if (fdelete.exists()) {
@@ -219,39 +255,6 @@ public class Image extends Activity {
                                     Log.e("file not Deleted :", filePathAux);
                                 }
                             }*/
-
-                            if(response!=null){
-
-                                try {
-                                    if (dialog.isShowing()) {
-                                        dialog.dismiss();
-                                    }
-                                }catch (Exception e7){}
-
-                                try {
-                                    JSONObject json = new JSONObject(response.getResult().toString());
-
-                                    showAlert(json.getString("Mensaje"));
-
-                                } catch (JSONException edd){
-
-                                }
-
-                                Log.e("JsonObject ", response.getResult().toString());
-                            } else  {
-                                Toast.makeText(mContext, "Error al enviar imagen. Por favor revise su conexión.", Toast.LENGTH_SHORT).show();
-                                Log.e("Exception ", "Finaliza "+ e.getMessage());
-                                finish();
-                            }
-
-                            try {
-                                if (dialog.isShowing()) {
-                                    dialog.dismiss();
-                                }
-                            }catch (Exception ee){}
-
-
-                            //finish();
                         }
                     });
 
@@ -264,26 +267,37 @@ public class Image extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
-        Log.e("MENUPRINCIPAL", "RESULT");
-
         if (resultCode != RESULT_OK){
             finish();
             return;
         }
 
+        Log.e("MENUPRINCIPAL", "RESULT");
+        if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
+            Log.e("File", "" + data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
 
-        if (requestCode == REQUEST_CAMERA) {
+            String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
+            filePath = photoUri;
+            //Log.e(" filePath ", filePath);
+
+            uploadImage();
+            //Toast.makeText(this, "Media captured.", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+        /*if (requestCode == REQUEST_CAMERA) {
             Log.e("MENUPRINCIPAL", "REQUEST_CAMERA");
             Uri photoUri = data.getData();
             // Get the bitmap in according to the width of the device
             //Bitmap bitmap = ImageUtility.decodeSampledBitmapFromPath(photoUri.getPath(), mSize.x, mSize.x);
             //((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
             Log.e("MENUPRINCIPAL", "REQUEST_CAMERA FIN " + String.valueOf(photoUri));
-            fileUri = photoUri;
+            //fileUri = photoUri;
 
-            uploadImage();
+            //uploadImage();
 
-        }
+        }*/
 
         Log.e("MENUPRINCIPAL", "RESULT FIN");
 

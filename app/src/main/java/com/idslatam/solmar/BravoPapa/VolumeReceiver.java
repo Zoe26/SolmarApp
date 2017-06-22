@@ -5,25 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.KeyEvent;
 
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class VolumeReceiver extends BroadcastReceiver {
 

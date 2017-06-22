@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +16,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Api.Parser.JsonParser;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Configuration;
@@ -26,12 +23,6 @@ import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
