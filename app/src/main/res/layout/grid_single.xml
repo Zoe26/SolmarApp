@@ -3,7 +3,7 @@
     android:id="@+id/android_custom_gridview_layout"
     android:layout_width="90dp"
     android:layout_height="90dp"
-    android:background="@color/white"
+    android:background="@color/squarecamera__white"
     android:orientation="vertical" >
 
     <ImageView

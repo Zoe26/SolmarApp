@@ -5,18 +5,20 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/title_bars_ok"
+        android:id="@+id/title_placa_ok"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:background="@color/verde"
+        android:text="¡Atención!"
+        style="?android:attr/textAppearanceMedium"
+        android:background="@color/squarecamera__red"
         android:textColor="@color/squarecamera__white"
         android:padding="7dp"
         android:layout_marginBottom="4dp"/>
 
     <TextView
-        android:id="@+id/mje_bars_ok"
+        android:id="@+id/mje_placa_ok"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
@@ -33,6 +35,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="5dp"
-        android:background="@color/verde"/>
+        android:background="@color/squarecamera__red"/>
 
 </LinearLayout>

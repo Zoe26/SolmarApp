@@ -848,7 +848,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.verde));
-            btnMarcacion.setTextColor(getResources().getColor(R.color.white));
+            btnMarcacion.setTextColor(getResources().getColor(R.color.squarecamera__white));
             estadoMaux = 1;
             FlagTiempoE="1";
             MargenAceptadoE="1";
@@ -988,7 +988,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             btnMarcacion.setEnabled(true);
             btnMarcacion.setText("Marcaci\u00F3n");
             btnMarcacion.setBackgroundColor(getResources().getColor(R.color.red));
-            btnMarcacion.setTextColor(getResources().getColor(R.color.white));
+            btnMarcacion.setTextColor(getResources().getColor(R.color.squarecamera__white));
 
             FlagTiempoE = "0";
             MargenAceptadoE = "1";

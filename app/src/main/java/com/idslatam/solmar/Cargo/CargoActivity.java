@@ -78,31 +78,18 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     boolean btn_dni = false;
 
     EditText primero_edt_tracto, primero_edt_dni;
-
     EditText segundo_edt_or, segundo_edt_cta_bultos;
-
     Calendar currenCodeBar;
-
     TextView primero_txt_mje;
-
     TextView segundo_txt_ingreso_tracto, segundo_txt_carga, segundo_txt_dni;
-
     TextView tercer_txt_ingreso_tracto, tercer_txt_carga, tercer_txt_dni;
-
     TextView cuarto_txt_ingreso_tracto, cuarto_txt_carga, cuarto_txt_dni;
-
     TextView quinto_txt_ingreso_tracto, quinto_txt_carga, quinto_txt_dni, quinto_txt_nro_precintos;
-
     ImageView quinto_btn_precintos;
-
     EditText cuarto_edt_codContenedor, cuarto_edt_precinto, cuarto_edt_origen, cuarto_edt_or;
-
     ImageView imgEstadoDelantera, imgEstadoTrasera, imgEstadoPaniramica;
-
     CheckBox check_casco, check_chaleco, check_botas, check_carga;
-
     SwitchCompat isLicencia, cuarto_switch_tamanoContenedor, cuarto_switch_tipoDoc;
-
     LinearLayout edt_trasera;
 
     boolean fotoDelantera = false, fotoTracera = false, fotoPanoramica = false, isSinCarga;
@@ -910,6 +897,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void enviarPlaca(View view) {
 
+        limpiarDatosPlaca();
+
         String pla = null;
 
         if (primero_edt_tracto.getText().toString().matches("")){
@@ -971,8 +960,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             pDialog.setCancelable(false);
             pDialog.show();
 
-
-            String finalPla = pla;
             Ion.with(this)
                     .load("GET", URL)
                     .asJsonObject()
@@ -1004,6 +991,44 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                                 Log.e("JsonObject PLACA ", result.toString());
 
+
+                                if (!result.get("Registrado").isJsonNull()){
+
+                                    if (result.get("Registrado").getAsString().equalsIgnoreCase("0")){
+
+                                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+
+                                        View mView = getLayoutInflater().inflate(R.layout.dialog_placa_failed, null);
+                                        TextView texMje = (TextView)mView.findViewById(R.id.mje_placa_ok);
+                                        texMje.setText("La placa "+primero_edt_tracto.getText().toString()+" no ha sido registrada.");
+
+                                        try {
+
+                                            mBuilder.setCancelable(false);
+                                            mBuilder.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.dismiss();
+                                                    ejecutarApiRegistro(primero_edt_tracto.getText().toString());
+
+                                                }
+                                            });
+
+                                            mBuilder.setPositiveButton("Revisión", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+
+                                                    limpiarDatos();
+                                                    dialog.dismiss();
+                                                }
+                                            });
+
+                                            mBuilder.setView(mView);
+                                            AlertDialog dialog = mBuilder.create();
+                                            dialog.show();
+                                        } catch (Exception vfdbe) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
 
                                 if (!result.get("CargoTipoMovimiento").isJsonNull()){
 
@@ -2699,6 +2724,35 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         return true;
     }
 
+    public boolean limpiarDatosPlaca(){
+
+        try {
+
+            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
+            dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
+            dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
+            dba.execSQL("UPDATE Cargo SET Dni = " + null);
+            dba.execSQL("UPDATE Cargo SET NroOR = " + null);
+            dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
+            dba.execSQL("UPDATE Cargo SET codigoContenedor = " + null);
+            dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
+            dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
+            dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
+
+            dba.close();
+
+        } catch (Exception eew){}
+
+        DBHelper dbgelperDeete = new DBHelper(this);
+        SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
+        sqldbDelete.execSQL("DELETE FROM CargoPrecinto");
+        sqldbDelete.close();
+
+        return true;
+    }
+
     public boolean limpiarDatosRadioBoton(){
 
         try {
@@ -2727,4 +2781,60 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         return true;
     }
 
+    public boolean ejecutarApiRegistro(String placaR){
+
+        String URL = URL_API.concat("api/Cargo/RegistrarPlaca");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("Placa", placaR);
+
+        final ProgressDialog pDialog;
+
+        pDialog = new ProgressDialog(CargoActivity.this);
+        pDialog.setMessage("Registrando Placa...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> response) {
+
+                        if(response == null){
+
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+
+                        }
+
+                        if (response.getHeaders().code() == 200) {
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("JsonObject Registro ", "Placa " +result.toString());
+
+
+                        } else {
+                            Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
+                        }
+
+                        if (pDialog != null && pDialog.isShowing()) {
+                            pDialog.dismiss();
+                        }
+
+                    }
+                });
+
+        return  true;
+    }
 }

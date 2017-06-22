@@ -42,7 +42,6 @@ import com.idslatam.solmar.View.Fragments.HomeFragment;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
-import com.roughike.bottombar.BottomBar;
 
 import com.idslatam.solmar.R;
 
@@ -57,7 +56,7 @@ import java.util.Date;
 
 
 public class MenuPrincipal extends  ActionBarActivity {
-    private BottomBar bottomBar;
+
     protected String URL_API;
     private Toolbar toolbar;
     String fotocheckCod;
