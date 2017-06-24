@@ -26,8 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.desmond.squarecamera.CameraActivity;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -951,8 +949,8 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     private void launch() {
         Log.e("launch","launch.....");
-        Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
-        startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
+        //Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+        //startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
 
         Log.e("launch","launch FIN.....");
     }

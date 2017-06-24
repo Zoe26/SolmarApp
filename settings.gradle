@@ -1,3 +1,4 @@
 include ':app'
 include ':zxing-android-embedded'
-include ':squarecamera'
+//include ':squarecamera'
+include ':sandriosCamera'

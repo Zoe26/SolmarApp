@@ -33,7 +33,7 @@
             android:contextClickable="true"
             android:layout_width="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/squarecamera__transparent"
+            android:background="@color/Transparent"
             android:layout_height="match_parent"
             android:onClick="updateAgenda"
             android:src="@drawable/ic_sync_black"

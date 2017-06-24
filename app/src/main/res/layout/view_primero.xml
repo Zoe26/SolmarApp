@@ -40,16 +40,16 @@
         </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/primero_txt_mje"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:textColor="@color/verde"
-        android:text=""
-        android:layout_below="@id/primero_tracto"
-        style="?android:attr/textAppearanceSmall"/>
+        <TextView
+            android:id="@+id/primero_txt_mje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:textColor="@color/verde"
+            android:text=""
+            android:layout_below="@id/primero_tracto"
+            style="?android:attr/textAppearanceSmall"/>
 
 
 
@@ -62,45 +62,66 @@
             android:layout_marginTop="5dp"
             android:background="#C8C9CB" />
 
+        <RadioGroup
+            android:id="@+id/opciones_carga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_s">
 
-            <RadioGroup
-                android:id="@+id/opciones_carga"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/view_s">
+                android:layout_weight="1">
 
-                <RadioButton
-                    android:id="@+id/radio_sinCarga"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    style="?android:attr/textAppearanceSmall"
-                    android:text="Sin Carga" />
+                    android:layout_weight="1">
 
-                <RadioButton
-                    android:id="@+id/radio_cargaSuelta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/radio_sinCarga"
-                    android:layout_weight="1"
-                    style="?android:attr/textAppearanceSmall"
-                    android:text="Carga Suelta" />
+                    <RadioButton
+                        android:id="@+id/radio_sinCarga"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceSmall"
+                        android:text="Sin Carga" />
 
-                <RadioButton
-                    android:id="@+id/radio_vacio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Contenedor Vacío"
-                    style="?android:attr/textAppearanceSmall"
-                    android:layout_weight="1"/>
+                    <RadioButton
+                        android:id="@+id/radio_vacio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Contenedor Vacío"
+                        style="?android:attr/textAppearanceSmall"/>
+                </LinearLayout>
 
-                <RadioButton
-                    android:id="@+id/radio_lleno"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Contenedor Lleno"
-                    style="?android:attr/textAppearanceSmall"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1">
+
+                    <RadioButton
+                        android:id="@+id/radio_cargaSuelta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="?android:attr/textAppearanceSmall"
+                        android:text="Carga Suelta" />
+
+                    <RadioButton
+                        android:id="@+id/radio_lleno"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Contenedor Lleno"
+                        style="?android:attr/textAppearanceSmall" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
 
         </RadioGroup>
 
@@ -112,245 +133,245 @@
             android:layout_marginBottom="5dp"
             android:background="#C8C9CB" />
 
-
-    <LinearLayout
-        android:id="@+id/buttums"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/view_f"
-        android:layout_weight="1">
-
-        <Button
-            android:id="@+id/primero_btn_persona"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_margin="2dp"
-            android:layout_weight="1"
-            android:textColor="@color/icons"
-            android:background="@color/verde"
-            android:drawableTop="@drawable/ic_blanco_persona"
-            style="?android:attr/textAppearanceSmall"
-            android:text="Persona"/>
-
-        <Button
-            android:id="@+id/primero_btn_carga"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_margin="2dp"
-            android:layout_weight="1"
-            android:textColor="@color/verde"
-            android:drawableTop="@drawable/ic_carga"
-            android:background="@drawable/button_bd_border"
-            style="?android:attr/textAppearanceSmall"
-            android:onClick="primeroViewCarga"
-            android:text="Carga"/>
-
-        <Button
-            android:id="@+id/primero_btn_foto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_margin="2dp"
-            android:layout_weight="1"
-            android:textColor="@color/verde"
-            android:onClick="primeroViewFoto"
-            android:drawableTop="@drawable/ic_foto"
-            android:background="@drawable/button_bd_border"
-            style="?android:attr/textAppearanceSmall"
-            android:text="Foto"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_below="@id/buttums"
-        android:layout_weight="1">
-
-
         <LinearLayout
+            android:id="@+id/buttums"
+            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
+            android:layout_below="@id/view_f"
             android:layout_weight="1">
 
-            <LinearLayout
-                android:layout_marginTop="5dp"
+            <Button
+                android:id="@+id/primero_btn_persona"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_epp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="EPP"/>
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/check_casco"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onCheckboxClicked"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:textColor="@color/icons"
+                android:background="@color/verde"
+                android:drawableTop="@drawable/ic_blanco_persona"
                 style="?android:attr/textAppearanceSmall"
-                android:text="Casco"/>
+                android:text="Persona"/>
 
-            <CheckBox
-                android:id="@+id/check_chaleco"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/primero_btn_carga"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onCheckboxClicked"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:textColor="@color/verde"
+                android:drawableTop="@drawable/ic_carga"
+                android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceSmall"
-                android:text="Chaleco"/>
+                android:onClick="primeroViewCarga"
+                android:text="Carga"/>
 
-            <CheckBox
-                android:id="@+id/check_botas"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/primero_btn_foto"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onCheckboxClicked"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:textColor="@color/verde"
+                android:onClick="primeroViewFoto"
+                android:drawableTop="@drawable/ic_foto"
+                android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceSmall"
-                android:text="Botas"/>
+                android:text="Foto"/>
+
 
         </LinearLayout>
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/image"
-            android:layout_marginBottom="5dp"
-            android:background="#C8C9CB" />
-
         <LinearLayout
+            android:id="@+id/layoud_licencia_conducir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="left"
-            android:layout_weight="0.4">
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_below="@id/buttums"
+            android:layout_weight="1">
+
 
             <LinearLayout
-
-                android:layout_marginLeft="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_weight="0.5">
+                android:layout_weight="1">
 
-                <EditText
-                    android:id="@+id/primero_edt_dni"
+                <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:maxLength="11"
-                    android:singleLine="true"
-                    android:inputType="number"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="DNI"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_epp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="EPP"/>
+                </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/check_casco"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Casco"/>
+
+                <CheckBox
+                    android:id="@+id/check_chaleco"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Chaleco"/>
+
+                <CheckBox
+                    android:id="@+id/check_botas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Botas"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/image"
+                android:layout_marginBottom="5dp"
+                android:background="#C8C9CB" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="left"
+                android:layout_weight="0.4">
 
                 <LinearLayout
 
                     android:layout_marginLeft="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:orientation="horizontal"
-                    android:layout_weight="1">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="0.5">
 
-                    <ImageButton
+                    <EditText
+                        android:id="@+id/primero_edt_dni"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginRight="1dp"
                         android:layout_weight="1"
-                        android:textColor="@color/icons"
-                        android:onClick="buscarDNI"
-                        android:background="@color/verde"
-                        android:src="@drawable/ic_buscar" />
-                    <Button
+                        android:maxLength="11"
+                        android:singleLine="true"
+                        android:inputType="number"
+                        style="?android:attr/textAppearanceMedium"
+                        android:hint="DNI"/>
+
+                    <LinearLayout
+
+                        android:layout_marginLeft="5dp"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="1dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/icons"
-                        android:onClick="scanDNI"
-                        android:background="@color/verde"
-                        android:textSize="12dp"
-                        android:text="Escanear"/>
+                        android:layout_height="30dp"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
+
+                        <ImageButton
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="1dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/icons"
+                            android:onClick="buscarDNI"
+                            android:background="@color/verde"
+                            android:src="@drawable/ic_buscar" />
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="1dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/icons"
+                            android:onClick="scanDNI"
+                            android:background="@color/verde"
+                            android:textSize="12dp"
+                            android:text="Escanear"/>
+                    </LinearLayout>
+
+
                 </LinearLayout>
 
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Licencia de conducir"/>
+
+                <LinearLayout
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vigente"/>
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/switch_licencia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vencida"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <TextView
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Licencia de conducir"/>
-
-            <LinearLayout
-                android:layout_marginLeft="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vigente"/>
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/switch_licencia"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vencida"/>
-
-            </LinearLayout>
 
         </LinearLayout>
 
+    </RelativeLayout>
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/primero_btn_verificar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/icons"
+            android:drawableLeft="@drawable/ic_blanco_carga"
+            android:paddingLeft="10dp"
+            android:onClick="primeroViewCarga"
+            android:background="@color/verde"
+            style="?android:attr/textAppearanceSmall"
+            android:text="Verificar"/>
 
     </LinearLayout>
-
-</RelativeLayout>
-
-<LinearLayout
-
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_alignParentBottom="true"
-android:orientation="horizontal"
-android:gravity="center">
-
-<Button
-    android:id="@+id/primero_btn_verificar"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_weight="1"
-    android:textColor="@color/icons"
-    android:drawableLeft="@drawable/ic_blanco_carga"
-    android:paddingLeft="10dp"
-    android:onClick="primeroViewCarga"
-    android:background="@color/verde"
-    style="?android:attr/textAppearanceSmall"
-    android:text="Verificar"/>
-
-</LinearLayout>
 
 </RelativeLayout>

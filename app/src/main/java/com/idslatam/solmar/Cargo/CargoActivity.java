@@ -1,6 +1,7 @@
 package com.idslatam.solmar.Cargo;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -36,8 +37,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.desmond.squarecamera.CameraActivity;
-import com.desmond.squarecamera.ImageUtility;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -60,6 +59,8 @@ import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
 import com.koushikdutta.ion.bitmap.Transform;
+import com.sandrios.sandriosCamera.internal.SandriosCamera;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -123,11 +124,16 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     boolean isPrecinto = false;
 
+    private static final int CAPTURE_MEDIA = 368;
+
+    private Activity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cargo);
 
+        activity = this;
         mContext = this;
 
         Constants globalClass = new Constants();
@@ -1114,7 +1120,86 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        if (requestCode == REQUEST_CAMERA) {
+        if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
+            Log.e("File", "" + data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
+
+            String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
+            Uri_Foto = photoUri;
+
+            if (isPrecinto){
+
+                try {
+
+                    CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
+                    CargoPrecinto cargoPrecinto = new CargoPrecinto();
+                    cargoPrecinto.Foto = Uri_Foto;
+                    cargoPrecinto.CargoPrecintoId = _CargoPrecinto_Id;
+                    _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
+
+                    Log.e("isPrecinto  ", "fin");
+
+                } catch (Exception esca) {esca.printStackTrace();}
+
+                loadPrecinto();
+
+                return;
+            }
+
+            if (fotoDelantera){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET fotoDelantera = '"+Uri_Foto+"'");
+                    dba.close();
+                    Log.e("fotoDelantera ","true");
+                } catch (Exception eew){
+                    Log.e("Exception ", "fotoDelantera");
+                }
+
+                imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
+
+                fotoDelantera = false;
+
+
+            } else if (fotoTracera){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET fotoTracera = '"+Uri_Foto+"'");
+                    dba.close();
+                    Log.e("fotoTracera ","true");
+                } catch (Exception eew){
+                    Log.e("Exception ", "fotoTracera");
+                }
+
+                imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
+
+                fotoTracera = false;
+
+            } else {
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET fotoPanoramica = '"+Uri_Foto+"'");
+                    dba.close();
+                    Log.e("fotoPanoramica ","true");
+                } catch (Exception eew){
+                    Log.e("Exception ", "fotoPanoramica");
+                }
+
+                imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
+
+                fotoPanoramica = false;
+
+            }
+
+            Log.e(" Position GUID ", String.valueOf(Uri_Foto));
+        }
+
+        /*if (requestCode == REQUEST_CAMERA) {
             photoUri = data.getData();
 
             Uri_Foto = photoUri.getPath();
@@ -1190,7 +1275,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             }
 
             Log.e(" Position GUID ", String.valueOf(photoUri.getPath()));
-        }
+        }*/
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -1769,7 +1854,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         photoUri = null;
 
-        final String permission = Manifest.permission.CAMERA;
+        new SandriosCamera(activity, CAPTURE_MEDIA)
+                .setShowPicker(false)
+                .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_MEDIUM)
+                .enableImageCropping(false)
+                .launchCamera();
+
+        /*final String permission = Manifest.permission.CAMERA;
         if (ContextCompat.checkSelfPermission(CargoActivity.this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(CargoActivity.this, permission)) {
@@ -1779,7 +1871,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             }
         } else {
             launch();
-        }
+        }*/
     }
 
     private void showPermissionRationaleDialog(final String message, final String permission) {
@@ -1806,8 +1898,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     private void launch() {
-        Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
-        startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
+
+        //Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+        //startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
     }
 
     public void showDialogSend() throws Exception {

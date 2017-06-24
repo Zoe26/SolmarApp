@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
-import com.desmond.squarecamera.CameraActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -211,6 +210,7 @@ public class Image extends Activity {
                                     }
                                 }catch (Exception e7){}
 
+                                mensajeError(filePathAux);
                                 Log.e("Excepction ", " --- ");
                                 return;
                             }
@@ -219,7 +219,7 @@ public class Image extends Activity {
                                 Gson gson = new Gson();
                                 JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                showAlert(result.get("Mensaje").getAsString());
+                                showAlert(result.get("Mensaje").getAsString(), filePathAux);
 
                                 try {
                                     if (dialog.isShowing()) {
@@ -235,7 +235,7 @@ public class Image extends Activity {
                                     }
                                 } catch (Exception edsv){}
 
-                                Toast.makeText(mContext, "Error al enviar imagen. Por favor revise su conexión.", Toast.LENGTH_SHORT).show();
+                                mensajeError(filePathAux);
                                 Log.e("Exception ", "Finaliza "+ e.getMessage());
                                 finish();
                             }
@@ -245,16 +245,6 @@ public class Image extends Activity {
                                     dialog.dismiss();
                                 }
                             } catch (Exception edsv){}
-
-                            /*File fdelete = new File(filePathAux);
-
-                            if (fdelete.exists()) {
-                                if (fdelete.delete()) {
-                                    Log.e("file Deleted :", filePathAux);
-                                } else {
-                                    Log.e("file not Deleted :", filePathAux);
-                                }
-                            }*/
                         }
                     });
 
@@ -278,26 +268,9 @@ public class Image extends Activity {
 
             String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
             filePath = photoUri;
-            //Log.e(" filePath ", filePath);
 
             uploadImage();
-            //Toast.makeText(this, "Media captured.", Toast.LENGTH_SHORT).show();
         }
-
-
-
-        /*if (requestCode == REQUEST_CAMERA) {
-            Log.e("MENUPRINCIPAL", "REQUEST_CAMERA");
-            Uri photoUri = data.getData();
-            // Get the bitmap in according to the width of the device
-            //Bitmap bitmap = ImageUtility.decodeSampledBitmapFromPath(photoUri.getPath(), mSize.x, mSize.x);
-            //((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
-            Log.e("MENUPRINCIPAL", "REQUEST_CAMERA FIN " + String.valueOf(photoUri));
-            //fileUri = photoUri;
-
-            //uploadImage();
-
-        }*/
 
         Log.e("MENUPRINCIPAL", "RESULT FIN");
 
@@ -305,15 +278,70 @@ public class Image extends Activity {
 
     }
 
-    private void showAlert(String message) {
+    private void showAlert(String message, String fileFoto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message).setTitle("Respuesta de Servidor")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
+                        File fdelete = new File(fileFoto);
+
+                            if (fdelete.exists()) {
+                                if (fdelete.delete()) {
+                                    Log.e("file Deleted :", fileFoto);
+                                } else {
+                                    Log.e("file not Deleted :", fileFoto);
+                                }
+                            }
                         finish();
                     }
                 });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void mensajeError(String fileFoto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Se ha terminado el tiempo de espera para el envío del image. Por favor intente nuevamente.")
+                .setTitle("Problemas al enviar")
+                .setCancelable(false)
+                .setNegativeButton("Salir", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        File fdelete = new File(fileFoto);
+
+                        if (fdelete.exists()) {
+                            if (fdelete.delete()) {
+                                Log.e("file Deleted :", fileFoto);
+                            } else {
+                                Log.e("file not Deleted :", fileFoto);
+                            }
+                        }
+
+                        finish();
+                    }
+                })
+                .setPositiveButton("Reintentar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        File fdelete = new File(fileFoto);
+
+                        if (fdelete.exists()) {
+                            if (fdelete.delete()) {
+                                Log.e("file Deleted :", fileFoto);
+                            } else {
+                                Log.e("file not Deleted :", fileFoto);
+                            }
+                        }
+
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }
+                });
+
         AlertDialog alert = builder.create();
         alert.show();
     }

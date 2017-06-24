@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#0097A7</color>
-    <color name="primary_text">#212121</color>
-    <color name="primary_light">#B2EBF2</color>
-    <color name="icons">#FFFFFF</color>
-    <color name="light">#FF5252</color>
-    <color name="colorAccent">#66000000</color>
-    <color name="negro_general">#555555</color>
-    <color name="black">#FFFFFF</color>
-    <color name="odd">#eee</color>
-    <color name="even">#fff</color>
-    <color name="devider">#ccc</color>
+        <color name="colorPrimary">#2196F3</color>
+        <color name="colorPrimaryDark">#0097A7</color>
+        <color name="primary_text">#212121</color>
+        <color name="primary_light">#B2EBF2</color>
+        <color name="icons">#FFFFFF</color>
+        <color name="light">#FF5252</color>
+        <color name="colorAccent">#66000000</color>
+        <color name="negro_general">#555555</color>
+        <color name="squarecamera__white">#FFFFFF</color>
+        <color name="odd">#eee</color>
+        <color name="even">#fff</color>
+        <color name="devider">#ccc</color>
 
-    <color name="Transparent">#00000000</color>
-    <color name="red">#F44336</color>
-    <color name="gris">#9E9E9E</color>
+        <color name="Transparent">#00000000</color>
+        <color name="red">#F44336</color>
+        <color name="gris">#9E9E9E</color>
 
-    <color name="black_overlay">#66000000</color>
+        <color name="black_overlay">#66000000</color>
 
-    <color name="textColorPrimary">#FFFFFF</color>
-    <color name="grayPanel">#EEEEEE</color>
-    <color name="lightGray">#d6d6d6</color>
-    <color name="boton_deshabilitado">#CFD8DC</color>
+        <color name="textColorPrimary">#FFFFFF</color>
+        <color name="grayPanel">#EEEEEE</color>
+        <color name="lightGray">#d6d6d6</color>
+        <color name="boton_deshabilitado">#CFD8DC</color>
+        <color name="squarecamera__red">#FF5252</color>
+        <color name="black">#ffffff</color>
+
 
     <color name="alert">#3B494C</color>
     <color name="image">#00796B</color>

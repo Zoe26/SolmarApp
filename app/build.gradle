@@ -86,7 +86,7 @@ dependencies {
     compile files('libs/signalr-client-sdk.jar')
     compile(name: 'signalr-client-sdk-android-release', ext: 'aar')
     compile project(':zxing-android-embedded')
-    compile project(':squarecamera')
+    //compile project(':squarecamera')
     compile project(':sandriosCamera')
 
     compile 'com.android.support:appcompat-v7:24.2.1'
