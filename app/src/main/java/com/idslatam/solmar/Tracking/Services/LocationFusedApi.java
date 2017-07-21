@@ -909,7 +909,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
                     i++;
 
-                } while(c.moveToNext() && i<30);
+                } while(c.moveToNext() || i<30);
 
             }
             c.close();

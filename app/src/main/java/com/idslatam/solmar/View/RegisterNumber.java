@@ -92,6 +92,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
 
             Log.e("Id ", Id);
             Log.e("Numero ", Num);
+            Log.e("serieSIM ", serieSIM);
 
             JsonObject json = new JsonObject();
             json.addProperty("Id", Id);
@@ -118,7 +119,6 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
                             if(response == null){
 
                                 Toast.makeText(mContex, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
-
 
                                 try {
                                     if (pDialog != null && pDialog.isShowing()) {

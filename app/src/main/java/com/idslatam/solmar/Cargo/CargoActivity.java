@@ -956,8 +956,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             String URL = URL_API.concat("api/Cargo/VerificaPlaca?Placa="+primero_edt_tracto.getText().toString()+"&DispositivoId="+GuidDipositivo+"");
 
-
-
             ProgressDialog pDialog;
 
             pDialog = new ProgressDialog(CargoActivity.this);
@@ -998,9 +996,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 Log.e("JsonObject PLACA ", result.toString());
 
 
-                                if (!result.get("Registrado").isJsonNull()){
+                                if (result.get("Placa").isJsonNull()){
 
-                                    if (result.get("Registrado").getAsString().equalsIgnoreCase("0")){
+                                    //if (result.get("Registrado").getAsString().equalsIgnoreCase("0")){
 
                                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
 
@@ -1021,7 +1019,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                                             mBuilder.setPositiveButton("Revisión", new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
-
                                                     limpiarDatos();
                                                     dialog.dismiss();
                                                 }
@@ -1033,12 +1030,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                         } catch (Exception vfdbe) {
                                             e.printStackTrace();
                                         }
-                                    }
+                                    //}
                                 }
 
-                                if (!result.get("CargoTipoMovimiento").isJsonNull()){
+                                if (!result.get("CargoTipoMovimientoId").isJsonNull()){
 
-                                    if (result.get("CargoTipoMovimiento").getAsString().equalsIgnoreCase("1")){
+                                    if (result.get("CargoTipoMovimientoId").getAsString().equalsIgnoreCase("1")){
                                         try {
                                             DBHelper dbHelperAlarm = new DBHelper(mContext);
                                             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -2900,8 +2897,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                         if(response == null){
 
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
 
+                            Log.e("RESPONSE CARGO ", "NULL");
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
                             }
@@ -2918,6 +2916,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
                         } else {
+
+                            Log.e("CARGO != 200 ", "Placa " +String.valueOf(response.getHeaders().code()));
+
                             Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
                         }
 

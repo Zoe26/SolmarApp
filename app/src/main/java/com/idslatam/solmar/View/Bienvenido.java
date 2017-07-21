@@ -1044,6 +1044,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             dba.execSQL("UPDATE Configuration SET FlagUpdate = 'true'");
             dba.execSQL("UPDATE Configuration SET NivelVolumen = '-1'");
             dba.execSQL("UPDATE Configuration SET isScreen = 'true'");
+            dba.execSQL("UPDATE Configuration SET SimSerie = '"+serieSIM+"'");
             dba.close();
 
         } catch (Exception e){}
