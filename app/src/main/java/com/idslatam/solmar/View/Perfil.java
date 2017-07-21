@@ -202,6 +202,10 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                             data.add(new Item("People", getResources().getDrawable(R.mipmap.ic_people)));
                         }
 
+                        if (cConfiguration.getString(cConfiguration.getColumnIndex("Code")).equalsIgnoreCase("9")){
+                            data.add(new Item("Patrol", getResources().getDrawable(R.mipmap.ic_patrol)));
+                        }
+
                     } while(cConfiguration.moveToNext());
 
                 }
@@ -210,7 +214,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             dbConfiguration.close();
 
             //data.add(new Item("People", getResources().getDrawable(R.mipmap.ic_people)));
-            data.add(new Item("Patrol", getResources().getDrawable(R.mipmap.ic_patrol)));
+            //data.add(new Item("Patrol", getResources().getDrawable(R.mipmap.ic_patrol)));
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));

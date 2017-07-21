@@ -369,8 +369,6 @@ public class PatrolActivity extends AppCompatActivity {
 
                             Log.e("JsonObject PATROL", result.toString());
 
-                            borrarDatos();
-
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
