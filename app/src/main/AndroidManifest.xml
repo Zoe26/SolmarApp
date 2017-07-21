@@ -33,7 +33,6 @@
     <uses-feature
         android:name="android.hardware.camera.front"
         android:required="false" />
-    <!-- TODO replace above two with next line after Android 4.2 -->
     <!-- <uses-feature android:name="android.hardware.camera.any"/> -->
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -137,9 +136,9 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
+        <!--<activity
             android:name="com.desmond.squarecamera.CameraActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" />-->
         <activity
             android:name=".Dialer.ContactosActivity"
             android:screenOrientation="portrait" />
@@ -162,7 +161,12 @@
             android:name=".Cargo.CargoActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".People.People" />
-        <activity android:name=".People.PeopleDetalle"></activity>
+        <activity android:name=".People.PeopleDetalle" />
+        <activity android:name=".Patrol.PatrolActivity">
+
+        </activity>
+        <activity android:name=".Patrol.ListadoContenedor">
+        </activity>
     </application>
 
 </manifest>

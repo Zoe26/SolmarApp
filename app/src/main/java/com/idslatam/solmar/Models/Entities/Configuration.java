@@ -48,6 +48,9 @@ public class Configuration {
 
     public static final String KEY_SimSerie = "SimSerie";
 
+    public static final String KEY_ContenedorPatrol = "ContenedorPatrol";
+    public static final String KEY_ContenedorId = "ContenedorId";
+
 
     public int ConfigurationId;
     public String GuidDispositivo;

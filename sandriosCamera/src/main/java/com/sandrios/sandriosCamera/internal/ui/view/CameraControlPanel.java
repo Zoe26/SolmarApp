@@ -81,8 +81,6 @@ public class CameraControlPanel extends RelativeLayout
         imageGalleryAdapter = new ImageGalleryAdapter(context);
 
         settingsButton = (ImageButton) findViewById(R.id.settings_view);
-        settingsButton.setEnabled(false);
-        settingsButton.setVisibility(View.GONE);
         cameraSwitchView = (CameraSwitchView) findViewById(R.id.front_back_camera_switcher);
         mediaActionSwitchView = (MediaActionSwitchView) findViewById(R.id.photo_video_camera_switcher);
         recordButton = (RecordButton) findViewById(R.id.record_button);
@@ -104,8 +102,7 @@ public class CameraControlPanel extends RelativeLayout
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (settingsClickListener != null)
-                    settingsClickListener.onSettingsClick();
+                if (settingsClickListener != null) settingsClickListener.onSettingsClick();
             }
         });
 

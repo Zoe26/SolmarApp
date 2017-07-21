@@ -42,6 +42,7 @@ import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Patrol.PatrolActivity;
 import com.idslatam.solmar.People.People;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Code.Scan;
@@ -208,7 +209,8 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             cConfiguration.close();
             dbConfiguration.close();
 
-            data.add(new Item("People", getResources().getDrawable(R.mipmap.ic_people)));
+            //data.add(new Item("People", getResources().getDrawable(R.mipmap.ic_people)));
+            data.add(new Item("Patrol", getResources().getDrawable(R.mipmap.ic_patrol)));
             data.add(new Item("Llamadas", getResources().getDrawable(R.mipmap.ic_llamada)));
             data.add(new Item("Mensajes", getResources().getDrawable(R.mipmap.ic_mje)));
             data.add(new Item("Configuración", getResources().getDrawable(R.mipmap.ic_settings)));
@@ -269,6 +271,11 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         if (data.get(position).getTitle().equalsIgnoreCase("People")){
             startActivity(new Intent(mContext, People.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+        }
+
+        if (data.get(position).getTitle().equalsIgnoreCase("Patrol")){
+            startActivity(new Intent(mContext, PatrolActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         }
 

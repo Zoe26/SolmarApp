@@ -83,14 +83,14 @@ public final class CameraHelper {
             }
         }
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date());
         File mediaFile;
         if (mediaAction == CameraConfiguration.MEDIA_ACTION_PHOTO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "SOLGIS_" + timeStamp + ".jpg");
+                    "IMG_" + timeStamp + ".jpg");
         } else if (mediaAction == CameraConfiguration.MEDIA_ACTION_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "SOLGIS_" + timeStamp + ".mp4");
+                    "VID_" + timeStamp + ".mp4");
         } else {
             return null;
         }

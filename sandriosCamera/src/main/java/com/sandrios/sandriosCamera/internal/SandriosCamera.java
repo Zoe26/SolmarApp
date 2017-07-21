@@ -24,7 +24,7 @@ public class SandriosCamera {
     private Activity mActivity;
     private int requestCode;
     private int mediaAction = CameraConfiguration.MEDIA_ACTION_BOTH;
-    private int mediaQuality = CameraConfiguration.MEDIA_QUALITY_MEDIUM;
+    private int mediaQuality = CameraConfiguration.MEDIA_QUALITY_LOWEST;
     private boolean showPicker = true;
     private boolean enableImageCrop = false;
     private long videoSize = -1;

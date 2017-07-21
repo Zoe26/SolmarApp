@@ -11,6 +11,8 @@ import com.idslatam.solmar.Models.Entities.CargoPrecinto;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.Models.Entities.Menu;
+import com.idslatam.solmar.Models.Entities.PatrolContenedor;
+import com.idslatam.solmar.Models.Entities.PatrolPrecinto;
 import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
@@ -103,6 +105,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_ContadorAux + " INTEGER,"
                 + Configuration.KEY_isScreen + " TEXT,"
                 + Configuration.KEY_SimSerie + " TEXT,"
+                + Configuration.KEY_ContenedorPatrol + " TEXT,"
+                + Configuration.KEY_ContenedorId + " TEXT,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 
         String CREATE_TABLE_ASISTENCIA = "CREATE TABLE " + Asistencia.TABLE_ASISTENCIA + "("
@@ -184,6 +188,15 @@ public class DBHelper extends SQLiteOpenHelper {
                 + CargoPrecinto.KEY_indice + " TEXT,"
                 + CargoPrecinto.KEY_Foto + " TEXT)";
 
+        String CREATE_TABLE_PATROL_PRECINTO = "CREATE TABLE " + PatrolPrecinto.TABLE_PATROL_PRECINTO + "("
+                + PatrolPrecinto.KEY_ID_PatrolPrecinto + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PatrolPrecinto.KEY_indice + " TEXT,"
+                + PatrolPrecinto.KEY_Foto + " TEXT)";
+
+        String CREATE_TABLE_PATROL_CONTENEDOR = "CREATE TABLE " + PatrolContenedor.TABLE_PATROL_CONTENEDOR + "("
+                + PatrolContenedor.KEY_ID_PatrolContenedor + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PatrolContenedor.KEY_ContenedorId + " TEXT,"
+                + PatrolContenedor.KEY_Codigo + " TEXT)";
 
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
@@ -195,6 +208,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_MENU);
         db.execSQL(CREATE_TABLE_CARGO);
         db.execSQL(CREATE_TABLE_CARGO_PRECINTO);
+        db.execSQL(CREATE_TABLE_PATROL_PRECINTO);
+        db.execSQL(CREATE_TABLE_PATROL_CONTENEDOR);
     }
 
     @Override
@@ -228,6 +243,12 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + CargoPrecinto.TABLE_CARGO_PRECINTO);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + PatrolPrecinto.TABLE_PATROL_PRECINTO);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + PatrolContenedor.TABLE_PATROL_CONTENEDOR);
         onCreate(db);
 
     }
