@@ -1073,7 +1073,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             } else  {
 
-                                Toast.makeText(CargoActivity.this, "Error. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                                ejecutarApiRegistro(primero_edt_tracto.getText().toString());
+                                //Toast.makeText(CargoActivity.this, "Error. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
                                 Log.e("ExceptionV ", "Finaliza" );
                             }
 
@@ -2873,61 +2874,92 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public boolean ejecutarApiRegistro(String placaR){
 
-        String URL = URL_API.concat("api/Cargo/RegistrarPlaca");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("La placa "+placaR+" no se encuetra registarda. ¿Desea Registrarla?");
+        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 
-        JsonObject json = new JsonObject();
-        json.addProperty("Placa", placaR);
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
 
-        final ProgressDialog pDialog;
+                String URL = URL_API.concat("api/Cargo/RegistrarPlaca");
 
-        pDialog = new ProgressDialog(CargoActivity.this);
-        pDialog.setMessage("Registrando Placa...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
-        pDialog.show();
+                JsonObject json = new JsonObject();
+                json.addProperty("Placa", placaR);
 
-        Ion.with(this)
-                .load("POST", URL)
-                .setJsonObjectBody(json)
-                .asJsonObject()
-                .withResponse()
-                .setCallback(new FutureCallback<Response<JsonObject>>() {
-                    @Override
-                    public void onCompleted(Exception e, Response<JsonObject> response) {
+                final ProgressDialog pDialog;
 
-                        if(response == null){
+                pDialog = new ProgressDialog(CargoActivity.this);
+                pDialog.setMessage("Registrando Placa...");
+                pDialog.setIndeterminate(false);
+                pDialog.setCancelable(true);
+                pDialog.show();
 
-                            //Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                Ion.with(mContext)
+                        .load("POST", URL)
+                        .setJsonObjectBody(json)
+                        .asJsonObject()
+                        .withResponse()
+                        .setCallback(new FutureCallback<Response<JsonObject>>() {
+                            @Override
+                            public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            Log.e("RESPONSE CARGO ", "NULL");
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
+                                if(response == null){
+
+                                    //Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                                    Log.e("RESPONSE CARGO ", "NULL");
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                        }
+                                    } catch (Exception exc){}
+                                    return;
+
+                                }
+
+                                if (response.getHeaders().code() == 200) {
+
+                                    Gson gson = new Gson();
+                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                    Log.e("JsonObject Registro ", "Placa " +result.toString());
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                        }
+                                    } catch (Exception exc){}
+                                    finish();
+
+
+                                } else {
+
+                                    Log.e("CARGO != 200 ", "Placa " +String.valueOf(response.getHeaders().code()));
+
+                                    Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
+                                }
+
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception exc){}
+
+
                             }
-                            return;
+                        });
+            }
+        });
 
-                        }
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 
-                        if (response.getHeaders().code() == 200) {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
 
-                            Gson gson = new Gson();
-                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+            }
+        });
 
-                            Log.e("JsonObject Registro ", "Placa " +result.toString());
-
-
-                        } else {
-
-                            Log.e("CARGO != 200 ", "Placa " +String.valueOf(response.getHeaders().code()));
-
-                            Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
-                        }
-
-                        if (pDialog != null && pDialog.isShowing()) {
-                            pDialog.dismiss();
-                        }
-
-                    }
-                });
+        builder.show();
 
         return  true;
     }

@@ -17,4 +17,5 @@ public class PeopleDetalle extends AppCompatActivity {
     public void salir(View view){
         finish();
     }
+
 }
