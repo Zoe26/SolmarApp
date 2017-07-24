@@ -13,6 +13,7 @@ import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.Models.Entities.Menu;
 import com.idslatam.solmar.Models.Entities.PatrolContenedor;
 import com.idslatam.solmar.Models.Entities.PatrolPrecinto;
+import com.idslatam.solmar.Models.Entities.People;
 import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
@@ -198,6 +199,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 + PatrolContenedor.KEY_ContenedorId + " TEXT,"
                 + PatrolContenedor.KEY_Codigo + " TEXT)";
 
+        String CREATE_TABLE_PEOPLE = "CREATE TABLE " + People.TABLE_PEOPLE + "("
+                + People.KEY_ID_People + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + People.KEY_Initial + " TEXT,"
+                + People.KEY_dni + " TEXT,"
+                + People.KEY_json + " TEXT,"
+                + People.KEY_fotoValor + " TEXT,"
+                + People.KEY_fotoVehiculo + " TEXT)";
+
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
         db.execSQL(CREATE_TABLE_ASISTENCIA);
@@ -210,6 +219,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CARGO_PRECINTO);
         db.execSQL(CREATE_TABLE_PATROL_PRECINTO);
         db.execSQL(CREATE_TABLE_PATROL_CONTENEDOR);
+        db.execSQL(CREATE_TABLE_PEOPLE);
     }
 
     @Override
@@ -249,6 +259,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + PatrolContenedor.TABLE_PATROL_CONTENEDOR);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + People.TABLE_PEOPLE);
         onCreate(db);
 
     }

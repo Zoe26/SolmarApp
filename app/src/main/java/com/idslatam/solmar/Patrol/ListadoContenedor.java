@@ -300,4 +300,8 @@ public class ListadoContenedor extends AppCompatActivity {
 
     }
 
+    public void Nuevo(View view){
+        listaContenedores();
+    }
+
 }

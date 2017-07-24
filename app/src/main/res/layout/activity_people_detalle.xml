@@ -16,13 +16,15 @@
         android:background="@color/verde"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
         <TextView
+            android:id="@+id/people_txt_mensaje"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/squarecamera__white"
-            android:padding="5dp"
+            android:padding="10dp"
             android:gravity="center"
             style="?android:attr/textAppearanceLarge"
             android:text="Autorizado"/>
@@ -49,12 +51,17 @@
                 android:layout_weight="2"
                 android:padding="5dp"
                 android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:text="DNI: "/>
 
             <EditText
+                android:id="@+id/people_detalle_dni"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                style="?android:attr/textAppearanceMedium"
+                android:textColor="@color/negro_general"
+                android:gravity="center"
+                android:enabled="false"
                 android:background="@drawable/button_bd_border"
                 android:layout_weight="1"/>
 
@@ -72,12 +79,17 @@
                 android:layout_weight="1"
                 android:padding="5dp"
                 android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:text="Personal: "/>
 
             <EditText
+                android:id="@+id/people_edt_persTipo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                style="?android:attr/textAppearanceMedium"
+                android:textColor="@color/negro_general"
+                android:gravity="center"
+                android:enabled="false"
                 android:background="@drawable/button_bd_border"
                 android:layout_weight="1"/>
 
@@ -104,10 +116,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:padding="5dp"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Nombre: "/>
+                style="?android:attr/textAppearanceMedium"
+                android:text="Nombres: "/>
 
             <EditText
+                android:id="@+id/people_detalle_nombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -126,38 +139,45 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="?android:attr/textAppearanceMedium"
                 android:layout_weight="2"
                 android:padding="5dp"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Empresa: "/>
+                android:text="Empresa Autorizante: "/>
 
-            <EditText
+            <!--<EditText
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/negro_general"
+                style="?android:attr/textAppearanceMedium"
+                android:enabled="false"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:background="@drawable/button_bd_border" />
+                android:background="@drawable/button_bd_border" />-->
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_weight="2"
-            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
 
-            <TextView
+            <!--<TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:padding="5dp"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Autorizante: "/>
+                style="?android:attr/textAppearanceMedium"
+                android:text="Autorizante: "/>-->
 
             <EditText
+                android:id="@+id/people_detalle_empresa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="?android:attr/textAppearanceMedium"
+                android:textColor="@color/negro_general"
+                android:enabled="false"
                 android:layout_weight="1"
                 android:padding="5dp"
                 android:background="@drawable/button_bd_border" />
@@ -185,12 +205,16 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:text="Motivo: "/>
 
             <EditText
+                android:id="@+id/people_detalle_motivo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                style="?android:attr/textAppearanceMedium"
+                android:textColor="@color/negro_general"
+                android:enabled="false"
                 android:background="@drawable/button_bd_border"
                 android:layout_weight="1"/>
 
@@ -207,12 +231,16 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:text="Área: "/>
 
             <EditText
+                android:id="@+id/people_detalle_codArea"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center"
+                style="?android:attr/textAppearanceMedium"
+                android:textColor="@color/negro_general"
                 android:background="@drawable/button_bd_border"
                 android:layout_weight="1"/>
 
@@ -232,8 +260,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?android:attr/textAppearanceSmall"
-            android:text="Material Valor"/>
+            style="?android:attr/textAppearanceMedium"
+            android:text="Valor"/>
         
         <LinearLayout
             android:layout_width="match_parent"
@@ -244,15 +272,15 @@
             <ImageButton
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:onClick="fotoValor"
                 android:gravity="center"
                 android:background="@drawable/ic_foto"/>
 
-            <ImageView
+            <TextView
+                android:id="@+id/people_detalle_txtfoto_valor"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="90dp"
-                android:maxHeight="90dp"
-                android:background="@drawable/button_bd_border"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:layout_weight="1"/>
 
         </LinearLayout>
@@ -271,7 +299,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?android:attr/textAppearanceSmall"
+            style="?android:attr/textAppearanceMedium"
             android:text="Vehículo"/>
 
         <LinearLayout
@@ -283,15 +311,15 @@
             <ImageButton
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:onClick="fotoVehiculo"
                 android:gravity="center"
                 android:background="@drawable/ic_foto"/>
 
-            <ImageView
+            <TextView
+                android:id="@+id/people_detalle_txtfoto_vehiculo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="90dp"
-                android:maxHeight="90dp"
-                android:background="@drawable/button_bd_border"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:layout_weight="1"/>
 
         </LinearLayout>
@@ -316,11 +344,11 @@
             android:text="Salir"/>
 
         <Button
-            android:id="@+id/segundo_btn_fotos"
+            android:id="@+id/people_detalle_btn_registrar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-
+            android:onClick="guardarPeople"
             android:textColor="@color/verde"
             android:paddingLeft="10dp"
             android:background="@drawable/button_bd_border"

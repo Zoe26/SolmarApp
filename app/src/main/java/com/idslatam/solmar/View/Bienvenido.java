@@ -64,10 +64,12 @@ import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Models.Crud.CargoCrud;
 import com.idslatam.solmar.Models.Crud.ConfigurationCrud;
 import com.idslatam.solmar.Models.Crud.ContactosCrud;
+import com.idslatam.solmar.Models.Crud.PeopleCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Cargo;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
+import com.idslatam.solmar.Models.Entities.People;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -152,7 +154,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     //---------------------------------------------------------
     private EditText value;
     private Button btn, btnC;
-    private int _Configuration_Id = 0, _Contactos_Id = 0, _Cargo_Id = 0;
+    private int _Configuration_Id = 0, _Contactos_Id = 0, _Cargo_Id = 0, _People_Id = 0;
     String numero;
 
     boolean flagIsFused = false, flagIsPlaySevice = true, flagIsUpdate = false;
@@ -162,6 +164,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
     ConfigurationCrud configurationCRUD = new ConfigurationCrud(this);
     CargoCrud cargoCrud = new CargoCrud(this);
+    PeopleCrud peopleCrud = new PeopleCrud(this);
 
     DBHelper dataBaseHelper = new DBHelper(this);
 
@@ -579,6 +582,12 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
             cargo.CargoId = _Cargo_Id;
             _Cargo_Id = cargoCrud.insert(cargo);
+
+
+            People people = new People();
+            people.Initial = "true";
+            people.PeopleId = _People_Id;
+            _People_Id = peopleCrud.insert(people);
 
             /*if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
                 Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
