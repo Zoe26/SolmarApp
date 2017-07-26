@@ -8,7 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -24,12 +30,19 @@ import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.async.http.body.FilePart;
+import com.koushikdutta.async.http.body.Part;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 import com.sandrios.sandriosCamera.internal.SandriosCamera;
 import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.security.AccessController.getContext;
 
 public class PeopleDetalle extends AppCompatActivity {
 
@@ -40,14 +53,18 @@ public class PeopleDetalle extends AppCompatActivity {
     EditText people_detalle_dni, people_edt_persTipo, people_detalle_nombre, people_detalle_empresa,
             people_detalle_motivo, people_detalle_codArea;
 
+    String GuidDipositivo;
+
     private static final int CAPTURE_MEDIA = 368;
     private Activity activity;
 
-    String Uri_Foto, URL_API;
+    String Uri_Foto, URL_API, fotoVal, fotoVeh;
 
     boolean fotoValor = true, fotoVehiculo = true;
 
     Button people_detalle_btn_registrar;
+
+    ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +139,10 @@ public class PeopleDetalle extends AppCompatActivity {
         }
 
         people_txt_mensaje.setText(jsonObject.get("Header").getAsString());
+
+        if (jsonObject.get("persNombres").isJsonNull()){
+            return;
+        }
 
         if (!jsonObject.get("persTipo").isJsonNull()){
             people_edt_persTipo.setText(jsonObject.get("persTipo").getAsString());
@@ -220,32 +241,17 @@ public class PeopleDetalle extends AppCompatActivity {
     }
 
     public void guardarPeople(View view){
+        guardarPeopleM();
+    }
 
-        final ProgressDialog pDialog;
+    public void guardarPeopleM(){
+
+
         pDialog = new ProgressDialog(PeopleDetalle.this);
-        pDialog.setMessage("Registrando Cargo...");
+        pDialog.setMessage("Registrando...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();
-
-        String dni = null, json = null, fotoVal = null, fotoVeh = null,
-                GuidDipositivo = null;
-        try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo FROM People";
-            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
-            if (c.moveToFirst()) {
-                dni = c.getString(c.getColumnIndex("dni"));
-                json = c.getString(c.getColumnIndex("json"));
-                fotoVal = c.getString(c.getColumnIndex("fotoValor"));
-                fotoVeh = c.getString(c.getColumnIndex("fotoVehiculo"));
-
-            }
-            c.close();
-            dbst.close();
-
-        } catch (Exception e) {}
 
         try {
 
@@ -263,43 +269,102 @@ public class PeopleDetalle extends AppCompatActivity {
 
         } catch (Exception e) {}
 
+
+        String dni = null, json = null;
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo FROM People";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                dni = c.getString(c.getColumnIndex("dni"));
+                json = c.getString(c.getColumnIndex("json"));
+                fotoVal = c.getString(c.getColumnIndex("fotoValor"));
+                fotoVeh = c.getString(c.getColumnIndex("fotoVehiculo"));
+
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
         Gson gson = new Gson();
-        JsonObject result = gson.fromJson(json, JsonObject.class);
-
-        Log.e("JsonObject SEND ", result.toString());
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
 
-        String URL = URL_API.concat("api/Patrol/Create");
+        if (fotoVal==null && fotoVeh==null){
+            casoSinNada(jsonObject);
 
-        /*Log.e("Numero ", Numero);
-        Log.e("DispositivoId ", DispositivoId);
-        Log.e("Placa ", Placa);
-        Log.e("CargoTipoMovimientoId ", CargoTipoMovimiento);
-        Log.e("CargoTipoCargaId ", TipoCarga);
-        Log.e("Casco ", Casco);*/
+        } else  if (fotoVal!=null && fotoVeh==null){
+            casoConMaterial(jsonObject);
 
+        } else  if (fotoVal==null && fotoVeh!=null){
+            casoConVehiculo(jsonObject);
+
+        } else  if (fotoVal!=null && fotoVeh!=null){
+            casoConMaterialVehiculo(jsonObject);
+        }
+
+        Log.e("JsonObject SEND ", jsonObject.toString());
+
+    }
+
+    public void casoConMaterial(JsonObject result){
+
+        String URL = URL_API.concat("api/People/Create");
 
         Ion.with(mContext)
                 .load(URL)
-                .setMultipartParameter("Doi", dni)
                 .setMultipartParameter("DispositivoId", GuidDipositivo)
-                //.setMultipartParameter("Placa", Placa)
-                //.setMultipartParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
-                //.setMultipartParameter("CargoTipoCargaId", TipoCarga)
-                .setMultipartFile("Valor", new File(fotoVal))
-                .setMultipartFile("Vehiculo", new File(fotoVeh))
+                .setMultipartParameter("codPers", result.get("codPers").getAsString())
+                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setMultipartParameter("codArea", result.get("codArea").getAsString())
+                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
+                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartFile("Material", new File(fotoVal))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
                     @Override
                     public void onCompleted(Exception e, Response<String> response) {
 
+                        if(e != null){
+                            Log.e("Exception ", e.getMessage());
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+
+                        }
+
                         if(response.getHeaders().code()==200){
 
                             Gson gson = new Gson();
                             JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                            Log.e("JsonObject ", result.toString());
+                            Log.e("People Create ", result.toString());
+                            //Estado
+
+                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogError();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+
+                            }
 
                             limpiarDatos();
 
@@ -324,6 +389,256 @@ public class PeopleDetalle extends AppCompatActivity {
 
                     }
                 });
+
+    }
+
+    public void casoConVehiculo(JsonObject result){
+
+        String URL = URL_API.concat("api/People/Create");
+
+        Ion.with(mContext)
+                .load(URL)
+                .setMultipartParameter("DispositivoId", GuidDipositivo)
+                .setMultipartParameter("codPers", result.get("codPers").getAsString())
+                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setMultipartParameter("codArea", result.get("codArea").getAsString())
+                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
+                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartFile("Vehiculo", new File(fotoVeh))
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> response) {
+
+                        if(e != null){
+                            Log.e("Exception ", e.getMessage());
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+
+                        }
+
+                        if(response.getHeaders().code()==200){
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("People Create ", result.toString());
+                            //Estado
+
+                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogError();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+
+                            }
+
+                            limpiarDatos();
+
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
+                            try {
+                                showDialogSend();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+
+                        try {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                        } catch (Exception edsv){}
+
+                    }
+                });
+
+    }
+
+    public void casoConMaterialVehiculo(JsonObject result){
+
+        String URL = URL_API.concat("api/People/Create");
+
+        Ion.with(mContext)
+                .load(URL)
+                .setMultipartParameter("DispositivoId", GuidDipositivo)
+                .setMultipartParameter("codPers", result.get("codPers").getAsString())
+                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setMultipartParameter("codArea", result.get("codArea").getAsString())
+                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
+                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartFile("Vehiculo", new File(fotoVeh))
+                .setMultipartFile("Material", new File(fotoVal))
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> response) {
+
+                        if(e != null){
+                            Log.e("Exception ", e.getMessage());
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+
+                        }
+
+                        if(response.getHeaders().code()==200){
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("People Create ", result.toString());
+                            //Estado
+
+                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogError();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+
+                            }
+
+                            limpiarDatos();
+
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
+                            try {
+                                showDialogSend();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+
+                        try {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                        } catch (Exception edsv){}
+
+                    }
+                });
+
+    }
+
+    public void casoSinNada(JsonObject result){
+
+        String URL = URL_API.concat("api/People/Create");
+
+        Ion.with(mContext)
+                .load(URL)
+                .setMultipartParameter("DispositivoId", GuidDipositivo)
+                .setMultipartParameter("codPers", result.get("codPers").getAsString())
+                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setMultipartParameter("codArea", result.get("codArea").getAsString())
+                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
+                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> response) {
+
+                        if(e != null){
+                            Log.e("Exception ", e.getMessage());
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+
+                        }
+
+                        if(response.getHeaders().code()==200){
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("People Create ", result.toString());
+                            //Estado
+
+                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogError();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+
+                            }
+
+                            limpiarDatos();
+
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
+                            try {
+                                showDialogSend();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+
+                        try {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                        } catch (Exception edsv){}
+
+                    }
+                });
+
     }
 
     public void showDialogSend() throws Exception {
@@ -342,6 +657,30 @@ public class PeopleDetalle extends AppCompatActivity {
         builder.show();
     }
 
+    public void showDialogError() throws Exception {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("No se pudo guardar el registro. Intente nuevamente por favor.");
+
+        builder.setPositiveButton("Reenviar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                guardarPeopleM();
+            }
+        });
+
+        builder.setPositiveButton("Cancelar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     public boolean limpiarDatos(){
 
         try {
@@ -355,6 +694,77 @@ public class PeopleDetalle extends AppCompatActivity {
         } catch (Exception eew){}
 
         return true;
+    }
+
+    private String getRightAngleImage(String photoPath) {
+
+        try {
+            ExifInterface ei = new ExifInterface(photoPath);
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            int degree = 0;
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_NORMAL:
+                    degree = 0;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                    degree = 0;
+                    break;
+                default:
+                    degree = 90;
+            }
+
+            return rotateImage(degree,photoPath);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return photoPath;
+    }
+
+    private String rotateImage(int degree, String imagePath){
+
+        if(degree<=0){
+            return imagePath;
+        }
+        try{
+            Bitmap b= BitmapFactory.decodeFile(imagePath);
+
+            Matrix matrix = new Matrix();
+            if(b.getWidth()>b.getHeight()){
+                matrix.setRotate(degree);
+                b = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(),
+                        matrix, true);
+            }
+
+            FileOutputStream fOut = new FileOutputStream(imagePath);
+            String imageName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+            String imageType = imageName.substring(imageName.lastIndexOf(".") + 1);
+
+            FileOutputStream out = new FileOutputStream(imagePath);
+            if (imageType.equalsIgnoreCase("png")) {
+                b.compress(Bitmap.CompressFormat.PNG, 100, out);
+            }else if (imageType.equalsIgnoreCase("jpeg")|| imageType.equalsIgnoreCase("jpg")) {
+                b.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            }
+            fOut.flush();
+            fOut.close();
+
+            b.recycle();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return imagePath;
     }
 
 }

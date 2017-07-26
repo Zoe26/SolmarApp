@@ -96,6 +96,10 @@ public class People extends AppCompatActivity {
 
         } catch (Exception e) {}
 
+
+        Log.e("DNI ", people_edt_dni.getText().toString());
+        Log.e("DispositivoId ", DispositivoId);
+
         String URL = URL_API.concat("api/People/VerificaDOI?NroDOI="+people_edt_dni.getText().toString()+"&DispositivoId="+DispositivoId+"");
 
         final ProgressDialog pDialog;

@@ -187,6 +187,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     private static final int MY_VIBRATE = 5;
     private static final int MY_CAMERA = 6;
     private static final int MY_WRITE_EXTERNAL_STORAGE = 8;
+    private static final int MY_READ_EXTERNAL_STORAGE = 11;
     private static final int MY_CALL_PHONE_STATE = 10;
 
     String serieSIM;
@@ -223,6 +224,20 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         URL_API = globalClass.getURL();
 
         //*********************************************************************************************************************
+
+        // PERMISO DE MEDIO EXTERNO
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_READ_EXTERNAL_STORAGE);
+            } else {
+                flagPermisos = false;
+                //  Log.e("WRITE_EXTERNAL_STORAGE"," false");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_READ_EXTERNAL_STORAGE);
+            }
+        } else {
+            //Log.e("WRITE_EXTERNAL_STORAGE"," true");
+            flagPermisos = true;
+        }
 
         // PERMISO DE LLAMADA
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED) {
@@ -326,6 +341,8 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
             //Log.e("WRITE_EXTERNAL_STORAGE"," true");
             flagPermisos = true;
         }
+
+
 
         if (flagPermisos == false){
             //Log.e("flagPermisos"," return");

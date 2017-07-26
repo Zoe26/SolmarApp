@@ -74,7 +74,7 @@ public final class CameraHelper {
 
     public static File getOutputMediaFile(Context context, @CameraConfiguration.MediaAction int mediaAction) {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), context.getPackageName());
+                Environment.DIRECTORY_PICTURES), "SolgisFotos");
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {

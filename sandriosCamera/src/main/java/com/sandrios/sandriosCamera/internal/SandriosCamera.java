@@ -82,6 +82,7 @@ public class SandriosCamera {
                 .setPermissions(
                         Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.RECORD_AUDIO)
                 .check();
     }
