@@ -358,26 +358,24 @@ public class PeopleDetalle extends AppCompatActivity {
                                     }
                                 } catch (Exception edsv){}
 
+                                showDialogError();
+
+                                return;
+                            } else {
+
+                                limpiarDatos();
+
                                 try {
-                                    showDialogError();
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogSend();
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                 }
-
-                            }
-
-                            limpiarDatos();
-
-                            try {
-                                if (pDialog != null && pDialog.isShowing()) {
-                                    pDialog.dismiss();
-                                }
-                            } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
                             }
                         }
 
@@ -441,26 +439,24 @@ public class PeopleDetalle extends AppCompatActivity {
                                     }
                                 } catch (Exception edsv){}
 
+                                showDialogError();
+
+                                return;
+                            } else {
+
+                                limpiarDatos();
+
                                 try {
-                                    showDialogError();
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogSend();
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                 }
-
-                            }
-
-                            limpiarDatos();
-
-                            try {
-                                if (pDialog != null && pDialog.isShowing()) {
-                                    pDialog.dismiss();
-                                }
-                            } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
                             }
                         }
 
@@ -525,26 +521,24 @@ public class PeopleDetalle extends AppCompatActivity {
                                     }
                                 } catch (Exception edsv){}
 
+                                showDialogError();
+
+                                return;
+                            } else {
+
+                                limpiarDatos();
+
                                 try {
-                                    showDialogError();
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogSend();
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                 }
-
-                            }
-
-                            limpiarDatos();
-
-                            try {
-                                if (pDialog != null && pDialog.isShowing()) {
-                                    pDialog.dismiss();
-                                }
-                            } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
                             }
                         }
 
@@ -607,26 +601,24 @@ public class PeopleDetalle extends AppCompatActivity {
                                     }
                                 } catch (Exception edsv){}
 
+                                showDialogError();
+
+                                return;
+                            } else {
+
+                                limpiarDatos();
+
                                 try {
-                                    showDialogError();
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogSend();
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                 }
-
-                            }
-
-                            limpiarDatos();
-
-                            try {
-                                if (pDialog != null && pDialog.isShowing()) {
-                                    pDialog.dismiss();
-                                }
-                            } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
                             }
                         }
 
@@ -657,7 +649,8 @@ public class PeopleDetalle extends AppCompatActivity {
         builder.show();
     }
 
-    public void showDialogError() throws Exception {
+    public void showDialogError(){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
         builder.setMessage("No se pudo guardar el registro. Intente nuevamente por favor.");
@@ -671,7 +664,7 @@ public class PeopleDetalle extends AppCompatActivity {
             }
         });
 
-        builder.setPositiveButton("Cancelar", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
