@@ -130,13 +130,23 @@ public class PeopleDetalle extends AppCompatActivity {
 
         Log.e(" PEOPLE DETALLE ", json.toString());
 
+        if (!jsonObject.get("Resultado").isJsonNull()){
 
-        if (jsonObject.get("Resultado").getAsString().equalsIgnoreCase("OK")){
-            people_detalle_mensaje.setBackgroundColor(Color.parseColor("#00796B"));
+            if (jsonObject.get("Resultado").getAsString().equalsIgnoreCase("OK")){
+                people_detalle_mensaje.setBackgroundColor(Color.parseColor("#00796B"));
+            } else {
+                people_detalle_mensaje.setBackgroundColor(Color.parseColor("#FF5252"));
+                people_detalle_btn_registrar.setEnabled(false);
+            }
+
         } else {
+
             people_detalle_mensaje.setBackgroundColor(Color.parseColor("#FF5252"));
             people_detalle_btn_registrar.setEnabled(false);
+
         }
+
+
 
         people_txt_mensaje.setText(jsonObject.get("Header").getAsString());
 
@@ -291,19 +301,10 @@ public class PeopleDetalle extends AppCompatActivity {
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-
-        if (fotoVal==null && fotoVeh==null){
-            casoSinNada(jsonObject);
-
-        } else  if (fotoVal!=null && fotoVeh==null){
-            casoConMaterial(jsonObject);
-
-        } else  if (fotoVal==null && fotoVeh!=null){
-            casoConVehiculo(jsonObject);
-
-        } else  if (fotoVal!=null && fotoVeh!=null){
-            casoConMaterialVehiculo(jsonObject);
-        }
+        if (fotoVal==null && fotoVeh==null){casoSinNada(jsonObject);
+        } else  if (fotoVal!=null && fotoVeh==null){casoConMaterial(jsonObject);
+        } else  if (fotoVal==null && fotoVeh!=null){casoConVehiculo(jsonObject);
+        } else  if (fotoVal!=null && fotoVeh!=null){casoConMaterialVehiculo(jsonObject);}
 
         Log.e("JsonObject SEND ", jsonObject.toString());
 
@@ -758,6 +759,22 @@ public class PeopleDetalle extends AppCompatActivity {
             e.printStackTrace();
         }
         return imagePath;
+    }
+
+    public void mensajePersona(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("¡Persona no encontrada!. No se ha obtenido datos de ésta persona.");
+
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
     }
 
 }

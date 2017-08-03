@@ -1,7 +1,9 @@
 package com.idslatam.solmar.People;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -118,9 +120,22 @@ public class People extends AppCompatActivity {
                     @Override
                     public void onCompleted(Exception e, Response<JsonObject> response) {
 
+                        if(e != null){
+
+                            Toast.makeText(mContext, "¡Ha ocurrido un problema!. Comuníquese con su administrador.", Toast.LENGTH_LONG).show();
+
+                            try {
+
+                                if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+
+                            } catch (Exception esc){}
+                            return;
+
+                        }
+
                         if(response == null){
 
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(mContext, "¡No hubo respuesta del servidor!. Por favor intente nuevamente. Caso contrario comuníquese con su administrador.", Toast.LENGTH_LONG).show();
 
                             try {
 
@@ -140,21 +155,28 @@ public class People extends AppCompatActivity {
 
                             Log.e("JsonObject PEOPLE ", result.toString());
 
-                            json = result.toString();
 
-                            try {
+                            if (!result.get("Resultado").isJsonNull()){
 
-                                DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                dba.execSQL("UPDATE People SET dni = "+people_edt_dni.getText().toString()+"");
-                                dba.execSQL("UPDATE People SET json = '"+json+"'");
-                                dba.close();
+                                json = result.toString();
+                                try {
 
-                            } catch (Exception edc){}
+                                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                    dba.execSQL("UPDATE People SET dni = "+people_edt_dni.getText().toString()+"");
+                                    dba.execSQL("UPDATE People SET json = '"+json+"'");
+                                    dba.close();
 
-                            Intent i = new Intent(mContext, PeopleDetalle.class);
-                            startActivity(i);
+                                } catch (Exception edc){}
 
+                                Intent i = new Intent(mContext, PeopleDetalle.class);
+                                startActivity(i);
+
+                            } else {
+
+                                mensajePersona();
+
+                            }
 
                         } else {
                             Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
@@ -175,8 +197,19 @@ public class People extends AppCompatActivity {
         finish();
     }
 
-    public void buscarPeople(){
+    public void mensajePersona(){
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("¡Persona no encontrada!. No se ha obtenido datos de ésta persona.");
+
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
 
     }
 
