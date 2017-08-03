@@ -104,7 +104,7 @@ public class PeopleDetalle extends AppCompatActivity {
         String json = null, dni = null, fotoValor = null, fotoVehiculo = null;
 
         try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
+            DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo FROM People";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
@@ -216,7 +216,7 @@ public class PeopleDetalle extends AppCompatActivity {
             if (fotoValor){
 
                 try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    DBHelper dbHelperAlarm = new DBHelper(this);
                     SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
                     dba.execSQL("UPDATE People SET fotoValor = '"+Uri_Foto+"'");
                     dba.close();
@@ -232,7 +232,7 @@ public class PeopleDetalle extends AppCompatActivity {
             } else if (fotoVehiculo){
 
                 try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    DBHelper dbHelperAlarm = new DBHelper(this);
                     SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
                     dba.execSQL("UPDATE People SET fotoVehiculo = '"+Uri_Foto+"'");
                     dba.close();
@@ -282,7 +282,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         String dni = null, json = null;
         try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
+            DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo FROM People";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
@@ -314,7 +314,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         String URL = URL_API.concat("api/People/Create");
 
-        Ion.with(mContext)
+        Ion.with(this)
                 .load(URL)
                 .setMultipartParameter("DispositivoId", GuidDipositivo)
                 .setMultipartParameter("codPers", result.get("codPers").getAsString())
@@ -325,7 +325,7 @@ public class PeopleDetalle extends AppCompatActivity {
                 .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
                 .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
                 .setMultipartFile("Material", new File(fotoVal))
                 .asString()
                 .withResponse()
@@ -395,7 +395,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         String URL = URL_API.concat("api/People/Create");
 
-        Ion.with(mContext)
+        Ion.with(this)
                 .load(URL)
                 .setMultipartParameter("DispositivoId", GuidDipositivo)
                 .setMultipartParameter("codPers", result.get("codPers").getAsString())
@@ -406,7 +406,7 @@ public class PeopleDetalle extends AppCompatActivity {
                 .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
                 .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
                 .setMultipartFile("Vehiculo", new File(fotoVeh))
                 .asString()
                 .withResponse()
@@ -476,7 +476,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         String URL = URL_API.concat("api/People/Create");
 
-        Ion.with(mContext)
+        Ion.with(this)
                 .load(URL)
                 .setMultipartParameter("DispositivoId", GuidDipositivo)
                 .setMultipartParameter("codPers", result.get("codPers").getAsString())
@@ -487,7 +487,7 @@ public class PeopleDetalle extends AppCompatActivity {
                 .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
                 .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
                 .setMultipartFile("Vehiculo", new File(fotoVeh))
                 .setMultipartFile("Material", new File(fotoVal))
                 .asString()
@@ -558,7 +558,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         String URL = URL_API.concat("api/People/Create");
 
-        Ion.with(mContext)
+        Ion.with(this)
                 .load(URL)
                 .setMultipartParameter("DispositivoId", GuidDipositivo)
                 .setMultipartParameter("codPers", result.get("codPers").getAsString())
@@ -569,7 +569,7 @@ public class PeopleDetalle extends AppCompatActivity {
                 .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
                 .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("codPers").getAsString())
+                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -643,6 +643,16 @@ public class PeopleDetalle extends AppCompatActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                try {
+
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE People SET dni = "+null);
+                    dba.close();
+
+                } catch (Exception edc){}
+
                 dialog.dismiss();
                 finish();
             }
@@ -679,7 +689,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         try {
 
-            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            DBHelper dbHelperAlarm = new DBHelper(this);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
             dba.execSQL("UPDATE People SET fotoValor = " + null);

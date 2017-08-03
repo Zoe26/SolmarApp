@@ -213,4 +213,34 @@ public class People extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
+        String dni = null;
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT dni FROM People";
+            Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
+
+            if (cConfiguration.moveToFirst()) {
+                dni = cConfiguration.getString(cConfiguration.getColumnIndex("dni"));
+            }
+            cConfiguration.close();
+            dbConfiguration.close();
+
+        } catch (Exception e) {}
+
+        if (dni==null){
+            people_edt_dni.setText("");
+            return;
+        }
+
+        people_edt_dni.setText(dni);
+
+    }
 }
