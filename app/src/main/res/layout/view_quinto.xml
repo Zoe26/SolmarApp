@@ -1,277 +1,283 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_above="@+id/btns_buttom"
         android:padding="@dimen/body">
 
-        <TextView
-            android:id="@+id/quinto_txt_ingreso_tracto"
+        <RelativeLayout
+            android:id="@+id/content_S"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:text=""
-            android:textStyle="bold"
-            style="?android:attr/textAppearanceMedium"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/quinto_txt_carga"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:text=""
-            android:textStyle="bold"
-            android:layout_below="@id/quinto_txt_ingreso_tracto"
-            style="?android:attr/textAppearanceMedium"/>
+            <TextView
+                android:id="@+id/quinto_txt_ingreso_tracto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                style="?android:attr/textAppearanceMedium"/>
 
-        <TextView
-            android:id="@+id/quinto_txt_dni"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:text=""
-            android:textStyle="bold"
-            android:textColor="@color/verde"
-            android:layout_below="@id/quinto_txt_carga"
-            style="?android:attr/textAppearanceMedium"/>
+            <TextView
+                android:id="@+id/quinto_txt_carga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                android:layout_below="@id/quinto_txt_ingreso_tracto"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/quinto_txt_dni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                android:textColor="@color/verde"
+                android:layout_below="@id/quinto_txt_carga"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <LinearLayout
+                android:id="@+id/buttums"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/quinto_txt_dni">
+
+                <Button
+                    android:id="@+id/quinto_btn_persona"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:onClick="quintoReturnPersona"
+                    android:textColor="@color/verde"
+                    android:drawableTop="@drawable/ic_persona"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Persona"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/verde"
+                    android:drawableTop="@drawable/ic_carga"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:onClick="returnCarga"
+                    android:text="Contenedor"/>
+
+                <Button
+                    android:id="@+id/quinto_btn_foto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/icons"
+                    android:background="@color/verde"
+                    android:drawableTop="@drawable/ic_blanco_foto"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Foto"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/edt_delantera"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:onClick="parteDelantera"
+                android:layout_below="@id/buttums">
+
+                <ImageView
+                    android:id="@+id/ic_estado_delantera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_estado"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parte Delantera"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    style="?android:attr/textAppearanceMedium"
+                    android:hint="Ingrese Nro OR/GR"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_foto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/edt_panoramica"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:onClick="partePanoramica"
+                android:layout_below="@id/edt_delantera">
+
+
+                <ImageView
+                    android:id="@+id/ic_estado_panoramica"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_estado"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parte Panorámica"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    style="?android:attr/textAppearanceMedium"
+                    android:hint="Ingrese Nro OR/GR"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_foto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/edt_trasera"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:onClick="parteTracera"
+                android:layout_below="@id/edt_panoramica">
+
+                <ImageView
+                    android:id="@+id/ic_estado_trasera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_estado"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parte Trasera"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    style="?android:attr/textAppearanceMedium"
+                    android:hint="Ingrese Nro OR/GR"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_foto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/title_precinto"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_below="@id/edt_trasera">
+
+                <TextView
+                    android:id="@+id/quinto_txt_nro_precintos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:gravity="right"
+                    android:text="Precintos"
+                    android:layout_weight="1"
+                    style="?android:attr/textAppearanceSmall"
+                    android:hint="Precintos"/>
+
+                <ImageButton
+                    android:id="@+id/quinto_btn_precintos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_camare_add"
+                    android:onClick="fotoPrecinto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/title_precinto"
+                android:orientation="vertical">
+
+                <ListView
+                    android:id="@+id/quinto_list_fotos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/buttums"
-            android:layout_marginTop="15dp"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:layout_below="@id/quinto_txt_dni">
-
-            <Button
-                android:id="@+id/quinto_btn_persona"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:layout_margin="2dp"
-                android:layout_weight="1"
-                android:onClick="quintoReturnPersona"
-                android:textColor="@color/verde"
-                android:drawableTop="@drawable/ic_persona"
-                android:background="@drawable/button_bd_border"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Persona"/>
+            android:gravity="center">
 
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:layout_margin="2dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textColor="@color/verde"
-                android:drawableTop="@drawable/ic_carga"
+                android:drawableLeft="@drawable/ic_persona"
+                android:paddingLeft="10dp"
                 android:background="@drawable/button_bd_border"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:onClick="returnCarga"
-                android:text="Contenedor"/>
+                android:text="Carga"/>
 
             <Button
-                android:id="@+id/quinto_btn_foto"
+
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:layout_margin="2dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/icons"
-                android:background="@color/verde"
-                android:drawableTop="@drawable/ic_blanco_foto"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Foto"/>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/edt_delantera"
-            android:layout_marginTop="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:onClick="parteDelantera"
-            android:layout_below="@id/buttums">
-
-            <ImageView
-                android:id="@+id/ic_estado_delantera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_estado"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Parte Delantera"
-                android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                style="?android:attr/textAppearanceSmall"
-                android:hint="Ingrese Nro OR/GR"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_foto"/>
+                android:onClick="finalizarContenedorSend"
+                android:textColor="@color/verde"
+                android:drawableLeft="@drawable/ic_foto"
+                android:paddingLeft="10dp"
+                android:background="@drawable/button_bd_border"
+                style="?android:attr/textAppearanceMedium"
+                android:text="Finalizar"/>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/edt_panoramica"
-            android:layout_marginTop="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:onClick="partePanoramica"
-            android:layout_below="@id/edt_delantera">
-
-
-            <ImageView
-                android:id="@+id/ic_estado_panoramica"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_estado"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Parte Panorámica"
-                android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                style="?android:attr/textAppearanceSmall"
-                android:hint="Ingrese Nro OR/GR"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_foto"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/edt_trasera"
-            android:layout_marginTop="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:onClick="parteTracera"
-            android:layout_below="@id/edt_panoramica">
-
-            <ImageView
-                android:id="@+id/ic_estado_trasera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_estado"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Parte Trasera"
-                android:layout_weight="1"
-                android:layout_marginLeft="5dp"
-                style="?android:attr/textAppearanceSmall"
-                android:hint="Ingrese Nro OR/GR"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_foto"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/title_precinto"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_below="@id/edt_trasera">
-
-            <TextView
-                android:id="@+id/quinto_txt_nro_precintos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:gravity="right"
-                android:text="Precintos"
-                android:layout_weight="1"
-                style="?android:attr/textAppearanceSmall"
-                android:hint="Precintos"/>
-
-            <ImageButton
-                android:id="@+id/quinto_btn_precintos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_camare_add"
-                android:onClick="fotoPrecinto"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/title_precinto"
-            android:orientation="vertical">
-
-            <ListView
-                android:id="@+id/quinto_list_fotos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <LinearLayout
-
-        android:id="@+id/btns_buttom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textColor="@color/verde"
-            android:drawableLeft="@drawable/ic_persona"
-            android:paddingLeft="10dp"
-            android:background="@drawable/button_bd_border"
-            style="?android:attr/textAppearanceSmall"
-            android:onClick="returnCarga"
-            android:text="Carga"/>
-
-        <Button
-
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="finalizarContenedorSend"
-            android:textColor="@color/verde"
-            android:drawableLeft="@drawable/ic_foto"
-            android:paddingLeft="10dp"
-            android:background="@drawable/button_bd_border"
-            style="?android:attr/textAppearanceSmall"
-            android:text="Finalizar"/>
 
     </LinearLayout>
 
-</RelativeLayout>
+</ScrollView>

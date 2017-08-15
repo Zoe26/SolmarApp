@@ -31,6 +31,8 @@ public class People extends AppCompatActivity {
     Context mContext;
     protected String URL_API;
 
+    String variable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +64,12 @@ public class People extends AppCompatActivity {
             if(result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Log.e("MainActivity", "Scanned");
+                Log.e("MainActivity", "Scanned "+result.getContents());
                 people_edt_dni.setText(result.getContents());
+
+                variable = result.getContents().toString();
+
+                buscarPeople(variable);
             }
         }
         // This is important, otherwise the result will not be passed to the fragment
@@ -80,6 +86,13 @@ public class People extends AppCompatActivity {
             Toast.makeText(this, "Ingrese DOI", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        variable = people_edt_dni.getText().toString();
+
+        buscarPeople(variable);
+    }
+
+    public void buscarPeople(String variable){
 
         String DispositivoId = null;
 
@@ -99,10 +112,10 @@ public class People extends AppCompatActivity {
         } catch (Exception e) {}
 
 
-        Log.e("DNI ", people_edt_dni.getText().toString());
+        Log.e("DNI ", variable);
         Log.e("DispositivoId ", DispositivoId);
 
-        String URL = URL_API.concat("api/People/VerificaDOI?NroDOI="+people_edt_dni.getText().toString()+"&DispositivoId="+DispositivoId+"");
+        String URL = URL_API.concat("api/People/VerificaDOI?NroDOI="+variable+"&DispositivoId="+DispositivoId+"");
 
         final ProgressDialog pDialog;
 
@@ -122,11 +135,11 @@ public class People extends AppCompatActivity {
 
                         if(e != null){
 
-                            Toast.makeText(mContext, "¡Ha ocurrido un problema!. Comuníquese con su administrador.", Toast.LENGTH_LONG).show();
-
                             try {
 
                                 if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+
+                                Toast.makeText(mContext, "¡Ha ocurrido un problema!. Comuníquese con su administrador.", Toast.LENGTH_LONG).show();
 
                             } catch (Exception esc){}
                             return;

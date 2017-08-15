@@ -28,7 +28,7 @@
                 style="?android:attr/textAppearanceMedium"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:padding="7dp" />
+                android:padding="10dp" />
 
         </LinearLayout>
 
@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:layout_marginLeft="5dp"
             style="?android:attr/textAppearanceMedium"
-            android:text="Contenedor"/>
+            android:text="CONTENEDOR"/>
 
         <LinearLayout
             android:id="@+id/edt_trasera"
@@ -67,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
+                style="?android:attr/textAppearanceMedium"
                 android:onClick="listaContenedor"
                 android:textColor="@color/squarecamera__white"
                 android:text="BUSCAR"/>
@@ -75,7 +76,7 @@
 
         <LinearLayout
             android:id="@+id/title_precinto"
-            android:layout_marginTop="20dp"
+            android:paddingTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -87,9 +88,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:gravity="center"
-                android:text="Foto"/>
+                android:text="FOTO"/>
 
             <ImageButton
                 android:id="@+id/quinto_btn_precintos"
@@ -132,8 +133,9 @@
             android:textColor="@color/colorPrimary"
             android:paddingLeft="10dp"
             android:background="@drawable/btn_border_patrol"
-            style="?android:attr/textAppearanceSmall"
+            style="?android:attr/textAppearanceMedium"
             android:onClick="GuardarPatrol"
+            android:textStyle="bold"
             android:text="Guardar"/>
 
     </LinearLayout>

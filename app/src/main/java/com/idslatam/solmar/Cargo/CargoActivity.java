@@ -182,6 +182,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             rbContenedorLleno = (RadioButton)viewPager.findViewById(R.id.radio_lleno);
             rbContenedorVacio = (RadioButton)viewPager.findViewById(R.id.radio_vacio);
 
+            rbSinCarga.setOnClickListener(rbSinCargaClick);
+            rbCargaSuelta.setOnClickListener(rbCargaSueltaClick);
+            rbContenedorLleno.setOnClickListener(rbContenedorLlenoClick);
+            rbContenedorVacio.setOnClickListener(rbContenedorVacioClick);
+
+
             isLicencia = (SwitchCompat)findViewById(R.id.switch_licencia);
             isLicencia.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -448,6 +454,77 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
     }
+
+    View.OnClickListener rbSinCargaClick = new View.OnClickListener(){
+        public void onClick(View v) {
+
+            try {
+                DBHelper dbHelperNumero = new DBHelper(mContext);
+                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                dbNro.execSQL("UPDATE Cargo SET TipoCarga = '1' WHERE CargoId = 1");
+                dbNro.close();
+            } catch (Exception eew){}
+
+            rbSinCarga.setChecked(true);
+            rbCargaSuelta.setChecked(false);
+            rbContenedorLleno.setChecked(false);
+            rbContenedorVacio.setChecked(false);
+        }
+    };
+
+    View.OnClickListener rbCargaSueltaClick = new View.OnClickListener(){
+        public void onClick(View v) {
+
+
+            try {
+                DBHelper dbHelperNumero = new DBHelper(mContext);
+                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                dbNro.execSQL("UPDATE Cargo SET TipoCarga = '2' WHERE CargoId = 1");
+                dbNro.close();
+            } catch (Exception eew){}
+
+            rbSinCarga.setChecked(false);
+            rbCargaSuelta.setChecked(true);
+            rbContenedorLleno.setChecked(false);
+            rbContenedorVacio.setChecked(false);
+        }
+    };
+
+    View.OnClickListener rbContenedorLlenoClick = new View.OnClickListener(){
+        public void onClick(View v) {
+
+            try {
+                DBHelper dbHelperNumero = new DBHelper(mContext);
+                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                dbNro.execSQL("UPDATE Cargo SET TipoCarga = '4' WHERE CargoId = 1");
+                dbNro.close();
+            } catch (Exception eew){}
+
+            rbSinCarga.setChecked(false);
+            rbCargaSuelta.setChecked(false);
+            rbContenedorLleno.setChecked(true);
+            rbContenedorVacio.setChecked(false);
+        }
+    };
+
+    View.OnClickListener rbContenedorVacioClick = new View.OnClickListener(){
+        public void onClick(View v) {
+
+            try {
+                DBHelper dbHelperNumero = new DBHelper(mContext);
+                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                dbNro.execSQL("UPDATE Cargo SET TipoCarga = '3' WHERE CargoId = 1");
+                dbNro.close();
+            } catch (Exception eew){}
+
+            rbSinCarga.setChecked(false);
+            rbCargaSuelta.setChecked(false);
+            rbContenedorLleno.setChecked(false);
+            rbContenedorVacio.setChecked(true);
+
+        }
+    };
+
 
     @Override
     public void onPageSelected(int position) {
@@ -1425,7 +1502,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
         if (primero_edt_dni.getText().length() < 8 ){
-            Toast.makeText(mContext, "La placa debe tener un mínimo de 8 dígitos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "El DNI debe tener un mínimo de 8 dígitos", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1520,10 +1597,31 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
-        if (TipoCarga.equalsIgnoreCase("1")){ rbSinCarga.setChecked(true);
-        } else if (TipoCarga.equalsIgnoreCase("2")){ rbCargaSuelta.setChecked(true);
-        } else if (TipoCarga.equalsIgnoreCase("3")){ rbContenedorVacio.setChecked(true);
-        } else if (TipoCarga.equalsIgnoreCase("4")){ rbContenedorLleno.setChecked(true); }
+        if (TipoCarga.equalsIgnoreCase("1")){
+            rbSinCarga.setChecked(true);
+            rbCargaSuelta.setChecked(false);
+            rbContenedorVacio.setChecked(false);
+            rbContenedorLleno.setChecked(false);
+
+        } else if (TipoCarga.equalsIgnoreCase("2")){
+            rbCargaSuelta.setChecked(true);
+            rbSinCarga.setChecked(false);
+            rbContenedorVacio.setChecked(false);
+            rbContenedorLleno.setChecked(false);
+
+        } else if (TipoCarga.equalsIgnoreCase("3")){
+            rbContenedorVacio.setChecked(true);
+            rbCargaSuelta.setChecked(false);
+            rbSinCarga.setChecked(false);
+            rbContenedorLleno.setChecked(false);
+
+        } else if (TipoCarga.equalsIgnoreCase("4")){
+            rbContenedorLleno.setChecked(true);
+            rbContenedorVacio.setChecked(false);
+            rbCargaSuelta.setChecked(false);
+            rbSinCarga.setChecked(false);
+
+        }
 
         if (EppCasco.equalsIgnoreCase("true")){ check_casco.setChecked(true);}
 

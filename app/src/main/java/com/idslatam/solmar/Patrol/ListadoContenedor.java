@@ -250,7 +250,7 @@ public class ListadoContenedor extends AppCompatActivity {
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Codigo, ContenedorId FROM PatrolContenedor WHERE Codigo = "+value;
+            String selectQuery = "SELECT Codigo, ContenedorId FROM PatrolContenedor WHERE Codigo = '"+value.toString()+"'";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 ContenedorId = c.getString(c.getColumnIndex("ContenedorId"));

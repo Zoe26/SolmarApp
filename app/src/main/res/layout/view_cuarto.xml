@@ -1,259 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1">
+    android:fillViewport="true">
 
-    <RelativeLayout
-        android:id="@+id/content_S"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="@dimen/body">
 
-        <TextView
-        android:id="@+id/cuarto_txt_ingreso_tracto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:text=""
-        android:textStyle="bold"
-        style="?android:attr/textAppearanceMedium"/>
+        <RelativeLayout
+            android:id="@+id/content_S"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <TextView
-        android:id="@+id/cuarto_txt_carga"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:text=""
-        android:textStyle="bold"
-        android:layout_below="@id/cuarto_txt_ingreso_tracto"
-        style="?android:attr/textAppearanceMedium"/>
+            <TextView
+                android:id="@+id/cuarto_txt_ingreso_tracto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                style="?android:attr/textAppearanceMedium"/>
 
-        <TextView
-        android:id="@+id/cuarto_txt_dni"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:text=""
-        android:textStyle="bold"
-        android:textColor="@color/verde"
-        android:layout_below="@id/cuarto_txt_carga"
-        style="?android:attr/textAppearanceMedium"/>
+            <TextView
+                android:id="@+id/cuarto_txt_carga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                android:layout_below="@id/cuarto_txt_ingreso_tracto"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/cuarto_txt_dni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                android:textColor="@color/verde"
+                android:layout_below="@id/cuarto_txt_carga"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <LinearLayout
+                android:id="@+id/buttums"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/cuarto_txt_dni"
+                android:layout_weight="1">
+
+                <Button
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/verde"
+                    android:drawableTop="@drawable/ic_persona"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:onClick="returnPersonaCuarto"
+                    android:text="Persona"/>
+
+                <Button
+                    android:id="@+id/cuarto_btn_carga"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/icons"
+                    android:background="@color/verde"
+                    android:drawableTop="@drawable/ic_blanco_carga"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Contenedor"/>
+
+                <Button
+                    android:id="@+id/cuarto_btn_foto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/verde"
+                    android:drawableTop="@drawable/ic_foto"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:onClick="cuarto_btn_fotos"
+                    android:text="Foto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/edt_ingresos"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_below="@id/buttums"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/textAppearanceMedium"
+                    android:text="Tamaño Contenedor"/>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="20"/>
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/cuarto_switch_tamanoContenedor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="40"/>
+
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/cuarto_edt_codContenedor"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    style="?android:attr/textAppearanceMedium"
+                    android:singleLine="true"
+                    android:numeric="integer"
+                    android:maxLength="21"
+                    android:inputType="number"
+                    android:hint="Código Contenedor"/>
+
+                <EditText
+                    android:id="@+id/cuarto_edt_precinto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    style="?android:attr/textAppearanceMedium"
+                    android:singleLine="true"
+                    android:numeric="integer"
+                    android:maxLength="20"
+                    android:inputType="number"
+                    android:hint="Nº de Precinto(s)"/>
+
+                <EditText
+                    android:id="@+id/cuarto_edt_origen"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    style="?android:attr/textAppearanceMedium"
+                    android:singleLine="true"
+                    android:maxLength="30"
+                    android:hint="Origen/Destino"/>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Guía Remisión"/>
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/cuarto_switch_tipoDoc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Ticket Balance"/>
+
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/cuarto_edt_or"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    style="?android:attr/textAppearanceMedium"
+                    android:singleLine="true"
+                    android:maxLength="15"
+                    android:hint="Número"
+                    android:numeric="integer"
+                    android:inputType="number"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/buttums"
-            android:layout_marginTop="15dp"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:layout_below="@id/cuarto_txt_dni"
-            android:layout_weight="1">
+            android:gravity="center">
 
             <Button
 
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:layout_margin="2dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textColor="@color/verde"
-                android:drawableTop="@drawable/ic_persona"
+                android:drawableLeft="@drawable/ic_persona"
+                android:paddingLeft="10dp"
                 android:background="@drawable/button_bd_border"
-                style="?android:attr/textAppearanceSmall"
+                style="?android:attr/textAppearanceMedium"
                 android:onClick="returnPersonaCuarto"
                 android:text="Persona"/>
 
             <Button
-                android:id="@+id/cuarto_btn_carga"
+                android:id="@+id/cuarto_btn_fotos"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:layout_margin="2dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/icons"
-                android:background="@color/verde"
-                android:drawableTop="@drawable/ic_blanco_carga"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Contenedor"/>
-
-            <Button
-                android:id="@+id/cuarto_btn_foto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:layout_margin="2dp"
-                android:layout_weight="1"
-                android:textColor="@color/verde"
-                android:drawableTop="@drawable/ic_foto"
-                android:background="@drawable/button_bd_border"
-                style="?android:attr/textAppearanceSmall"
                 android:onClick="cuarto_btn_fotos"
-                android:text="Foto"/>
+                android:textColor="@color/verde"
+                android:drawableLeft="@drawable/ic_foto"
+                android:paddingLeft="10dp"
+                android:background="@drawable/button_bd_border"
+                style="?android:attr/textAppearanceMedium"
+                android:text="Fotos"/>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/edt_ingresos"
-            android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_below="@id/buttums"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:attr/textAppearanceSmall"
-                android:text="Tamaño Contenedor"/>
-
-            <LinearLayout
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="20"/>
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/cuarto_switch_tamanoContenedor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="40"/>
-
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/cuarto_edt_codContenedor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
-                android:singleLine="true"
-                android:numeric="integer"
-                android:maxLength="21"
-                android:inputType="number"
-                android:hint="Código Contenedor"/>
-
-            <EditText
-                android:id="@+id/cuarto_edt_precinto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
-                android:singleLine="true"
-                android:numeric="integer"
-                android:maxLength="20"
-                android:inputType="number"
-                android:hint="Nº de Precinto(s)"/>
-
-            <EditText
-                android:id="@+id/cuarto_edt_origen"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
-                android:singleLine="true"
-                android:maxLength="30"
-                android:hint="Origen/Destino"/>
-
-            <LinearLayout
-                android:gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Guía Remisión"/>
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/cuarto_switch_tipoDoc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ticket Balance"/>
-
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/cuarto_edt_or"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                style="?android:attr/textAppearanceSmall"
-                android:singleLine="true"
-                android:maxLength="15"
-                android:hint="Número"
-                android:numeric="integer"
-                android:inputType="number"/>
-
     </LinearLayout>
 
-    </RelativeLayout>
-
-    <LinearLayout
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <Button
-
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textColor="@color/verde"
-            android:drawableLeft="@drawable/ic_persona"
-            android:paddingLeft="10dp"
-            android:background="@drawable/button_bd_border"
-            style="?android:attr/textAppearanceSmall"
-            android:onClick="returnPersonaCuarto"
-            android:text="Persona"/>
-
-        <Button
-            android:id="@+id/cuarto_btn_fotos"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="cuarto_btn_fotos"
-            android:textColor="@color/verde"
-            android:drawableLeft="@drawable/ic_foto"
-            android:paddingLeft="10dp"
-            android:background="@drawable/button_bd_border"
-            style="?android:attr/textAppearanceSmall"
-            android:text="Fotos"/>
-
-    </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>
