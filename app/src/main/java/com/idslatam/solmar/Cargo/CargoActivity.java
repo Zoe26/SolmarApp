@@ -1391,29 +1391,23 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (true){
 
-            String URL = URL_API.concat("api/CodigoBarra");
 
+            Log.e("DNI ", primero_edt_dni.getText().toString());
+            Log.e("DispositivoId ", GuidDipositivo);
 
-            ProgressDialog pDialog;
+            String URL = URL_API.concat("api/People/VerificaDOI?NroDOI="+primero_edt_dni.getText().toString()+
+                    "&DispositivoId="+GuidDipositivo+"");
+
+            final ProgressDialog pDialog;
 
             pDialog = new ProgressDialog(CargoActivity.this);
-            pDialog.setMessage("Enviando...");
+            pDialog.setMessage("Obteniendo Datos...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
 
-            JsonObject json = new JsonObject();
-            json.addProperty("Numero", NumeroCel);
-            json.addProperty("DispositivoId", GuidDipositivo);
-            json.addProperty("CodigoEmpleado", CodigoEmpleado);
-            json.addProperty("CodigoBarraTipoDocumentoID", tipo);
-            json.addProperty("Valor", valor);
-            json.addProperty("Fecha", fecha);
-            json.addProperty("Formato", formato);
-
             Ion.with(this)
-                    .load("POST", URL)
-                    .setJsonObjectBody(json)
+                    .load("GET", URL)
                     .asJsonObject()
                     .withResponse()
                     .setCallback(new FutureCallback<Response<JsonObject>>() {
@@ -1430,64 +1424,66 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 Log.e("Exception ", "Dni");
                             }
 
-                            if(response == null){
-
-                                Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            if(e != null){
 
                                 try {
 
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
+                                    if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
 
-                                } catch (Exception edsv){}
+                                    Toast.makeText(mContext, "¡Ha ocurrido un problema!. Comuníquese con su administrador.", Toast.LENGTH_LONG).show();
 
+                                } catch (Exception esc){}
                                 return;
 
                             }
 
-                            if(response.getHeaders().code() == 200){
+                            if(response == null){
+
+                                Toast.makeText(mContext, "¡No hubo respuesta del servidor!. Por favor intente nuevamente. Caso contrario comuníquese con su administrador.", Toast.LENGTH_LONG).show();
+
+                                try {
+
+                                    if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+
+                                } catch (Exception esc){}
+                                return;
+
+                            }
+
+                            if (response.getHeaders().code() == 200) {
 
                                 Gson gson = new Gson();
                                 JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                                Log.e("JsonObject PEOPLE ", result.toString());
 
-                                try {
+                                if (!result.get("Resultado").isJsonNull()){
 
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
+                                    try {
+                                        DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                        dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
+                                        dba.close();
+                                        Log.e("Dni ","true");
+                                    } catch (Exception eew){
+                                        Log.e("Exception ", "CargoActivity Dni");
                                     }
 
-                                    dialogoRespuesta(result.get("Estado").getAsString() ,result.get("Header").getAsString(),result.get("Mensaje").getAsString());
+                                } else {
 
-                                } catch (Exception edd){
+                                    mensajePersona();
 
                                 }
-                                Log.e("JsonObject Bars ", response.getResult().toString());
 
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                } catch (Exception ecsa){}
-
-                            } else  {
-
-                                Log.e("Error Code DNI ", String.valueOf(response.getHeaders().code()));
-
-                                Toast.makeText(CargoActivity.this, "Error Code " +  response.getHeaders().code(), Toast.LENGTH_LONG).show();
-                                Log.e("Exception ", "Finaliza" );
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                } catch (Exception ecsa){}
+                            } else {
+                                Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
                             }
 
                             try {
-                                if (pDialog != null && pDialog.isShowing()) {
-                                    pDialog.dismiss();
-                                }
-                            } catch (Exception ecsa){}
+
+                                if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+
+                            } catch (Exception esc){}
+
                         }
                     });
         }
@@ -2062,10 +2058,42 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        int selectedId = radiogroup.getCheckedRadioButtonId();
+        String TipoCarga = null;
+        int selectedId = 0;
 
-        RadioButton radioButton = (RadioButton) findViewById(selectedId);
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT TipoCarga FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                selectedId = c.getInt(c.getColumnIndex("TipoCarga"));
+            }
+            c.close();
+            dbst.close();
 
+        } catch (Exception e) {}
+
+        Log.e("selectedId ", String.valueOf(selectedId));
+
+        if (selectedId==1){
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+
+        } else if(selectedId==2){
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+
+        } else if(selectedId==3){
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 3);
+
+        } else if (selectedId==4){
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 3);
+
+        }
+
+
+        /*RadioButton radioButton = (RadioButton) findViewById(selectedId);
+
+        //EPROBLEMAS
         if (radioButton.getText().toString().equalsIgnoreCase("Sin Carga")){
             idRadioButtom = "1";
         } else if ((radioButton.getText().toString().equalsIgnoreCase("Carga Suelta"))){
@@ -2090,7 +2118,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         } else {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 3);
 
-        }
+        }*/
 
     }
 
@@ -2225,6 +2253,46 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
     }
 
+    public void fotoPrecinto(View view){
+
+        int ctaA = 0,ctaB = 0;
+        try {
+            DBHelper bdh = new DBHelper(this);
+            SQLiteDatabase sqlite = bdh.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM CargoPrecinto";
+            Cursor ca = sqlite.rawQuery(selectQuery, new String[]{});
+            ctaA = ca.getCount();
+            ca.close();
+            sqlite.close();
+
+        } catch (Exception e) {}
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT numeroPrecintos FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                ctaB = c.getInt(c.getColumnIndex("numeroPrecintos"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        Log.e("ctaA ", String.valueOf(ctaA));
+        Log.e("ctaB ", String.valueOf(ctaB));
+
+        if (ctaA == ctaB){
+            Toast.makeText(mContext, "¡Precintos Completos!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        tomarFoto();
+        isPrecinto = true;
+
+    }
+
     public void SinCarga(){
 
         if (CargoTipoMovimiento.equalsIgnoreCase("true")){
@@ -2321,19 +2389,23 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             Log.e("JsonObject ", result.toString());
 
-                            limpiarDatos();
+                            if (result.get("Estado").getAsBoolean()){
+                                limpiarDatos();
+                                try {
+                                    showDialogSend();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+
+                                Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                            }
 
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                            }
 
                         }
 
@@ -2452,7 +2524,17 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             Log.e("JsonObject ", result.toString());
 
-                            limpiarDatos();
+                            if (result.get("Estado").getAsBoolean()){
+                                limpiarDatos();
+                                try {
+                                    showDialogSend();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+
+                                Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                            }
 
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
@@ -2460,11 +2542,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 }
                             } catch (Exception edsv){}
 
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                            }
 
                         }
 
@@ -2476,46 +2553,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                     }
                 });
-
-    }
-
-    public void fotoPrecinto(View view){
-
-        int ctaA = 0,ctaB = 0;
-        try {
-            DBHelper bdh = new DBHelper(this);
-            SQLiteDatabase sqlite = bdh.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM CargoPrecinto";
-            Cursor ca = sqlite.rawQuery(selectQuery, new String[]{});
-            ctaA = ca.getCount();
-            ca.close();
-            sqlite.close();
-
-        } catch (Exception e) {}
-
-        try {
-            DBHelper dataBaseHelper = new DBHelper(this);
-            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT numeroPrecintos FROM Cargo";
-            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
-            if (c.moveToFirst()) {
-                ctaB = c.getInt(c.getColumnIndex("numeroPrecintos"));
-            }
-            c.close();
-            dbst.close();
-
-        } catch (Exception e) {}
-
-        Log.e("ctaA ", String.valueOf(ctaA));
-        Log.e("ctaB ", String.valueOf(ctaB));
-
-        if (ctaA == ctaB){
-            Toast.makeText(mContext, "¡Precintos Completos!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        tomarFoto();
-        isPrecinto = true;
 
     }
 
@@ -2654,19 +2691,23 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             Log.e("JsonObject ", result.toString());
 
-                            limpiarDatos();
+                            if (result.get("Estado").getAsBoolean()){
+                                limpiarDatos();
+                                try {
+                                    showDialogSend();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+
+                                Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                            }
 
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                            }
                         }
                     }
                 });
@@ -2808,19 +2849,24 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             Log.e("JsonObject ", result.toString());
 
-                            limpiarDatos();
+                            if (result.get("Estado").getAsBoolean()){
+                                limpiarDatos();
+
+                                try {
+                                    showDialogSend();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+
+                                Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                            }
 
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
-
-                            try {
-                                showDialogSend();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                            }
                         }
                     }
                 });
@@ -2905,6 +2951,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception eew){}
 
+        limpiarDatosRadioBoton();
+
         DBHelper dbgelperDeete = new DBHelper(this);
         SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
         sqldbDelete.execSQL("DELETE FROM CargoPrecinto");
@@ -2934,6 +2982,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception eew){}
 
+        limpiarDatosRadioBoton();
+
         DBHelper dbgelperDeete = new DBHelper(this);
         SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
         sqldbDelete.execSQL("DELETE FROM CargoPrecinto");
@@ -2945,27 +2995,16 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     public boolean limpiarDatosRadioBoton(){
 
         try {
-
-            DBHelper dbHelperAlarm = new DBHelper(mContext);
-            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-            dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
-            dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
-            dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
-            dba.execSQL("UPDATE Cargo SET NroOR = " + null);
-            dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
-            dba.execSQL("UPDATE Cargo SET codigoContenedor = " + null);
-            dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
-            dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
-            dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
-
-            dba.close();
-
+            DBHelper dbHelperNumero = new DBHelper(mContext);
+            SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+            dbNro.execSQL("UPDATE Cargo SET TipoCarga = '1' WHERE CargoId = 1");
+            dbNro.execSQL("UPDATE Cargo SET EppCasco = 'false'");
+            dbNro.execSQL("UPDATE Cargo SET EppChaleco = 'false'");
+            dbNro.execSQL("UPDATE Cargo SET EppBotas = 'false'");
+            dbNro.execSQL("UPDATE Cargo SET isCarga = 'false'");
+            dbNro.close();
         } catch (Exception eew){}
 
-        DBHelper dbgelperDeete = new DBHelper(this);
-        SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
-        sqldbDelete.execSQL("DELETE FROM CargoPrecinto");
-        sqldbDelete.close();
 
         return true;
     }
@@ -3043,6 +3082,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 } catch (Exception exc){}
 
 
+
                             }
                         });
             }
@@ -3061,4 +3101,21 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         return  true;
     }
+
+    public void mensajePersona(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("¡Persona no encontrada!. No se ha obtenido datos de ésta persona.");
+
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+    }
+
 }
