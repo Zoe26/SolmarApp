@@ -375,11 +375,26 @@ public class PatrolActivity extends AppCompatActivity {
                                 }
                             } catch (Exception edsv){}
 
-                            try {
-                                mensajeGuardado();
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
+                            if (result.get("Estado").getAsBoolean()){
+                                try {
+                                    mensajeGuardado();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+                                //MensajeErrorPatrol();
+                                if (!result.get("Exception").isJsonNull()){
+                                    Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                                }
+
                             }
+                        } else {
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+                            Log.e("PATROL Error Code ", String.valueOf(response.getHeaders().code()));
                         }
                     }
                 });
@@ -401,6 +416,24 @@ public class PatrolActivity extends AppCompatActivity {
             builder.show();
 
         } catch (Exception sdf){}
+    }
+
+    public void MensajeErrorPatrol(){
+
+        /*try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("¡Ha ocurrido una excepción! " + );
+            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    borrarDatos();
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+
+        } catch (Exception sdf){}*/
     }
 
 }
