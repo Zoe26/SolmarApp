@@ -77,9 +77,9 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     protected LocationRequest mLocationRequest;
     Location locationLastSend = null;
     protected String URL_API;
-    String NetworkHabilitado,GPSHabilitado,MobileHabilitado, valido=null;
+    String NetworkHabilitado, GPSHabilitado, MobileHabilitado, valido=null;
     String lastActividad=null;
-    String versionAp="1.0";
+    String versionAp="2.0";
     Calendar currentSend = null;
     Boolean flagSend = false, flagDelay = false;
     int contador =0, intervalSend=0;

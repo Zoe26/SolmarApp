@@ -1458,14 +1458,26 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                                 if (!result.get("Resultado").isJsonNull()){
 
-                                    try {
-                                        DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                        dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
-                                        dba.close();
-                                        Log.e("Dni ","true");
-                                    } catch (Exception eew){
-                                        Log.e("Exception ", "CargoActivity Dni");
+                                    Log.e(" RESULTADO ", result.get("Resultado").getAsString());
+
+                                    if (result.get("Resultado").getAsString().equalsIgnoreCase("ERROR")){
+                                        if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+                                        MensajeError(result.get("Header").getAsString(), result.get("Mensaje").getAsString());
+                                        Log.e("ERROR ","ERROR");
+                                        return;
+                                    }
+
+
+                                    if (result.get("Resultado").getAsString().equalsIgnoreCase("OK")){
+                                        try {
+                                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                            dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
+                                            dba.close();
+                                            Log.e("Dni ","true");
+                                        } catch (Exception eew){
+                                            Log.e("Exception ", "CargoActivity Dni");
+                                        }
                                     }
 
                                 } else {
@@ -3115,6 +3127,46 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 dialog.dismiss();
             }
         });
+
+    }
+
+    public void MensajeError(String title, String mensaje){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_failed, null);
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView texMje = (TextView)mView.findViewById(R.id.cargo_mje_failed);
+
+        txtTitle.setText("¡"+title+"!");
+        texMje.setText(mensaje);
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    /*limpiarDatosRadioBoton();
+                    limpiarDatos();
+                    limpiarDatosPlaca();*/
+
+                    dialog.dismiss();
+
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

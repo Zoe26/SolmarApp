@@ -169,8 +169,6 @@ public class ListadoContenedor extends AppCompatActivity {
 
     public void listaContenedores(){
 
-        String URL = URL_API.concat("api/Contenedor/GetAll");
-
         final ProgressDialog pDialog;
 
         pDialog = new ProgressDialog(ListadoContenedor.this);
@@ -178,6 +176,28 @@ public class ListadoContenedor extends AppCompatActivity {
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(true);
         pDialog.show();
+
+        String DispositivoId = null;
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT GuidDipositivo FROM Configuration";
+            Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
+
+            if (cConfiguration.moveToFirst()) {
+                DispositivoId = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
+            }
+            cConfiguration.close();
+            dbConfiguration.close();
+
+        } catch (Exception e) {}
+
+
+        String URL = URL_API.concat("api/Contenedor/GetAll?DispositivoId="+DispositivoId);
+
+
 
         Ion.with(this)
                 .load("GET", URL)
