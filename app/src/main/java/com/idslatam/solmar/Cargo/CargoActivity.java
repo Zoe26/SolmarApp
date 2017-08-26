@@ -2804,6 +2804,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 } while (c.moveToNext());
 
             }
+
             c.close();
             dbst.close();
 
