@@ -1414,17 +1414,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                         @Override
                         public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                            try {
-                                DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
-                                dba.close();
-                                Log.e("Dni ","true");
-                            } catch (Exception eew){
-                                Log.e("Exception ", "Dni");
-                            }
-
                             if(e != null){
+
+                                limpiarDatosRadioBoton();
+                                limpiarDatos();
+                                limpiarDatosPlaca();
 
                                 try {
 
@@ -1482,6 +1476,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                                 } else {
 
+                                    limpiarDatosRadioBoton();
+                                    limpiarDatos();
+                                    limpiarDatosPlaca();
                                     mensajePersona();
 
                                 }
@@ -3149,9 +3146,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
-                    /*limpiarDatosRadioBoton();
+                    limpiarDatosRadioBoton();
                     limpiarDatos();
-                    limpiarDatosPlaca();*/
+                    limpiarDatosPlaca();
 
                     dialog.dismiss();
 
