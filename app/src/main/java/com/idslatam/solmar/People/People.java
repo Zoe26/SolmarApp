@@ -72,9 +72,6 @@ public class People extends AppCompatActivity {
                 buscarPeople(variable);
             }
         }
-        // This is important, otherwise the result will not be passed to the fragment
-
-        Log.e("MENUPRINCIPAL", "RESULT FIN");
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -168,7 +165,6 @@ public class People extends AppCompatActivity {
 
                             Log.e("JsonObject PEOPLE ", result.toString());
 
-
                             if (!result.get("Resultado").isJsonNull()){
 
                                 json = result.toString();
@@ -176,13 +172,19 @@ public class People extends AppCompatActivity {
 
                                     DBHelper dbHelperAlarm = new DBHelper(mContext);
                                     SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                    dba.execSQL("UPDATE People SET dni = "+people_edt_dni.getText().toString()+"");
+                                    dba.execSQL("UPDATE People SET dni = "+variable.toString()+"");
                                     dba.execSQL("UPDATE People SET json = '"+json+"'");
                                     dba.close();
 
                                 } catch (Exception edc){}
 
                                 Intent i = new Intent(mContext, PeopleDetalle.class);
+                                try {
+
+                                    if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+
+                                } catch (Exception esc){}
+
                                 startActivity(i);
 
                             } else {

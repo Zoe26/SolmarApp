@@ -53,11 +53,20 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="3"
+            android:layout_weight="1.5"
             style="?android:attr/textAppearanceMedium"
             android:textColor="@color/squarecamera__white"
             android:onClick="Nuevo"
-            android:text="Nuevo"/>
+            android:text="SYNC"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            style="?android:attr/textAppearanceMedium"
+            android:onClick="crearContenedor"
+            android:textColor="@color/squarecamera__white"
+            android:text="NUEVO"/>
 
     </LinearLayout>
 

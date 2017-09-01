@@ -66,7 +66,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="1.5"
                 style="?android:attr/textAppearanceMedium"
                 android:onClick="listaContenedor"
                 android:textColor="@color/squarecamera__white"

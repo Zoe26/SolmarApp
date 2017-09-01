@@ -117,9 +117,7 @@ public class RegisterNumber extends Activity implements View.OnClickListener{
                         public void onCompleted(Exception e, Response<JsonObject> response) {
 
                             if(response == null){
-
                                 Toast.makeText(mContex, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
-
                                 try {
                                     if (pDialog != null && pDialog.isShowing()) {
                                         pDialog.dismiss();

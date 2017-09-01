@@ -1468,6 +1468,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
                                             dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
                                             dba.close();
+
+                                            MensajePersona(result.get("Mensaje").getAsString());
                                             Log.e("Dni ","true");
                                         } catch (Exception eew){
                                             Log.e("Exception ", "CargoActivity Dni");
@@ -3134,6 +3136,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
         mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_failed, null);
+        mBuilder.setCancelable(false);
 
         TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
         TextView texMje = (TextView)mView.findViewById(R.id.cargo_mje_failed);
@@ -3155,6 +3158,46 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Intent intent = getIntent();
                     finish();
                     startActivity(intent);
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void MensajePersona(String mensaje) {
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_ok, null);
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView texMje = (TextView) mView.findViewById(R.id.cargo_mje_failed);
+
+        txtTitle.setText("¡INFORMACIÓN!");
+        texMje.setText(mensaje);
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    /*limpiarDatosRadioBoton();
+                    limpiarDatos();
+                    limpiarDatosPlaca();*/
+
+                    dialog.dismiss();
+
+                    /*Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);*/
 
                 }
             });

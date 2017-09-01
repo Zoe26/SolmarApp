@@ -9,17 +9,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="?android:attr/textAppearanceMedium"
+        android:text="CREAR CONTENEDOR"
         android:gravity="center"
         android:layout_weight="1"
-        android:background="@color/squarecamera__red"
+        android:background="@color/colorPrimary"
         android:textColor="@color/squarecamera__white"
         android:padding="7dp"
         android:layout_marginBottom="4dp"/>
 
     <TextView
-        android:id="@+id/cargo_mje_failed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:text="Ingrese código del contenedor"
+        style="?android:attr/textAppearanceMedium"
+        android:layout_weight="0.5"
+        android:textColor="@color/common_google_signin_btn_text_light"
+        android:paddingTop="15dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"/>
+
+    <EditText
+        android:id="@+id/patrol_cod_contenedor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="Código"
         style="?android:attr/textAppearanceMedium"
         android:layout_weight="0.5"
         android:textColor="@color/common_google_signin_btn_text_light"

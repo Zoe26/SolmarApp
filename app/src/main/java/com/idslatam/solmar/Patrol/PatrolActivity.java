@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
+import com.idslatam.solmar.Cargo.CargoActivity;
 import com.idslatam.solmar.Models.Crud.PatrolPrecintoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.PatrolPrecinto;

@@ -49,6 +49,8 @@ public class ListadoContenedor extends AppCompatActivity {
 
     Context mContext;
 
+    String sUsername;
+
     // Search EditText
     EditText inputSearch;
 
@@ -118,10 +120,6 @@ public class ListadoContenedor extends AppCompatActivity {
                 //Toast.makeText(ListadoContenedor.this, "parent "+ parent.getItemAtPosition(position), Toast.LENGTH_SHORT).show();
 
             }});
-
-        /**
-         * Enabling Search Filter
-         * */
         inputSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -131,15 +129,13 @@ public class ListadoContenedor extends AppCompatActivity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                          int arg3) {
-                // TODO Auto-generated method stub
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
 
             }
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
+
             }
         });
 
@@ -177,6 +173,15 @@ public class ListadoContenedor extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        try {
+
+            DBHelper dbgelperDeete = new DBHelper(this);
+            SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
+            sqldbDelete.execSQL("DELETE FROM PatrolContenedor ");
+            sqldbDelete.close();
+
+        } catch (Exception e){}
+
         String DispositivoId = null;
 
         try {
@@ -196,7 +201,6 @@ public class ListadoContenedor extends AppCompatActivity {
 
 
         String URL = URL_API.concat("api/Contenedor/GetAll?DispositivoId="+DispositivoId);
-
 
 
         Ion.with(this)
@@ -262,6 +266,7 @@ public class ListadoContenedor extends AppCompatActivity {
                         }
 
                     }});
+
     }
 
     public void seleccion(String value) {
@@ -322,6 +327,130 @@ public class ListadoContenedor extends AppCompatActivity {
 
     public void Nuevo(View view){
         listaContenedores();
+    }
+
+    public void crearContenedor(View view){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ListadoContenedor.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_patrol_crear_contenedor, null);
+
+        EditText editText = (EditText) mView.findViewById(R.id.patrol_cod_contenedor);
+        //TextView texMje = (TextView) mView.findViewById(R.id.cargo_mje_failed);
+        //texMje.setText(mensaje);
+
+        sUsername = editText.getText().toString();
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+
+                        dialog.dismiss();
+                        contenedorApi(editText.getText().toString());
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void contenedorApi(String codigoContenedor){
+
+        final ProgressDialog pDialog;
+
+        pDialog = new ProgressDialog(ListadoContenedor.this);
+        pDialog.setMessage("Creando contenedor...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+        String DispositivoId = null;
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT GuidDipositivo FROM Configuration";
+            Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
+
+            if (cConfiguration.moveToFirst()) {
+                DispositivoId = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
+            }
+            cConfiguration.close();
+            dbConfiguration.close();
+
+        } catch (Exception e) {}
+
+
+        Log.e(" Codigo ", codigoContenedor);
+        Log.e(" GuidDipositivo ", DispositivoId);
+
+        String URL = URL_API.concat("api/Contenedor/Create");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("DispositivoId", DispositivoId);
+        json.addProperty("Codigo", codigoContenedor);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> response) {
+
+                        if(response == null){
+
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+                        }
+
+                        if (response.getHeaders().code() == 200) {
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("Contendedor Patrol ", result.toString());
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+
+                            Toast.makeText(mContext, "¡Guardado Correctamente!", Toast.LENGTH_SHORT).show();
+
+                            itemsList.clear();
+                            listaContenedores();
+
+
+                        } else {
+
+                            Log.e("ERROR CODE ", String.valueOf(response.getHeaders().code()));
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+
+                            Toast.makeText(mContext, "Error al registrar. ¡Intente Nuevamente!", Toast.LENGTH_LONG).show();
+                        }
+                        if (pDialog != null && pDialog.isShowing()) {
+                            pDialog.dismiss();
+                        }
+
+                    }});
+
     }
 
 }
