@@ -674,6 +674,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
         ////Log.e("-- IF | ", String.valueOf(flagIsFused) +"-"+String.valueOf(flagIsPlaySevice)+"-"+String.valueOf(flagIsUpdate));
 
+
         if (flagIsPlaySevice == true && flagIsUpdate == true){
 
             String URL = URL_API.concat("api/dispositivo");
