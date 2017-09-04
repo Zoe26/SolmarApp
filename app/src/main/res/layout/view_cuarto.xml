@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true">
 
     <LinearLayout
@@ -135,7 +136,15 @@
                         android:id="@+id/cuarto_switch_tamanoContenedor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"/>
+                        android:checked="false"
+                        android:thumb="@drawable/switch_compat_custom"
+                        app:track="@drawable/switch_compat_custom_track"/>
+
+                    <!--<android.support.v7.widget.SwitchCompat
+                        android:id="@+id/cuarto_switch_tamanoContenedor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>-->
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -150,14 +159,14 @@
                     android:id="@+id/cuarto_edt_codContenedor"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:maxLength="11"
+                    style="?android:attr/textAppearanceMedium"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
                     android:layout_weight="1"
                     android:layout_marginTop="5dp"
                     android:gravity="center"
-                    style="?android:attr/textAppearanceMedium"
-                    android:singleLine="true"
-                    android:numeric="integer"
-                    android:maxLength="21"
-                    android:inputType="number"
                     android:hint="Código Contenedor"/>
 
                 <EditText
@@ -203,7 +212,15 @@
                         android:id="@+id/cuarto_switch_tipoDoc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"/>
+                        android:checked="false"
+                        android:thumb="@drawable/switch_compat_custom"
+                        app:track="@drawable/switch_compat_custom_track"/>
+
+                    <!--<android.support.v7.widget.SwitchCompat
+                        android:id="@+id/cuarto_switch_tipoDoc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>-->
 
                     <TextView
                         android:layout_width="wrap_content"

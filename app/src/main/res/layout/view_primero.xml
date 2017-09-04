@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true">
 
 
@@ -16,13 +17,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:orientation="vertical"
             android:layout_weight="1">
 
             <LinearLayout
                 android:id="@+id/primero_tracto"
                 android:layout_width="match_parent"
-                android:layout_height="40dp">
+                android:layout_height="48dp">
 
                 <EditText
                     android:id="@+id/primero_edt_tracto"
@@ -201,8 +203,9 @@
 
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="2"
                     android:paddingRight="5dp"
                     android:orientation="vertical">
 
@@ -265,7 +268,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="left"
-                    android:layout_weight="0.4">
+                    android:layout_weight="1">
 
                     <LinearLayout
 
@@ -290,7 +293,7 @@
 
                             android:layout_marginLeft="5dp"
                             android:layout_width="match_parent"
-                            android:layout_height="30dp"
+                            android:layout_height="48dp"
                             android:orientation="horizontal"
                             android:layout_weight="1">
 
@@ -342,7 +345,15 @@
                             android:id="@+id/switch_licencia"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checked="false"/>
+                            android:thumb="@drawable/switch_compat_custom"
+                            app:track="@drawable/switch_compat_custom_track"/>
+
+                        <!--<android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switch_licencia"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/ic_sync_black"
+                            android:checked="false"/>-->
 
                         <TextView
                             android:layout_width="wrap_content"

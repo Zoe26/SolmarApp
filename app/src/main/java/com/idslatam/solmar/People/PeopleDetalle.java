@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
+import com.idslatam.solmar.ImageClass.ImageConverter;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
@@ -34,6 +36,7 @@ import com.koushikdutta.async.http.body.FilePart;
 import com.koushikdutta.async.http.body.Part;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
+import com.koushikdutta.ion.bitmap.Transform;
 import com.sandrios.sandriosCamera.internal.SandriosCamera;
 import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
@@ -64,6 +67,8 @@ public class PeopleDetalle extends AppCompatActivity {
 
     Button people_detalle_btn_registrar;
 
+    ImageView people_detalle_img;
+
     ProgressDialog pDialog;
 
     @Override
@@ -89,6 +94,8 @@ public class PeopleDetalle extends AppCompatActivity {
 
         people_detalle_txtfoto_valor = (TextView)findViewById(R.id.people_detalle_txtfoto_valor);
         people_detalle_txtfoto_vehiculo = (TextView)findViewById(R.id.people_detalle_txtfoto_vehiculo);
+
+        people_detalle_img = (ImageView)findViewById(R.id.people_detalle_img);
 
         people_detalle_btn_registrar = (Button)findViewById(R.id.people_detalle_btn_registrar);
 
@@ -147,6 +154,33 @@ public class PeopleDetalle extends AppCompatActivity {
         }
 
 
+        try {
+
+            ImageView imageViewb = (ImageView)findViewById(R.id.people_detalle_img);
+
+            try {
+
+                Ion.with(imageViewb)
+                        .placeholder(R.drawable.ic_foto_fail)
+                        .error(R.drawable.ic_foto_fail)
+                        .transform(new Transform() {
+                            @Override
+                            public Bitmap transform(Bitmap b) {
+                                return ImageConverter.createCircleBitmap(b);
+                            }
+
+                            @Override
+                            public String key() {
+                                Log.e("key "," null");
+                                return null;
+                            }
+                        })
+                        .load(jsonObject.get("Img").getAsString());
+
+            } catch (Exception e){}
+
+        } catch (Exception es){}
+
 
         people_txt_mensaje.setText(jsonObject.get("Header").getAsString());
 
@@ -175,7 +209,7 @@ public class PeopleDetalle extends AppCompatActivity {
     }
 
     public void salir(View view){
-        finish();
+        mensajeSalir();
     }
 
     public void fotoValor(View view){
@@ -644,20 +678,42 @@ public class PeopleDetalle extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                try {
-
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE People SET dni = "+null);
-                    dba.close();
-
-                } catch (Exception edc){}
-
+                limpiarDatos();
                 dialog.dismiss();
                 finish();
             }
         });
         builder.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        mensajeSalir();
+    }
+
+    public void mensajeSalir(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("¿Está seguro que desea salir?");
+        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                limpiarDatos();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
+
     }
 
     public void showDialogError(){
@@ -689,10 +745,20 @@ public class PeopleDetalle extends AppCompatActivity {
 
         try {
 
+            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+
+            dba.close();
+
+        } catch (Exception edc){}
+
+        try {
+
             DBHelper dbHelperAlarm = new DBHelper(this);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
             dba.execSQL("UPDATE People SET fotoValor = " + null);
+            dba.execSQL("UPDATE People SET dni = "+null);
             dba.close();
 
         } catch (Exception eew){}
