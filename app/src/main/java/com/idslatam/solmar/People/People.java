@@ -172,7 +172,7 @@ public class People extends AppCompatActivity {
 
                                     DBHelper dbHelperAlarm = new DBHelper(mContext);
                                     SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                    dba.execSQL("UPDATE People SET dni = "+variable.toString()+"");
+                                    dba.execSQL("UPDATE People SET dni = '"+variable.toString()+"'");
                                     dba.execSQL("UPDATE People SET json = '"+json+"'");
                                     dba.close();
 
