@@ -51,8 +51,10 @@ public class PeopleDetalle extends AppCompatActivity {
 
     Context mContext;
 
-    LinearLayout people_detalle_mensaje;
-    TextView people_txt_mensaje, people_detalle_txtfoto_valor, people_detalle_txtfoto_vehiculo;
+    LinearLayout people_detalle_mensaje, people_detalle_datos, people_detalle_cuarto,
+            people_detalle_quinto, people_detalle_aux;
+
+    TextView people_txt_mensaje, people_detalle_txtfoto_valor, people_detalle_txtfoto_vehiculo,people_detalle_mensaje_error;
     EditText people_detalle_dni, people_edt_persTipo, people_detalle_nombre, people_detalle_empresa,
             people_detalle_motivo, people_detalle_codArea;
 
@@ -83,7 +85,13 @@ public class PeopleDetalle extends AppCompatActivity {
         URL_API = globalClass.getURL();
 
         people_detalle_mensaje = (LinearLayout)findViewById(R.id.people_detalle_mensaje);
+        people_detalle_datos = (LinearLayout)findViewById(R.id.people_detalle_datos);
+        people_detalle_cuarto = (LinearLayout)findViewById(R.id.people_detalle_cuarto);
+        people_detalle_quinto = (LinearLayout)findViewById(R.id.people_detalle_quinto);
+        people_detalle_aux = (LinearLayout)findViewById(R.id.people_detalle_aux);
+
         people_txt_mensaje = (TextView)findViewById(R.id.people_txt_mensaje);
+        people_detalle_mensaje_error = (TextView)findViewById(R.id.people_detalle_mensaje_error);
 
         people_edt_persTipo = (EditText)findViewById(R.id.people_edt_persTipo);
         people_detalle_dni = (EditText) findViewById(R.id.people_detalle_dni);
@@ -144,6 +152,18 @@ public class PeopleDetalle extends AppCompatActivity {
             } else {
                 people_detalle_mensaje.setBackgroundColor(Color.parseColor("#FF5252"));
                 people_detalle_btn_registrar.setEnabled(false);
+                people_detalle_aux.setVisibility(View.VISIBLE);
+
+                if (!jsonObject.get("Mensaje").isJsonNull()){
+                    people_detalle_mensaje_error.setText(jsonObject.get("Mensaje").getAsString());
+                }
+
+                //people_detalle_datos.setVisibility(View.GONE);
+                //people_detalle_img.setVisibility(View.GONE);
+                people_detalle_btn_registrar.setVisibility(View.GONE);
+                people_detalle_cuarto.setVisibility(View.GONE);
+                people_detalle_quinto.setVisibility(View.GONE);
+
             }
 
         } else {
