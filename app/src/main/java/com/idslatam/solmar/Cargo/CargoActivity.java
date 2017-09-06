@@ -91,7 +91,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     ImageView imgEstadoDelantera, imgEstadoTrasera, imgEstadoPaniramica;
     CheckBox check_casco, check_chaleco, check_botas, check_carga;
     SwitchCompat isLicencia, cuarto_switch_tamanoContenedor, cuarto_switch_tipoDoc;
-    LinearLayout edt_trasera;
+    LinearLayout edt_trasera, edt_panoramica;
 
     boolean fotoDelantera = false, fotoTracera = false, fotoPanoramica = false, isSinCarga;
 
@@ -448,6 +448,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             imgEstadoDelantera = (ImageView) viewPager.findViewById(R.id.ic_estado_delantera);
             imgEstadoTrasera = (ImageView) viewPager.findViewById(R.id.ic_estado_trasera);
             imgEstadoPaniramica = (ImageView) viewPager.findViewById(R.id.ic_estado_panoramica);
+
+            edt_panoramica = (LinearLayout) viewPager.findViewById(R.id.edt_panoramica);
+
+            if (sTipoCarga.equalsIgnoreCase("4")){
+                edt_panoramica.setVisibility(View.GONE);
+            }
 
             poblarQuintaVista();
 
@@ -2595,7 +2601,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (Trasera==null){Toast.makeText(mContext, "Flata Foto Trasera", Toast.LENGTH_SHORT).show();
             return;}
 
-        if (Panoramica==null){Toast.makeText(mContext, "Falta Foto Panoramica ", Toast.LENGTH_SHORT).show();
+        if (Panoramica==null){Toast.makeText(mContext, "Falta Foto Interior", Toast.LENGTH_SHORT).show();
             return;}
 
         try {
@@ -2639,7 +2645,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         Log.e("TipoDocumento ", sTipoDocumento);
         Log.e("Delantera ", Delantera);
         Log.e("Trasera ", Trasera);
-        Log.e("Panoramica ", Panoramica);
+        Log.e("Interior ", Panoramica);
 
         List <Part> files = new ArrayList();
 
@@ -2687,7 +2693,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .setMultipartParameter("Botas", Botas)
                 .setMultipartFile("Delantera", new File(Delantera))
                 .setMultipartFile("Trasera", new File(Trasera))
-                .setMultipartFile("Panoramica", new File(Panoramica))
+                .setMultipartFile("Interior", new File(Panoramica))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -2765,9 +2771,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (Trasera==null){Toast.makeText(mContext, "Falta Foto Trasera", Toast.LENGTH_SHORT).show();
             return;}
 
-        if (Panoramica==null){Toast.makeText(mContext, "Falta Foto Panoramica", Toast.LENGTH_SHORT).show();
-            return;}
-
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
@@ -2808,7 +2811,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         Log.e("TipoDocumento ", sTipoDocumento);
         Log.e("Delantera ", Delantera);
         Log.e("Trasera ", Trasera);
-        Log.e("Panoramica ", Panoramica);
 
         List <Part> files = new ArrayList();
 
@@ -2860,7 +2862,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .setMultipartParameter("Botas", Botas)
                 .setMultipartFile("Delantera", new File(Delantera))
                 .setMultipartFile("Trasera", new File(Trasera))
-                .setMultipartFile("Panoramica", new File(Panoramica))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {

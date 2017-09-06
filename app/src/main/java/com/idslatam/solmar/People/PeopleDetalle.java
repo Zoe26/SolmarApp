@@ -195,7 +195,14 @@ public class PeopleDetalle extends AppCompatActivity {
         people_detalle_nombre.setText(jsonObject.get("persNombres").getAsString());
         people_detalle_empresa.setText(jsonObject.get("persEmpresa").getAsString());
         people_detalle_motivo.setText(jsonObject.get("persMotivo").getAsString());
-        people_detalle_dni.setText(dni);
+        //.setText(dni);
+
+        if (!jsonObject.get("NroDOI").isJsonNull()){
+            people_detalle_dni.setText(jsonObject.get("NroDOI").getAsString());
+        } else {
+            people_detalle_dni.setText("");
+        }
+
         people_detalle_codArea.setText(jsonObject.get("persArea").getAsString());
 
         if (fotoValor!=null){
