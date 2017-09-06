@@ -135,6 +135,39 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/edt_trasera"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="7dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:onClick="parteTracera"
+                android:layout_below="@id/edt_delantera">
+
+                <ImageView
+                    android:id="@+id/ic_estado_trasera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_estado"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parte Trasera"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    style="?android:attr/textAppearanceMedium"
+                    android:hint="Ingrese Nro OR/GR"/>
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_foto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/edt_panoramica"
                 android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
@@ -143,7 +176,7 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:onClick="partePanoramica"
-                android:layout_below="@id/edt_delantera">
+                android:layout_below="@id/edt_trasera">
 
 
                 <ImageView
@@ -169,39 +202,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/edt_trasera"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="7dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:onClick="parteTracera"
-                android:layout_below="@id/edt_panoramica">
-
-                <ImageView
-                    android:id="@+id/ic_estado_trasera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_estado"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Parte Trasera"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
-
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/title_precinto"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
@@ -209,7 +209,7 @@
                 android:padding="7dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_below="@id/edt_trasera">
+                android:layout_below="@id/edt_panoramica">
 
                 <TextView
                     android:id="@+id/quinto_txt_nro_precintos"
