@@ -106,6 +106,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="7dp"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:onClick="parteDelantera"
@@ -120,6 +121,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="Parte Delantera"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
@@ -127,8 +129,8 @@
                     android:hint="Ingrese Nro OR/GR"/>
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_foto"/>
 
             </LinearLayout>
@@ -138,6 +140,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="7dp"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:onClick="partePanoramica"
@@ -153,6 +156,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:text="Parte Panorámica"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
@@ -160,8 +164,8 @@
                     android:hint="Ingrese Nro OR/GR"/>
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_foto"/>
 
             </LinearLayout>
@@ -173,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
+                android:padding="7dp"
                 android:onClick="parteTracera"
                 android:layout_below="@id/edt_panoramica">
 
@@ -185,6 +190,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:text="Parte Trasera"
                     android:layout_weight="1"
                     android:layout_marginLeft="5dp"
@@ -192,8 +198,8 @@
                     android:hint="Ingrese Nro OR/GR"/>
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_foto"/>
 
             </LinearLayout>

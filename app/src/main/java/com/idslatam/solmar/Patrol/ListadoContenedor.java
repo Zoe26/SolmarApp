@@ -347,9 +347,18 @@ public class ListadoContenedor extends AppCompatActivity {
             mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
-
+                    if (editText.getText().toString().matches("")){
+                        //dialog.dismiss();
+                        Toast.makeText(mContext, "Ingrese código de contenedor", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (editText.getText().toString().length() <= 10){
+                        //dialog.dismiss();
+                        Toast.makeText(mContext, "Contenedor debe tener 11 caracteres", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
                         dialog.dismiss();
                         contenedorApi(editText.getText().toString());
+                    }
 
                 }
             });

@@ -36,6 +36,8 @@
         android:id="@+id/patrol_cod_contenedor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+        android:maxLength="11"
         android:hint="Código"
         style="?android:attr/textAppearanceMedium"
         android:layout_weight="0.5"

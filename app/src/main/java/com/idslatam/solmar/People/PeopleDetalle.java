@@ -173,6 +173,10 @@ public class PeopleDetalle extends AppCompatActivity {
 
         }
 
+        String foto = null;
+
+        foto = jsonObject.get("Img").getAsString();
+
 
         try {
 
@@ -195,7 +199,7 @@ public class PeopleDetalle extends AppCompatActivity {
                                 return null;
                             }
                         })
-                        .load(jsonObject.get("Img").getAsString());
+                        .load(foto);
 
             } catch (Exception e){}
 
