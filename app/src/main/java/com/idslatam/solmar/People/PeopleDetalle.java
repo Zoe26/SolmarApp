@@ -54,7 +54,8 @@ public class PeopleDetalle extends AppCompatActivity {
     LinearLayout people_detalle_mensaje, people_detalle_datos, people_detalle_cuarto,
             people_detalle_quinto, people_detalle_aux;
 
-    TextView people_txt_mensaje, people_detalle_txtfoto_valor, people_detalle_txtfoto_vehiculo,people_detalle_mensaje_error;
+    TextView people_txt_mensaje, people_detalle_txtfoto_valor,
+            people_detalle_txtfoto_vehiculo,people_detalle_mensaje_error, people_txt_ur_img;
     EditText people_detalle_dni, people_edt_persTipo, people_detalle_nombre, people_detalle_empresa,
             people_detalle_motivo, people_detalle_codArea;
 
@@ -91,6 +92,7 @@ public class PeopleDetalle extends AppCompatActivity {
         people_detalle_aux = (LinearLayout)findViewById(R.id.people_detalle_aux);
 
         people_txt_mensaje = (TextView)findViewById(R.id.people_txt_mensaje);
+        people_txt_ur_img = (TextView)findViewById(R.id.people_txt_ur_img);
         people_detalle_mensaje_error = (TextView)findViewById(R.id.people_detalle_mensaje_error);
 
         people_edt_persTipo = (EditText)findViewById(R.id.people_edt_persTipo);
@@ -177,6 +179,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         foto = jsonObject.get("Img").getAsString();
 
+        people_txt_ur_img.setText(foto);
 
         try {
 

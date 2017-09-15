@@ -51,6 +51,12 @@
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:src="@drawable/ic_foto_fail"/>
+                <TextView
+                    android:id="@+id/people_txt_ur_img"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:text="uri"
+                    android:layout_height="wrap_content" />
 
 
             </LinearLayout>
