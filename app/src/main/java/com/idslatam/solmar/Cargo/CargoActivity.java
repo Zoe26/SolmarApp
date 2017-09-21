@@ -168,7 +168,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         } catch (Exception e) {}
 
         if (position == 0) {
-            //set values to EditTexts to pull data from 3 entry fragments and display in SwipeReviewResults
+
             primero_edt_tracto = (EditText) viewPager.findViewById(R.id.primero_edt_tracto);
             primero_edt_dni = (EditText) viewPager.findViewById(R.id.primero_edt_dni);
             primero_txt_mje = (TextView)viewPager.findViewById(R.id.primero_txt_mje);
@@ -278,6 +278,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             poblarPrimeraVista();
             segundo_btn_fotos_aux();
+            cuarto_btn_fotos_aux();
 
 
         }
@@ -353,6 +354,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
         if (position == 3){
+
             cuarto_txt_ingreso_tracto  = (TextView) viewPager.findViewById(R.id.cuarto_txt_ingreso_tracto);
             cuarto_txt_carga = (TextView) viewPager.findViewById(R.id.cuarto_txt_carga);
             cuarto_txt_dni = (TextView) viewPager.findViewById(R.id.cuarto_txt_dni);
@@ -535,6 +537,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     @Override
     public void onPageSelected(int position) {
+
+
         Log.e("POSITION ", String.valueOf(position));
 
         String Placa = null, Dni = null, NroOR = null, CantidadBultos = null, sTipoCarga = null, isIngresoV = null,
@@ -671,6 +675,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             rbCargaSuelta = (RadioButton)viewPager.findViewById(R.id.radio_cargaSuelta);
             rbContenedorLleno = (RadioButton)viewPager.findViewById(R.id.radio_lleno);
             rbContenedorVacio = (RadioButton)viewPager.findViewById(R.id.radio_vacio);
+
+            cuarto_btn_fotos_aux();
 
         }
 
@@ -871,13 +877,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void segundo_btn_fotos_aux(){
 
-
-        if (segundo_edt_or==null){
+        if (segundo_edt_or == null || segundo_edt_or.getText().toString().matches("")){
             Log.e(" return ", "segundo_edt_or");
-            return;
-        }
-
-        if (segundo_edt_or.getText().toString().matches("")){
         } else {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
@@ -905,7 +906,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (!sTipoCarga.equalsIgnoreCase("1")){
 
-            if (segundo_edt_cta_bultos.getText().toString().matches("")){
+            if (segundo_edt_cta_bultos == null ||  segundo_edt_cta_bultos.getText().toString().matches("")){
             } else {
                 DBHelper dataBaseHelper = new DBHelper(mContext);
                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
@@ -974,6 +975,55 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
 
+    }
+
+    public void cuarto_btn_fotos_aux(){
+
+        if (cuarto_edt_codContenedor == null
+                || cuarto_edt_codContenedor.getText().toString().matches("")
+                || cuarto_edt_codContenedor.getText().length() <=10){
+
+            //Toast.makeText(mContext, "El código del contenedor debe tener 11 caracteres.", Toast.LENGTH_SHORT).show();
+            Log.e(" return ", "cuarto_edt_codContenedor");
+
+        } else {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Cargo SET codigoContenedor = '"+cuarto_edt_codContenedor.getText().toString()+"'");
+            db.close();
+            Log.e("codigoContenedor "," Guardado");
+        }
+
+
+        if (cuarto_edt_precinto == null
+                || cuarto_edt_precinto.getText().toString().matches("")){
+        } else {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Cargo SET numeroPrecintos = "+cuarto_edt_precinto.getText().toString()+"");
+            db.close();
+            Log.e("cuarto_edt_precinto ","isContenedor");
+        }
+
+        if (cuarto_edt_origen == null
+                || cuarto_edt_origen.getText().toString().matches("")){
+        } else {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Cargo SET origenDestino = '"+cuarto_edt_origen.getText().toString()+"'");
+            db.close();
+            Log.e("cuarto_edt_origen ","isContenedor");
+        }
+
+        if (cuarto_edt_or == null
+                ||  cuarto_edt_or.getText().toString().matches("")){
+        } else {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Cargo SET numeroDocumento = "+cuarto_edt_or.getText().toString()+"");
+            db.close();
+            Log.e("cuarto_edt_or ","isContenedor");
+        }
     }
 
     public void onCheckboxClicked(View view) {
@@ -1141,43 +1191,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 Log.e("JsonObject PLACA ", result.toString());
 
 
-                                if (result.get("Placa").isJsonNull()){
-
-                                    //if (result.get("Registrado").getAsString().equalsIgnoreCase("0")){
-
-                                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
-
-                                        View mView = getLayoutInflater().inflate(R.layout.dialog_placa_failed, null);
-                                        TextView texMje = (TextView)mView.findViewById(R.id.mje_placa_ok);
-                                        texMje.setText("La placa "+primero_edt_tracto.getText().toString()+" no ha sido registrada.");
-
-                                        try {
-
-                                            mBuilder.setCancelable(false);
-                                            mBuilder.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.dismiss();
-                                                    ejecutarApiRegistro(primero_edt_tracto.getText().toString());
-
-                                                }
-                                            });
-
-                                            mBuilder.setPositiveButton("Revisión", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    limpiarDatos();
-                                                    dialog.dismiss();
-                                                }
-                                            });
-
-                                            mBuilder.setView(mView);
-                                            AlertDialog dialog = mBuilder.create();
-                                            dialog.show();
-                                        } catch (Exception vfdbe) {
-                                            e.printStackTrace();
-                                        }
-                                    //}
-                                }
-
                                 if (!result.get("CargoTipoMovimientoId").isJsonNull()){
 
                                     if (result.get("CargoTipoMovimientoId").getAsString().equalsIgnoreCase("1")){
@@ -1204,6 +1217,46 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                         primero_txt_mje.setText("El Tracto "+primero_edt_tracto.getText().toString()+" está Saliendo");
                                     }
 
+                                }
+
+                                if (result.get("Placa").isJsonNull()){
+                                    primero_txt_mje.setText("");
+
+                                    //if (result.get("Registrado").getAsString().equalsIgnoreCase("0")){
+
+                                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+
+                                    View mView = getLayoutInflater().inflate(R.layout.dialog_placa_failed, null);
+                                    TextView texMje = (TextView)mView.findViewById(R.id.mje_placa_ok);
+                                    texMje.setText("La placa "+primero_edt_tracto.getText().toString()+" no ha sido registrada. " +
+                                            "¿Desea registar la placa");
+
+                                    try {
+
+                                        mBuilder.setCancelable(false);
+                                        mBuilder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                                ejecutarApiRegistro(primero_edt_tracto.getText().toString());
+
+                                            }
+                                        });
+
+                                        mBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+
+                                                limpiarDatos();
+                                                dialog.dismiss();
+                                            }
+                                        });
+
+                                        mBuilder.setView(mView);
+                                        AlertDialog dialog = mBuilder.create();
+                                        dialog.show();
+                                    } catch (Exception vfdbe) {
+                                        e.printStackTrace();
+                                    }
+                                    //}
                                 }
 
                                 try {
@@ -1698,7 +1751,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        Log.e("Placa ", Placa);
+        //Log.e("Placa ", Placa);
 
         if (isIngreso.equalsIgnoreCase("true")){
             segundo_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
@@ -1766,7 +1819,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        Log.e("Placa ", Placa);
+        //Log.e("Placa ", Placa);
 
         if (isIngreso.equalsIgnoreCase("true")){
             tercer_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
@@ -1843,13 +1896,16 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
         if (codigoContenedor == null){return;}
-        if (numeroPrecintos == null){return;}
-        if (origenDestino == null){return;}
-        if (numeroDocumento == null){return;}
-
+        Log.e("codigoContenedor ", codigoContenedor);
         cuarto_edt_codContenedor.setText(codigoContenedor);
+
+        if (numeroPrecintos == null){return;}
         cuarto_edt_precinto.setText(numeroPrecintos);
+
+        if (origenDestino == null){return;}
         cuarto_edt_origen.setText((origenDestino));
+
+        if (numeroDocumento == null){return;}
         cuarto_edt_or.setText(numeroDocumento);
 
     }
@@ -1885,7 +1941,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        Log.e("Placa ", Placa);
+        //Log.e("Placa ", Placa);
 
         if (isIngreso.equalsIgnoreCase("true")){
             quinto_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
@@ -2035,6 +2091,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     public void returnPersonaCuarto(View view){
+        cuarto_btn_fotos_aux();
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 3);
     }
 
@@ -3145,9 +3202,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
                                 } else {
-
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                        }
+                                    } catch (Exception exc){}
                                     Log.e("CARGO != 200 ", "Placa " +String.valueOf(response.getHeaders().code()));
-
                                     Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
                                 }
 
@@ -3156,8 +3216,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                         pDialog.dismiss();
                                     }
                                 } catch (Exception exc){}
-
-
 
                             }
                         });
