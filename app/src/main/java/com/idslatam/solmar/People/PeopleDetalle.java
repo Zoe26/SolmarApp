@@ -513,18 +513,17 @@ public class PeopleDetalle extends AppCompatActivity {
                                 return;
                             } else {
 
-                                limpiarDatos();
+                                if (limpiarDatos()){
 
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+                                    } catch (Exception edsv){}
+                                    try {
+                                        showDialogSend();
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
                                     }
-                                } catch (Exception edsv){}
 
-                                try {
-                                    showDialogSend();
-                                } catch (Exception e1) {
-                                    e1.printStackTrace();
                                 }
                             }
                         }
@@ -790,9 +789,9 @@ public class PeopleDetalle extends AppCompatActivity {
 
             DBHelper dbHelperAlarm = new DBHelper(this);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE People SET dni = "+null);
             dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
             dba.execSQL("UPDATE People SET fotoValor = " + null);
-            dba.execSQL("UPDATE People SET dni = "+null);
             dba.close();
 
         } catch (Exception eew){}

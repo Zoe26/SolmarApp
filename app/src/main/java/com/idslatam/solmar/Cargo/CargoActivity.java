@@ -277,6 +277,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             });
 
             poblarPrimeraVista();
+            segundo_btn_fotos_aux();
 
 
         }
@@ -496,23 +497,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
     };
 
-    View.OnClickListener rbContenedorLlenoClick = new View.OnClickListener(){
-        public void onClick(View v) {
-
-            try {
-                DBHelper dbHelperNumero = new DBHelper(mContext);
-                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
-                dbNro.execSQL("UPDATE Cargo SET TipoCarga = '4' WHERE CargoId = 1");
-                dbNro.close();
-            } catch (Exception eew){}
-
-            rbSinCarga.setChecked(false);
-            rbCargaSuelta.setChecked(false);
-            rbContenedorLleno.setChecked(true);
-            rbContenedorVacio.setChecked(false);
-        }
-    };
-
     View.OnClickListener rbContenedorVacioClick = new View.OnClickListener(){
         public void onClick(View v) {
 
@@ -528,6 +512,23 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             rbContenedorLleno.setChecked(false);
             rbContenedorVacio.setChecked(true);
 
+        }
+    };
+
+    View.OnClickListener rbContenedorLlenoClick = new View.OnClickListener(){
+        public void onClick(View v) {
+
+            try {
+                DBHelper dbHelperNumero = new DBHelper(mContext);
+                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                dbNro.execSQL("UPDATE Cargo SET TipoCarga = '4' WHERE CargoId = 1");
+                dbNro.close();
+            } catch (Exception eew){}
+
+            rbSinCarga.setChecked(false);
+            rbCargaSuelta.setChecked(false);
+            rbContenedorLleno.setChecked(true);
+            rbContenedorVacio.setChecked(false);
         }
     };
 
@@ -814,6 +815,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     public void segundo_btn_fotos(View view){
+        segundo_btn_fotos();
+    }
+
+    //MODIFICAR
+    public void segundo_btn_fotos(){
 
         if (segundo_edt_or.getText().toString().matches("")){
             Toast.makeText(mContext, "Ingrese OR/GR", Toast.LENGTH_SHORT).show();
@@ -863,7 +869,60 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     }
 
+    public void segundo_btn_fotos_aux(){
+
+
+        if (segundo_edt_or==null){
+            Log.e(" return ", "segundo_edt_or");
+            return;
+        }
+
+        if (segundo_edt_or.getText().toString().matches("")){
+        } else {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Cargo SET NroOR = '"+segundo_edt_or.getText().toString()+"'");
+            db.close();
+            Log.e("segundo_btn_fotos ","isCarga");
+        }
+
+        String sTipoCarga = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT TipoCarga FROM Cargo";
+
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                sTipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
+
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        if (!sTipoCarga.equalsIgnoreCase("1")){
+
+            if (segundo_edt_cta_bultos.getText().toString().matches("")){
+            } else {
+                DBHelper dataBaseHelper = new DBHelper(mContext);
+                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                db.execSQL("UPDATE Cargo SET CantidadBultos = "+segundo_edt_cta_bultos.getText().toString()+"");
+                db.close();
+                Log.e("segundo_edt_cta_bultos ","CantidadBultos");
+            }
+
+        }
+    }
+
     public void cuarto_btn_fotos(View view){
+        cuarto_btn_fotos();
+    }
+
+    //MODIFICAR
+    public void cuarto_btn_fotos(){
 
         if (cuarto_edt_codContenedor.getText().toString().matches("")){
             Toast.makeText(mContext, "Ingrese código de contenedor", Toast.LENGTH_SHORT).show();
@@ -1529,7 +1588,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void poblarPrimeraVista(){
 
-        Log.e("poblarPrimeraVista ", "Ingreso");
+        //Log.e("poblarPrimeraVista ", "Ingreso");
 
         String Placa = null, TipoCarga = null, Dni = null, isCarga = null, isIngresoS = null,
                 EppCasco = null, EppChaleco = null, EppBotas = null, isLicenciaL = null;
@@ -1616,6 +1675,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         or = null, ctaBultos = null;
 
         try {
+
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, isCarga, NroOR, CantidadBultos FROM Cargo";
@@ -1970,6 +2030,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     public void returnPersona(View view){
+        segundo_btn_fotos_aux();
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
     }
 
