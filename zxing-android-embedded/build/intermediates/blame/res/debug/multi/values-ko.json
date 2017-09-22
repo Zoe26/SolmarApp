@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ko/values-ko.xml",
+        "outputFile": "/Users/ronaldsalazar/Documents/IDSLatam/02 Moviles/01 Solmar/Code Android/App Core/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ko/values-ko.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 101
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Documents/IDSLatam/02 Moviles/01 Solmar/Code Android/App Core/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -30,7 +30,7 @@
                     "endOffset": 148
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Documents/IDSLatam/02 Moviles/01 Solmar/Code Android/App Core/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -49,7 +49,7 @@
                     "endOffset": 255
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Documents/IDSLatam/02 Moviles/01 Solmar/Code Android/App Core/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -68,7 +68,7 @@
                     "endOffset": 327
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Documents/IDSLatam/02 Moviles/01 Solmar/Code Android/App Core/SolmarApp/zxing-android-embedded/res-orig/values-ko/zxing_strings.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,

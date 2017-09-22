@@ -9,7 +9,7 @@ android {
         applicationId "com.idslatam.solmar"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 2
+        versionCode 1
         versionName "1.1"
         jackOptions {
             enabled true
