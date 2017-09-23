@@ -785,6 +785,7 @@ public class PeopleDetalle extends AppCompatActivity {
 
         } catch (Exception edc){}
 
+
         try {
 
             DBHelper dbHelperAlarm = new DBHelper(this);
