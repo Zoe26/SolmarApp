@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.idslatam.solmar.R;
+import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 
@@ -23,7 +25,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
     // View lookup cache
     private static class ViewHolder {
         TextView txtName;
-        //TextView txtDoi;
+        ImageView img;
     }
 
     public PrecintoCustomAdapter(ArrayList<PrecintoDataModel> data, Context context) {
@@ -48,7 +50,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item_precinto, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.req_nombre);
-            //viewHolder.txtDoi = (TextView) convertView.findViewById(R.id.req_doi);
+            viewHolder.img = (ImageView) convertView.findViewById(R.id.item_info);
 
 
             result=convertView;
@@ -59,9 +61,21 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             result=convertView;
         }
 
-
-        viewHolder.txtName.setText(dataModel.getName());
+        //viewHolder.txtName.setText(dataModel.getName());
         //viewHolder.txtDoi.setText(dataModel.getDoi());
+
+        try {
+
+            try {
+
+                Ion.with(viewHolder.img)
+                        .placeholder(R.drawable.ic_foto_fail)
+                        .error(R.drawable.ic_foto_fail)
+                        .load(dataModel.getName());
+
+            } catch (Exception e){}
+
+        } catch (Exception es){}
 
         // Return the completed view to render on screen
         return convertView;

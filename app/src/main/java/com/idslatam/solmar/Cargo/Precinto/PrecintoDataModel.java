@@ -9,7 +9,7 @@ public class PrecintoDataModel {
     String name;
     String doi;
 
-    public PrecintoDataModel(String name, String doi) {
+    public PrecintoDataModel(String name) {
         this.name=name;
         this.doi=doi;
     }

@@ -38,6 +38,7 @@ import com.koushikdutta.ion.Response;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class ListadoContenedor extends AppCompatActivity {
 
@@ -251,18 +252,23 @@ public class ListadoContenedor extends AppCompatActivity {
                             loadLista();
 
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception ezs){}
+
 
 
                         } else {
 
                             Log.e("ERROR CODE ", String.valueOf(response.getHeaders().code()));
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception ezs){}
                         }
 
                     }});

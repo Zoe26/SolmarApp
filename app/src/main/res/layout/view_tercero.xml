@@ -13,7 +13,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1">
 
             <TextView
@@ -101,108 +101,134 @@
 
             </LinearLayout>
 
+
             <LinearLayout
-                android:id="@+id/edt_delantera"
-                android:layout_marginTop="20dp"
+                android:id="@+id/ly_ultimo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="7dp"
-                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:gravity="center"
-                android:onClick="parteDelantera"
+                android:orientation="vertical"
                 android:layout_below="@id/buttums">
 
-                <ImageView
-                    android:id="@+id/ic_estado_delantera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_estado"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="Parte Delantera"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
+                    <LinearLayout
+                        android:id="@+id/edt_delantera"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_delantera"
+                            android:layout_width="150dp"
+                            android:layout_height="170dp"
+                            android:scaleType="centerCrop"
+                            android:gravity="center"
+                            android:onClick="visualizacionDelantera"
+                            android:background="@drawable/bg_fotos"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Delantera"/>
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="parteDelantera"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/edt_trasera"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_trasera"
+                            android:layout_width="150dp"
+                            android:layout_height="170dp"
+                            android:scaleType="centerCrop"
+                            android:gravity="center"
+                            android:onClick="visualizacionTrasera"
+                            android:background="@drawable/bg_fotos"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Posterior"/>
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="parteTracera"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/edt_panoramica"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_panoramica"
+                            android:layout_width="150dp"
+                            android:layout_height="170dp"
+                            android:scaleType="centerCrop"
+                            android:gravity="center"
+                            android:onClick="visualizacionPanoramica"
+                            android:background="@drawable/bg_fotos"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Interior"/>
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="partePanoramica"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/edt_panoramica"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="7dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:onClick="partePanoramica"
-                android:layout_below="@id/edt_delantera">
-
-
-                <ImageView
-                    android:id="@+id/ic_estado_panoramica"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_estado"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="Parte Panorámica"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/edt_trasera"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:padding="7dp"
-                android:onClick="parteTracera"
-                android:layout_below="@id/edt_panoramica">
-
-                <ImageView
-                    android:id="@+id/ic_estado_trasera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_estado"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="Parte Trasera"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
-
-            </LinearLayout>
 
 
         </RelativeLayout>

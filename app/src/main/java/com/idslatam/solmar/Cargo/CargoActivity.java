@@ -11,7 +11,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +31,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -63,6 +68,7 @@ import com.sandrios.sandriosCamera.internal.SandriosCamera;
 import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -88,10 +94,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     TextView quinto_txt_ingreso_tracto, quinto_txt_carga, quinto_txt_dni, quinto_txt_nro_precintos;
     ImageView quinto_btn_precintos;
     EditText cuarto_edt_codContenedor, cuarto_edt_precinto, cuarto_edt_origen, cuarto_edt_or;
-    ImageView imgEstadoDelantera, imgEstadoTrasera, imgEstadoPaniramica;
     CheckBox check_casco, check_chaleco, check_botas, check_carga;
     SwitchCompat isLicencia, cuarto_switch_tamanoContenedor, cuarto_switch_tipoDoc;
     LinearLayout edt_trasera, edt_panoramica;
+
+    ImageButton btn_visualizar_delantera, btn_visualizar_trasera, btn_visualizar_panoramica;
 
     boolean fotoDelantera = false, fotoTracera = false, fotoPanoramica = false, isSinCarga;
 
@@ -114,7 +121,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     RadioButton rbSinCarga, rbCargaSuelta, rbContenedorLleno, rbContenedorVacio;
 
-    ListView listView;
+    GridView listView;
 
     ArrayList<PrecintoDataModel> dataModelsMovil;
 
@@ -127,6 +134,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     private static final int CAPTURE_MEDIA = 368;
 
     private Activity activity;
+
+    boolean fotoA,fotoB, fotoC, fotoPrecinto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -330,10 +339,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             tercer_txt_carga = (TextView) viewPager.findViewById(R.id.tercero_txt_carga);
             tercer_txt_dni = (TextView) viewPager.findViewById(R.id.tercero_txt_dni);
 
-            imgEstadoDelantera = (ImageView) viewPager.findViewById(R.id.ic_estado_delantera);
-            imgEstadoTrasera = (ImageView) viewPager.findViewById(R.id.ic_estado_trasera);
-            imgEstadoPaniramica = (ImageView) viewPager.findViewById(R.id.ic_estado_panoramica);
-
             edt_trasera = (LinearLayout)viewPager.findViewById(R.id.edt_trasera);
 
             if (sTipoCarga.equalsIgnoreCase("1")){
@@ -348,6 +353,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             } else {
                 edt_trasera.setVisibility(View.VISIBLE);
             }
+
+            btn_visualizar_delantera = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_delantera);
+            btn_visualizar_trasera = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_trasera);
+            btn_visualizar_panoramica = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_panoramica);
+
+            btn_visualizar_delantera.setVisibility(View.GONE);
+            btn_visualizar_trasera.setVisibility(View.GONE);
+            btn_visualizar_panoramica.setVisibility(View.GONE);
 
             poblarTerceraVista();
 
@@ -448,15 +461,19 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             quinto_txt_nro_precintos = (TextView) viewPager.findViewById(R.id.quinto_txt_nro_precintos);
             quinto_btn_precintos = (ImageView) viewPager.findViewById(R.id.quinto_btn_precintos);
 
-            imgEstadoDelantera = (ImageView) viewPager.findViewById(R.id.ic_estado_delantera);
-            imgEstadoTrasera = (ImageView) viewPager.findViewById(R.id.ic_estado_trasera);
-            imgEstadoPaniramica = (ImageView) viewPager.findViewById(R.id.ic_estado_panoramica);
-
             edt_panoramica = (LinearLayout) viewPager.findViewById(R.id.edt_panoramica);
 
             if (sTipoCarga.equalsIgnoreCase("4")){
                 edt_panoramica.setVisibility(View.GONE);
             }
+
+            btn_visualizar_delantera = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_delantera);
+            btn_visualizar_trasera = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_trasera);
+            btn_visualizar_panoramica = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_panoramica);
+
+            btn_visualizar_delantera.setVisibility(View.GONE);
+            btn_visualizar_trasera.setVisibility(View.GONE);
+            btn_visualizar_panoramica.setVisibility(View.GONE);
 
             poblarQuintaVista();
 
@@ -726,10 +743,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             tercer_txt_carga = (TextView) viewPager.findViewById(R.id.tercero_txt_carga);
             tercer_txt_dni = (TextView) viewPager.findViewById(R.id.tercero_txt_dni);
 
-            imgEstadoDelantera = (ImageView) viewPager.findViewById(R.id.ic_estado_delantera);
-            imgEstadoTrasera = (ImageView) viewPager.findViewById(R.id.ic_estado_trasera);
-            imgEstadoPaniramica = (ImageView) viewPager.findViewById(R.id.ic_estado_panoramica);
-
             edt_trasera = (LinearLayout) viewPager.findViewById(R.id.edt_trasera);
 
             if (sTipoCarga.equalsIgnoreCase("1")){
@@ -786,10 +799,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             quinto_txt_nro_precintos = (TextView) viewPager.findViewById(R.id.quinto_txt_nro_precintos);
 
             quinto_btn_precintos = (ImageView) viewPager.findViewById(R.id.quinto_btn_precintos);
-
-            imgEstadoDelantera = (ImageView) viewPager.findViewById(R.id.ic_estado_delantera);
-            imgEstadoTrasera = (ImageView) viewPager.findViewById(R.id.ic_estado_trasera);
-            imgEstadoPaniramica = (ImageView) viewPager.findViewById(R.id.ic_estado_panoramica);
 
 
         }
@@ -1229,7 +1238,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                     View mView = getLayoutInflater().inflate(R.layout.dialog_placa_failed, null);
                                     TextView texMje = (TextView)mView.findViewById(R.id.mje_placa_ok);
                                     texMje.setText("La placa "+primero_edt_tracto.getText().toString()+" no ha sido registrada. " +
-                                            "¿Desea registar la placa");
+                                            "¿Desea registar la placa?");
 
                                     try {
 
@@ -1237,7 +1246,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                         mBuilder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 dialog.dismiss();
-                                                ejecutarApiRegistro(primero_edt_tracto.getText().toString());
+                                                ejecutarApiRegistro(primero_edt_tracto.getText().toString(), GuidDipositivo);
 
                                             }
                                         });
@@ -1270,8 +1279,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 }
 
                             } else  {
-
-                                ejecutarApiRegistro(primero_edt_tracto.getText().toString());
                                 //Toast.makeText(CargoActivity.this, "Error. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
                                 Log.e("ExceptionV ", "Finaliza" );
                             }
@@ -1353,7 +1360,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Log.e("Exception ", "fotoDelantera");
                 }
 
-                imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
+                //imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
+                btn_visualizar_delantera.setVisibility(View.VISIBLE);
+                btn_visualizar_delantera.setImageURI(Uri.parse(Uri_Foto));
 
                 fotoDelantera = false;
 
@@ -1370,8 +1379,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Log.e("Exception ", "fotoTracera");
                 }
 
-                imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
-
+                //imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
+                btn_visualizar_trasera.setVisibility(View.VISIBLE);
+                btn_visualizar_trasera.setImageURI(Uri.parse(Uri_Foto));
                 fotoTracera = false;
 
             } else {
@@ -1386,92 +1396,15 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     Log.e("Exception ", "fotoPanoramica");
                 }
 
-                imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
-
+                //imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
+                btn_visualizar_panoramica.setVisibility(View.VISIBLE);
+                btn_visualizar_panoramica.setImageURI(Uri.parse(Uri_Foto));
                 fotoPanoramica = false;
 
             }
 
             Log.e(" Position GUID ", String.valueOf(Uri_Foto));
         }
-
-        /*if (requestCode == REQUEST_CAMERA) {
-            photoUri = data.getData();
-
-            Uri_Foto = photoUri.getPath();
-
-            if (isPrecinto){
-
-                try {
-
-                    CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
-                    CargoPrecinto cargoPrecinto = new CargoPrecinto();
-                    cargoPrecinto.Foto = Uri_Foto;
-                    cargoPrecinto.CargoPrecintoId = _CargoPrecinto_Id;
-                    _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
-
-                    Log.e("isPrecinto  ", "fin");
-
-                } catch (Exception esca) {esca.printStackTrace();}
-
-                loadPrecinto();
-
-                return;
-            }
-
-            if (fotoDelantera){
-
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE Cargo SET fotoDelantera = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoDelantera ","true");
-                } catch (Exception eew){
-                    Log.e("Exception ", "fotoDelantera");
-                }
-
-                imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
-
-                fotoDelantera = false;
-
-
-            } else if (fotoTracera){
-
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE Cargo SET fotoTracera = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoTracera ","true");
-                } catch (Exception eew){
-                    Log.e("Exception ", "fotoTracera");
-                }
-
-                imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
-
-                fotoTracera = false;
-
-            } else {
-
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE Cargo SET fotoPanoramica = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoPanoramica ","true");
-                } catch (Exception eew){
-                    Log.e("Exception ", "fotoPanoramica");
-                }
-
-                imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
-
-                fotoPanoramica = false;
-
-            }
-
-            Log.e(" Position GUID ", String.valueOf(photoUri.getPath()));
-        }*/
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -1839,12 +1772,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         tercer_txt_dni.setText("Conductor con DNI "+ Dni + "");
 
-        if (fotoD!=null){imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);}
-
-        if (fotoT!=null){imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);}
-
-        if (fotoP!=null){imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);}
-
     }
 
     public void poblarCuartaVista(){
@@ -1971,16 +1898,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         quinto_btn_precintos.setVisibility(View.VISIBLE);
         loadPrecinto();
 
-        if (fotoD!=null){imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);}
-
-        if (fotoT!=null){imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);}
-
-        if (fotoP!=null){imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);}
-
-
-
-
-
     }
 
     public void parteDelantera(View view){
@@ -2024,18 +1941,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_MEDIUM)
                 .enableImageCropping(false)
                 .launchCamera();
-
-        /*final String permission = Manifest.permission.CAMERA;
-        if (ContextCompat.checkSelfPermission(CargoActivity.this, permission)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(CargoActivity.this, permission)) {
-                showPermissionRationaleDialog("Test", permission);
-            } else {
-                requestForPermission(permission);
-            }
-        } else {
-            launch();
-        }*/
     }
 
     private void showPermissionRationaleDialog(final String message, final String permission) {
@@ -2981,8 +2886,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             dataModelsMovil = new ArrayList<>();
 
-            listView = (ListView) viewPager.findViewById(R.id.quinto_list_fotos);
+            listView = (GridView) viewPager.findViewById(R.id.quinto_list_fotos);
 
+
+        if (listView==null){
+            return;
+        }
             try {
                 DBHelper dataBaseHelper = new DBHelper(this);
                 SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
@@ -2992,8 +2901,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 if (c.moveToFirst()) {
 
                     do {
-                        dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Foto")),
-                                c.getString(c.getColumnIndex("Foto"))));
+                        dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Foto"))));
                     } while (c.moveToNext());
 
                 }
@@ -3002,16 +2910,21 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             } catch (Exception e) {}
 
-            adapterMovil= new PrecintoCustomAdapter(dataModelsMovil,getApplicationContext());
-            listView.setAdapter(adapterMovil);
+        adapterMovil= new PrecintoCustomAdapter(dataModelsMovil,getApplicationContext());
+        listView.setAdapter(adapterMovil);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                PrecintoDataModel datamo = dataModelsMovil.get(position);
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                fotoA = false;
+                fotoB = false;
+                fotoC = false;
+                fotoPrecinto = true;
 
-                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                    //ImageView ra = (ImageView) v.findViewById(R.id.item_info);
-                    //ra.setOnClickListener(vdClickListener);
-
-                }});
+                visualizarImagen(datamo.getName());
+            }
+        });
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
@@ -3142,55 +3055,54 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         return true;
     }
 
-    public boolean ejecutarApiRegistro(String placaR){
+    public boolean ejecutarApiRegistro(String placaR, String GuidDipositivo){
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("La placa "+placaR+" no se encuetra registarda. ¿Desea Registrarla?");
-        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
 
-                String URL = URL_API.concat("api/Cargo/RegistrarPlaca");
+        final ProgressDialog pDialog;
+        pDialog = new ProgressDialog(CargoActivity.this);
+        pDialog.setMessage("Registrando Placa...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+        pDialog.show();
 
-                JsonObject json = new JsonObject();
-                json.addProperty("Placa", placaR);
+        String URL = URL_API.concat("api/Cargo/RegistrarPlaca");
 
-                final ProgressDialog pDialog;
 
-                pDialog = new ProgressDialog(CargoActivity.this);
-                pDialog.setMessage("Registrando Placa...");
-                pDialog.setIndeterminate(false);
-                pDialog.setCancelable(true);
-                pDialog.show();
+        Log.e("DispositivoId ", GuidDipositivo);
+        Log.e("placaR ", placaR);
 
-                Ion.with(mContext)
-                        .load("POST", URL)
-                        .setJsonObjectBody(json)
-                        .asJsonObject()
-                        .withResponse()
-                        .setCallback(new FutureCallback<Response<JsonObject>>() {
-                            @Override
-                            public void onCompleted(Exception e, Response<JsonObject> response) {
+        JsonObject json = new JsonObject();
+        json.addProperty("DispositivoId", GuidDipositivo);
+        json.addProperty("Placa", placaR);
+        json.addProperty("CodigoEmpresa", "0");
+        json.addProperty("CodigoTipoVehiculo", "6");
 
-                                if(response == null){
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> response) {
 
-                                    //Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
-                                    Log.e("RESPONSE CARGO ", "NULL");
-                                    try {
-                                        if (pDialog != null && pDialog.isShowing()) {
-                                            pDialog.dismiss();
-                                        }
-                                    } catch (Exception exc){}
-                                    return;
+                        if(response == null){
+                            //Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            Log.e("RESPONSE CARGO ", "NULL");
 
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
                                 }
+                            } catch (Exception exc){
+                                return;
+                            }
+                        }
 
-                                if (response.getHeaders().code() == 200) {
-
-                                    Gson gson = new Gson();
-                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                        if (response.getHeaders().code() == 200) {
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
                                     Log.e("JsonObject Registro ", "Placa " +result.toString());
                                     try {
@@ -3201,13 +3113,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                     finish();
 
 
-                                } else {
+                        } else {
                                     try {
                                         if (pDialog != null && pDialog.isShowing()) {
                                             pDialog.dismiss();
                                         }
                                     } catch (Exception exc){}
                                     Log.e("CARGO != 200 ", "Placa " +String.valueOf(response.getHeaders().code()));
+                            Log.e("CARGO != 200 ", "Placa " +String.valueOf(response.getException()));
                                     Toast.makeText(mContext, "¡Error de servidor!. Por favor comuníquese con su administrador.", Toast.LENGTH_LONG).show();
                                 }
 
@@ -3219,19 +3132,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             }
                         });
-            }
-        });
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-
-            }
-        });
-
-        builder.show();
 
         return  true;
     }
@@ -3337,6 +3239,235 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void visualizarImagen(String uri){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+        mView = getLayoutInflater().inflate(R.layout.popup_visualizacion, null);
+        mBuilder.setCancelable(false);
+
+        ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
+
+        Uri myUri = Uri.parse(getRightAngleImage(uri));
+
+        img.setImageURI(myUri);
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+
+                }
+            });
+            mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    Log.e(" fotoPrecinto ", String.valueOf(fotoPrecinto));
+                    Log.e(" fotoA ", String.valueOf(fotoA));
+                    Log.e(" fotoB ", String.valueOf(fotoB));
+                    Log.e(" fotoC ", String.valueOf(fotoC));
+
+                    if (fotoPrecinto){
+
+                        try {
+                            DBHelper dataBaseHelperB = new DBHelper(mContext);
+                            SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
+                            dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
+                            dbU.close();
+
+                        } catch (Exception e){}
+
+                    } else {
+
+                        try {
+
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+
+                            if (fotoA){
+                                dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
+                                btn_visualizar_delantera.setVisibility(View.GONE);
+                            } else if (fotoB){
+                                dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
+                                btn_visualizar_trasera.setVisibility(View.GONE);
+                            } else if (fotoC){
+                                dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
+                                btn_visualizar_panoramica.setVisibility(View.GONE);
+                            }
+
+                            dba.close();
+
+                        } catch (Exception eew){}
+                    }
+
+
+                    loadPrecinto();
+
+                    dialog.dismiss();
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private String getRightAngleImage(String photoPath) {
+
+        try {
+            ExifInterface ei = new ExifInterface(photoPath);
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            int degree = 0;
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_NORMAL:
+                    degree = 0;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                    degree = 0;
+                    break;
+                default:
+                    degree = 90;
+            }
+
+            return rotateImage(degree,photoPath);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return photoPath;
+    }
+
+    private String rotateImage(int degree, String imagePath){
+
+        if(degree<=0){
+            return imagePath;
+        }
+        try{
+            Bitmap b= BitmapFactory.decodeFile(imagePath);
+
+            Matrix matrix = new Matrix();
+            if(b.getWidth()>b.getHeight()){
+                matrix.setRotate(degree);
+                b = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(),
+                        matrix, true);
+            }
+
+            FileOutputStream fOut = new FileOutputStream(imagePath);
+            String imageName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+            String imageType = imageName.substring(imageName.lastIndexOf(".") + 1);
+
+            FileOutputStream out = new FileOutputStream(imagePath);
+            if (imageType.equalsIgnoreCase("png")) {
+                b.compress(Bitmap.CompressFormat.PNG, 100, out);
+            }else if (imageType.equalsIgnoreCase("jpeg")|| imageType.equalsIgnoreCase("jpg")) {
+                b.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            }
+            fOut.flush();
+            fOut.close();
+
+            b.recycle();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return imagePath;
+    }
+
+    public void visualizacionDelantera(View view){
+
+        String fotoD = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT fotoDelantera FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+
+                fotoD = c.getString(c.getColumnIndex("fotoDelantera"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        fotoA = true;
+        fotoB = false;
+        fotoC = false;
+        fotoPrecinto = false;
+        visualizarImagen(fotoD);
+
+    }
+
+    public void visualizacionTrasera(View view){
+
+        String fotoT = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT fotoTracera FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+
+                fotoT = c.getString(c.getColumnIndex("fotoTracera"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        fotoA = false;
+        fotoB = true;
+        fotoC = false;
+        fotoPrecinto = false;
+        visualizarImagen(fotoT);
+
+    }
+
+    public void visualizacionPanoramica(View view){
+
+        String fotoP = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT fotoPanoramica FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+
+                fotoP = c.getString(c.getColumnIndex("fotoPanoramica"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        fotoA = false;
+        fotoB = false;
+        fotoC = true;
+        fotoPrecinto = false;
+        visualizarImagen(fotoP);
 
     }
 

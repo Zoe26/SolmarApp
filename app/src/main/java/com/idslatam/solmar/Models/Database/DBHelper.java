@@ -205,7 +205,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 + People.KEY_dni + " TEXT,"
                 + People.KEY_json + " TEXT,"
                 + People.KEY_fotoValor + " TEXT,"
-                + People.KEY_fotoVehiculo + " TEXT)";
+                + People.KEY_fotoVehiculo + " TEXT,"
+                + People.KEY_fotoVehiculoGuantera + " TEXT,"
+                + People.KEY_fotoVehiculoMaletera + " TEXT)";
 
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);

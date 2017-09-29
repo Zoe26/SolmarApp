@@ -9,7 +9,7 @@ public class DataModel {
     String name;
     String uri;
 
-    public DataModel(String name) {
+    public DataModel(String name, String uri) {
         this.name=name;
         this.uri=uri;
     }
@@ -21,5 +21,6 @@ public class DataModel {
     public String getUri() {
         return uri;
     }
+
 
 }

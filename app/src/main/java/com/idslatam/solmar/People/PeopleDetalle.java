@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,15 +48,15 @@ import java.util.List;
 
 import static java.security.AccessController.getContext;
 
-public class PeopleDetalle extends AppCompatActivity {
+public class PeopleDetalle extends AppCompatActivity implements View.OnClickListener {
 
     Context mContext;
 
     LinearLayout people_detalle_mensaje, people_detalle_datos, people_detalle_cuarto,
             people_detalle_quinto, people_detalle_aux;
 
-    TextView people_txt_mensaje, people_detalle_txtfoto_valor,
-            people_detalle_txtfoto_vehiculo,people_detalle_mensaje_error, people_txt_ur_img;
+    TextView people_txt_mensaje, people_detalle_mensaje_error, people_txt_ur_img;
+
     EditText people_detalle_dni, people_edt_persTipo, people_detalle_nombre, people_detalle_empresa,
             people_detalle_motivo, people_detalle_codArea;
 
@@ -64,13 +65,18 @@ public class PeopleDetalle extends AppCompatActivity {
     private static final int CAPTURE_MEDIA = 368;
     private Activity activity;
 
-    String Uri_Foto, URL_API, fotoVal, fotoVeh;
+    String Uri_Foto, URL_API, fotoVal, fotoVeh, fotoVehGuantera, fotoVehMaletera;
 
-    boolean fotoValor = true, fotoVehiculo = true;
+    boolean fotoValor = true, fotoVehiculo = true, fotoVehiculoGuantera = true, fotoVehiculoMaletera = true;
 
     Button people_detalle_btn_registrar;
 
+    ImageButton btn_visualizar_valor, btn_visualizar_vehiculo_delatera, btn_visualizar_vehiculo_guantera
+            , btn_visualizar_vehiculo_maletera;
+
     ImageView people_detalle_img;
+
+    int indice;
 
     ProgressDialog pDialog;
 
@@ -91,6 +97,16 @@ public class PeopleDetalle extends AppCompatActivity {
         people_detalle_quinto = (LinearLayout)findViewById(R.id.people_detalle_quinto);
         people_detalle_aux = (LinearLayout)findViewById(R.id.people_detalle_aux);
 
+        btn_visualizar_valor = (ImageButton)findViewById(R.id.btn_visualizar_valor);
+        btn_visualizar_vehiculo_delatera = (ImageButton)findViewById(R.id.btn_visualizar_vehiculo_delatera);
+        btn_visualizar_vehiculo_guantera = (ImageButton)findViewById(R.id.btn_visualizar_vehiculo_guantera);
+        btn_visualizar_vehiculo_maletera = (ImageButton)findViewById(R.id.btn_visualizar_vehiculo_maletera);
+
+        btn_visualizar_valor.setOnClickListener(this);
+        btn_visualizar_vehiculo_delatera.setOnClickListener(this);
+        btn_visualizar_vehiculo_guantera.setOnClickListener(this);
+        btn_visualizar_vehiculo_maletera.setOnClickListener(this);
+
         people_txt_mensaje = (TextView)findViewById(R.id.people_txt_mensaje);
         people_txt_ur_img = (TextView)findViewById(R.id.people_txt_ur_img);
         people_detalle_mensaje_error = (TextView)findViewById(R.id.people_detalle_mensaje_error);
@@ -102,9 +118,6 @@ public class PeopleDetalle extends AppCompatActivity {
         people_detalle_codArea = (EditText) findViewById(R.id.people_detalle_codArea);
         people_detalle_motivo = (EditText) findViewById(R.id.people_detalle_motivo);
 
-        people_detalle_txtfoto_valor = (TextView)findViewById(R.id.people_detalle_txtfoto_valor);
-        people_detalle_txtfoto_vehiculo = (TextView)findViewById(R.id.people_detalle_txtfoto_vehiculo);
-
         people_detalle_img = (ImageView)findViewById(R.id.people_detalle_img);
 
         people_detalle_btn_registrar = (Button)findViewById(R.id.people_detalle_btn_registrar);
@@ -114,22 +127,128 @@ public class PeopleDetalle extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onClick(View v) {
+
+        String fotoValorA = null, fotoVehiculoA = null
+                , fotoVehiculoGuanteraA = null, fotoVehiculoMaleteraA = null;
+
+        switch (v.getId()) {
+            case R.id.btn_visualizar_valor:
+
+                try {
+                    DBHelper dataBaseHelper = new DBHelper(this);
+                    SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                    String selectQuery = "SELECT fotoValor FROM People";
+                    Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                    if (c.moveToFirst()) {
+                        fotoValorA = c.getString(c.getColumnIndex("fotoValor"));
+
+                    }
+                    c.close();
+                    dbst.close();
+
+                } catch (Exception e) {}
+
+                indice = 1;
+
+                visualizarImagen(fotoValorA);
+
+                break;
+
+            case R.id.btn_visualizar_vehiculo_delatera:
+
+                try {
+                    DBHelper dataBaseHelper = new DBHelper(this);
+                    SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                    String selectQuery = "SELECT fotoVehiculo FROM People";
+                    Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                    if (c.moveToFirst()) {
+                        fotoVehiculoA = c.getString(c.getColumnIndex("fotoVehiculo"));
+
+                    }
+                    c.close();
+                    dbst.close();
+
+                } catch (Exception e) {}
+
+                indice = 2;
+
+                visualizarImagen(fotoVehiculoA);
+
+                break;
+
+            case R.id.btn_visualizar_vehiculo_guantera:
+
+                try {
+                    DBHelper dataBaseHelper = new DBHelper(this);
+                    SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                    String selectQuery = "SELECT fotoVehiculoGuantera FROM People";
+                    Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                    if (c.moveToFirst()) {
+                        fotoVehiculoGuanteraA = c.getString(c.getColumnIndex("fotoVehiculoGuantera"));
+                    }
+                    c.close();
+                    dbst.close();
+
+                } catch (Exception e) {}
+
+                indice = 3;
+
+                visualizarImagen(fotoVehiculoGuanteraA);
+
+                break;
+
+            case R.id.btn_visualizar_vehiculo_maletera:
+
+                try {
+                    DBHelper dataBaseHelper = new DBHelper(this);
+                    SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                    String selectQuery = "SELECT fotoVehiculoMaletera FROM People";
+                    Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                    if (c.moveToFirst()) {
+                        fotoVehiculoMaleteraA = c.getString(c.getColumnIndex("fotoVehiculoMaletera"));
+                    }
+                    c.close();
+                    dbst.close();
+
+                } catch (Exception e) {}
+
+                indice = 4;
+
+                visualizarImagen(fotoVehiculoMaleteraA);
+
+                break;
+        }
+
+    }
+
+
     public void loadDatosPeople(){
+
+        btn_visualizar_valor.setVisibility(View.GONE);
+        btn_visualizar_vehiculo_delatera.setVisibility(View.GONE);
+        btn_visualizar_vehiculo_guantera.setVisibility(View.GONE);
+        btn_visualizar_vehiculo_maletera.setVisibility(View.GONE);
 
         Log.e(" PEOPLE DETALLE ", "loadDatosPeople");
 
-        String json = null, dni = null, fotoValor = null, fotoVehiculo = null;
+        String json = null, dni = null, fotoValor = null, fotoVehiculoA = null
+                , fotoVehiculoGuanteraA = null, fotoVehiculoMaleteraA = null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo FROM People";
+            String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo, fotoVehiculoGuantera, fotoVehiculoMaletera FROM People";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 dni = c.getString(c.getColumnIndex("dni"));
                 json = c.getString(c.getColumnIndex("json"));
                 fotoValor = c.getString(c.getColumnIndex("fotoValor"));
-                fotoVehiculo = c.getString(c.getColumnIndex("fotoVehiculo"));
+                fotoVehiculoA = c.getString(c.getColumnIndex("fotoVehiculo"));
+                fotoVehiculoGuanteraA = c.getString(c.getColumnIndex("fotoVehiculoGuantera"));
+                fotoVehiculoMaleteraA = c.getString(c.getColumnIndex("fotoVehiculoMaletera"));
 
             }
             c.close();
@@ -233,11 +352,27 @@ public class PeopleDetalle extends AppCompatActivity {
         people_detalle_codArea.setText(jsonObject.get("persArea").getAsString());
 
         if (fotoValor!=null){
-            people_detalle_txtfoto_valor.setText("¡Foto valor guardada!");
+            btn_visualizar_valor.setEnabled(true);
+            btn_visualizar_valor.setVisibility(View.VISIBLE);
+            btn_visualizar_valor.setImageURI(Uri.parse(fotoValor));
         }
 
-        if (fotoVehiculo!=null){
-            people_detalle_txtfoto_vehiculo.setText("¡Foto vehículo guardada!");
+        if (fotoVehiculoA!=null){
+            btn_visualizar_vehiculo_delatera.setEnabled(true);
+            btn_visualizar_vehiculo_delatera.setVisibility(View.VISIBLE);
+            btn_visualizar_vehiculo_delatera.setImageURI(Uri.parse(fotoVehiculoA));
+        }
+
+        if (fotoVehiculoGuanteraA!=null){
+            btn_visualizar_vehiculo_guantera.setEnabled(true);
+            btn_visualizar_valor.setVisibility(View.VISIBLE);
+            btn_visualizar_vehiculo_guantera.setImageURI(Uri.parse(fotoVehiculoGuanteraA));
+        }
+
+        if (fotoVehiculoMaleteraA!=null){
+            btn_visualizar_vehiculo_maletera.setEnabled(true);
+            btn_visualizar_vehiculo_maletera.setVisibility(View.VISIBLE);
+            btn_visualizar_vehiculo_maletera.setImageURI(Uri.parse(fotoVehiculoMaleteraA));
         }
 
     }
@@ -249,12 +384,32 @@ public class PeopleDetalle extends AppCompatActivity {
     public void fotoValor(View view){
         fotoValor = true;
         fotoVehiculo = false;
+        fotoVehiculoGuantera = false;
+        fotoVehiculoMaletera = false;
         tomarFoto();
     }
 
     public void fotoVehiculo(View view){
         fotoValor = false;
         fotoVehiculo = true;
+        fotoVehiculoGuantera = false;
+        fotoVehiculoMaletera = false;
+        tomarFoto();
+    }
+
+    public void fotoVehiculoGuantera(View view){
+        fotoValor = false;
+        fotoVehiculo = false;
+        fotoVehiculoGuantera = true;
+        fotoVehiculoMaletera = false;
+        tomarFoto();
+    }
+
+    public void fotoVehiculoMaletera(View view){
+        fotoValor = false;
+        fotoVehiculo = false;
+        fotoVehiculoGuantera = false;
+        fotoVehiculoMaletera = true;
         tomarFoto();
     }
 
@@ -292,10 +447,12 @@ public class PeopleDetalle extends AppCompatActivity {
                 } catch (Exception eew){}
 
 
-                people_detalle_txtfoto_valor.setText("¡Foto valor guardada!");
+                btn_visualizar_valor.setVisibility(View.VISIBLE);
+                btn_visualizar_valor.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
 
                 //imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
                 fotoValor = false;
+                btn_visualizar_valor.setEnabled(true);
 
             } else if (fotoVehiculo){
 
@@ -307,10 +464,45 @@ public class PeopleDetalle extends AppCompatActivity {
                     Log.e("fotoVehiculo ","true");
                 } catch (Exception eew){}
 
-                people_detalle_txtfoto_vehiculo.setText("¡Foto vehículo guardada!");
+                btn_visualizar_vehiculo_delatera.setVisibility(View.VISIBLE);
+                btn_visualizar_vehiculo_delatera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
 
                 //imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
                 fotoVehiculo = false;
+                btn_visualizar_vehiculo_delatera.setEnabled(true);
+
+            } else if (fotoVehiculoGuantera){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(this);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE People SET fotoVehiculoGuantera = '"+Uri_Foto+"'");
+                    dba.close();
+                    Log.e("fotoValorGuantera ","true");
+                } catch (Exception eew){}
+
+                btn_visualizar_vehiculo_guantera.setVisibility(View.VISIBLE);
+                btn_visualizar_vehiculo_guantera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
+
+                fotoVehiculoGuantera = false;
+                btn_visualizar_vehiculo_guantera.setEnabled(true);
+
+            } else if (fotoVehiculoMaletera){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(this);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE People SET fotoVehiculoMaletera = '"+Uri_Foto+"'");
+                    dba.close();
+                    Log.e("fotoValorMaletera ","true");
+                } catch (Exception eew){}
+
+                btn_visualizar_vehiculo_maletera.setVisibility(View.VISIBLE);
+                btn_visualizar_vehiculo_maletera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
+
+                fotoVehiculoMaletera = false;
+
+                btn_visualizar_vehiculo_maletera.setEnabled(true);
             }
         }
 
@@ -352,13 +544,15 @@ public class PeopleDetalle extends AppCompatActivity {
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo FROM People";
+            String selectQuery = "SELECT dni, json, fotoValor, fotoVehiculo, fotoVehiculoGuantera, fotoVehiculoMaletera FROM People";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 dni = c.getString(c.getColumnIndex("dni"));
                 json = c.getString(c.getColumnIndex("json"));
                 fotoVal = c.getString(c.getColumnIndex("fotoValor"));
                 fotoVeh = c.getString(c.getColumnIndex("fotoVehiculo"));
+                fotoVehGuantera = c.getString(c.getColumnIndex("fotoVehiculoGuantera"));
+                fotoVehMaletera = c.getString(c.getColumnIndex("fotoVehiculoMaletera"));
 
             }
             c.close();
@@ -369,12 +563,145 @@ public class PeopleDetalle extends AppCompatActivity {
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-        if (fotoVal==null && fotoVeh==null){casoSinNada(jsonObject);
-        } else  if (fotoVal!=null && fotoVeh==null){casoConMaterial(jsonObject);
-        } else  if (fotoVal==null && fotoVeh!=null){casoConVehiculo(jsonObject);
-        } else  if (fotoVal!=null && fotoVeh!=null){casoConMaterialVehiculo(jsonObject);}
+        if (fotoVal==null && fotoVeh==null){
+            casoSinNada(jsonObject);
+
+        } else  if (fotoVal!=null && fotoVeh==null){
+            casoConMaterial(jsonObject);
+
+        } else  if (fotoVal==null && fotoVeh!=null){
+
+            if (fotoVehGuantera == null){
+
+                try {
+                    if (pDialog != null && pDialog.isShowing()) {
+                        pDialog.dismiss();
+                    }
+                } catch (Exception dsf){}
+
+                Toast.makeText(mContext, "Falta foto de guantera", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (fotoVehMaletera == null){
+                try {
+                    if (pDialog != null && pDialog.isShowing()) {
+                        pDialog.dismiss();
+                    }
+                } catch (Exception dsf){}
+                Toast.makeText(mContext, "Falta foto de maletera", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            casoConVehiculo(jsonObject);
+
+        } else  if (fotoVal!=null && fotoVeh!=null){
+
+            if (fotoVehGuantera == null){
+                try {
+                    if (pDialog != null && pDialog.isShowing()) {
+                        pDialog.dismiss();
+                    }
+                } catch (Exception dsf){}
+                Toast.makeText(mContext, "Falta foto de guantera", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (fotoVehMaletera == null){
+                try {
+                    if (pDialog != null && pDialog.isShowing()) {
+                        pDialog.dismiss();
+                    }
+                } catch (Exception dsf){}
+                Toast.makeText(mContext, "Falta foto de maletera", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            casoConMaterialVehiculo(jsonObject);
+
+        }
 
         Log.e("JsonObject SEND ", jsonObject.toString());
+
+    }
+
+    public void casoSinNada(JsonObject result){
+
+        String URL = URL_API.concat("api/People/Create");
+
+        Ion.with(this)
+                .load(URL)
+                .setMultipartParameter("DispositivoId", GuidDipositivo)
+                .setMultipartParameter("codPers", result.get("codPers").getAsString())
+                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setMultipartParameter("codArea", result.get("codArea").getAsString())
+                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
+                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> response) {
+
+                        if(e != null){
+                            Log.e("Exception ", e.getMessage());
+                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            return;
+
+                        }
+
+                        if(response.getHeaders().code()==200){
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("People Create ", result.toString());
+                            //Estado
+
+                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                showDialogError();
+
+                                return;
+                            } else {
+
+                                limpiarDatos();
+
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                try {
+                                    showDialogSend();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }
+
+                        try {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                        } catch (Exception edsv){}
+
+                    }
+                });
 
     }
 
@@ -475,7 +802,9 @@ public class PeopleDetalle extends AppCompatActivity {
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
                 .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
                 .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
-                .setMultipartFile("Vehiculo", new File(fotoVeh))
+                .setMultipartFile("Delantera", new File(fotoVeh))
+                .setMultipartFile("Guantera", new File(fotoVehGuantera))
+                .setMultipartFile("Maletera", new File(fotoVehMaletera))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -555,88 +884,10 @@ public class PeopleDetalle extends AppCompatActivity {
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
                 .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
                 .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
-                .setMultipartFile("Vehiculo", new File(fotoVeh))
                 .setMultipartFile("Material", new File(fotoVal))
-                .asString()
-                .withResponse()
-                .setCallback(new FutureCallback<Response<String>>() {
-                    @Override
-                    public void onCompleted(Exception e, Response<String> response) {
-
-                        if(e != null){
-                            Log.e("Exception ", e.getMessage());
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
-
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
-                            return;
-
-                        }
-
-                        if(response.getHeaders().code()==200){
-
-                            Gson gson = new Gson();
-                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
-
-                            Log.e("People Create ", result.toString());
-                            //Estado
-
-                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                } catch (Exception edsv){}
-
-                                showDialogError();
-
-                                return;
-                            } else {
-
-                                limpiarDatos();
-
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                } catch (Exception edsv){}
-
-                                try {
-                                    showDialogSend();
-                                } catch (Exception e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-                        }
-
-                        try {
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
-                        } catch (Exception edsv){}
-
-                    }
-                });
-
-    }
-
-    public void casoSinNada(JsonObject result){
-
-        String URL = URL_API.concat("api/People/Create");
-
-        Ion.with(this)
-                .load(URL)
-                .setMultipartParameter("DispositivoId", GuidDipositivo)
-                .setMultipartParameter("codPers", result.get("codPers").getAsString())
-                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
-                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
-                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
-                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
-                .setMultipartParameter("codArea", result.get("codArea").getAsString())
-                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
+                .setMultipartFile("Delantera", new File(fotoVeh))
+                .setMultipartFile("Guantera", new File(fotoVehGuantera))
+                .setMultipartFile("Maletera", new File(fotoVehMaletera))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -792,6 +1043,8 @@ public class PeopleDetalle extends AppCompatActivity {
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
             dba.execSQL("UPDATE People SET dni = "+null);
             dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
+            dba.execSQL("UPDATE People SET fotoVehiculoGuantera = " + null);
+            dba.execSQL("UPDATE People SET fotoVehiculoMaletera = " + null);
             dba.execSQL("UPDATE People SET fotoValor = " + null);
             dba.close();
 
@@ -886,5 +1139,67 @@ public class PeopleDetalle extends AppCompatActivity {
         });
 
     }
+
+    public void visualizarImagen(String uri){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(PeopleDetalle.this);
+        mView = getLayoutInflater().inflate(R.layout.popup_visualizacion, null);
+        mBuilder.setCancelable(false);
+
+        ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
+
+        Uri myUri = Uri.parse(getRightAngleImage(uri));
+
+        img.setImageURI(myUri);
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+
+                }
+            });
+            mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    try {
+
+                        DBHelper dbHelperAlarm = new DBHelper(mContext);
+                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+
+                        if(indice==1){
+                            dba.execSQL("UPDATE People SET fotoValor = " + null);
+                        } else if(indice==2){
+                            dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
+                        } else if (indice==3){
+                            dba.execSQL("UPDATE People SET fotoVehiculoGuantera = " + null);
+                        } else {
+                            dba.execSQL("UPDATE People SET fotoVehiculoMaletera = " + null);
+                        }
+
+                        dba.close();
+
+                    } catch (Exception eew){}
+
+
+                    loadDatosPeople();
+
+                    dialog.dismiss();
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 }

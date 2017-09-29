@@ -15,6 +15,8 @@ public class People {
     public static final String KEY_json = "json";
     public static final String KEY_fotoValor = "fotoValor";
     public static final String KEY_fotoVehiculo = "fotoVehiculo";
+    public static final String KEY_fotoVehiculoGuantera = "fotoVehiculoGuantera";
+    public static final String KEY_fotoVehiculoMaletera = "fotoVehiculoMaletera";
 
     public int PeopleId;
     public String Initial;

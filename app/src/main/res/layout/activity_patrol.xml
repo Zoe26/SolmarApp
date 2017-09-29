@@ -1,143 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_patrol"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context="com.idslatam.solmar.Patrol.PatrolActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_above="@+id/btns_buttom"
-        android:padding="@dimen/body">
+        android:layout_height="match_parent">
 
-
-        <LinearLayout
-            android:id="@+id/titleBar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_above="@+id/btns_buttom"
+            android:padding="@dimen/body">
 
-            <TextView
+
+            <LinearLayout
+                android:id="@+id/titleBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="PATROL"
-                android:textColor="@color/squarecamera__white"
-                style="?android:attr/textAppearanceMedium"
+                android:background="@color/colorPrimary">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PATROL"
+                    android:textColor="@color/squarecamera__white"
+                    style="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:padding="10dp" />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/titleBar"
                 android:textStyle="bold"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                style="?android:attr/textAppearanceMedium"
+                android:text="CONTENEDOR"/>
+
+            <LinearLayout
+                android:id="@+id/edt_trasera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtTitle"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/edt_contenedor_seleccionado"
+                    android:layout_width="match_parent"
+                    android:enabled="false"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/negro_general"
+                    style="?android:attr/textAppearanceMedium"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    style="?android:attr/textAppearanceMedium"
+                    android:onClick="listaContenedor"
+                    android:textColor="@color/squarecamera__white"
+                    android:text="BUSCAR"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/title_precinto"
+                android:paddingTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:gravity="center"
-                android:padding="10dp" />
+                android:layout_below="@id/edt_trasera">
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/quinto_txt_nro_precintos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    style="?android:attr/textAppearanceMedium"
+                    android:gravity="center"
+                    android:text="FOTO"/>
+
+                <ImageButton
+                    android:id="@+id/quinto_btn_precintos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_camare_patrol"
+                    android:onClick="fotoPrecinto"/>
+
+            </LinearLayout>
+
+            <GridView
+                android:id="@+id/quinto_list_fotos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:numColumns="auto_fit"
+                android:columnWidth="150dp"
+                android:stretchMode="spacingWidthUniform"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/title_precinto"/>
 
 
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/titleBar"
-            android:textStyle="bold"
-            android:layout_weight="1"
-            android:layout_marginLeft="5dp"
-            style="?android:attr/textAppearanceMedium"
-            android:text="CONTENEDOR"/>
+        </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/edt_trasera"
+
+            android:id="@+id/btns_buttom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtTitle"
+            android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             android:gravity="center">
 
-            <EditText
-                android:id="@+id/edt_contenedor_seleccionado"
-                android:layout_width="match_parent"
-                android:enabled="false"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="5dp"
-                android:textColor="@color/negro_general"
-                style="?android:attr/textAppearanceMedium"/>
-
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.5"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/colorPrimary"
+                android:paddingLeft="10dp"
+                android:background="@drawable/btn_border_patrol"
                 style="?android:attr/textAppearanceMedium"
-                android:onClick="listaContenedor"
-                android:textColor="@color/squarecamera__white"
-                android:text="BUSCAR"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/title_precinto"
-            android:paddingTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_below="@id/edt_trasera">
-
-            <TextView
-                android:id="@+id/quinto_txt_nro_precintos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                style="?android:attr/textAppearanceMedium"
-                android:gravity="center"
-                android:text="FOTO"/>
-
-            <ImageButton
-                android:id="@+id/quinto_btn_precintos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_camare_patrol"
-                android:onClick="fotoPrecinto"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/title_precinto"
-            android:orientation="vertical">
-
-            <ListView
-                android:id="@+id/quinto_list_fotos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:onClick="GuardarPatrol"
+                android:textStyle="bold"
+                android:text="Guardar"/>
 
         </LinearLayout>
 
     </RelativeLayout>
 
-    <LinearLayout
 
-        android:id="@+id/btns_buttom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textColor="@color/colorPrimary"
-            android:paddingLeft="10dp"
-            android:background="@drawable/btn_border_patrol"
-            style="?android:attr/textAppearanceMedium"
-            android:onClick="GuardarPatrol"
-            android:textStyle="bold"
-            android:text="Guardar"/>
-
-    </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>

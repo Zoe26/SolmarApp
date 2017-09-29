@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fillViewport="true"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_cargo"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
 
     <LinearLayout
+        android:id="@+id/content_S"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="@dimen/body">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/content_S"
+            android:id="@+id/ly_bo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/btns_buttom">
 
             <TextView
                 android:id="@+id/quinto_txt_ingreso_tracto"
@@ -102,102 +105,129 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/edt_delantera"
-                android:layout_marginTop="15dp"
+                android:id="@+id/ly_ultimo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="7dp"
-                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:gravity="center"
-                android:onClick="parteDelantera"
+                android:orientation="vertical"
                 android:layout_below="@id/buttums">
 
-                <ImageView
-                    android:id="@+id/ic_estado_delantera"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_estado"/>
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/edt_delantera"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_delantera"
+                            android:layout_width="150dp"
+                            android:layout_height="170dp"
+                            android:scaleType="centerCrop"
+                            android:gravity="center"
+                            android:onClick="visualizacionDelantera"
+                            android:background="@drawable/bg_fotos"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Delantera"/>
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="parteDelantera"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/edt_trasera"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_trasera"
+                            android:layout_width="150dp"
+                            android:layout_height="170dp"
+                            android:scaleType="centerCrop"
+                            android:gravity="center"
+                            android:onClick="visualizacionTrasera"
+                            android:background="@drawable/bg_fotos"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Posterior"/>
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="parteTracera"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Parte Delantera"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
+                    <LinearLayout
+                        android:id="@+id/edt_panoramica"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-            </LinearLayout>
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_panoramica"
+                            android:layout_width="150dp"
+                            android:layout_height="170dp"
+                            android:scaleType="centerCrop"
+                            android:gravity="center"
+                            android:onClick="visualizacionPanoramica"
+                            android:background="@drawable/bg_fotos"/>
 
-            <LinearLayout
-                android:id="@+id/edt_trasera"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="7dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:onClick="parteTracera"
-                android:layout_below="@id/edt_delantera">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Interior"/>
 
-                <ImageView
-                    android:id="@+id/ic_estado_trasera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_estado"/>
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="partePanoramica"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Parte Trasera"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/edt_panoramica"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="7dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:onClick="partePanoramica"
-                android:layout_below="@id/edt_trasera">
+                    </LinearLayout>
 
 
-                <ImageView
-                    android:id="@+id/ic_estado_panoramica"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_estado"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Parte Interior"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    style="?android:attr/textAppearanceMedium"
-                    android:hint="Ingrese Nro OR/GR"/>
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_foto"/>
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -209,7 +239,7 @@
                 android:padding="7dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_below="@id/edt_panoramica">
+                android:layout_below="@id/ly_ultimo">
 
                 <TextView
                     android:id="@+id/quinto_txt_nro_precintos"
@@ -231,26 +261,25 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_below="@id/title_precinto"
-                android:orientation="vertical">
-
-                <ListView
+            <GridView
                     android:id="@+id/quinto_list_fotos"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"
+                    android:numColumns="auto_fit"
+                    android:columnWidth="150dp"
+                    android:stretchMode="spacingWidthUniform"
+                    android:layout_below="@id/title_precinto"
+                    android:layout_gravity="center" />
 
-            </LinearLayout>
+
 
         </RelativeLayout>
 
         <LinearLayout
-
+            android:id="@+id/btns_buttom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/ly_bo"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             android:gravity="center">
