@@ -3075,7 +3075,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         JsonObject json = new JsonObject();
         json.addProperty("DispositivoId", GuidDipositivo);
         json.addProperty("Placa", placaR);
-        json.addProperty("CodigoEmpresa", "0");
+        json.addProperty("CodigoEmpresa", "1");
         json.addProperty("CodigoTipoVehiculo", "6");
 
         Ion.with(this)

@@ -310,7 +310,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
             flagDelay = false;
             if(currentDate.after(currentPrecision)){
                 flagDelay = true;
-                Log.e("-- DELAY TRUE ", String.valueOf(precision)+ " ----------- ");
+                //Log.e("-- DELAY TRUE ", String.valueOf(precision)+ " ----------- ");
             }
 
             requestActivityUpdates();
@@ -414,7 +414,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         if(currentDate.after(currentPrecision)){
             precision = precision + 10;
-            Log.e("-- DELAY PRECISION ", "-- ");
+            //Log.e("-- DELAY PRECISION ", "-- ");
         }
 
         //Log.e("-- !! Intervalo "+ String.valueOf(intervalSend), " ! Precision "+ String.valueOf(precision));

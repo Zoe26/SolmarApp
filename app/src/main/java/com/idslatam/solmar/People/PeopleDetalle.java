@@ -563,6 +563,8 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
+        Log.e("jsonObject ", String.valueOf(jsonObject));
+
         if (fotoVal==null && fotoVeh==null){
             casoSinNada(jsonObject);
 
@@ -597,35 +599,40 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
         } else  if (fotoVal!=null && fotoVeh!=null){
 
+
+
+            Log.e("DispositivoId ", GuidDipositivo);
+
+            Log.e("Valor ", fotoVal);
+
+            Log.e("Delantera ", fotoVeh);
+
             if (fotoVehGuantera == null){
-                try {
-                    if (pDialog != null && pDialog.isShowing()) {
-                        pDialog.dismiss();
-                    }
+                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
                 } catch (Exception dsf){}
                 Toast.makeText(mContext, "Falta foto de guantera", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            Log.e("fotoVehGuantera ", fotoVehGuantera);
+
             if (fotoVehMaletera == null){
-                try {
-                    if (pDialog != null && pDialog.isShowing()) {
-                        pDialog.dismiss();
-                    }
+                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
                 } catch (Exception dsf){}
                 Toast.makeText(mContext, "Falta foto de maletera", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            Log.e("fotoVehMaletera ", fotoVehMaletera);
             casoConMaterialVehiculo(jsonObject);
 
         }
 
-        Log.e("JsonObject SEND ", jsonObject.toString());
-
     }
 
     public void casoSinNada(JsonObject result){
+
+        Log.e("SinNada ", "Ingreso");
 
         String URL = URL_API.concat("api/People/Create");
 
@@ -707,6 +714,8 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     public void casoConMaterial(JsonObject result){
 
+        Log.e("ConMaterial ", "Ingreso");
+
         String URL = URL_API.concat("api/People/Create");
 
         Ion.with(this)
@@ -787,6 +796,8 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
     }
 
     public void casoConVehiculo(JsonObject result){
+
+        Log.e("ConVehiculo ", "Ingreso");
 
         String URL = URL_API.concat("api/People/Create");
 
@@ -870,15 +881,17 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     public void casoConMaterialVehiculo(JsonObject result){
 
+        Log.e("ConMaterialVehiculo ", "Ingreso");
+
         String URL = URL_API.concat("api/People/Create");
 
-        Ion.with(this)
+        Ion.with(mContext)
                 .load(URL)
                 .setMultipartParameter("DispositivoId", GuidDipositivo)
                 .setMultipartParameter("codPers", result.get("codPers").getAsString())
                 .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
                 .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMovSgte").getAsString())
                 .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
                 .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
@@ -939,6 +952,11 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                                     e1.printStackTrace();
                                 }
                             }
+                        } else {
+
+                            Log.e(".getHeaders() ", String.valueOf(response.getHeaders().code()));
+                            Log.e(".getException() ", String.valueOf(response.getException()));
+
                         }
 
                         try {
@@ -1176,7 +1194,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                             dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
                         } else if (indice==3){
                             dba.execSQL("UPDATE People SET fotoVehiculoGuantera = " + null);
-                        } else {
+                        } else if (indice==4){
                             dba.execSQL("UPDATE People SET fotoVehiculoMaletera = " + null);
                         }
 

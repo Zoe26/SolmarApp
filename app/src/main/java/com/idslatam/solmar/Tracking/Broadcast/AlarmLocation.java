@@ -82,7 +82,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         if (vApi > 19) {
 
-            Log.e("Alarm Api > 19", "Execute");
+            //Log.e("Alarm Api > 19", "Execute");
 
             updateFechaAlarmLocation();
 
@@ -142,7 +142,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         if(intervalo == 0){ intervalo = 1;}
 
-        Log.e("-- PRUEBA INT ALARM ", String.valueOf(intervalo));
+        //Log.e("-- PRUEBA INT ALARM ", String.valueOf(intervalo));
 
 
         if(intervalo <= 1){
@@ -232,7 +232,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
         } catch (Exception e) {}
 
-        Log.e("-- PRUEBA ALARM ", formatoIso.format(currentDate.getTime()));
+        //Log.e("-- PRUEBA ALARM ", formatoIso.format(currentDate.getTime()));
 
         AlarmTrackCrud alarmTrackCrud = new AlarmTrackCrud(mContext);
         AlarmTrack alarmTrack = new AlarmTrack();
