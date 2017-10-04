@@ -74,8 +74,8 @@ public class CustomAdapter extends ArrayAdapter<DataModel>{
             try {
 
                 Ion.with(viewHolder.item_info)
-                        .placeholder(R.drawable.ic_foto_fail)
-                        .error(R.drawable.ic_foto_fail)
+                        .placeholder(R.drawable.ic_camare_add)
+                        .error(R.drawable.ic_camare_add)
                         .load(dataModel.getUri());
 
             } catch (Exception e){}

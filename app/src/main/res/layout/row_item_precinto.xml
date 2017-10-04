@@ -8,7 +8,9 @@
         android:id="@+id/item_info"
         android:layout_width="150dp"
         android:layout_height="170dp"
-        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
         android:padding="1dp"
         android:layout_gravity="center"/>
 

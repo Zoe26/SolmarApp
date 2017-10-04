@@ -97,19 +97,13 @@
                     android:gravity="center"
                     android:text="FOTO"/>
 
-                <ImageButton
-                    android:id="@+id/quinto_btn_precintos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_camare_patrol"
-                    android:onClick="fotoPrecinto"/>
-
             </LinearLayout>
 
             <GridView
                 android:id="@+id/quinto_list_fotos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:numColumns="auto_fit"
                 android:columnWidth="150dp"
                 android:stretchMode="spacingWidthUniform"

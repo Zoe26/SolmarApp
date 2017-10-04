@@ -9,7 +9,9 @@
             android:id="@+id/item_info"
             android:layout_width="150dp"
             android:layout_height="170dp"
-            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:scaleType="fitXY"
             android:padding="1dp"
             android:layout_gravity="center"/>
 
@@ -22,7 +24,7 @@
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:textColor="@color/colorPrimaryDark"
-                android:text="grtgtrgtr"
+                android:text=""
                 style="?android:attr/textAppearanceSmall" />
 
 

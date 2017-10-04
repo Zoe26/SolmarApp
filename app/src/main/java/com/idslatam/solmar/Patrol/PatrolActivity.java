@@ -62,7 +62,7 @@ public class PatrolActivity extends AppCompatActivity {
 
     int count = 0;
 
-    String ContenedorId, URL_API, DispositivoId, formato;
+    String ContenedorId, URL_API, DispositivoId, numeroPrecintoFoto;
 
     Context mContext;
 
@@ -99,13 +99,15 @@ public class PatrolActivity extends AppCompatActivity {
         loadPrecinto();
     }
 
-    public void fotoPrecinto(View view){
+    public void fotoPrecinto(String numeroPrecinto){
 
-        int ctaA = 0;
+        numeroPrecintoFoto = numeroPrecinto;
+
+        /*int ctaA = 0;
         try {
             DBHelper bdh = new DBHelper(this);
             SQLiteDatabase sqlite = bdh.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM PatrolPrecinto";
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
             Cursor ca = sqlite.rawQuery(selectQuery, new String[]{});
             ctaA = ca.getCount();
             ca.close();
@@ -119,7 +121,7 @@ public class PatrolActivity extends AppCompatActivity {
         if (ctaA == 6){
             Toast.makeText(this, "¡Precintos Completos!", Toast.LENGTH_SHORT).show();
             return;
-        }
+        }*/
 
         tomarFoto();
     }
@@ -145,28 +147,16 @@ public class PatrolActivity extends AppCompatActivity {
         }
 
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
-            Log.e("File", "" + data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
 
             String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
 
-            if (contadorLista==0){
-                contadorLista = 1;
-            } else {
-                contadorLista++;
-            }
-
             try {
 
-                PatrolPrecintoCrud patrolPrecintoCrud = new PatrolPrecintoCrud(mContext);
-                PatrolPrecinto patrolPrecinto = new PatrolPrecinto();
-                patrolPrecinto.Indice = "Precinto Nº " + String.valueOf(contadorLista);
-                patrolPrecinto.Foto = photoUri;
-                patrolPrecinto.PatrolPrecintoId = _PatrolPrecinto_Id;
-                _PatrolPrecinto_Id = patrolPrecintoCrud.insert(patrolPrecinto);
-
-                Log.e("isPrecinto  ", "fin");
-
-            } catch (Exception esca) {esca.printStackTrace();}
+                DBHelper dbHelperNumero = new DBHelper(this);
+                SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                dbNro.execSQL("UPDATE PatrolPrecinto SET Foto = '"+photoUri+"' WHERE Indice = '"+numeroPrecintoFoto+"'");
+                dbNro.close();
+            } catch (Exception eew){}
 
             loadPrecinto();
 
@@ -180,6 +170,34 @@ public class PatrolActivity extends AppCompatActivity {
     public void loadPrecinto(){
 
         String NroContenedor = null;
+        int contadorIndice = 0;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Indice FROM PatrolPrecinto";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            contadorIndice = c.getCount();
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        if (contadorIndice==0){
+
+            for (int i = 1; i <= 6 ; i++){
+
+                try {
+                    PatrolPrecintoCrud patrolPrecintoCrud = new PatrolPrecintoCrud(mContext);
+                    PatrolPrecinto patrolPrecinto = new PatrolPrecinto();
+                    patrolPrecinto.Indice = "Precinto No " + String.valueOf(i);
+                    patrolPrecinto.PatrolPrecintoId = _PatrolPrecinto_Id;
+                    _PatrolPrecinto_Id = patrolPrecintoCrud.insert(patrolPrecinto);
+                } catch (Exception esca) {esca.printStackTrace();}
+
+            }
+        }
+
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
@@ -210,7 +228,6 @@ public class PatrolActivity extends AppCompatActivity {
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Indice, Foto FROM PatrolPrecinto";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
-            contadorLista = c.getCount();
             if (c.moveToFirst()) {
 
                 do {
@@ -224,6 +241,17 @@ public class PatrolActivity extends AppCompatActivity {
 
         } catch (Exception e) {}
 
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            contadorLista = c.getCount();
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
         adapterMovil= new CustomAdapter(dataModelsMovil,getApplicationContext());
         listView.setAdapter(adapterMovil);
 
@@ -231,7 +259,12 @@ public class PatrolActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 DataModel datamo = dataModelsMovil.get(position);
-                visualizarImagen(datamo.getUri());
+
+                if (datamo.getUri()==null){
+                    fotoPrecinto(datamo.getName());
+                } else {
+                    visualizarImagen(datamo.getUri());
+                }
             }
         });
 
@@ -243,7 +276,6 @@ public class PatrolActivity extends AppCompatActivity {
         Intent intent = new Intent(PatrolActivity.this, ListadoContenedor.class);
         startActivity(intent);
     }
-
 
     public void GuardarPatrol(View view){
         guardarPatrol();
@@ -352,12 +384,6 @@ public class PatrolActivity extends AppCompatActivity {
 
         Ion.with(mContext)
                 .load(URL)
-                .uploadProgressHandler(new ProgressCallback() {
-                    @Override
-                    public void onProgress(long uploaded, long total) {
-                        Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
-                    }
-                })
                 .setTimeout(15 * 60 * 1000)
                 .addMultipartParts(files)
                 .setMultipartParameter("ContenedorId", ContenedorId)

@@ -26,7 +26,7 @@ public class PatrolPrecintoCrud {
         ContentValues values = new ContentValues();
 
         values.put(PatrolPrecinto.KEY_indice, patrolPrecinto.Indice);
-        values.put(PatrolPrecinto.KEY_Foto, patrolPrecinto.Foto);
+        //values.put(PatrolPrecinto.KEY_Foto, patrolPrecinto.Foto);
 
         long PatrolPrecintoId = db.insert(PatrolPrecinto.TABLE_PATROL_PRECINTO, null, values);
         db.close();
