@@ -160,8 +160,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-
-
         String sTipoCarga = null, isIngresoV = null;
 
         try {
@@ -391,6 +389,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
             cuarto_edt_precinto = (EditText) viewPager.findViewById(R.id.cuarto_edt_precinto);
+
             cuarto_edt_origen = (EditText) viewPager.findViewById(R.id.cuarto_edt_origen);
             cuarto_edt_or = (EditText) viewPager.findViewById(R.id.cuarto_edt_or);
 
@@ -472,6 +471,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
         if (position == 4){
+
             quinto_txt_ingreso_tracto  = (TextView) viewPager.findViewById(R.id.quinto_txt_ingreso_tracto);
             quinto_txt_carga = (TextView) viewPager.findViewById(R.id.quinto_txt_carga);
             quinto_txt_dni = (TextView) viewPager.findViewById(R.id.quinto_txt_dni);
@@ -689,7 +689,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (position == 0){
 
+
             primero_edt_tracto = (EditText) viewPager.findViewById(R.id.primero_edt_tracto);
+            primero_edt_tracto.requestFocus(); //Asegurar que editText tiene focus
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(primero_edt_tracto, InputMethodManager.SHOW_IMPLICIT);
+
             primero_edt_dni = (EditText) viewPager.findViewById(R.id.primero_edt_dni);
             primero_txt_mje = (TextView)viewPager.findViewById(R.id.primero_txt_mje);
 
@@ -720,8 +725,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (position == 1){
 
             segundo_edt_or = (EditText) viewPager.findViewById(R.id.segundo_edt_or);
-            segundo_edt_cta_bultos = (EditText) viewPager.findViewById(R.id.segundo_edt_cta_bultos);
+            segundo_edt_or.requestFocus(); //Asegurar que editText tiene focus
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(segundo_edt_or, InputMethodManager.SHOW_IMPLICIT);
 
+            segundo_edt_cta_bultos = (EditText) viewPager.findViewById(R.id.segundo_edt_cta_bultos);
             segundo_txt_ingreso_tracto = (TextView) viewPager.findViewById(R.id.segundo_txt_ingreso_tracto);
             segundo_txt_carga = (TextView) viewPager.findViewById(R.id.segundo_txt_carga);
             segundo_txt_dni = (TextView) viewPager.findViewById(R.id.segundo_txt_dni);
@@ -786,6 +794,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             cuarto_txt_dni = (TextView) viewPager.findViewById(R.id.cuarto_txt_dni);
 
             cuarto_edt_codContenedor = (EditText) viewPager.findViewById(R.id.cuarto_edt_codContenedor);
+
+            cuarto_edt_codContenedor.requestFocus(); //Asegurar que editText tiene focus
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(cuarto_edt_codContenedor, InputMethodManager.SHOW_IMPLICIT);
+
             cuarto_edt_precinto = (EditText) viewPager.findViewById(R.id.cuarto_edt_precinto);
             cuarto_edt_origen = (EditText) viewPager.findViewById(R.id.cuarto_edt_origen);
             cuarto_edt_or = (EditText) viewPager.findViewById(R.id.cuarto_edt_or);
@@ -852,6 +865,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void segundo_btn_fotos(){
 
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(segundo_edt_or.getWindowToken(), 0);
+
         if (segundo_edt_or.getText().toString().matches("")){
             Toast.makeText(mContext, "Ingrese OR/GR", Toast.LENGTH_SHORT).show();
             return;
@@ -894,9 +910,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         }
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(segundo_edt_or.getWindowToken(), 0);
-
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
 
     }
@@ -904,14 +917,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     public void segundo_btn_fotos_aux(){
 
         if (segundo_edt_or == null || segundo_edt_or.getText().toString().matches("")){
-            Log.e(" return ", "segundo_edt_or");
+            Log.e(" segundo_btn ", "_fotos_aux");
         } else {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET NroOR = '"+segundo_edt_or.getText().toString()+"'");
             db.close();
         }
-
         String sTipoCarga = null;
 
         try {
@@ -938,7 +950,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 db.execSQL("UPDATE Cargo SET CantidadBultos = "+segundo_edt_cta_bultos.getText().toString()+"");
                 db.close();
             }
-
         }
     }
 
@@ -991,6 +1002,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             db.execSQL("UPDATE Cargo SET numeroDocumento = "+cuarto_edt_or.getText().toString()+"");
             db.close();
         }
+
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(cuarto_edt_codContenedor.getWindowToken(), 0);
@@ -1721,9 +1733,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         //ly_foto.setVisibility(View.VISIBLE);
         Gson gson = new Gson();
         JsonObject result = gson.fromJson(json, JsonObject.class);
-
-        Log.e(" result == ", result.toString());
-
         cargo_txt_dni_persona.setText(result.get("persNombres").getAsString());
         cargo_txt_empresa_persona.setText(result.get("persEmpresa").getAsString());
 
