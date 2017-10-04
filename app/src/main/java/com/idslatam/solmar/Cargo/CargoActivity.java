@@ -23,9 +23,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -158,6 +160,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+
+
         String sTipoCarga = null, isIngresoV = null;
 
         try {
@@ -181,6 +185,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             primero_edt_tracto = (EditText) viewPager.findViewById(R.id.primero_edt_tracto);
             primero_edt_dni = (EditText) viewPager.findViewById(R.id.primero_edt_dni);
+
             primero_txt_mje = (TextView)viewPager.findViewById(R.id.primero_txt_mje);
 
             check_casco = (CheckBox) viewPager.findViewById(R.id.check_casco);
@@ -350,6 +355,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             edt_trasera = (LinearLayout)viewPager.findViewById(R.id.edt_trasera);
 
+
             if (sTipoCarga.equalsIgnoreCase("1")){
 
                 edt_trasera.setVisibility(View.GONE);
@@ -382,6 +388,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             cuarto_txt_dni = (TextView) viewPager.findViewById(R.id.cuarto_txt_dni);
 
             cuarto_edt_codContenedor = (EditText) viewPager.findViewById(R.id.cuarto_edt_codContenedor);
+
+
             cuarto_edt_precinto = (EditText) viewPager.findViewById(R.id.cuarto_edt_precinto);
             cuarto_edt_origen = (EditText) viewPager.findViewById(R.id.cuarto_edt_origen);
             cuarto_edt_or = (EditText) viewPager.findViewById(R.id.cuarto_edt_or);
@@ -564,9 +572,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     @Override
     public void onPageSelected(int position) {
 
-
-        Log.e("POSITION ", String.valueOf(position));
-
         String Placa = null, Dni = null, NroOR = null, CantidadBultos = null, sTipoCarga = null, isIngresoV = null,
                 codContenedor = null, numeroPrecintos = null, origenDestinoC = null, numeroC = null;
 
@@ -677,7 +682,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             if (position == 2 && CantidadBultos == null){
                 viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
-                Log.e("BACK ","1");
                 Toast.makeText(mContext, "Ingrese CantidadBultos I", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -798,7 +802,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     dba.execSQL("UPDATE Cargo SET tipoDocumento = '1'");
                     dba.close();
                 } catch (Exception eew){}
-                Log.e("tipoDocumento ","guia");
 
                 cuarto_switch_tipoDoc.setEnabled(false);
                 cuarto_switch_tipoDoc.setChecked(false);
@@ -833,13 +836,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                     db.execSQL("UPDATE Cargo SET isCarga = 'true'");
                     db.close();
-                    Log.e("isCarga ","true");
                 }else {
                     DBHelper dataBaseHelper = new DBHelper(mContext);
                     SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                     db.execSQL("UPDATE Cargo SET isCarga = 'false'");
                     db.close();
-                    Log.e("isCarga ","false");
                 }
                 break;
         }
@@ -849,7 +850,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         segundo_btn_fotos();
     }
 
-    //MODIFICAR
     public void segundo_btn_fotos(){
 
         if (segundo_edt_or.getText().toString().matches("")){
@@ -860,7 +860,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET NroOR = '"+segundo_edt_or.getText().toString()+"'");
             db.close();
-            Log.e("segundo_btn_fotos ","isCarga");
         }
 
         String sTipoCarga = null;
@@ -891,10 +890,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                 db.execSQL("UPDATE Cargo SET CantidadBultos = "+segundo_edt_cta_bultos.getText().toString()+"");
                 db.close();
-                Log.e("segundo_edt_cta_bultos ","CantidadBultos");
             }
 
         }
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(segundo_edt_or.getWindowToken(), 0);
 
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
 
@@ -909,7 +910,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET NroOR = '"+segundo_edt_or.getText().toString()+"'");
             db.close();
-            Log.e("segundo_btn_fotos ","isCarga");
         }
 
         String sTipoCarga = null;
@@ -937,7 +937,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                 db.execSQL("UPDATE Cargo SET CantidadBultos = "+segundo_edt_cta_bultos.getText().toString()+"");
                 db.close();
-                Log.e("segundo_edt_cta_bultos ","CantidadBultos");
             }
 
         }
@@ -947,7 +946,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         cuarto_btn_fotos();
     }
 
-    //MODIFICAR
     public void cuarto_btn_fotos(){
 
         if (cuarto_edt_codContenedor.getText().toString().matches("")){
@@ -961,7 +959,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET codigoContenedor = '"+cuarto_edt_codContenedor.getText().toString()+"'");
             db.close();
-            Log.e("cuarto_edt_codCon ","isContenedor");
         }
 
 
@@ -973,7 +970,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET numeroPrecintos = "+cuarto_edt_precinto.getText().toString()+"");
             db.close();
-            Log.e("cuarto_edt_precinto ","isContenedor");
         }
 
         if (cuarto_edt_origen.getText().toString().matches("")){
@@ -984,7 +980,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET origenDestino = '"+cuarto_edt_origen.getText().toString()+"'");
             db.close();
-            Log.e("cuarto_edt_origen ","isContenedor");
         }
 
         if (cuarto_edt_or.getText().toString().matches("")){
@@ -995,8 +990,10 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET numeroDocumento = "+cuarto_edt_or.getText().toString()+"");
             db.close();
-            Log.e("cuarto_edt_or ","isContenedor");
         }
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(cuarto_edt_codContenedor.getWindowToken(), 0);
 
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
 
@@ -1009,14 +1006,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 || cuarto_edt_codContenedor.getText().length() <=10){
 
             //Toast.makeText(mContext, "El código del contenedor debe tener 11 caracteres.", Toast.LENGTH_SHORT).show();
-            Log.e(" return ", "cuarto_edt_codContenedor");
+
 
         } else {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
             db.execSQL("UPDATE Cargo SET codigoContenedor = '"+cuarto_edt_codContenedor.getText().toString()+"'");
             db.close();
-            Log.e("codigoContenedor "," Guardado");
         }
 
 
@@ -1573,10 +1569,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                         } catch (Exception eew){
                                             Log.e("Exception ", "CargoActivity Dni");
                                         }
+                                    } else {
+                                        primero_edt_dni.setFocusable(true);
                                     }
 
                                 } else {
 
+                                    primero_edt_dni.setFocusable(true);
                                     limpiarDatosRadioBoton();
                                     limpiarDatos();
                                     limpiarDatosPlaca();
@@ -1906,7 +1905,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
         if (codigoContenedor == null){return;}
-        Log.e("codigoContenedor ", codigoContenedor);
         cuarto_edt_codContenedor.setText(codigoContenedor);
 
         if (numeroPrecintos == null){return;}
@@ -3328,6 +3326,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     } catch (Exception eew){}
 
                     primero_edt_dni.setText("");
+                    primero_edt_dni.setFocusable(true);
 
                     dialog.dismiss();
 

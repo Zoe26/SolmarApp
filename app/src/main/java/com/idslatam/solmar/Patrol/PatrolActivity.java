@@ -15,6 +15,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -337,6 +338,31 @@ public class PatrolActivity extends AppCompatActivity {
 
     public void guardarPatrol(){
 
+        int contador = 0;
+
+        if (edt_contenedor_seleccionado.getText().toString().matches("")){
+            Toast.makeText(mContext, "¡Falta Contenedor!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            contador = c.getCount();
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        if (contador == 0){
+            Toast.makeText(mContext, "¡Falta precintos!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         final ProgressDialog pDialog;
         pDialog = new ProgressDialog(PatrolActivity.this);
         pDialog.setMessage("Registrando Patrol...");
@@ -503,14 +529,15 @@ public class PatrolActivity extends AppCompatActivity {
             mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
-
                     try {
                         DBHelper dataBaseHelperB = new DBHelper(mContext);
                         SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
-                        dbU.execSQL("DELETE FROM PatrolPrecinto WHERE Foto = '"+uri+"'");
+                        //dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
+                        dbU.execSQL("UPDATE PatrolPrecinto SET Foto = " + null+" WHERE Foto = '"+uri+"'");
                         dbU.close();
 
                     } catch (Exception e){}
+
 
                     loadPrecinto();
 
