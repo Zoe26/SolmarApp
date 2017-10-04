@@ -80,7 +80,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     private Toolbar toolbar;
     ViewPager viewPager;
 
-    String GuidDipositivo, URL_API, valor, formato;
+    String GuidDipositivo, URL_API, valor, formato, numeroPrecintoFoto;
 
     Context mContext;
     boolean btn_dni = false;
@@ -93,7 +93,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     TextView tercer_txt_ingreso_tracto, tercer_txt_carga, tercer_txt_dni;
     TextView cuarto_txt_ingreso_tracto, cuarto_txt_carga, cuarto_txt_dni;
     TextView quinto_txt_ingreso_tracto, quinto_txt_carga, quinto_txt_dni, quinto_txt_nro_precintos;
-    ImageView quinto_btn_precintos, img_cargo_persona;
+    ImageView img_cargo_persona; // quinto_btn_precintos,
     EditText cuarto_edt_codContenedor, cuarto_edt_precinto, cuarto_edt_origen, cuarto_edt_or;
     CheckBox check_casco, check_chaleco, check_botas, check_carga;
     SwitchCompat isLicencia, cuarto_switch_tamanoContenedor, cuarto_switch_tipoDoc;
@@ -468,7 +468,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             quinto_txt_carga = (TextView) viewPager.findViewById(R.id.quinto_txt_carga);
             quinto_txt_dni = (TextView) viewPager.findViewById(R.id.quinto_txt_dni);
             quinto_txt_nro_precintos = (TextView) viewPager.findViewById(R.id.quinto_txt_nro_precintos);
-            quinto_btn_precintos = (ImageView) viewPager.findViewById(R.id.quinto_btn_precintos);
+            //quinto_btn_precintos = (ImageView) viewPager.findViewById(R.id.quinto_btn_precintos);
 
             edt_panoramica = (LinearLayout) viewPager.findViewById(R.id.edt_panoramica);
 
@@ -814,7 +814,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             quinto_txt_dni = (TextView) viewPager.findViewById(R.id.quinto_txt_dni);
             quinto_txt_nro_precintos = (TextView) viewPager.findViewById(R.id.quinto_txt_nro_precintos);
 
-            quinto_btn_precintos = (ImageView) viewPager.findViewById(R.id.quinto_btn_precintos);
+            //quinto_btn_precintos = (ImageView) viewPager.findViewById(R.id.quinto_btn_precintos);
 
 
         }
@@ -1354,15 +1354,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                 try {
 
-                    CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
-                    CargoPrecinto cargoPrecinto = new CargoPrecinto();
-                    cargoPrecinto.Foto = Uri_Foto;
-                    cargoPrecinto.CargoPrecintoId = _CargoPrecinto_Id;
-                    _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
+                    DBHelper dbHelperNumero = new DBHelper(this);
+                    SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                    dbNro.execSQL("UPDATE CargoPrecinto SET Foto = '"+Uri_Foto+"' WHERE Indice = '"+numeroPrecintoFoto+"'");
+                    dbNro.close();
+                } catch (Exception eew){}
 
-                    Log.e("isPrecinto  ", "fin");
-
-                } catch (Exception esca) {esca.printStackTrace();}
 
                 loadPrecinto();
 
@@ -1547,18 +1544,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                                 Ion.with(img_cargo_persona)
                                                         .placeholder(R.drawable.ic_foto_fail)
                                                         .error(R.drawable.ic_foto_fail)
-                                                        .transform(new Transform() {
-                                                            @Override
-                                                            public Bitmap transform(Bitmap b) {
-                                                                return ImageConverter.createCircleBitmap(b);
-                                                            }
-
-                                                            @Override
-                                                            public String key() {
-                                                                Log.e("key "," null");
-                                                                return null;
-                                                            }
-                                                        })
                                                         .load(result.get("Img").getAsString());
 
                                             } catch (Exception esvd){}
@@ -1747,17 +1732,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             Ion.with(img_cargo_persona)
                     .placeholder(R.drawable.ic_foto_fail)
                     .error(R.drawable.ic_foto_fail)
-                    .transform(new Transform() {
-                        @Override
-                        public Bitmap transform(Bitmap b) {
-                            return ImageConverter.createCircleBitmap(b);
-                        }
-
-                        @Override
-                        public String key() {
-                            return null;
-                        }
-                    })
                     .load(result.get("Img").getAsString());
 
         } catch (Exception esvd){}
@@ -1948,14 +1922,15 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void poblarQuintaVista(){
 
-        String Placa = null, TipoCarga = null, Dni = null, numeroPrecintos = null, isIngreso = null,
-        fotoD=null, fotoT=null, fotoP=null;
+        int contadorIndice = 0, candFotos = 0;
+
+        String numeroPrecintos = null, isIngreso = null;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, numeroPrecintos, " +
-                    "fotoDelantera, fotoTracera, fotoPanoramica FROM Cargo";
+            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, numeroPrecintos " +
+                    "FROM Cargo";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 Placa = c.getString(c.getColumnIndex("Placa"));
@@ -1963,10 +1938,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 Dni = c.getString(c.getColumnIndex("Dni"));
                 isIngreso = c.getString(c.getColumnIndex("isIngreso"));
                 numeroPrecintos = c.getString(c.getColumnIndex("numeroPrecintos"));
-
-                fotoD = c.getString(c.getColumnIndex("fotoDelantera"));
-                fotoT = c.getString(c.getColumnIndex("fotoTracera"));
-                fotoP = c.getString(c.getColumnIndex("fotoPanoramica"));
             }
             c.close();
             dbst.close();
@@ -1991,7 +1962,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }else {quinto_txt_carga.setText("Contenedor LLeno");}
 
         quinto_txt_dni.setText("Conductor con DNI "+ Dni + "");
-        quinto_txt_nro_precintos.setText("Precintos: 0 de "+ numeroPrecintos);
+
+
+        try {
+            DBHelper bdh = new DBHelper(this);
+            SQLiteDatabase sqlite = bdh.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE Foto IS NOT NULL";
+            Cursor ca = sqlite.rawQuery(selectQuery, new String[]{});
+            candFotos = ca.getCount();
+            ca.close();
+            sqlite.close();
+
+        } catch (Exception e) {}
+
+        quinto_txt_nro_precintos.setText("Precintos: 0 de "+ candFotos);
 
         /*if (TipoCarga.equalsIgnoreCase("3")){
             quinto_btn_precintos.setEnabled(false);
@@ -2003,8 +1987,44 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             loadPrecinto();
         }*/
 
-        quinto_btn_precintos.setEnabled(true);
-        quinto_btn_precintos.setVisibility(View.VISIBLE);
+        // CREACION DE PRE FOTOS -------------------------------------------------------------------
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Indice FROM CargoPrecinto";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            contadorIndice = c.getCount();
+            /*if (c.moveToFirst()) {
+
+                do {
+                    dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Foto"))));
+                } while (c.moveToNext());
+
+            }*/
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        if (contadorIndice==0){
+
+            for (int i = 1; i <= Integer.parseInt(numeroPrecintos) ; i++){
+
+                try {
+
+                    CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
+                    CargoPrecinto cargoPrecinto = new CargoPrecinto();
+                    cargoPrecinto.Indice = "Precinto No "+ String.valueOf(i);
+                    cargoPrecinto.CargoPrecintoId = _CargoPrecinto_Id;
+                    _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
+                } catch (Exception esca) {esca.printStackTrace();}
+
+            }
+        }
+
+
+        //quinto_btn_precintos.setEnabled(true);
+        //quinto_btn_precintos.setVisibility(View.VISIBLE);
         loadPrecinto();
 
     }
@@ -2341,13 +2361,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
     }
 
-    public void fotoPrecinto(View view){
+    public void fotoPrecinto(String numeroPrecinto){
 
-        int ctaA = 0,ctaB = 0;
+        /*int ctaA = 0,ctaB = 0;
         try {
             DBHelper bdh = new DBHelper(this);
             SQLiteDatabase sqlite = bdh.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM CargoPrecinto";
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE Foto IS NOT NULL";
             Cursor ca = sqlite.rawQuery(selectQuery, new String[]{});
             ctaA = ca.getCount();
             ca.close();
@@ -2374,10 +2394,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (ctaA == ctaB){
             Toast.makeText(mContext, "¡Precintos Completos!", Toast.LENGTH_SHORT).show();
             return;
-        }
+        }*/
 
-        tomarFoto();
+        numeroPrecintoFoto = numeroPrecinto;
         isPrecinto = true;
+        tomarFoto();
+
 
     }
 
@@ -2684,7 +2706,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM CargoPrecinto";
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE = Foto IS NOT NULL";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
             c.close();
@@ -2852,7 +2874,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM CargoPrecinto";
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE = Foto IS NOT NULL";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
             c.close();
@@ -3004,13 +3026,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             try {
                 DBHelper dataBaseHelper = new DBHelper(this);
                 SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-                String selectQuery = "SELECT Foto FROM CargoPrecinto";
+                String selectQuery = "SELECT Foto, Indice FROM CargoPrecinto";
                 Cursor c = dbst.rawQuery(selectQuery, new String[]{});
-                contadorLista = c.getCount();
                 if (c.moveToFirst()) {
 
                     do {
-                        dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Foto"))));
+                        dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Indice")), c.getString(c.getColumnIndex("Foto"))));
                     } while (c.moveToNext());
 
                 }
@@ -3018,6 +3039,15 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 dbst.close();
 
             } catch (Exception e) {}
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            contadorLista = c.getCount();
+        } catch (Exception e) {}
+
 
         adapterMovil= new PrecintoCustomAdapter(dataModelsMovil,getApplicationContext());
         listView.setAdapter(adapterMovil);
@@ -3031,7 +3061,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 fotoC = false;
                 fotoPrecinto = true;
 
-                visualizarImagen(datamo.getName());
+                if (datamo.getFoto()==null){
+                    fotoPrecinto(datamo.getNum() );
+                } else {
+                    visualizarImagen(datamo.getFoto());
+                }
             }
         });
 

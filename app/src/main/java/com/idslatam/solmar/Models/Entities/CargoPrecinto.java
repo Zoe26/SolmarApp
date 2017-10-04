@@ -16,5 +16,6 @@ public class CargoPrecinto {
 
 
     public int CargoPrecintoId;
+    public String Indice;
     public String Foto;
 }

@@ -211,8 +211,12 @@
 
                     <ImageView
                         android:id="@+id/img_cargo_persona"
-                        android:layout_width="120dp"
+                        android:layout_width="110dp"
                         android:layout_height="120dp"
+                        android:adjustViewBounds="true"
+                        android:cropToPadding="false"
+                        android:scaleType="fitXY"
+                        android:background="@drawable/ic_persona"
                         android:onClick="previewFotoCargo"/>
 
                 </LinearLayout>
@@ -230,12 +234,14 @@
                         android:id="@+id/cargo_txt_dni_persona"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
+                        android:hint="Nombre"
                         style="?android:attr/textAppearanceMedium"/>
 
                     <TextView
                         android:id="@+id/cargo_txt_empresa_persona"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:hint="Empresa"
                         android:layout_marginTop="5dp"
                         android:textStyle="bold"
                         style="?android:attr/textAppearanceMedium"/>

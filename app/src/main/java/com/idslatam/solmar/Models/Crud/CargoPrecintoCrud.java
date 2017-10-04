@@ -24,8 +24,8 @@ public class CargoPrecintoCrud {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        //values.put(CargoPrecinto.KEY_indice, cargoPrecinto.Indice);
-        values.put(CargoPrecinto.KEY_Foto, cargoPrecinto.Foto);
+        values.put(CargoPrecinto.KEY_indice, cargoPrecinto.Indice);
+        //values.put(CargoPrecinto.KEY_Foto, cargoPrecinto.Foto);
 
         long CargoId = db.insert(CargoPrecinto.TABLE_CARGO_PRECINTO, null, values);
         db.close();

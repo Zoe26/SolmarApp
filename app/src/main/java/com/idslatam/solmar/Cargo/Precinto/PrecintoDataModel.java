@@ -6,20 +6,20 @@ package com.idslatam.solmar.Cargo.Precinto;
 
 public class PrecintoDataModel {
 
-    String name;
-    String doi;
+    String num;
+    String foto;
 
-    public PrecintoDataModel(String name) {
-        this.name=name;
-        this.doi=doi;
+    public PrecintoDataModel(String num, String foto) {
+        this.num=num;
+        this.foto=foto;
     }
 
-    public String getName() {
-        return name;
+    public String getNum() {
+        return num;
     }
 
-    public String getDoi() {
-        return doi;
+    public String getFoto() {
+        return foto;
     }
 
 }

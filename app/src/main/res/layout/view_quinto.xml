@@ -257,13 +257,6 @@
                     style="?android:attr/textAppearanceSmall"
                     android:hint="Precintos"/>
 
-                <ImageButton
-                    android:id="@+id/quinto_btn_precintos"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/ic_camare_add"
-                    android:onClick="fotoPrecinto"/>
-
             </LinearLayout>
 
             <GridView

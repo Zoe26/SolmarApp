@@ -24,7 +24,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
 
     // View lookup cache
     private static class ViewHolder {
-        TextView txtName;
+        TextView txtNum;
         ImageView img;
     }
 
@@ -49,7 +49,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item_precinto, parent, false);
-            viewHolder.txtName = (TextView) convertView.findViewById(R.id.req_nombre);
+            viewHolder.txtNum = (TextView) convertView.findViewById(R.id.item_num_precinto);
             viewHolder.img = (ImageView) convertView.findViewById(R.id.item_info);
 
 
@@ -61,7 +61,7 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             result=convertView;
         }
 
-        //viewHolder.txtName.setText(dataModel.getName());
+        viewHolder.txtNum.setText(dataModel.getNum());
         //viewHolder.txtDoi.setText(dataModel.getDoi());
 
         try {
@@ -69,9 +69,9 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             try {
 
                 Ion.with(viewHolder.img)
-                        .placeholder(R.drawable.ic_foto_fail)
-                        .error(R.drawable.ic_foto_fail)
-                        .load(dataModel.getName());
+                        .placeholder(R.drawable.ic_camare_add)
+                        .error(R.drawable.ic_camare_add)
+                        .load(dataModel.getFoto());
 
             } catch (Exception e){}
 
