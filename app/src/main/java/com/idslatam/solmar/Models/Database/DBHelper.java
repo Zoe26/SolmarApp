@@ -182,7 +182,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Cargo.KEY_numeroPrecintos + " TEXT,"
                 + Cargo.KEY_origenDestino + " TEXT,"
                 + Cargo.KEY_tipoDocumento + " TEXT,"
-                + Cargo.KEY_numeroDocumento + " TEXT)";
+                + Cargo.KEY_numeroDocumento + " TEXT,"
+                + Cargo.KEY_json + " TEXT)";
 
         String CREATE_TABLE_CARGO_PRECINTO = "CREATE TABLE " + CargoPrecinto.TABLE_CARGO_PRECINTO + "("
                 + CargoPrecinto.KEY_ID_CargoPrecinto + " INTEGER PRIMARY KEY AUTOINCREMENT,"

@@ -101,7 +101,6 @@
 
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/ly_ultimo"
                 android:layout_width="match_parent"
@@ -131,7 +130,9 @@
                             android:id="@+id/btn_visualizar_delantera"
                             android:layout_width="150dp"
                             android:layout_height="170dp"
-                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:cropToPadding="false"
+                            android:scaleType="fitXY"
                             android:gravity="center"
                             android:onClick="visualizacionDelantera"
                             android:background="@drawable/bg_fotos"/>
@@ -163,7 +164,9 @@
                             android:id="@+id/btn_visualizar_trasera"
                             android:layout_width="150dp"
                             android:layout_height="170dp"
-                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:cropToPadding="false"
+                            android:scaleType="fitXY"
                             android:gravity="center"
                             android:onClick="visualizacionTrasera"
                             android:background="@drawable/bg_fotos"/>
@@ -204,7 +207,9 @@
                             android:id="@+id/btn_visualizar_panoramica"
                             android:layout_width="150dp"
                             android:layout_height="170dp"
-                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:cropToPadding="false"
+                            android:scaleType="fitXY"
                             android:gravity="center"
                             android:onClick="visualizacionPanoramica"
                             android:background="@drawable/bg_fotos"/>
@@ -228,8 +233,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-
 
         </RelativeLayout>
 

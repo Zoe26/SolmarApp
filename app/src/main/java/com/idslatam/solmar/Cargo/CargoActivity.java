@@ -49,6 +49,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Cargo.Precinto.PrecintoCustomAdapter;
 import com.idslatam.solmar.Cargo.Precinto.PrecintoDataModel;
+import com.idslatam.solmar.ImageClass.*;
 import com.idslatam.solmar.Models.Crud.CargoCrud;
 import com.idslatam.solmar.Models.Crud.CargoPrecintoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
@@ -87,16 +88,16 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     EditText primero_edt_tracto, primero_edt_dni;
     EditText segundo_edt_or, segundo_edt_cta_bultos;
     Calendar currenCodeBar;
-    TextView primero_txt_mje;
+    TextView primero_txt_mje, cargo_txt_dni_persona, cargo_txt_empresa_persona;
     TextView segundo_txt_ingreso_tracto, segundo_txt_carga, segundo_txt_dni;
     TextView tercer_txt_ingreso_tracto, tercer_txt_carga, tercer_txt_dni;
     TextView cuarto_txt_ingreso_tracto, cuarto_txt_carga, cuarto_txt_dni;
     TextView quinto_txt_ingreso_tracto, quinto_txt_carga, quinto_txt_dni, quinto_txt_nro_precintos;
-    ImageView quinto_btn_precintos;
+    ImageView quinto_btn_precintos, img_cargo_persona;
     EditText cuarto_edt_codContenedor, cuarto_edt_precinto, cuarto_edt_origen, cuarto_edt_or;
     CheckBox check_casco, check_chaleco, check_botas, check_carga;
     SwitchCompat isLicencia, cuarto_switch_tamanoContenedor, cuarto_switch_tipoDoc;
-    LinearLayout edt_trasera, edt_panoramica;
+    LinearLayout edt_trasera, edt_panoramica, ly_foto;
 
     ImageButton btn_visualizar_delantera, btn_visualizar_trasera, btn_visualizar_panoramica;
 
@@ -190,6 +191,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             rbCargaSuelta = (RadioButton)viewPager.findViewById(R.id.radio_cargaSuelta);
             rbContenedorLleno = (RadioButton)viewPager.findViewById(R.id.radio_lleno);
             rbContenedorVacio = (RadioButton)viewPager.findViewById(R.id.radio_vacio);
+
+            img_cargo_persona = (ImageView)viewPager.findViewById(R.id.img_cargo_persona);
+            ly_foto = (LinearLayout) viewPager.findViewById(R.id.ly_foto);
+            //ly_foto.setVisibility(View.GONE);
+
+            cargo_txt_dni_persona = (TextView)viewPager.findViewById(R.id.cargo_txt_dni_persona);
+            cargo_txt_empresa_persona = (TextView)viewPager.findViewById(R.id.cargo_txt_empresa_persona);
+
 
             rbSinCarga.setOnClickListener(rbSinCargaClick);
             rbCargaSuelta.setOnClickListener(rbCargaSueltaClick);
@@ -693,6 +702,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             rbContenedorLleno = (RadioButton)viewPager.findViewById(R.id.radio_lleno);
             rbContenedorVacio = (RadioButton)viewPager.findViewById(R.id.radio_vacio);
 
+            img_cargo_persona = (ImageView)viewPager.findViewById(R.id.img_cargo_persona);
+            ly_foto = (LinearLayout) viewPager.findViewById(R.id.ly_foto);
+            //ly_foto.setVisibility(View.GONE);
+
+            cargo_txt_dni_persona = (TextView)viewPager.findViewById(R.id.cargo_txt_dni_persona);
+            cargo_txt_empresa_persona = (TextView)viewPager.findViewById(R.id.cargo_txt_empresa_persona);
+
             cuarto_btn_fotos_aux();
 
         }
@@ -1105,9 +1121,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         new IntentIntegrator(this).initiateScan();
     }
 
-    public void enviarPlaca(View view) {
 
-        limpiarDatosPlaca();
+    public void enviarPlaca(View view){
+        enviarPlaca();
+    }
+
+    public void enviarPlaca() {
+
+        //limpiarDatosPlaca();
 
         String pla = null;
 
@@ -1362,7 +1383,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                 //imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
                 btn_visualizar_delantera.setVisibility(View.VISIBLE);
-                btn_visualizar_delantera.setImageURI(Uri.parse(Uri_Foto));
+                btn_visualizar_delantera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
 
                 fotoDelantera = false;
 
@@ -1381,7 +1402,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                 //imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
                 btn_visualizar_trasera.setVisibility(View.VISIBLE);
-                btn_visualizar_trasera.setImageURI(Uri.parse(Uri_Foto));
+                btn_visualizar_trasera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
                 fotoTracera = false;
 
             } else {
@@ -1398,7 +1419,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                 //imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
                 btn_visualizar_panoramica.setVisibility(View.VISIBLE);
-                btn_visualizar_panoramica.setImageURI(Uri.parse(Uri_Foto));
+                btn_visualizar_panoramica.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
                 fotoPanoramica = false;
 
             }
@@ -1517,14 +1538,53 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
                                     if (result.get("Resultado").getAsString().equalsIgnoreCase("OK")){
+
+                                        if (!result.get("Img").isJsonNull()){
+
+                                            //ly_foto.setVisibility(View.VISIBLE);
+
+                                            try {
+                                                Ion.with(img_cargo_persona)
+                                                        .placeholder(R.drawable.ic_foto_fail)
+                                                        .error(R.drawable.ic_foto_fail)
+                                                        .transform(new Transform() {
+                                                            @Override
+                                                            public Bitmap transform(Bitmap b) {
+                                                                return ImageConverter.createCircleBitmap(b);
+                                                            }
+
+                                                            @Override
+                                                            public String key() {
+                                                                Log.e("key "," null");
+                                                                return null;
+                                                            }
+                                                        })
+                                                        .load(result.get("Img").getAsString());
+
+                                            } catch (Exception esvd){}
+                                        } else {
+                                            //ly_foto.setVisibility(View.GONE);
+                                        }
+
+                                        if (!result.get("persNombres").isJsonNull()){
+                                            cargo_txt_dni_persona.setText(result.get("persNombres").getAsString());
+                                            cargo_txt_empresa_persona.setText(result.get("persEmpresa").getAsString());
+                                        }
+
+
                                         try {
                                             DBHelper dbHelperAlarm = new DBHelper(mContext);
                                             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
                                             dba.execSQL("UPDATE Cargo SET Dni = "+primero_edt_dni.getText().toString()+"");
                                             dba.close();
 
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                            db.execSQL("UPDATE Cargo SET json = '"+result.toString()+"'");
+                                            db.close();
+                                            Log.e("cuarto_edt_or ","isContenedor");
+
                                             MensajePersona(result.get("Mensaje").getAsString());
-                                            Log.e("Dni ","true");
                                         } catch (Exception eew){
                                             Log.e("Exception ", "CargoActivity Dni");
                                         }
@@ -1577,7 +1637,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         //Log.e("poblarPrimeraVista ", "Ingreso");
 
         String Placa = null, TipoCarga = null, Dni = null, isCarga = null, isIngresoS = null,
-                EppCasco = null, EppChaleco = null, EppBotas = null, isLicenciaL = null;
+                EppCasco = null, EppChaleco = null, EppBotas = null, isLicenciaL = null, json = null;
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
@@ -1598,6 +1658,21 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             dbst.close();
 
         } catch (Exception e) {}
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT json FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+
+                json = c.getString(c.getColumnIndex("json"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
 
         if (TipoCarga.equalsIgnoreCase("1")){
             rbSinCarga.setChecked(true);
@@ -1652,6 +1727,40 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         } else {
             primero_txt_mje.setText("El Tracto "+Placa+" está Saliendo");
         }
+
+        if (json==null){
+            Log.e(" json == ", "NULL");
+            return;
+        }
+
+
+        //ly_foto.setVisibility(View.VISIBLE);
+        Gson gson = new Gson();
+        JsonObject result = gson.fromJson(json, JsonObject.class);
+
+        Log.e(" result == ", result.toString());
+
+        cargo_txt_dni_persona.setText(result.get("persNombres").getAsString());
+        cargo_txt_empresa_persona.setText(result.get("persEmpresa").getAsString());
+
+        try {
+            Ion.with(img_cargo_persona)
+                    .placeholder(R.drawable.ic_foto_fail)
+                    .error(R.drawable.ic_foto_fail)
+                    .transform(new Transform() {
+                        @Override
+                        public Bitmap transform(Bitmap b) {
+                            return ImageConverter.createCircleBitmap(b);
+                        }
+
+                        @Override
+                        public String key() {
+                            return null;
+                        }
+                    })
+                    .load(result.get("Img").getAsString());
+
+        } catch (Exception esvd){}
 
     }
 
@@ -2960,6 +3069,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
             dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
             dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
+            dba.execSQL("UPDATE Cargo SET json = " + null);
 
             dba.close();
 
@@ -3022,6 +3132,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
             dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
             dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
+            dba.execSQL("UPDATE Cargo SET json = " + null);
 
             dba.close();
 
@@ -3104,13 +3215,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             Gson gson = new Gson();
                             JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                    Log.e("JsonObject Registro ", "Placa " +result.toString());
-                                    try {
-                                        if (pDialog != null && pDialog.isShowing()) {
-                                            pDialog.dismiss();
-                                        }
-                                    } catch (Exception exc){}
-                                    finish();
+                            Log.e("JsonObject Registro ", "Placa " +result.toString());
+
+                            try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+                            } catch (Exception exc){}
+
+                            enviarPlaca();
+                            //finish();
 
 
                         } else {
@@ -3277,7 +3388,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                         try {
                             DBHelper dataBaseHelperB = new DBHelper(mContext);
                             SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
-                            dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
+                            //dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
+                            dbU.execSQL("UPDATE CargoPrecinto SET Foto = " + null+" WHERE Foto = '"+uri+"'");
                             dbU.close();
 
                         } catch (Exception e){}
@@ -3312,6 +3424,119 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                 }
             });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void previewFotoCargo(View view){
+
+        String json = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT json FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+
+                json = c.getString(c.getColumnIndex("json"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        Gson gson = new Gson();
+        JsonObject result = gson.fromJson(json, JsonObject.class);
+
+        visualizarImagenX(result.get("Img").getAsString());
+
+    }
+
+    public void visualizarImagenX(String uri){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+        mView = getLayoutInflater().inflate(R.layout.popup_visualizacion, null);
+        mBuilder.setCancelable(false);
+
+        ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
+
+        //Uri myUri = Uri.parse(getRightAngleImage(uri));
+
+        //img.setImageURI(myUri);
+
+        try {
+            Ion.with(img)
+                    .placeholder(R.drawable.ic_foto_fail)
+                    .error(R.drawable.ic_foto_fail)
+                    .load(uri);
+        } catch (Exception dsf){}
+
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+
+                }
+            });
+            /*mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    *//*Log.e(" fotoPrecinto ", String.valueOf(fotoPrecinto));
+                    Log.e(" fotoA ", String.valueOf(fotoA));
+                    Log.e(" fotoB ", String.valueOf(fotoB));
+                    Log.e(" fotoC ", String.valueOf(fotoC));
+
+                    if (fotoPrecinto){
+
+                        try {
+                            DBHelper dataBaseHelperB = new DBHelper(mContext);
+                            SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
+                            dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
+                            dbU.close();
+
+                        } catch (Exception e){}
+
+                    } else {
+
+                        try {
+
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+
+                            if (fotoA){
+                                dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
+                                btn_visualizar_delantera.setVisibility(View.GONE);
+                            } else if (fotoB){
+                                dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
+                                btn_visualizar_trasera.setVisibility(View.GONE);
+                            } else if (fotoC){
+                                dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
+                                btn_visualizar_panoramica.setVisibility(View.GONE);
+                            }
+
+                            dba.close();
+
+                        } catch (Exception eew){}
+                    }
+
+
+                    loadPrecinto();*//*
+
+                    dialog.dismiss();
+
+                }
+            });*/
 
             mBuilder.setView(mView);
             AlertDialog dialog = mBuilder.create();
