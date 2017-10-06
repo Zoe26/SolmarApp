@@ -439,7 +439,7 @@ public class ListadoContenedor extends AppCompatActivity {
                             Gson gson = new Gson();
                             JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                            Log.e("Contendedor Patrol ", result.toString());
+                            Log.e("Contendedor  Patrol ", result.toString());
 
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
