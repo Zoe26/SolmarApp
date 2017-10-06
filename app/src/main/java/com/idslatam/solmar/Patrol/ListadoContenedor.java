@@ -464,9 +464,7 @@ public class ListadoContenedor extends AppCompatActivity {
                         if (pDialog != null && pDialog.isShowing()) {
                             pDialog.dismiss();
                         }
-
                     }});
-
     }
 
 }
