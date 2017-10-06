@@ -24,7 +24,7 @@ import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "SolgisDB";
 
     public DBHelper(Context context) {
@@ -108,6 +108,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_SimSerie + " TEXT,"
                 + Configuration.KEY_ContenedorPatrol + " TEXT,"
                 + Configuration.KEY_ContenedorId + " TEXT,"
+                + Configuration.KEY_Sesion + " TEXT,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 
         String CREATE_TABLE_ASISTENCIA = "CREATE TABLE " + Asistencia.TABLE_ASISTENCIA + "("

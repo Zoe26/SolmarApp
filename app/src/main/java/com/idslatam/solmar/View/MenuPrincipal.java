@@ -865,6 +865,7 @@ public class MenuPrincipal extends  ActionBarActivity {
         JsonObject json = new JsonObject();
         json.addProperty("Numero", Num);
         json.addProperty("DispositivoId", DisId);
+        json.addProperty("DispositivoId", DisId);
         json.addProperty("FechaInicioCelular", FechaInicioCelular);
 
         Ion.with(this)
@@ -879,7 +880,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
                             String AsistenciaId = null;
                             //Log.e("JsonObject ", response.toString());
-
                             AsistenciaId = response.get("AsistenciaId").getAsString();
                             //AsistenciaId
                             //String AsistenciaId = json.get("AsistenciaId").getAsString();

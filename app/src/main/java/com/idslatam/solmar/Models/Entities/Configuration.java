@@ -45,6 +45,7 @@ public class Configuration {
     public static final String KEY_ContadorPulsacion = "ContadorPulsacion";
     public static final String KEY_ContadorAux = "ContadorAux";
     public static final String KEY_isScreen = "isScreen";
+    public static final String KEY_Sesion = "Sesion";
 
     public static final String KEY_SimSerie = "SimSerie";
 

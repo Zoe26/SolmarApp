@@ -73,7 +73,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
     Context mContext;
 
     int _Menu_Id = 0;
-    String DispositivoId;
+    String DispositivoId, flagSesion;
     boolean state;
 
     private Point mSize;
@@ -87,6 +87,9 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
     private List<ApplicationInfo> applist = null;
     private PackageManager packageManager = null;
     private ApplicationAdapter listadaptor = null;
+
+    SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
+            , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
     @Override
@@ -118,12 +121,13 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT CodigoEmpleado, GuidDipositivo FROM Configuration";
+            String selectQueryconfiguration = "SELECT CodigoEmpleado, GuidDipositivo, Sesion FROM Configuration";
             Cursor cConfiguration = dbConfiguration.rawQuery(selectQueryconfiguration, new String[]{});
 
             if (cConfiguration.moveToFirst()) {
                 fotocheckCod = cConfiguration.getString(cConfiguration.getColumnIndex("CodigoEmpleado"));
                 DispositivoId = cConfiguration.getString(cConfiguration.getColumnIndex("GuidDipositivo"));
+                flagSesion = cConfiguration.getString(cConfiguration.getColumnIndex("Sesion"));
             }
             cConfiguration.close();
             dbConfiguration.close();
@@ -143,6 +147,16 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
+
+        if (flagSesion==null){
+            flagSesion = "false";
+        }
+
+        Log.e("flagSesion ", flagSesion);
+
+        if(flagSesion.equalsIgnoreCase("false")){
+            inicioTurno();
+        }
 
         if (state == true) {
             load(savedInstanceState);
@@ -664,6 +678,14 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         try {
 
             DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("UPDATE Configuration SET Sesion = 'false'");
+            db.close();
+        } catch (Exception e5) {}
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
             dbT.execSQL("UPDATE Configuration SET Token = " + null);
             dbT.close();
@@ -781,7 +803,67 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
     }
 
-    private class LoadApplications extends AsyncTask<Void, Void, Void> {
+    public void inicioTurno(){
+
+
+        String Num = null, DisId = null, CodigoEmpleado = null;
+
+        String FechaInicioCelular = formatoGuardar.format(new Date());
+
+        try {
+
+            FechaInicioCelular = formatoGuardar.format(new Date());
+            DBHelper dbhGUID = new DBHelper(mContext);
+            SQLiteDatabase dbA = dbhGUID.getReadableDatabase();
+            String selectQueryA = "SELECT NumeroCel, GuidDipositivo, CodigoEmpleado FROM Configuration";
+            Cursor cA = dbA.rawQuery(selectQueryA, new String[]{});
+
+            if (cA.moveToFirst()) {
+                Num = cA.getString(cA.getColumnIndex("NumeroCel"));
+                DisId = cA.getString(cA.getColumnIndex("GuidDipositivo"));
+                CodigoEmpleado = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
+            }
+            cA.close();
+            dbA.close();
+
+        }catch (Exception e){}
+
+        String URL = URL_API.concat("api/Attendance");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("Numero", Num);
+        json.addProperty("CodigoEmpleado", CodigoEmpleado);
+        json.addProperty("DispositivoId", DisId);
+        json.addProperty("FechaInicioCelular", FechaInicioCelular);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject response) {
+
+                        if(response!=null){
+                            Log.e("JsonObject Frag. Ini ", response.toString());
+
+                        } else  {
+                            Log.e("Exception ", "Finaliza" );
+                        }
+
+                        try {
+
+                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                            db.execSQL("UPDATE Configuration SET Sesion = 'true'");
+                            db.close();
+                        } catch (Exception e5) {}
+                    }
+                });
+    }
+
+
+    /*private class LoadApplications extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             applist = checkForLaunchIntent(packageManager.getInstalledApplications(PackageManager.GET_META_DATA));
@@ -824,7 +906,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
                     Log.e("class name", String.valueOf(info.packageName));
 
-                    /*try {
+                    *//*try {
 
                         DBHelper dataBaseHelper = new DBHelper(this);
                         SQLiteDatabase dbConfiguration = dataBaseHelper.getReadableDatabase();
@@ -846,7 +928,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                         cConfiguration.close();
                         dbConfiguration.close();
 
-                    } catch (Exception e) {}*/
+                    } catch (Exception e) {}*//*
 
 
                     if ( true ){
@@ -862,6 +944,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             }
         }
         return applist;
-    }
+    }*/
 
 }
