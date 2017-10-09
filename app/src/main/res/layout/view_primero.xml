@@ -232,7 +232,7 @@
 
                     <TextView
                         android:id="@+id/cargo_txt_dni_persona"
-                        android:layout_width="200dp"
+                        android:layout_width="190dp"
                         android:layout_height="wrap_content"
                         android:hint="Nombre"
                         style="?android:attr/textAppearanceMedium"/>

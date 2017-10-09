@@ -59,7 +59,7 @@ public class PatrolActivity extends AppCompatActivity {
 
     Uri photoUri;
 
-    int _PatrolPrecinto_Id = 0, contadorLista = 0;
+    int _PatrolPrecinto_Id = 0, contadorLista = 0, TIME_OUT = 5 * 60 * 1000;
 
     int count = 0;
 
@@ -103,6 +103,11 @@ public class PatrolActivity extends AppCompatActivity {
     public void fotoPrecinto(String numeroPrecinto){
 
         numeroPrecintoFoto = numeroPrecinto;
+
+        if (edt_contenedor_seleccionado.getText().toString().matches("")){
+            Toast.makeText(mContext, "Falta contenedor", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         /*int ctaA = 0;
         try {
@@ -410,7 +415,14 @@ public class PatrolActivity extends AppCompatActivity {
 
         Ion.with(mContext)
                 .load(URL)
-                .setTimeout(15 * 60 * 1000)
+                .uploadProgressHandler(new ProgressCallback() {
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+                        Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                    }
+                })
+                .setTimeout(TIME_OUT)
+                .setLogging("PATRO_ION", Log.DEBUG)
                 .addMultipartParts(files)
                 .setMultipartParameter("ContenedorId", ContenedorId)
                 .setMultipartParameter("DispositivoId", DispositivoId)
@@ -420,13 +432,20 @@ public class PatrolActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(Exception e, Response<String> response) {
 
-                        if (e != null) {
-                            Toast.makeText(mContext, "Error uploading file", Toast.LENGTH_LONG).show();
+                        if (e != null){
+
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
+
+                            Log.e("Excepction ContVacio", e.toString());
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
+
                             return;
                         }
 
@@ -624,6 +643,38 @@ public class PatrolActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return imagePath;
+    }
+
+    public void mensajeTimeOut(){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(PatrolActivity.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_failed, null);
+        mBuilder.setCancelable(false);
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView texMje = (TextView)mView.findViewById(R.id.cargo_mje_failed);
+
+        txtTitle.setText("¡Atención!");
+        texMje.setText("Lo sentimos, el servidor ha demorado en responder. " +
+                "Intente nuevamente en un momento, caso contrario pongase en contacto con su administrador");
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

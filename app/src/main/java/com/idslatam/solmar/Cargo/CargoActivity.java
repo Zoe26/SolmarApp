@@ -130,7 +130,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     PrecintoCustomAdapter adapterMovil;
 
-    int _CargoPrecinto_Id = 0, contadorLista;
+    int _CargoPrecinto_Id = 0, contadorLista, TIME_OUT = 5 * 60 * 1000;
 
     boolean isPrecinto = false;
 
@@ -568,7 +568,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
     };
 
-
     @Override
     public void onPageSelected(int position) {
 
@@ -578,14 +577,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Placa, Dni, NroOR, CantidadBultos, TipoCarga, codigoContenedor, " +
+            String selectQuery = "SELECT Placa, Dni, GuiaRemision, CantidadBultos, TipoCarga, codigoContenedor, " +
                     "numeroPrecintos, origenDestino, numeroDocumento, isIngreso FROM Cargo";
 
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 Placa = c.getString(c.getColumnIndex("Placa"));
                 Dni = c.getString(c.getColumnIndex("Dni"));
-                NroOR = c.getString(c.getColumnIndex("NroOR"));
+                NroOR = c.getString(c.getColumnIndex("GuiaRemision"));
                 CantidadBultos = c.getString(c.getColumnIndex("CantidadBultos"));
                 sTipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
 
@@ -874,7 +873,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         } else {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-            db.execSQL("UPDATE Cargo SET NroOR = '"+segundo_edt_or.getText().toString()+"'");
+            db.execSQL("UPDATE Cargo SET GuiaRemision = '"+segundo_edt_or.getText().toString()+"'");
             db.close();
         }
 
@@ -918,12 +917,15 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (segundo_edt_or == null || segundo_edt_or.getText().toString().matches("")){
             Log.e(" segundo_btn ", "_fotos_aux");
-        } else {
+        }
+
+        /*else {
             DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-            db.execSQL("UPDATE Cargo SET NroOR = '"+segundo_edt_or.getText().toString()+"'");
+            db.execSQL("UPDATE Cargo SET GuiaRemision = '"+segundo_edt_or.getText().toString()+"'");
             db.close();
-        }
+        }*/
+
         String sTipoCarga = null;
 
         try {
@@ -1755,7 +1757,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, isCarga, NroOR, CantidadBultos FROM Cargo";
+            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, isCarga, GuiaRemision, CantidadBultos FROM Cargo";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 Placa = c.getString(c.getColumnIndex("Placa"));
@@ -1763,7 +1765,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 Dni = c.getString(c.getColumnIndex("Dni"));
                 isIngreso = c.getString(c.getColumnIndex("isIngreso"));
                 isCarga = c.getString(c.getColumnIndex("isCarga"));
-                or = c.getString(c.getColumnIndex("NroOR"));
+                or = c.getString(c.getColumnIndex("GuiaRemision"));
                 ctaBultos = c.getString(c.getColumnIndex("CantidadBultos"));
             }
             c.close();
@@ -2079,33 +2081,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .launchCamera();
     }
 
-    private void showPermissionRationaleDialog(final String message, final String permission) {
-        new android.support.v7.app.AlertDialog.Builder(CargoActivity.this)
-                .setMessage(message)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CargoActivity.this.requestForPermission(permission);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .create()
-                .show();
-    }
-
     private void requestForPermission(final String permission) {
         ActivityCompat.requestPermissions(CargoActivity.this, new String[]{permission}, REQUEST_CAMERA_PERMISSION);
-    }
-
-    private void launch() {
-
-        //Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
-        //startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
     }
 
     public void showDialogSend() throws Exception {
@@ -2205,36 +2182,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         }
 
-
-        /*RadioButton radioButton = (RadioButton) findViewById(selectedId);
-
-        //EPROBLEMAS
-        if (radioButton.getText().toString().equalsIgnoreCase("Sin Carga")){
-            idRadioButtom = "1";
-        } else if ((radioButton.getText().toString().equalsIgnoreCase("Carga Suelta"))){
-            idRadioButtom = "2";
-        } else if ((radioButton.getText().toString().equalsIgnoreCase("Contenedor Vacío"))){
-            idRadioButtom = "3";
-        } else if ((radioButton.getText().toString().equalsIgnoreCase("Contenedor Lleno"))){
-            idRadioButtom = "4";
-        }
-
-        Log.e("idRadioButtom ", idRadioButtom);
-
-        if (idRadioButtom.equalsIgnoreCase("1")){
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-
-        } else if(idRadioButtom.equalsIgnoreCase("2")){
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-
-        } else if(idRadioButtom.equalsIgnoreCase("3")){
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 3);
-
-        } else {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 3);
-
-        }*/
-
     }
 
     public void primeroViewFoto(View view){
@@ -2263,7 +2210,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Placa, TipoCarga, EppCasco, EppChaleco, EppBotas," +
-                    "Dni, isLicencia, NroOR, isCarga, CantidadBultos, isIngreso, fotoDelantera, " +
+                    "Dni, isLicencia, GuiaRemision, isCarga, CantidadBultos, isIngreso, fotoDelantera, " +
                     "fotoTracera, fotoPanoramica FROM Cargo";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
 
@@ -2275,7 +2222,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 Botas = c.getString(c.getColumnIndex("EppBotas"));
                 Dni = c.getString(c.getColumnIndex("Dni"));
                 Licencia = c.getString(c.getColumnIndex("isLicencia"));
-                NroOR = c.getString(c.getColumnIndex("NroOR"));
+                NroOR = c.getString(c.getColumnIndex("GuiaRemision"));
                 Carga = c.getString(c.getColumnIndex("isCarga"));
                 Delantera = c.getString(c.getColumnIndex("fotoDelantera"));
                 Trasera = c.getString(c.getColumnIndex("fotoTracera"));
@@ -2474,6 +2421,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         Ion.with(mContext)
                 .load(URL)
+                .uploadProgressHandler(new ProgressCallback() {
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+                        Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                    }
+                })
+                .setTimeout(TIME_OUT)
                 .setMultipartParameter("Numero", Numero)
                 .setMultipartParameter("DispositivoId", DispositivoId)
                 .setMultipartParameter("Placa", Placa)
@@ -2495,7 +2449,17 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                         if (e != null){
 
-                            Log.e("Excepction ", " --- ");
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
+                            Log.e("Excepction SinCarga",  e.toString());
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
                             return;
                         }
 
@@ -2614,6 +2578,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         Ion.with(mContext)
                 .load(URL)
+                .uploadProgressHandler(new ProgressCallback() {
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+                        Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                    }
+                })
+                .setTimeout(TIME_OUT)
                 .setMultipartParameter("Numero", Numero)
                 .setMultipartParameter("DispositivoId", DispositivoId)
                 .setMultipartParameter("Placa", Placa)
@@ -2634,6 +2605,23 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .setCallback(new FutureCallback<Response<String>>() {
                     @Override
                     public void onCompleted(Exception e, Response<String> response) {
+
+                        if (e != null){
+
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+
+                            Log.e("Excepction ConCarga", e.toString());
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
+
+                            return;
+                        }
 
                         if(response.getHeaders().code()==200){
 
@@ -2713,7 +2701,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE = Foto IS NOT NULL";
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE Foto IS NOT NULL";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
             c.close();
@@ -2779,7 +2767,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                         Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
                     }
                 })
-                .setTimeout(15 * 60 * 1000)
+                .setTimeout(TIME_OUT)
                 .addMultipartParts(files)
                 .setMultipartParameter("Numero", Numero)
                 .setMultipartParameter("DispositivoId", DispositivoId)
@@ -2806,13 +2794,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     @Override
                     public void onCompleted(Exception e, Response<String> response) {
 
-                        if (e != null) {
-                            Toast.makeText(mContext, "Error uploading file", Toast.LENGTH_LONG).show();
+                        if (e != null){
+
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
+
+                            Log.e("Excepction ContVacio", e.toString());
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
+
                             return;
                         }
 
@@ -2881,7 +2876,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE = Foto IS NOT NULL";
+            String selectQuery = "SELECT Foto FROM CargoPrecinto WHERE Foto IS NOT NULL";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
             c.close();
@@ -2949,7 +2944,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                         Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
                     }
                 })
-                .setTimeout(15 * 60 * 1000)
+                .setTimeout(TIME_OUT)
                 .addMultipartParts(files)
                 .setMultipartParameter("Numero", Numero)
                 .setMultipartParameter("DispositivoId", DispositivoId)
@@ -2975,13 +2970,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     @Override
                     public void onCompleted(Exception e, Response<String> response) {
 
-                        if (e != null) {
-                            Toast.makeText(mContext, "Error uploading file", Toast.LENGTH_LONG).show();
+                        if (e != null){
+
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
+
+                            Log.e("Excepction ContLleno", e.toString());
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
+
                             return;
                         }
 
@@ -3111,6 +3113,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
             dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
             dba.execSQL("UPDATE Cargo SET json = " + null);
+            dba.execSQL("UPDATE Cargo SET GuiaRemision = " + null);
 
             dba.close();
 
@@ -3174,6 +3177,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
             dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
             dba.execSQL("UPDATE Cargo SET json = " + null);
+            dba.execSQL("UPDATE Cargo SET GuiaRemision = " + null);
 
             dba.close();
 
@@ -3404,9 +3408,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         mBuilder.setCancelable(false);
 
         ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
-
         Uri myUri = Uri.parse(getRightAngleImage(uri));
-
         img.setImageURI(myUri);
 
         try {
@@ -3478,6 +3480,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void previewFotoCargo(View view){
 
+        Log.e("previewFotoCargo ", "INGRESO");
+
         String json = null;
 
         try {
@@ -3494,10 +3498,19 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
+
+        if (json==null){
+
+            Toast.makeText(mContext, "¡No existe foto!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Gson gson = new Gson();
         JsonObject result = gson.fromJson(json, JsonObject.class);
 
-        visualizarImagenX(result.get("Img").getAsString());
+        if (!result.get("Img").isJsonNull()){
+            visualizarImagenX(result.get("Img").getAsString());
+        }
 
     }
 
@@ -3510,6 +3523,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         mBuilder.setCancelable(false);
 
         ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
+
+        Log.e("visualizarImagenX ", "INGRESO");
 
         //Uri myUri = Uri.parse(getRightAngleImage(uri));
 
@@ -3735,6 +3750,38 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         fotoC = true;
         fotoPrecinto = false;
         visualizarImagen(fotoP);
+
+    }
+
+    public void mensajeTimeOut(){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoActivity.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_failed, null);
+        mBuilder.setCancelable(false);
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView texMje = (TextView)mView.findViewById(R.id.cargo_mje_failed);
+
+        txtTitle.setText("¡Atención!");
+        texMje.setText("Lo sentimos, el servidor ha demorado en responder. " +
+                "Intente nuevamente en un momento, caso contrario pongase en contacto con su administrador");
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

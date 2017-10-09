@@ -34,6 +34,7 @@ public class Cargo {
     public static final String KEY_tipoDocumento = "tipoDocumento";//iniciar
     public static final String KEY_numeroDocumento = "numeroDocumento";
     public static final String KEY_json= "json";
+    public static final String KEY_GuiaRemision = "GuiaRemision";
 
 
 

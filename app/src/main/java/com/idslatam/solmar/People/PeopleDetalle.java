@@ -1156,6 +1156,38 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     }
 
+    public void peopleFoto(View view){
+
+        String json = null, dni = null, fotoValor = null, fotoVehiculoA = null
+                , fotoVehiculoGuanteraA = null, fotoVehiculoMaleteraA = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT json FROM People";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                json = c.getString(c.getColumnIndex("json"));
+
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        if (json == null){return;}
+
+        if (json == null){return;}
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+        if (!jsonObject.get("Img").isJsonNull()){
+            visualizarImagenX(jsonObject.get("Img").getAsString());
+        }
+
+    }
+
     public void visualizarImagen(String uri){
 
         View mView;
@@ -1207,6 +1239,94 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                 }
             });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void visualizarImagenX(String uri){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(PeopleDetalle.this);
+        mView = getLayoutInflater().inflate(R.layout.popup_visualizacion, null);
+        mBuilder.setCancelable(false);
+
+        ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
+
+        //Uri myUri = Uri.parse(getRightAngleImage(uri));
+
+        //img.setImageURI(myUri);
+
+        try {
+            Ion.with(img)
+                    .placeholder(R.drawable.ic_foto_fail)
+                    .error(R.drawable.ic_foto_fail)
+                    .load(uri);
+        } catch (Exception dsf){}
+
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+
+                }
+            });
+            /*mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    *//*Log.e(" fotoPrecinto ", String.valueOf(fotoPrecinto));
+                    Log.e(" fotoA ", String.valueOf(fotoA));
+                    Log.e(" fotoB ", String.valueOf(fotoB));
+                    Log.e(" fotoC ", String.valueOf(fotoC));
+
+                    if (fotoPrecinto){
+
+                        try {
+                            DBHelper dataBaseHelperB = new DBHelper(mContext);
+                            SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
+                            dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
+                            dbU.close();
+
+                        } catch (Exception e){}
+
+                    } else {
+
+                        try {
+
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+
+                            if (fotoA){
+                                dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
+                                btn_visualizar_delantera.setVisibility(View.GONE);
+                            } else if (fotoB){
+                                dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
+                                btn_visualizar_trasera.setVisibility(View.GONE);
+                            } else if (fotoC){
+                                dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
+                                btn_visualizar_panoramica.setVisibility(View.GONE);
+                            }
+
+                            dba.close();
+
+                        } catch (Exception eew){}
+                    }
+
+
+                    loadPrecinto();*//*
+
+                    dialog.dismiss();
+
+                }
+            });*/
 
             mBuilder.setView(mView);
             AlertDialog dialog = mBuilder.create();
