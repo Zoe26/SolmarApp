@@ -440,7 +440,9 @@ public class Camera1Manager extends BaseCameraManager<Integer, SurfaceHolder.Cal
 
         parameters.setPictureFormat(PixelFormat.JPEG);
 
-        if (configurationProvider.getMediaQuality() == CameraConfiguration.MEDIA_QUALITY_LOW) {
+        if (configurationProvider.getMediaQuality() == CameraConfiguration.MEDIA_QUALITY_LOWEST) {
+            parameters.setJpegQuality(20);
+        } else if (configurationProvider.getMediaQuality() == CameraConfiguration.MEDIA_QUALITY_LOW) {
             parameters.setJpegQuality(50);
         } else if (configurationProvider.getMediaQuality() == CameraConfiguration.MEDIA_QUALITY_MEDIUM) {
             parameters.setJpegQuality(75);

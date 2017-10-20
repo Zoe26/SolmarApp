@@ -74,7 +74,7 @@ public final class CameraHelper {
 
     public static File getOutputMediaFile(Context context, @CameraConfiguration.MediaAction int mediaAction) {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "SolgisFotos");
+                Environment.DIRECTORY_PICTURES), context.getPackageName());
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
@@ -266,8 +266,8 @@ public final class CameraHelper {
         int targetHeight = height;
 
         for (Size size : sizes) {
-//            if (size.getWidth() == width && size.getHeight() == height)
-//                return size;
+            if (size.getWidth() == width && size.getHeight() == height)
+                return size;
             double ratio = (double) size.getWidth() / size.getHeight();
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
             if (Math.abs(size.getHeight() - targetHeight) < minDiff) {

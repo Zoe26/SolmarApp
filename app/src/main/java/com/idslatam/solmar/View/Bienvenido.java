@@ -782,6 +782,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
                                     if(result.get("Numero").isJsonNull()){
                                         NumeroReinstlado = null;
+                                        RequiereNumero = "true";
                                         Log.e("NumeroReinstlado ", "INGRESÓ");
                                     } else {
                                         NumeroReinstlado = result.get("Numero").getAsString();

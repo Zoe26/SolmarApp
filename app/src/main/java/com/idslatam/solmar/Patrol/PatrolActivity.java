@@ -100,7 +100,7 @@ public class PatrolActivity extends AppCompatActivity {
         loadPrecinto();
     }
 
-    public void fotoPrecinto(String numeroPrecinto){
+    public void fotoPrecinto(String numeroPrecinto, int pos){
 
         numeroPrecintoFoto = numeroPrecinto;
 
@@ -109,30 +109,36 @@ public class PatrolActivity extends AppCompatActivity {
             return;
         }
 
-        /*int ctaA = 0;
-        try {
-            DBHelper bdh = new DBHelper(this);
-            SQLiteDatabase sqlite = bdh.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
-            Cursor ca = sqlite.rawQuery(selectQuery, new String[]{});
-            ctaA = ca.getCount();
-            ca.close();
-            sqlite.close();
 
-        } catch (Exception e) {}
+        int i = 0;
+            try {
+                DBHelper dataBaseHelper = new DBHelper(this);
+                SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+                Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                i = c.getCount();
+                c.close();
+                dbst.close();
+
+            } catch (Exception e) {}
 
 
-        Log.e("ctaA ", String.valueOf(ctaA));
+        Log.e("pos ", String.valueOf(pos));
+        Log.e("i ", String.valueOf(i));
 
-        if (ctaA == 6){
-            Toast.makeText(this, "¡Precintos Completos!", Toast.LENGTH_SHORT).show();
+        if (i==0 && pos == 0){
+            tomarFoto();
             return;
-        }*/
+        }
 
-        tomarFoto();
+        if(i == pos){
+            tomarFoto();
+        } else {
+            Toast.makeText(activity, "Tomar fotos de precintos anteriores", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    // METODOS DE CAMARA
+    // METODOSDECAMARA
     public void tomarFoto(){
 
         photoUri = null;
@@ -140,7 +146,7 @@ public class PatrolActivity extends AppCompatActivity {
         new SandriosCamera(activity, CAPTURE_MEDIA)
                 .setShowPicker(false)
                 .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_MEDIUM)
+                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_LOWEST)
                 .enableImageCropping(false)
                 .launchCamera();
 
@@ -267,7 +273,7 @@ public class PatrolActivity extends AppCompatActivity {
                 DataModel datamo = dataModelsMovil.get(position);
 
                 if (datamo.getUri()==null){
-                    fotoPrecinto(datamo.getName());
+                    fotoPrecinto(datamo.getName(), position);
                 } else {
                     visualizarImagen(datamo.getUri());
                 }
@@ -469,9 +475,9 @@ public class PatrolActivity extends AppCompatActivity {
                                     e1.printStackTrace();
                                 }
                             } else {
-                                //MensajeErrorPatrol();
+                                //
                                 if (!result.get("Exception").isJsonNull()){
-                                    Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                                    MensajeErrorPatrol(result.get("Exception").getAsString());
                                 }
 
                             }
@@ -481,6 +487,7 @@ public class PatrolActivity extends AppCompatActivity {
                                     pDialog.dismiss();
                                 }
                             } catch (Exception edsv){}
+                            MensajeErrorPatrol(String.valueOf(response.getHeaders().code()));
                             Log.e("PATROL Error Code ", String.valueOf(response.getHeaders().code()));
                         }
                     }
@@ -505,12 +512,13 @@ public class PatrolActivity extends AppCompatActivity {
         } catch (Exception sdf){}
     }
 
-    public void MensajeErrorPatrol(){
+    public void MensajeErrorPatrol(String mensajeError){
 
-        /*try {
+        try {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("¡Ha ocurrido una excepción! " + );
+            builder.setTitle("¡Ha ocurrido una excepción!");
+            builder.setMessage(mensajeError);
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -520,7 +528,7 @@ public class PatrolActivity extends AppCompatActivity {
             });
             builder.show();
 
-        } catch (Exception sdf){}*/
+        } catch (Exception sdf){}
     }
 
     public void visualizarImagen(String uri){

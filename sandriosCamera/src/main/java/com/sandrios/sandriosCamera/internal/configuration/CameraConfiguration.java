@@ -11,11 +11,11 @@ import java.lang.annotation.RetentionPolicy;
 public final class CameraConfiguration {
 
     public static final int MEDIA_QUALITY_AUTO = 10;
-    public static final int MEDIA_QUALITY_LOWEST = 15;
     public static final int MEDIA_QUALITY_LOW = 11;
     public static final int MEDIA_QUALITY_MEDIUM = 12;
     public static final int MEDIA_QUALITY_HIGH = 13;
     public static final int MEDIA_QUALITY_HIGHEST = 14;
+    public static final int MEDIA_QUALITY_LOWEST = 15;
 
     public static final int MEDIA_ACTION_VIDEO = 100;
     public static final int MEDIA_ACTION_PHOTO = 101;

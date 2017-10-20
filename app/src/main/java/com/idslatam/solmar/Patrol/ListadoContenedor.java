@@ -217,9 +217,12 @@ public class ListadoContenedor extends AppCompatActivity {
 
                             Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
-                            }
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception dslnkg){}
+
                             return;
 
                         }
@@ -230,6 +233,22 @@ public class ListadoContenedor extends AppCompatActivity {
                             JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
                             Log.e("JsonObject Listado ", result.toString());
+
+
+                            if (result.get("Data").isJsonNull()){
+
+                                Log.e("JsonObject Data ", "NULL");
+
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception dslnkg){}
+
+                                MensajeContenedor();
+
+                                return;
+                            }
 
                             JsonArray jsonArrayData = result.get("Data").getAsJsonArray();
 
@@ -465,6 +484,37 @@ public class ListadoContenedor extends AppCompatActivity {
                             pDialog.dismiss();
                         }
                     }});
+    }
+
+    public void MensajeContenedor() {
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ListadoContenedor.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_ok, null);
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView texMje = (TextView) mView.findViewById(R.id.cargo_mje_failed);
+
+        txtTitle.setText("¡INFORMACIÓN!");
+        texMje.setText("La lista de contenedores se encuentavacía.");
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

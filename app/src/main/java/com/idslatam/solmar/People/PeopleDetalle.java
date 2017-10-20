@@ -31,6 +31,7 @@ import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.ImageClass.ImageConverter;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.*;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.body.FilePart;
@@ -416,7 +417,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
         new SandriosCamera(activity, CAPTURE_MEDIA)
                 .setShowPicker(false)
                 .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_MEDIUM)
+                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_LOWEST)
                 .enableImageCropping(false)
                 .launchCamera();
 
@@ -622,7 +623,10 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
             }
 
             Log.e("fotoVehMaletera ", fotoVehMaletera);
-            casoConMaterialVehiculo(jsonObject);
+
+            casoConMaterialVehiculoX(jsonObject);
+
+            //casoConMaterialVehiculo(jsonObject);
 
         }
 
@@ -653,14 +657,16 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                     public void onCompleted(Exception e, Response<String> response) {
 
                         if(e != null){
-                            Log.e("Exception ", e.getMessage());
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception fd){}
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
                             }
                             return;
-
                         }
 
                         if(response.getHeaders().code()==200){
@@ -736,14 +742,16 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                     public void onCompleted(Exception e, Response<String> response) {
 
                         if(e != null){
-                            Log.e("Exception ", e.getMessage());
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception fd){}
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
                             }
                             return;
-
                         }
 
                         if(response.getHeaders().code()==200){
@@ -821,14 +829,16 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                     public void onCompleted(Exception e, Response<String> response) {
 
                         if(e != null){
-                            Log.e("Exception ", e.getMessage());
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception fd){}
 
-                            if (pDialog != null && pDialog.isShowing()) {
-                                pDialog.dismiss();
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
                             }
                             return;
-
                         }
 
                         if(response.getHeaders().code()==200){
@@ -877,19 +887,34 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     }
 
-    public void casoConMaterialVehiculo(JsonObject result){
+    public void casoConMaterialVehiculoX(JsonObject result){
 
-        Log.e("ConMaterialVehiculo ", "Ingreso");
+        Log.e("MaterialVehiculoX ", "Ingreso");
+
+        String cadenaA = "";
+
+        String[] ary = GuidDipositivo.trim().split("-");
+
+        for(int i=0;i<ary.length;i++){cadenaA = cadenaA +ary[i];}
+
+        Log.e("-- valorEscaneado ", cadenaA);
+
+        Log.e("DispositivoId ", cadenaA);
+        Log.e("Material ", fotoVal);
+        Log.e("Delantera ", fotoVeh);
+        Log.e("Guantera ", fotoVehGuantera);
+        Log.e("Maletera ", fotoVehMaletera);
 
         String URL = URL_API.concat("api/People/Create");
+        Log.e("URL ", URL);
 
-        Ion.with(mContext)
+        Ion.with(this)
                 .load(URL)
-                .setMultipartParameter("DispositivoId", GuidDipositivo)
+                .setMultipartParameter("DispositivoId", cadenaA)
                 .setMultipartParameter("codPers", result.get("codPers").getAsString())
                 .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
                 .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
                 .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
                 .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
                 .setMultipartParameter("codArea", result.get("codArea").getAsString())
@@ -906,14 +931,107 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                     public void onCompleted(Exception e, Response<String> response) {
 
                         if(e != null){
-                            Log.e("Exception ", e.getMessage());
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_LONG).show();
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception fd){}
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
+                            return;
+                        }
+
+                        if(response.getHeaders().code()==200){
+
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                            Log.e("People Create ", result.toString());
+                            //Estado
+
+                            if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+
+                                showDialogError();
+
+                                return;
+                            } else {
+
+                                if (limpiarDatos()){
+
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
+                                    } catch (Exception edsv){}
+                                    try {
+                                        showDialogSend();
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                    }
+
+                                }
+                            }
+                        }
+
+                        try {
+
+                            Log.e("Exception ", "MaterialVehiculoX");
+                            Log.e("Exception ", String.valueOf(response.getResult()));
 
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
                             }
-                            return;
+                        } catch (Exception edsv){}
 
+                    }
+                });
+
+    }
+
+    public void casoConMaterialVehiculo(JsonObject result){
+
+        Log.e("ConMaterialVehiculo ", "Ingreso");
+
+        String URL = URL_API.concat("api/People/Create");
+
+        Ion.with(this)
+                .load(URL)
+                .setMultipartParameter("DispositivoId", GuidDipositivo)
+                .setMultipartParameter("codPers", result.get("codPers").getAsString())
+                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setMultipartParameter("codArea", result.get("codArea").getAsString())
+                .setMultipartParameter("nroPase", "0")
+                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
+                .setMultipartFile("Material", new File(fotoVal))
+                .setMultipartFile("Delantera", new File(fotoVeh))
+                .setMultipartFile("Guantera", new File(fotoVehGuantera))
+                .setMultipartFile("Maletera", new File(fotoVehMaletera))
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> response) {
+
+                        if(e != null){
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception fd){}
+
+                            if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                mensajeTimeOut();
+                            }
+                            return;
                         }
 
                         if(response.getHeaders().code()==200){
@@ -954,6 +1072,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                             Log.e(".getHeaders() ", String.valueOf(response.getHeaders().code()));
                             Log.e(".getException() ", String.valueOf(response.getException()));
+                            Log.e(".getResult() ", String.valueOf(response.getResult()));
 
                         }
 
@@ -1198,6 +1317,12 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
         ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
 
+        if (uri==null){
+
+            Toast.makeText(mContext, "¡No hay imagen para mostrar!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Uri myUri = Uri.parse(getRightAngleImage(uri));
 
         img.setImageURI(myUri);
@@ -1337,5 +1462,36 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     }
 
+    public void mensajeTimeOut(){
+
+        View mView;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(PeopleDetalle.this);
+        mView = getLayoutInflater().inflate(R.layout.dialog_dni_patrol_failed, null);
+        mBuilder.setCancelable(false);
+
+        TextView txtTitle = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView texMje = (TextView)mView.findViewById(R.id.cargo_mje_failed);
+
+        txtTitle.setText("¡Atención!");
+        texMje.setText("Lo sentimos, el servidor ha demorado en responder. " +
+                "Intente nuevamente en un momento, caso contrario pongase en contacto con su administrador");
+
+        try {
+
+            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
