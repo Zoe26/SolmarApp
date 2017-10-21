@@ -95,6 +95,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     TextView tercer_txt_ingreso_tracto, tercer_txt_carga, tercer_txt_dni;
     TextView cuarto_txt_ingreso_tracto, cuarto_txt_carga, cuarto_txt_dni;
     TextView quinto_txt_ingreso_tracto, quinto_txt_carga, quinto_txt_dni, quinto_txt_nro_precintos;
+
+    TextView tercero_cargo_text_foto_panoramica;
+
     ImageView img_cargo_persona; // quinto_btn_precintos,
     EditText cuarto_edt_codContenedor, cuarto_edt_precinto, cuarto_edt_origen, cuarto_edt_or;
     CheckBox check_casco, check_chaleco, check_botas, check_carga;
@@ -308,7 +311,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             if (vplaca==null){
                 limpiarDatos();
-                limpiarDatosPlaca();
                 return;
             }
 
@@ -367,12 +369,15 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             tercer_txt_carga = (TextView) viewPager.findViewById(R.id.tercero_txt_carga);
             tercer_txt_dni = (TextView) viewPager.findViewById(R.id.tercero_txt_dni);
 
-            edt_panoramica = (LinearLayout)viewPager.findViewById(R.id.edt_panoramica);
+            tercero_cargo_text_foto_panoramica = (TextView)viewPager.findViewById(R.id.tercero_cargo_text_foto_panoramica);
+
+            edt_trasera = (LinearLayout)viewPager.findViewById(R.id.edt_trasera);
 
 
             if (sTipoCarga.equalsIgnoreCase("1")){
 
-                edt_panoramica.setVisibility(View.GONE);
+                edt_trasera.setVisibility(View.GONE);
+                tercero_cargo_text_foto_panoramica.setText("Trasera");
 
                 DBHelper dbHelperAlarm = new DBHelper(mContext);
                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -380,7 +385,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 dba.close();
 
             } else {
-                edt_panoramica.setVisibility(View.VISIBLE);
+                edt_trasera.setVisibility(View.VISIBLE);
             }
 
             btn_visualizar_delantera = (ImageButton) viewPager.findViewById(R.id.btn_visualizar_delantera);
@@ -779,12 +784,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             tercer_txt_ingreso_tracto = (TextView) viewPager.findViewById(R.id.tercero_txt_ingreso_tracto);
             tercer_txt_carga = (TextView) viewPager.findViewById(R.id.tercero_txt_carga);
             tercer_txt_dni = (TextView) viewPager.findViewById(R.id.tercero_txt_dni);
+            tercero_cargo_text_foto_panoramica = (TextView)viewPager.findViewById(R.id.tercero_cargo_text_foto_panoramica);
 
-            edt_panoramica = (LinearLayout) viewPager.findViewById(R.id.edt_panoramica);
+            edt_trasera = (LinearLayout) viewPager.findViewById(R.id.edt_trasera);
 
             if (sTipoCarga.equalsIgnoreCase("1")){
 
-                edt_panoramica.setVisibility(View.GONE);
+                edt_trasera.setVisibility(View.GONE);
+                tercero_cargo_text_foto_panoramica.setText("Trasera");
 
                 DBHelper dbHelperAlarm = new DBHelper(mContext);
                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -792,7 +799,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 dba.close();
 
             } else {
-                edt_panoramica.setVisibility(View.VISIBLE);
+                edt_trasera.setVisibility(View.VISIBLE);
             }
         }
 
@@ -1487,7 +1494,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 Log.e("Exception ", "VerificaDOI ");
                                 limpiarDatosRadioBoton();
                                 limpiarDatos();
-                                limpiarDatosPlaca();
 
                                 try {
 
@@ -1578,7 +1584,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                     primero_edt_dni.setFocusable(true);
                                     limpiarDatosRadioBoton();
                                     limpiarDatos();
-                                    limpiarDatosPlaca();
                                     mensajePersona();
 
                                 }
@@ -2360,8 +2365,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        if (Trasera==null){
-            Toast.makeText(mContext, "Falta Foto Trasera", Toast.LENGTH_SHORT).show();
+        if (Panoramica==null){
+            Toast.makeText(mContext, "Falta Foto Panoramica - Trasera (Lado derecho)", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -2378,6 +2383,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         pDialog.show();
 
         String URL = URL_API.concat("api/Cargo/CreateSinCarga");
+
+        Log.e("Numero", Numero);
+        Log.e("DispositivoId", DispositivoId);
+        Log.e("Placa", Placa);
+        Log.e("CargoTipoMovimientoId", CargoTipoMovimiento);
+        Log.e("CargoTipoCargaId", TipoCarga);
+        Log.e("Casco", Casco);
+        Log.e("Chaleco", Chaleco);
+        Log.e("Botas", Botas);
+        Log.e("Licencia ", Licencia);
+        Log.e("NroDOI", Dni);
+        Log.e("NroORGR", NroOR);
+        Log.e("Delantera", Delantera);
+        Log.e("Panoramica", Panoramica);
 
         Ion.with(mContext)
                 .load(URL)
@@ -2400,7 +2419,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 .setMultipartParameter("NroDOI", Dni)
                 .setMultipartParameter("NroORGR", NroOR)
                 .setMultipartFile("Delantera", new File(Delantera))
-                .setMultipartFile("Trasera", new File(Trasera))
+                .setMultipartFile("Panoramica", new File(Panoramica))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -2429,8 +2448,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             Log.e("JsonObject ", result.toString());
 
                             if (result.get("Estado").getAsBoolean()){
+
                                 limpiarDatos();
-                                limpiarDatosPlaca();
                                 try {
                                     showDialogSend();
                                 } catch (Exception e1) {
@@ -2573,8 +2592,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             Log.e("JsonObject ", result.toString());
 
                             if (result.get("Estado").getAsBoolean()){
+
                                 limpiarDatos();
-                                limpiarDatosPlaca();
+
                                 try {
                                     showDialogSend();
                                 } catch (Exception e1) {
@@ -2637,7 +2657,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (Trasera==null){Toast.makeText(mContext, "Flata Foto Trasera", Toast.LENGTH_SHORT).show();
             return;}
 
-        if (Panoramica==null){Toast.makeText(mContext, "Falta Foto Interior", Toast.LENGTH_SHORT).show();
+        if (Panoramica==null){Toast.makeText(mContext, "Falta Foto Panoramica", Toast.LENGTH_SHORT).show();
             return;}
 
         try {
@@ -2743,32 +2763,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             if (result.get("Estado").getAsBoolean()){
 
-                                try {
-
-                                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                    dba.execSQL("UPDATE Cargo SET NroOR = " + null);
-                                    dba.execSQL("UPDATE Cargo SET json = " + null);
-                                    dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
-                                    dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
-                                    dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
-                                    dba.execSQL("UPDATE Cargo SET Placa = " + null);
-                                    dba.execSQL("UPDATE Cargo SET Dni = " + null);
-                                    dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
-                                    dba.execSQL("UPDATE Cargo SET codigoContenedor = " + null);
-                                    dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
-                                    dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
-                                    dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
-                                    dba.execSQL("UPDATE Cargo SET GuiaRemision = " + null);
-
-                                    dba.close();
-
-                                } catch (Exception eew){
-                                    Log.e("Exception Estado ", eew.getMessage());
-                                }
-
                                 limpiarDatos();
-                                limpiarDatosPlaca();
+
                                 try {
                                     showDialogSend();
                                 } catch (Exception e1) {
@@ -2923,33 +2919,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             if (result.get("Estado").getAsBoolean()){
 
-                                try {
-
-                                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                    dba.execSQL("UPDATE Cargo SET NroOR = " + null);
-                                    dba.execSQL("UPDATE Cargo SET json = " + null);
-                                    dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
-                                    dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
-                                    dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
-                                    dba.execSQL("UPDATE Cargo SET Placa = " + null);
-                                    dba.execSQL("UPDATE Cargo SET Dni = " + null);
-                                    dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
-                                    dba.execSQL("UPDATE Cargo SET codigoContenedor = " + null);
-                                    dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
-                                    dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
-                                    dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
-                                    dba.execSQL("UPDATE Cargo SET GuiaRemision = " + null);
-
-                                    dba.close();
-
-                                } catch (Exception eew){
-                                    Log.e("Exception Estado ", eew.getMessage());
-                                }
-
                                 limpiarDatos();
-                                limpiarDatosPlaca();
-
                                 try {
                                     showDialogSend();
                                 } catch (Exception e1) {
@@ -3058,7 +3028,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                limpiarDatosPlaca();
+                limpiarDatos();
                 dialog.dismiss();
                 finish();
             }
@@ -3101,43 +3071,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception eew){
             Log.e("Exception limpiarDatos ", eew.getMessage());
-        }
-
-        limpiarDatosRadioBoton();
-
-        DBHelper dbgelperDeete = new DBHelper(this);
-        SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
-        sqldbDelete.execSQL("DELETE FROM CargoPrecinto");
-        sqldbDelete.close();
-
-        return true;
-    }
-
-    public boolean limpiarDatosPlaca(){
-
-        try {
-
-            DBHelper dbHelperAlarm = new DBHelper(this);
-            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-            dba.execSQL("UPDATE Cargo SET NroOR = " + null);
-            dba.execSQL("UPDATE Cargo SET json = " + null);
-            dba.execSQL("UPDATE Cargo SET fotoDelantera = " + null);
-            dba.execSQL("UPDATE Cargo SET fotoTracera = " + null);
-            dba.execSQL("UPDATE Cargo SET fotoPanoramica = " + null);
-            dba.execSQL("UPDATE Cargo SET Placa = " + null);
-            dba.execSQL("UPDATE Cargo SET Dni = " + null);
-            dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
-            dba.execSQL("UPDATE Cargo SET codigoContenedor = " + null);
-            dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
-            dba.execSQL("UPDATE Cargo SET origenDestino = " + null);
-            dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
-            dba.execSQL("UPDATE Cargo SET GuiaRemision = " + null);
-
-            dba.close();
-
-        } catch (Exception eew){
-
-            Log.e("Exception limpiarDat ", eew.getMessage());
         }
 
         limpiarDatosRadioBoton();

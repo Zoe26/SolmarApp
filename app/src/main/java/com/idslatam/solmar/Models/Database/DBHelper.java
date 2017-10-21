@@ -109,6 +109,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Configuration.KEY_ContenedorPatrol + " TEXT,"
                 + Configuration.KEY_ContenedorId + " TEXT,"
                 + Configuration.KEY_Sesion + " TEXT,"
+                + Configuration.KEY_Indice + " INTEGER,"
+                + Configuration.KEY_Posicion + " INTEGER,"
                 + Configuration.KEY_IntervaloTrackingEmergencia + " INTEGER)";
 
         String CREATE_TABLE_ASISTENCIA = "CREATE TABLE " + Asistencia.TABLE_ASISTENCIA + "("

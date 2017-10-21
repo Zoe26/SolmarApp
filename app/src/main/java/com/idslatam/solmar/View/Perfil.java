@@ -160,7 +160,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         if (state == true) {
             load(savedInstanceState);
-            //sendAsistencia();
         } else {
 
             initView(); // Initialize the GUI Components
@@ -602,11 +601,14 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         @Override
         protected void onPreExecute() {
 
-            dialog = new ProgressDialog(Perfil.this);
-            dialog.setMessage("Finalizando...");
-            dialog.setIndeterminate(false);
-            dialog.setCancelable(false);
-            dialog.show();
+            try {
+                dialog = new ProgressDialog(Perfil.this);
+                dialog.setMessage("Finalizando...");
+                dialog.setIndeterminate(false);
+                dialog.setCancelable(false);
+                dialog.show();
+            }catch (Exception d){}
+
 
         };
 
@@ -615,9 +617,8 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
             try {
 
-                finalizarTurno();
+                finalizarTurno(dialog);
                 tareaLarga();
-                finish();
 
             } catch (Exception e){}
 
@@ -645,22 +646,31 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                 sqldbDelete.execSQL("DELETE FROM Menu");
                 sqldbDelete.close();
 
-                Intent intent = new Intent(Perfil.this, Login.class);
-                startActivity(intent);
+                try {
+                    if (dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                } catch (Exception dfs){}
 
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
-                finish();
+
             }catch (Exception e){}
         }
     }
 
-    private Boolean finalizarTurno(){
+    private Boolean finalizarTurno(ProgressDialog dialogo){
 
         try {
             updateAlert();
+
+        } catch (Exception e){}
+
+        try {
             Asistencia();
+
+        } catch (Exception e){}
+
+        try {
+            cerrarSesion(dialogo);
 
         } catch (Exception e){}
 
@@ -744,12 +754,10 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         }
 
-        cerrarSesion();
-
         return true;
     }
 
-    public void cerrarSesion(){
+    public void cerrarSesion(ProgressDialog d){
 
         //******************************************************************************************
         String AsistenciaId = null, DispositivoId=null, FechaTerminoCelular=null;
@@ -774,11 +782,26 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         }catch (Exception e){}
 
+        String cadenaA = "";
+        String cadenaB = "";
+
+        String[] ary = AsistenciaId.trim().split("-");
+        String[] ary1 = DispositivoId.trim().split("-");
+
+        for(int i=0;i<ary.length;i++){cadenaA = cadenaA +ary[i];}
+        for(int i=0;i<ary1.length;i++){cadenaB = cadenaB +ary1[i];}
+
+        //----------------------------------------------
+
+        Log.e("cadenaA", cadenaA);
+        Log.e("cadenaB", cadenaB);
+
+
         String URL = URL_API.concat("Attendance/end");
 
         JsonObject json = new JsonObject();
-        json.addProperty("AsistenciaId", AsistenciaId);
-        json.addProperty("DispositivoId", DispositivoId);
+        json.addProperty("AsistenciaId", cadenaA);
+        json.addProperty("DispositivoId", cadenaB);
         json.addProperty("FechaTerminoCelular", FechaTerminoCelular);
 
         Ion.with(this)
@@ -788,19 +811,65 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                 .withResponse()
                 .setCallback(new FutureCallback<Response<JsonObject>>() {
                     @Override
-                    public void onCompleted(Exception e, Response<JsonObject> response) {
+                    public void onCompleted(Exception e, Response<JsonObject> result) {
 
-                        if(response == null){
-                            Toast.makeText(mContext, "¡Error de red!. Por favor revise su conexión a internet.", Toast.LENGTH_SHORT).show();
+                        if (e!=null){
+                            Log.e("Exception ", e.getMessage());
+                            try {
+                                if (d.isShowing()) {
+                                    d.dismiss();
+                                }
+                            } catch (Exception dfs){}
+
+                            finalizarTurnoX();
                             return;
                         }
 
-                        if(response.getHeaders().code()==200){
-                            Log.e("JsonObject Salida ", response.getResult().toString());
+                        if(result!=null){
+                            Log.e("JSON SALIDA ", result.getResult().toString());
+
+
+                        } else  {
+                            Log.e("Exception ", "Finaliza" );
                         }
+
+                        try {
+                            if (d.isShowing()) {
+                                d.dismiss();
+                            }
+                        } catch (Exception dfs){}
+                        finalizarTurnoX();
+
                     }
                 });
 
+    }
+
+    private Boolean finalizarTurnoX(){
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("UPDATE Configuration SET Token = " + null);
+            dbT.close();
+
+        } catch (Exception e){}
+
+        try {
+
+            Log.e("finalizarTurno ", "finalizarTurno");
+
+            /*startActivity(new Intent(getBaseContext(), Login.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));*/
+
+            Intent intent = new Intent(Perfil.this, Login.class);
+            startActivity(intent);
+            finish();
+
+        } catch (Exception e){}
+
+        return true;
     }
 
     public void inicioTurno(){
@@ -845,7 +914,16 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                     public void onCompleted(Exception e, JsonObject response) {
 
                         if(response!=null){
-                            Log.e("JsonObject Frag. Ini ", response.toString());
+                            Log.e("JsonObject Frag.", response.toString());
+
+                            try {
+
+                                DBHelper dataBaseHelper = new DBHelper(mContext);
+                                SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+                                dbT.execSQL("UPDATE Configuration SET AsistenciaId = '"+response.get("AsistenciaId").getAsString()+"'");
+                                dbT.close();
+
+                            } catch (Exception vdse){}
 
                         } else  {
                             Log.e("Exception ", "Finaliza" );

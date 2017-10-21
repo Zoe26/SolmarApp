@@ -886,16 +886,13 @@ public class MenuPrincipal extends  ActionBarActivity {
 
                             try {
 
-                                ConfigurationCrud configurationCRUD = new ConfigurationCrud(mContext);
+                                DBHelper dataBaseHelper = new DBHelper(mContext);
+                                SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+                                dbT.execSQL("UPDATE Configuration SET AsistenciaId = '"+response.get("AsistenciaId").getAsString()+"'");
+                                dbT.close();
 
-                                Configuration configuration = new Configuration();
-                                configuration.AsistenciaId= AsistenciaId;
-                                //configuration.CodigoEmpleado= pass;
-                                configuration.ConfigurationId = 1;
-                                configurationCRUD.updateAsistencia(configuration);
-
-                            } catch (Exception e5) {}
-                            Log.e("JsonObject Frag. Ini ", response.toString());
+                            } catch (Exception vdse){}
+                            Log.e("JsonObject F ", response.toString());
 
                         } else  {
                             Log.e("Exception ", "Finaliza" );

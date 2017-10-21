@@ -215,10 +215,11 @@
                             android:background="@drawable/bg_fotos"/>
 
                         <TextView
+                            android:id="@+id/tercero_cargo_text_foto_panoramica"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             style="?android:attr/textAppearanceMedium"
-                            android:text="Interior"/>
+                            android:text="Panorámica"/>
 
                         <ImageButton
                             android:layout_width="48dp"

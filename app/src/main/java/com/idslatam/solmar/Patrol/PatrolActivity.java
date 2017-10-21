@@ -77,6 +77,8 @@ public class PatrolActivity extends AppCompatActivity {
 
     EditText edt_contenedor_seleccionado;
 
+    int cantidadFotos, posicion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,31 +111,66 @@ public class PatrolActivity extends AppCompatActivity {
             return;
         }
 
+       int ctaFotos = 0;
 
-        int i = 0;
-            try {
-                DBHelper dataBaseHelper = new DBHelper(this);
-                SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-                String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
-                Cursor c = dbst.rawQuery(selectQuery, new String[]{});
-                i = c.getCount();
-                c.close();
-                dbst.close();
-
-            } catch (Exception e) {}
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            ctaFotos = c.getCount();
+            c.close();
+            dbst.close();
+         } catch (Exception e) {}
 
 
-        Log.e("pos ", String.valueOf(pos));
-        Log.e("i ", String.valueOf(i));
+        /*try {
 
-        if (i==0 && pos == 0){
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("UPDATE Configuration SET Indice = " + ctaFotos);
+
+            if (ctaFotos >= pos){
+                dbT.execSQL("UPDATE Configuration SET Posicion = " + pos);
+            }
+
+            dbT.close();
+
+        } catch (Exception e){}
+
+        int indAux = 0, posAux = 0;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Indice, Posicion FROM Configuration";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                indAux = c.getInt(c.getColumnIndex("Indice"));
+                posAux = c.getInt(c.getColumnIndex("Posicion"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}*/
+
+
+        Log.e("indAux P ", String.valueOf(ctaFotos));
+        Log.e("posAux P ", String.valueOf(pos));
+
+        cantidadFotos = ctaFotos;
+        posicion = pos;
+
+        if (ctaFotos==0 && pos == 0){
             tomarFoto();
             return;
         }
 
-        if(i == pos){
+        if(ctaFotos == pos){
             tomarFoto();
-        } else {
+        } else if (pos <= ctaFotos){
+            tomarFoto();
+        }else {
             Toast.makeText(activity, "Tomar fotos de precintos anteriores", Toast.LENGTH_SHORT).show();
         }
     }
@@ -285,17 +322,69 @@ public class PatrolActivity extends AppCompatActivity {
     }
 
     public void listaContenedor(View view){
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("DELETE FROM sqlite_sequence WHERE NAME ='PatrolPrecinto'");
+            dbT.close();
+
+        } catch (Exception edsv){}
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("DELETE FROM PatrolPrecinto");
+            dbT.close();
+
+        } catch (Exception e){}
+
         Intent intent = new Intent(PatrolActivity.this, ListadoContenedor.class);
         startActivity(intent);
     }
 
     public void GuardarPatrol(View view){
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            cantidadFotos = c.getCount();
+            c.close();
+            dbst.close();
+        } catch (Exception e) {}
+
+        int ultimaposi = 0;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT PatrolPrecintoId FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToLast()) {
+                ultimaposi = c.getInt(c.getColumnIndex("PatrolPrecintoId"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+
+        Log.e("cantidadFotos G ", String.valueOf(cantidadFotos));
+        Log.e("ultimaposi G ", String.valueOf((ultimaposi)));
+
+        if ( cantidadFotos != ultimaposi){
+            Toast.makeText(activity, "¡Por favor completar fotos!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         guardarPatrol();
     }
 
     @Override
     public void onBackPressed() {
-
 
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -306,8 +395,27 @@ public class PatrolActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
+
+                    try {
+
+                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                        SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+                        dbT.execSQL("DELETE FROM sqlite_sequence WHERE NAME ='PatrolPrecinto'");
+                        dbT.close();
+
+                    } catch (Exception edsv){}
+
+                    try {
+
+                        DBHelper dataBaseHelper = new DBHelper(mContext);
+                        SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+                        dbT.execSQL("UPDATE Configuration SET Posicion = 0");
+                        dbT.close();
+
+                    } catch (Exception edsv){}
                     borrarDatos();
+                    dialog.dismiss();
+
                 }
             });
 
@@ -343,6 +451,15 @@ public class PatrolActivity extends AppCompatActivity {
             dbT.close();
 
         } catch (Exception e){}
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("DELETE FROM sqlite_sequence WHERE NAME ='PatrolPrecinto'");
+            dbT.close();
+
+        } catch (Exception edsv){}
 
         finish();
     }
@@ -469,6 +586,16 @@ public class PatrolActivity extends AppCompatActivity {
                             } catch (Exception edsv){}
 
                             if (result.get("Estado").getAsBoolean()){
+
+                                try {
+
+                                    DBHelper dataBaseHelper = new DBHelper(mContext);
+                                    SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+                                    dbT.execSQL("UPDATE Configuration SET Posicion = 0");
+                                    dbT.close();
+
+                                } catch (Exception edsv){}
+
                                 try {
                                     mensajeGuardado();
                                 } catch (Exception e1) {
