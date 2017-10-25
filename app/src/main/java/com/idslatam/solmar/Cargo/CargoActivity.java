@@ -377,7 +377,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             if (sTipoCarga.equalsIgnoreCase("1")){
 
                 edt_trasera.setVisibility(View.GONE);
-                tercero_cargo_text_foto_panoramica.setText("Trasera");
+                try {
+                    tercero_cargo_text_foto_panoramica.setText("Trasera");
+                } catch (NullPointerException s){}
 
                 DBHelper dbHelperAlarm = new DBHelper(mContext);
                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -397,6 +399,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             btn_visualizar_panoramica.setVisibility(View.GONE);
 
             poblarTerceraVista();
+            loadFotos();
 
         }
 
@@ -469,7 +472,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             });
 
             cuarto_switch_tipoDoc.setEnabled(true);
-            if (isIngresoV.equalsIgnoreCase("false") && TipoCarga.equalsIgnoreCase("4")){
+
+            Log.e("TipoCarga ", sTipoCarga );
+            Log.e("isIngresoV ", isIngresoV );
+
+            if (isIngresoV.equalsIgnoreCase("false") && sTipoCarga.equalsIgnoreCase("4")){
                 try {
                     DBHelper dbHelperAlarm = new DBHelper(mContext);
                     SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -508,6 +515,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             btn_visualizar_panoramica.setVisibility(View.GONE);
 
             poblarQuintaVista();
+            loadFotos();
 
         }
 
@@ -515,6 +523,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     View.OnClickListener rbSinCargaClick = new View.OnClickListener(){
         public void onClick(View v) {
+
+            mContext = CargoActivity.this;
 
             try {
                 DBHelper dbHelperNumero = new DBHelper(mContext);
@@ -533,6 +543,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     View.OnClickListener rbCargaSueltaClick = new View.OnClickListener(){
         public void onClick(View v) {
 
+            mContext = CargoActivity.this;
 
             try {
                 DBHelper dbHelperNumero = new DBHelper(mContext);
@@ -551,6 +562,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     View.OnClickListener rbContenedorVacioClick = new View.OnClickListener(){
         public void onClick(View v) {
 
+            mContext = CargoActivity.this;
+
             try {
                 DBHelper dbHelperNumero = new DBHelper(mContext);
                 SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
@@ -568,6 +581,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     View.OnClickListener rbContenedorLlenoClick = new View.OnClickListener(){
         public void onClick(View v) {
+
+            mContext = CargoActivity.this;
 
             try {
                 DBHelper dbHelperNumero = new DBHelper(mContext);
@@ -791,7 +806,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             if (sTipoCarga.equalsIgnoreCase("1")){
 
                 edt_trasera.setVisibility(View.GONE);
-                tercero_cargo_text_foto_panoramica.setText("Trasera");
+
+                try {
+                    tercero_cargo_text_foto_panoramica.setText("Trasera");
+                } catch (NullPointerException s){}
+
 
                 DBHelper dbHelperAlarm = new DBHelper(mContext);
                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
@@ -1852,6 +1871,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         tercer_txt_dni.setText("Conductor con DNI "+ Dni + "");
 
+
+
     }
 
     public void poblarCuartaVista(){
@@ -2016,9 +2037,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             }
         }
 
-
-        //quinto_btn_precintos.setEnabled(true);
-        //quinto_btn_precintos.setVisibility(View.VISIBLE);
+        loadFotos();
         loadPrecinto();
 
     }
@@ -2940,7 +2959,74 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 });
     }
 
+    public void loadFotos(){
+        //----------------
+
+        viewPager.getCurrentItem();
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT fotoPanoramica, fotoDelantera, " +
+                    "fotoTracera FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+
+            if (c.moveToFirst()) {
+                Delantera = c.getString(c.getColumnIndex("fotoDelantera"));
+                Trasera = c.getString(c.getColumnIndex("fotoTracera"));
+                Panoramica = c.getString(c.getColumnIndex("fotoPanoramica"));
+
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+
+        if (Delantera != null){
+
+            btn_visualizar_delantera.setVisibility(View.VISIBLE);
+
+            try {
+                Ion.with(btn_visualizar_delantera)
+                        .placeholder(R.drawable.ic_foto_fail)
+                        .error(R.drawable.ic_foto_fail)
+                        .load(Delantera);
+            } catch (Exception dsf){}
+
+        }
+
+        if (Trasera != null){
+            btn_visualizar_trasera.setVisibility(View.VISIBLE);
+
+            try {
+                Ion.with(btn_visualizar_trasera)
+                        .placeholder(R.drawable.ic_foto_fail)
+                        .error(R.drawable.ic_foto_fail)
+                        .load(Trasera);
+            } catch (Exception dsf){}
+
+        }
+
+        if (Panoramica != null){
+
+            btn_visualizar_panoramica.setVisibility(View.VISIBLE);
+
+            try {
+                Ion.with(btn_visualizar_panoramica)
+                        .placeholder(R.drawable.ic_foto_fail)
+                        .error(R.drawable.ic_foto_fail)
+                        .load(Panoramica);
+            } catch (Exception dsf){}
+
+        }
+    }
+
     public void loadPrecinto(){
+
+
+        //----------------
+
 
         int count = 0;
 

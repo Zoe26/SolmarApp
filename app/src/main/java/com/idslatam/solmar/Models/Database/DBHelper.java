@@ -24,7 +24,7 @@ import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "SolgisDB";
 
     public DBHelper(Context context) {

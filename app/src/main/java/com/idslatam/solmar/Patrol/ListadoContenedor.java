@@ -39,6 +39,8 @@ import com.koushikdutta.ion.Response;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ListadoContenedor extends AppCompatActivity {
@@ -60,7 +62,7 @@ public class ListadoContenedor extends AppCompatActivity {
 
     ArrayList<String> itemsList = new ArrayList<String>();
 
-    ListView listView;
+    boolean isProgress = false;
 
     int _PatrolContenedor_Id = 0, contadorLista;
 
@@ -78,11 +80,6 @@ public class ListadoContenedor extends AppCompatActivity {
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
-        /*for (int i = 0; i <= 10; i++){
-            itemsList.add("Samsung "+i);
-        }*/
-
-
         dataModelsMovil = new ArrayList<>();
 
         lv = (ListView) findViewById(R.id.list_view);
@@ -99,7 +96,6 @@ public class ListadoContenedor extends AppCompatActivity {
         } catch (Exception e) {}
 
         if (contadorLista==0){
-
             listaContenedores();
 
         } else {
@@ -143,29 +139,43 @@ public class ListadoContenedor extends AppCompatActivity {
 
     }
 
-    public void loadLista(){
+    public boolean loadLista(){
+
+        itemsList.clear();
+
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Codigo FROM PatrolContenedor";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
-
                 do {
-
                     itemsList.add(c.getString(c.getColumnIndex("Codigo")));
-                    //dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Codigo")),
-                    //        c.getString(c.getColumnIndex("Foto"))));
                 } while (c.moveToNext());
-
             }
             c.close();
             dbst.close();
 
         } catch (Exception e) {}
+
+        adapter = new ArrayAdapter<String>(this, R.layout.list_item_contenedor, R.id.product_name, itemsList);
+        lv.setAdapter(adapter);
+
+        return  true;
+    }
+
+    public synchronized void refreshAdapter() {
+
+        if (itemsList != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public void listaContenedores(){
+
+        if (isProgress){return;}
+
+        isProgress = true;
 
         final ProgressDialog pDialog;
 
@@ -204,7 +214,6 @@ public class ListadoContenedor extends AppCompatActivity {
 
         String URL = URL_API.concat("api/Contenedor/GetAll?DispositivoId="+DispositivoId);
 
-
         Ion.with(this)
                 .load("GET", URL)
                 .asJsonObject()
@@ -234,15 +243,11 @@ public class ListadoContenedor extends AppCompatActivity {
 
                             Log.e("JsonObject Listado ", result.toString());
 
-
                             if (result.get("Data").isJsonNull()){
 
                                 Log.e("JsonObject Data ", "NULL");
 
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
+                                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
                                 } catch (Exception dslnkg){}
 
                                 MensajeContenedor();
@@ -255,6 +260,8 @@ public class ListadoContenedor extends AppCompatActivity {
                             for (JsonElement p : jsonArrayData) {
 
                                 JsonObject jsonObject1 = p.getAsJsonObject();
+
+                                Log.e(" Codigo ", jsonObject1.get("Codigo").getAsString());
 
                                 try {
 
@@ -291,6 +298,8 @@ public class ListadoContenedor extends AppCompatActivity {
                             } catch (Exception ezs){}
                         }
 
+                        isProgress = false;
+
                     }});
 
     }
@@ -310,6 +319,8 @@ public class ListadoContenedor extends AppCompatActivity {
             dbst.close();
 
         } catch (Exception e) {}
+
+        if (ContenedorId==null){return;}
 
         Log.e("Codigo ", value);
         Log.e("ContenedorId ", ContenedorId);
@@ -352,6 +363,7 @@ public class ListadoContenedor extends AppCompatActivity {
     }
 
     public void Nuevo(View view){
+        refreshAdapter();
         listaContenedores();
     }
 
