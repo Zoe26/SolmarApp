@@ -68,7 +68,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    boolean flagMostrarFecha = false, flagClick = false;
+    boolean flagMostrarFecha = false;
 
     protected String URL_API;
 
@@ -77,7 +77,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
     CountDownTimer cdt5, cdtBtn;
 
-    Calendar calendarCurrentG = null;
 
     boolean flagCancel = false;
     boolean flagCancelBtn = false;
@@ -94,7 +93,18 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
-        //myView = inflater.inflate(R.layout.fragment_alert, container, false);
+        UI();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        load();
+    }
+
+    public void UI(){
+
         textHora = (TextView) findViewById(R.id.hora);
         textHoraFecha = (TextView) findViewById(R.id.hora_fecha);
         texttolerancia = (TextView) findViewById(R.id.tolerancia);
@@ -111,65 +121,80 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
         btnMarcacion.setTextColor(Color.WHITE);
 
-        Log.e("onCreate Alert", "Ingresó");
-        load();
     }
 
     public void load(){
 
-        Alert alertload = ultimoRegistro();
+        obtenerDatos();
+        Alert alertUltimo  = new Alert();
 
-        if(obtenerDatos() == true){
+        int nro = 0;
 
-            if(!alertload.FechaMarcacion.isEmpty()){
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
+            /*String selectQueryconfiguration = "SELECT NumeroCel, FechaMarcacion, FechaEsperada, " +
+                    "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado, " +
+                    "FechaEsperadaIso FROM Alert WHERE FinTurno = 'false' AND EstadoBoton ='true'";*/
 
-                crearRegistro();
-                mostrarHora();
-                ultimaMarcacion(alertload);
+            String selectQueryconfiguration = "SELECT NumeroCel, FechaMarcacion, FechaEsperada, " +
+                    "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado, " +
+                    "FechaEsperadaIso, FinTurno, EstadoBoton FROM Alert";
 
-                if (!flagCancel){
-                    updateCountDown();
-                }
+            Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
+            nro = cA.getCount();
 
-                Log.e("*** Alert Data *** ", alertload.FechaEsperada);
-                Log.e("*** Alert Data ISO *** ", alertload.FechaEsperadaIso);
-
-            } else {
-
-                crearRegistro();
-                mostrarHora();
-
-                if (!flagCancel){
-                    updateCountDown();
-                }
-
-                Log.e("*** Alert Vacio *** ", "Sin datos en Alert");
+            if (cA.moveToLast()) {
+                alertUltimo.NumeroA = cA.getString(cA.getColumnIndex("NumeroCel"));
+                alertUltimo.FechaMarcacion = cA.getString(cA.getColumnIndex("FechaMarcacion"));
+                alertUltimo.FechaEsperada = cA.getString(cA.getColumnIndex("FechaEsperada"));
+                alertUltimo.FechaProxima = cA.getString(cA.getColumnIndex("FechaProxima"));
+                alertUltimo.FlagTiempo = cA.getString(cA.getColumnIndex("FlagTiempo"));
+                alertUltimo.MargenAceptado = cA.getString(cA.getColumnIndex("MargenAceptado"));
+                alertUltimo.DispositivoId = cA.getString(cA.getColumnIndex("DispositivoId"));
+                alertUltimo.CodigoEmpleado = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
+                alertUltimo.FechaEsperadaIso = cA.getString(cA.getColumnIndex("FechaEsperadaIso"));
+                alertUltimo.FinTurno = cA.getString(cA.getColumnIndex("FinTurno"));
+                alertUltimo.EstadoBoton = cA.getString(cA.getColumnIndex("EstadoBoton"));
             }
 
+            cA.close();
+            existeDatos.close();
 
+        } catch (Exception e) {}
+
+
+        //VERIFICACIONDE SI EXISTE ULTIMO REGISTRO ------
+        if(alertUltimo.EstadoBoton == null || alertUltimo.EstadoBoton.equalsIgnoreCase("true")){
+            crearRegistro();
+            Log.e("alertUltimo ", " NO EXISTE ");
         } else {
 
-            Toast.makeText(mContext, "Error al obtener datos de configuración", Toast.LENGTH_LONG).show();
+            Log.e(" alertUltimo ", " EXISTE ");
+        }
+
+        if (nro>1){
+            ultimaMarcacion(alertUltimo);
+        }
+
+        mostrarHora();
+        if (!flagCancel){
+            updateCountDown();
         }
 
     }
 
     public Boolean obtenerDatos(){
 
-        //Log.e("--- Ingresó ", "obtenerDatos");
-
         try {
 
-            DBHelper dataBaseHelper = new DBHelper(mContext);
+            DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-
             String selectQuery = "SELECT IntervaloMarcacion, CodigoEmpleado, IntervaloMarcacionTolerancia" +
-                    ",NumeroCel, GuidDipositivo  FROM Configuration";
-
+                    ",NumeroCel, GuidDipositivo FROM Configuration";
             Cursor c = db.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
-
                 tiempoGuardado = c.getInt(c.getColumnIndex("IntervaloMarcacion"));
                 tiempoIntervalo = c.getInt(c.getColumnIndex("IntervaloMarcacionTolerancia"));
                 NumeroG = c.getString(c.getColumnIndex("NumeroCel"));
@@ -182,115 +207,61 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
         } catch (Exception e) {}
 
-        if(tiempoGuardado == 0){
-
-            //tiempoGuardado=30;
-            Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-
-            return  false;
-        }
-
-        if(tiempoIntervalo == 0){
-
-            //tiempoIntervalo=1;
-            Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
-
-            return  false;
-        }
-
-
-        if(CodigoEmpleado==null){
-            Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
-            return  false;
-        }
-
-        if(DispositivoId==null){
-            Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
-            return  false;
-        }
-
-        //Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));
-        //Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));
-        //Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));
-        //Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));
-
-        //Log.e("--- obtenerDatos ", "Fin");
+        if(tiempoGuardado == 0){Log.e("--- tiempoGuardado ", String.valueOf(tiempoGuardado));return false;}
+        if(tiempoIntervalo == 0){Log.e("--- tiempoGuardado ", String.valueOf(tiempoIntervalo));return false;}
+        if(DispositivoId==null){Log.e("--- DispositivoId IF ", String.valueOf(DispositivoId));return false;}
+        if(CodigoEmpleado==null){Log.e("--- CodigoEmpleado IF ", String.valueOf(CodigoEmpleado));return false;}
 
         return true;
     }
 
-    public Boolean crearRegistro(){
+    public Boolean crearRegistro() {
 
-        Log.e("--- CREATE REGISTRO ---", " INGRESÓ "+ ultima() );
+        int aux = 0, resto;
+        Calendar calendarCurrentG = Calendar.getInstance();
+        calendarCurrentG.add(Calendar.MINUTE, tiempoIntervalo);
 
-        if (ultima()>0){
-            Log.e("--- CREATE REGISTRO ---", " NO GUARDO");
-            return false;
-        }
+        Log.e("--- CURRENT ", formatoIso.format(calendarCurrentG.getTime()));
 
-        Log.e("---------------- DATOS", "----------------");
-        Log.e("-- flagClick ", String.valueOf(flagClick));
-
-        calendarCurrentG = Calendar.getInstance();
-
-        if (flagClick){
-            calendarCurrentG.add(Calendar.MINUTE, tiempoIntervalo);
-            flagClick = false;
-            Log.e("-- flagClick ", "IF");
-        }
-
-
-        Log.e("--- F PASADA ", formatoIso.format(calendarCurrentG.getTime()));
-
-        int aux = 0;
         int minuto = calendarCurrentG.get(Calendar.MINUTE);
+
         Log.e("--- MINUTO ", String.valueOf(minuto));
 
-        int resto;
-
-        if(minuto == tiempoGuardado){
-
+        if (minuto == tiempoGuardado) {
             minuto++;
-
-            Log.e("--- MINUTO ++ ", String.valueOf(minuto));
         }
 
         if (minuto > tiempoGuardado) {
-
-            resto = minuto%tiempoGuardado;
+            resto = minuto % tiempoGuardado;
             aux = tiempoGuardado - resto;
 
         } else {
-
             aux = tiempoGuardado - minuto;
-
         }
+
 
         int minutoT = aux + minuto;
         Log.e("--- AUX ", String.valueOf(aux));
         Log.e("--- MINUTO T ", String.valueOf(minutoT));
 
-        Calendar choraEsperadaGL = Calendar.getInstance();
-        Calendar choraEsperadaIsoGL = Calendar.getInstance();
+        Calendar choraEsperadaGL = calendarCurrentG;
+        Calendar choraEsperadaIsoGL = calendarCurrentG;
+
+        Log.e("--- IF HORA MARCADA ", formatoIso.format(calendarCurrentG.getTime()));
 
         int hour = calendarCurrentG.get(Calendar.HOUR_OF_DAY);
-        int hourAct = choraEsperadaGL.get(Calendar.HOUR_OF_DAY);
 
-        if (hour>hourAct){
-            choraEsperadaGL.set(Calendar.HOUR_OF_DAY, hour);
-            choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, hour);
+        Log.e("--- hour ", String.valueOf(hour));
 
-            Log.e("--- IF HORA MARCADA > ", " HORA ACTUAL");
-
-            Log.e("--- choraEsperadaGL ", formatoIso.format(choraEsperadaGL.getTime()));
-            Log.e("--- choraEsperadaIsoGL ", formatoIso.format(choraEsperadaIsoGL.getTime()));
-
-        }
+        choraEsperadaGL.set(Calendar.HOUR_OF_DAY, hour);
+        choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, hour);
 
         choraEsperadaGL.set(Calendar.MINUTE, minutoT);
         choraEsperadaGL.set(Calendar.SECOND, 00);
 
+        Log.e(" EsperadaGL SET ", formatoIso.format(choraEsperadaGL.getTime()));
         choraEsperadaIsoGL.set(Calendar.MINUTE, minutoT);
+        Log.e(" EsperadaIsoGL SET ", formatoIso.format(choraEsperadaGL.getTime()));
 
         horaEsperadaG = formatoGuardar.format(choraEsperadaGL.getTime());
 
@@ -314,11 +285,9 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         horaEsperadaIsoFinG = formatoIso.format(choraEsperadaIsoGL.getTime());
 
         Log.e("------------- REGISTRO ", " CREADO -------------");
-
         Log.e("--- H. ESP G ", String.valueOf(horaEsperadaG));
         Log.e("--- H. ESP ISO ", String.valueOf(horaEsperadaIsoG));
         Log.e("--- H. FIN ", String.valueOf(horaEsperadaIsoFinG));
-
         Log.e("--------- FIN REGISTRO ", " CREADO -------------");
 
 
@@ -436,8 +405,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                 btnMarcacion.setBackgroundColor(getResources().getColor(R.color.boton_deshabilitado));
                 btnMarcacion.setTextColor(Color.WHITE);
 
-                flagClick = true;
-
                 if (flagCancelBtn){
                     cdtBtn.cancel();
                 }
@@ -464,9 +431,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public Boolean enviarMarcacion(){
-
-        Log.e("--- INGRESÓ ", "+++++++ enviarMarcacion ++++++");
-
         // CONSULTA DE DATOS DEL SQLITE PARA ENVIO AL SERVIDOR
         try {
             DBHelper dataBaseHelper = new DBHelper(mContext);
@@ -663,7 +627,7 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
                         if (response.getHeaders().code() == 200) {
 
-                            Log.e("JsonObject ", response.getResult().toString());
+                            Log.e("Alerta", response.getResult().toString());
 
                             JSONObject j = null;
                             try {
@@ -705,7 +669,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                                         db.close();
 
                                         a = c.getInt("Valor");
-//                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
                                     }
 
                                     if(c.getInt("ConfiguracionId")==4){
@@ -715,11 +678,8 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                                         db.close();
 
                                         b = c.getInt("Valor");
-//                            Log.e("-- M[" + i + "]= ", String.valueOf(c.getInt("Valor")));
                                     }
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
-                                }
+                                } catch (JSONException e1) {e1.printStackTrace();}
                             }
 
                             int te = a;
@@ -740,57 +700,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
                 });
 
         return true;
-    }
-
-    public Alert ultimoRegistro(){
-
-        Alert alert = new Alert();
-
-        alert.FechaMarcacion = "";
-
-        if(alert.FechaMarcacion == ""){
-            Log.e("Alert NULL ", "alert.FechaMarcacion");
-        }
-
-
-        try {
-
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
-            String selectQueryconfiguration = "SELECT NumeroCel, FechaMarcacion, FechaEsperada, " +
-                    "FechaProxima, FlagTiempo, MargenAceptado, DispositivoId, CodigoEmpleado, " +
-                    "FechaEsperadaIso FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton ='true'";
-            Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
-
-            //Log.e("Consulta ", "If");
-
-            if(alert.FechaMarcacion == ""){
-                Log.e("Alert NULL ", "alert.FechaMarcacion");
-            }
-
-            if (cA.moveToLast()) {
-
-                Log.e("FechaEsperada ", "");
-
-                alert.NumeroA = cA.getString(cA.getColumnIndex("NumeroCel"));
-                alert.FechaMarcacion = cA.getString(cA.getColumnIndex("FechaMarcacion"));
-                alert.FechaEsperada = cA.getString(cA.getColumnIndex("FechaEsperada"));
-                alert.FechaProxima = cA.getString(cA.getColumnIndex("FechaProxima"));
-                alert.FlagTiempo = cA.getString(cA.getColumnIndex("FlagTiempo"));
-                alert.MargenAceptado = cA.getString(cA.getColumnIndex("MargenAceptado"));
-                alert.DispositivoId = cA.getString(cA.getColumnIndex("DispositivoId"));
-                alert.CodigoEmpleado = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
-                alert.FechaEsperadaIso = cA.getString(cA.getColumnIndex("FechaEsperadaIso"));
-
-            }
-
-            cA.close();
-            existeDatos.close();
-
-        } catch (Exception e) {}
-
-        return alert;
-
     }
 
     public void updateCountDown(){
@@ -1044,12 +953,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    @Override
-    public void onStart() {
-
-        super.onStart();
-    }
-
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     public void saveError(Alert marker){
@@ -1273,25 +1176,25 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
     public void ultimaMarcacion(Alert a){
 
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT FechaEsperada, FlagTiempo FROM Alert WHERE FinTurno = 'false' AND EstadoBoton ='true'";
+            Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
+
+            if (cA.moveToLast()) {
+                a.FechaEsperada = cA.getString(cA.getColumnIndex("FechaEsperada"));
+                a.FlagTiempo = cA.getString(cA.getColumnIndex("FlagTiempo"));
+            }
+
+            cA.close();
+            existeDatos.close();
+
+        } catch (Exception e) {}
+
         String horaUltimaMarcacion = a.FechaEsperada; //null;
         String estadoMarcacion = a.FlagTiempo; //= null;
 
-        /*try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
-            String selectQueryAlert = "SELECT FechaEsperada, FlagTiempo FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton ='true'";
-
-            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
-
-            if (calert.moveToLast()) {
-
-                horaUltimaMarcacion = calert.getString(calert.getColumnIndex("FechaEsperada"));
-                estadoMarcacion = calert.getString(calert.getColumnIndex("FlagTiempo"));
-            }
-            calert.close();
-            dbalert.close();
-
-        } catch (Exception e){}*/
 
         String ultiHora, ultiHoraFecha;
 
@@ -1345,25 +1248,8 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         if(flagMostrarFecha==true) {
             textUltimaMarcacionFecha.setText(ultiHoraFecha);
         }
-    }
 
-    public int ultima(){
-
-        int count = 0;
-
-        try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbalert = dataBaseHelper.getWritableDatabase();
-            String selectQueryAlert = "SELECT FechaEsperada FROM Alert WHERE  FinTurno = 'false' AND EstadoBoton = 'false'";
-            Cursor calert = dbalert.rawQuery(selectQueryAlert, new String[]{});
-            count = calert.getCount();
-
-            calert.close();
-            dbalert.close();
-
-        } catch (Exception e){}
-
-        return count;
+        Log.e("Ultima Marcacion ", " II --- ");
     }
 
     @Override
@@ -1377,8 +1263,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             cdt5.cancel();
             updateCountDown();
         }
-
-        mostrarHora();
         super.onResume();
     }
 
@@ -1394,7 +1278,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             //updateCountDown();
         }
 
-        //mostrarHora();
         super.onPause();
     }
 
@@ -1409,7 +1292,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
             cdt5.cancel();
             //updateCountDown();
         }
-        //mostrarHora();
         super.onStop();
     }
 

@@ -162,8 +162,6 @@ public class MenuPrincipal extends  ActionBarActivity {
 
     public void load(Bundle savedInstanceState){
 
-        //bottomBar = BottomBar.attach(this, savedInstanceState);
-
         String URL = URL_API.concat("Aplicacion/GetAppByUser?id="+DispositivoId);
 
 
@@ -556,8 +554,7 @@ public class MenuPrincipal extends  ActionBarActivity {
             try {
                 DBHelper dataBaseHelperB = new DBHelper(this);
                 SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
-                dbU.execSQL("DELETE FROM  Alert WHERE AlertId = "+idUp);
-//            dbU.execSQL("UPDATE Alert SET FinTurno = 'false' WHERE AlertId = "+idUp);
+                dbU.execSQL("DELETE FROM Alert WHERE AlertId = "+idUp);
                 dbU.close();
 
             } catch (Exception e){}

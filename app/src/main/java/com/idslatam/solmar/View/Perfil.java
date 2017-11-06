@@ -152,8 +152,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
             flagSesion = "false";
         }
 
-        Log.e("flagSesion ", flagSesion);
-
         if(flagSesion.equalsIgnoreCase("false")){
             inicioTurno();
         }
@@ -391,8 +389,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                                 Gson gson = new Gson();
                                 JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                Log.e("JsonObject GET MENU ", result.toString());
-
                                 JsonArray jarray = result.getAsJsonArray("Menu");
 
                                 for (JsonElement pa : jarray) {
@@ -405,9 +401,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                                     menu.Code = paymentObj.get("Id").getAsString();
                                     menu.MenuId = _Menu_Id;
                                     _Menu_Id = menuCrud.insert(menu);
-
-                                    Log.e("-- Nombre -- ", paymentObj.get("Nombre").getAsString());
-                                    Log.e("-- Id -- ", paymentObj.get("Id").getAsString());
 
                                     JsonArray jarraconf = paymentObj.getAsJsonArray("Configuracion");
 
@@ -448,8 +441,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                                                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                                                 db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+paymentC.get("Valor").getAsString()+"'");
                                                 db.close();
-
-                                                Log.e("BP 5 ", paymentC.get("Valor").getAsString());
                                             }
                                         }
 
@@ -457,7 +448,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
                                 }
 
-                                Log.e("-- Get Menu! ", " Finaliza");
                                 //generarMenu(savedInstanceState);
                                 initView(); // Initialize the GUI Components
                                 fillData(); // Insert The Data
@@ -739,20 +729,20 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
         //Log.e("ID "+ String.valueOf(statusBoton) + " | Estado Btn "+ statusBoton, " | Estado Turno "+ statusFinTurno);
 
-        if(statusBoton.equals("false") && statusFinTurno.equals("true")){
+        //if(statusBoton.equals("false") && statusFinTurno.equals("true")){
 
             try {
                 DBHelper dataBaseHelperB = new DBHelper(this);
                 SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
-                dbU.execSQL("DELETE FROM Alert WHERE AlertId = "+idUp);
+                //dbU.execSQL("DELETE FROM Alert WHERE AlertId = "+idUp);
+                dbU.execSQL("DELETE FROM Alert");
                 dbU.close();
 
             } catch (Exception e){}
 
-
             Log.e("Fin Consulta ", " Eliminar ");
 
-        }
+        //}
 
         return true;
     }
@@ -914,7 +904,6 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                     public void onCompleted(Exception e, JsonObject response) {
 
                         if(response!=null){
-                            Log.e("JsonObject Frag.", response.toString());
 
                             try {
 

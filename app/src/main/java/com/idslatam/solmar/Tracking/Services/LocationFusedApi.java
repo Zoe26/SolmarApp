@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -94,8 +95,6 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
     Calendar currentPrecision;
 
-    final Handler handler = new Handler();
-
     //**********************************************************************************************
     Tracking tracking = new Tracking();
     private final Context mContext = this;
@@ -106,6 +105,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     int precision = 0;
     double deltaAltitud = 0;
     float deltaVelocidad = 0;
+
+    private Handler handler = new Handler();
 
     BroadcastReceiver mReceiver;
 
@@ -716,9 +717,12 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
                                 if (!result.get("Configuracion").isJsonNull()) {
 
-                                   /* Intent intent = new Intent(Intent.ACTION_CALL);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    intent.setData(Uri.parse("tel:" + "123"));
+                                    /*Intent call = new Intent(Intent.ACTION_CALL);
+                                    call.setData(Uri.parse("tel://" + "123" + ""));
+                                    call.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    call.addFlags(Intent.FLAG_FROM_BACKGROUND);
+
+                                    handler.postDelayed(r, 1000*10);
 
                                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                                         // TODO: Consider calling
@@ -730,7 +734,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
                                         // for ActivityCompat#requestPermissions for more details.
                                         return;
                                     }
-                                    startActivity(intent);*/
+                                    startActivity(call);*/
 
                                     JsonArray jarray = result.getAsJsonArray("Configuracion");
 
@@ -794,6 +798,36 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
         }
 
         return  true;
+    }
+
+
+    final Runnable r = new Runnable() {
+        public void run() {
+
+            Log.e("Hello World", " Runnable I ");
+            endCall(mContext);
+            Log.e("Hello World", " Runnable ");
+            //handler.postDelayed(this, 1000*10);
+        }
+    };
+
+
+    public void endCall(Context context) {
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            Class c = Class.forName(tm.getClass().getName());
+            Method m = c.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
+            Object telephonyService = m.invoke(tm);
+
+            c = Class.forName(telephonyService.getClass().getName());
+            m = c.getDeclaredMethod("endCall");
+            m.setAccessible(true);
+            m.invoke(telephonyService);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private final ServiceConnection mConnection = new ServiceConnection() {
