@@ -215,53 +215,65 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         return true;
     }
 
-    public Boolean crearRegistro() {
+    public Boolean crearRegistro(){
 
-        int aux = 0, resto;
+        //Log.e("--- CREATE REGISTRO ---", " INGRESÓ "+ ultima() );
+
+        /*if (ultima()>0){
+            Log.e("--- CREATE REGISTRO ---", " NO GUARDO");
+            return false;
+        }*/
+
+        //Log.e("---------------- DATOS", "----------------");
+        //Log.e("-- flagClick ", String.valueOf(flagClick));
+
         Calendar calendarCurrentG = Calendar.getInstance();
-        calendarCurrentG.add(Calendar.MINUTE, tiempoIntervalo);
 
-        Log.e("--- CURRENT ", formatoIso.format(calendarCurrentG.getTime()));
+        //if (flagClick){
+            calendarCurrentG.add(Calendar.MINUTE, tiempoIntervalo);
+         //   flagClick = false;
+         //   Log.e("-- flagClick ", "IF");
+        //}
 
+
+        Log.e("--- F PASADA ", formatoIso.format(calendarCurrentG.getTime()));
+        int aux = 0;
         int minuto = calendarCurrentG.get(Calendar.MINUTE);
-
         Log.e("--- MINUTO ", String.valueOf(minuto));
 
-        if (minuto == tiempoGuardado) {
-            minuto++;
-        }
+        int resto;
+        if(minuto == tiempoGuardado){minuto++;Log.e("--- MINUTO ++ ", String.valueOf(minuto));}
 
-        if (minuto > tiempoGuardado) {
-            resto = minuto % tiempoGuardado;
+        if (minuto > tiempoGuardado) {resto = minuto%tiempoGuardado;
             aux = tiempoGuardado - resto;
-
         } else {
             aux = tiempoGuardado - minuto;
         }
-
 
         int minutoT = aux + minuto;
         Log.e("--- AUX ", String.valueOf(aux));
         Log.e("--- MINUTO T ", String.valueOf(minutoT));
 
-        Calendar choraEsperadaGL = calendarCurrentG;
-        Calendar choraEsperadaIsoGL = calendarCurrentG;
-
-        Log.e("--- IF HORA MARCADA ", formatoIso.format(calendarCurrentG.getTime()));
+        Calendar choraEsperadaGL = Calendar.getInstance();
+        Calendar choraEsperadaIsoGL = Calendar.getInstance();
 
         int hour = calendarCurrentG.get(Calendar.HOUR_OF_DAY);
+        int hourAct = choraEsperadaGL.get(Calendar.HOUR_OF_DAY);
 
-        Log.e("--- hour ", String.valueOf(hour));
+        if (hour>hourAct){
+            choraEsperadaGL.set(Calendar.HOUR_OF_DAY, hour);
+            choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, hour);
 
-        choraEsperadaGL.set(Calendar.HOUR_OF_DAY, hour);
-        choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, hour);
+            Log.e("--- IF HORA MARCADA > ", " HORA ACTUAL");
+            Log.e("--- choraEsperadaGL ", formatoIso.format(choraEsperadaGL.getTime()));
+            Log.e("--- choraEsperadaIsoGL ", formatoIso.format(choraEsperadaIsoGL.getTime()));
+
+        }
 
         choraEsperadaGL.set(Calendar.MINUTE, minutoT);
         choraEsperadaGL.set(Calendar.SECOND, 00);
 
-        Log.e(" EsperadaGL SET ", formatoIso.format(choraEsperadaGL.getTime()));
         choraEsperadaIsoGL.set(Calendar.MINUTE, minutoT);
-        Log.e(" EsperadaIsoGL SET ", formatoIso.format(choraEsperadaGL.getTime()));
 
         horaEsperadaG = formatoGuardar.format(choraEsperadaGL.getTime());
 
@@ -285,9 +297,54 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
         horaEsperadaIsoFinG = formatoIso.format(choraEsperadaIsoGL.getTime());
 
         Log.e("------------- REGISTRO ", " CREADO -------------");
+        Log.e("--- F PASADA ", formatoIso.format(calendarCurrentG.getTime()));
+        Log.e("--- F ESPERA ", formatoIso.format(choraEsperadaGL.getTime()));
+
+        if (choraEsperadaGL.before(calendarCurrentG)){
+
+            Log.e(" ------------ ", " ------------ ");
+
+            choraEsperadaGL.set(Calendar.HOUR_OF_DAY, 00);
+            choraEsperadaGL.set(Calendar.MINUTE, minutoT);
+            choraEsperadaGL.set(Calendar.SECOND, 00);
+
+            choraEsperadaIsoGL.set(Calendar.HOUR_OF_DAY, 00);
+            choraEsperadaIsoGL.set(Calendar.MINUTE, minutoT);
+
+            horaEsperadaG = formatoGuardar.format(choraEsperadaGL.getTime());
+
+            choraProximaG = choraEsperadaGL;
+            choraProximaG.set(Calendar.HOUR_OF_DAY, 00);
+            choraProximaG.add(Calendar.MINUTE, tiempoGuardado);
+            choraProximaG.set(Calendar.SECOND, 00);
+            horaProximaG = formatoGuardar.format(choraProximaG.getTime());
+
+            choraIso = choraEsperadaIsoGL;
+            choraIso.add(Calendar.DATE, 1);
+            choraIso.set(Calendar.HOUR_OF_DAY, 00);
+            choraIso.set(Calendar.MINUTE, minutoT);
+            choraIso.set(Calendar.SECOND, 00);
+            choraIso.add(Calendar.MINUTE, -tiempoIntervalo);
+
+            horaEsperadaIsoG = formatoIso.format(choraEsperadaIsoGL.getTime());
+
+            // --- Hora IsoFin
+            choraIsoFin = choraEsperadaIsoGL; //Calendar.getInstance();
+            choraIsoFin.set(Calendar.HOUR_OF_DAY, 00);
+            choraIsoFin.set(Calendar.MINUTE, minutoT);
+            choraIsoFin.add(Calendar.MINUTE, tiempoIntervalo);
+
+            horaEsperadaIsoFinG = formatoIso.format(choraEsperadaIsoGL.getTime());
+
+            Log.e(" INGRESÓ ", " MORFO ");
+            Log.e(" ------------ ", " ------------ ");
+
+        }
+
         Log.e("--- H. ESP G ", String.valueOf(horaEsperadaG));
         Log.e("--- H. ESP ISO ", String.valueOf(horaEsperadaIsoG));
         Log.e("--- H. FIN ", String.valueOf(horaEsperadaIsoFinG));
+
         Log.e("--------- FIN REGISTRO ", " CREADO -------------");
 
 
@@ -770,7 +827,6 @@ public class AlertActivity extends AppCompatActivity implements View.OnClickList
 
         Log.e(" ---- startTime ----- ",String.valueOf(startTime));
         Log.e(" -- fechaEsperada -- ",formatoIso.format(horaAux.getTime()));
-
 
         try {
 
