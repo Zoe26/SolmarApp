@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -74,6 +75,8 @@ public class Login extends AppCompatActivity implements
     Context context;
     String pass;
     String user;
+
+    TextView txt_numero;
     protected String URL_API;
 
 
@@ -204,6 +207,7 @@ public class Login extends AppCompatActivity implements
         password.setEnabled(false);
 
         acceso = (Button)findViewById(R.id.login_button);
+        txt_numero = (TextView)findViewById(R.id.txt_numero);
 //        verConfiguracion = (Button)findViewById(R.id.boton_configuracion);
 
         acceso.setOnClickListener(this);
@@ -232,6 +236,31 @@ public class Login extends AppCompatActivity implements
             }
 
         } catch (Exception e){}
+
+        String numeroAux = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+            String selectQueryBusca = "SELECT NumeroCel FROM Configuration";
+            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+
+            if(cbusca.moveToLast()){
+                numeroAux = cbusca.getString(cbusca.getColumnIndex("NumeroCel"));
+            }
+
+            cbusca.close();
+            dbc.close();
+
+        } catch (Exception e) {}
+        Log.e("NumeroReinstlado ", numeroAux);
+
+        if (numeroAux!=null){
+            Log.e("numeroAux ", numeroAux);
+
+            txt_numero.setText(numeroAux);
+        }
+
 
     }
 

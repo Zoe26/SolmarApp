@@ -39,13 +39,13 @@ public class SoundService extends Service {
 
                 case 1: // '\001'
                     Log.e("", "stopPlayback");
-                    stopPlayback();
-                    stopService();
+                    //stopPlayback();
+                    //stopService();
                     return;
 
 
                 case 2: // '\002'
-                    stopService();
+                   // stopService();
                     return;
             }
         }
@@ -61,8 +61,7 @@ public class SoundService extends Service {
     private Looper mLooper;
     private MediaPlayer mp;
 
-    public SoundService()
-    {}
+    public SoundService() {}
 
     private void doPlayback()
     {

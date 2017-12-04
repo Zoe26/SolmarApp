@@ -40,7 +40,10 @@ import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.Cargo.CargoActivity;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
+import com.idslatam.solmar.Models.Crud.AplicacionCrud;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
+import com.idslatam.solmar.Models.Entities.Aplicaciones;
+import com.idslatam.solmar.Models.Entities.Menu;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Patrol.PatrolActivity;
 import com.idslatam.solmar.People.People;
@@ -72,7 +75,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
     Bundle b;
     Context mContext;
 
-    int _Menu_Id = 0;
+    int _Menu_Id = 0, _Aplicaciones_Id = 0;
     String DispositivoId, flagSesion;
     boolean state;
 
@@ -141,8 +144,28 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         b = getIntent().getExtras();
         state = b.getBoolean("State");
 
+        String numeroAux = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+            String selectQueryBusca = "SELECT NumeroCel FROM Configuration";
+            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+
+            if(cbusca.moveToLast()){
+                numeroAux = cbusca.getString(cbusca.getColumnIndex("NumeroCel"));
+            }
+
+            cbusca.close();
+            dbc.close();
+
+        } catch (Exception e) {}
 
         toolbar.setTitle("Solgis | "+fotocheckCod);
+        if (numeroAux!=null){
+            Log.e("numeroAux ", numeroAux);
+            toolbar.setSubtitle("Nº: "+numeroAux);
+        }
         setSupportActionBar(toolbar);
 
         Constants globalClass = new Constants();
@@ -386,73 +409,83 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
 
                         if (response.getHeaders().code() == 200) {
 
-                                Gson gson = new Gson();
-                                JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                            Gson gson = new Gson();
+                            JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                JsonArray jarray = result.getAsJsonArray("Menu");
 
-                                for (JsonElement pa : jarray) {
-                                    JsonObject paymentObj = pa.getAsJsonObject();
+                            /*JsonArray jarrayApp = result.getAsJsonArray("Apps");
 
-                                    MenuCrud menuCrud = new MenuCrud(mContext);
+                            for (JsonElement pa : jarrayApp) {
 
-                                    com.idslatam.solmar.Models.Entities.Menu menu = new com.idslatam.solmar.Models.Entities.Menu();
-                                    menu.Nombre = paymentObj.get("Nombre").getAsString();
-                                    menu.Code = paymentObj.get("Id").getAsString();
-                                    menu.MenuId = _Menu_Id;
-                                    _Menu_Id = menuCrud.insert(menu);
+                                JsonObject paymentObjR = pa.getAsJsonObject();
 
-                                    JsonArray jarraconf = paymentObj.getAsJsonArray("Configuracion");
+                                AplicacionCrud aplicacionCrud = new AplicacionCrud(mContext);
+                                Aplicaciones aplicaciones = new Aplicaciones();
+                                aplicaciones.Nombre = paymentObjR.get("Package").getAsString();
+                                aplicaciones.AplicacionesId = _Aplicaciones_Id;
+                                _Aplicaciones_Id = aplicacionCrud.insert(aplicaciones);
 
-                                    for (JsonElement co : jarraconf) {
-                                        JsonObject paymentC = co.getAsJsonObject();
+                                Log.e("Apps ", paymentObjR.get("Package").getAsString());
 
-                                        // ALERT
-                                        if(paymentObj.get("Id").getAsString().equalsIgnoreCase("2")){
+                            }*/
+                                //new LoadApplications().execute();
 
-                                            if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("3")){
 
-                                                DBHelper dataBaseHelper = new DBHelper(mContext);
-                                                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                                db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + paymentC.get("Valor").getAsString() + "'");
-                                                db.close();
 
-                                                Log.e("ALERT 3 ", paymentC.get("Valor").getAsString());
+                            JsonArray jarray = result.getAsJsonArray("Menu");
 
-                                            }
+                            for (JsonElement pa : jarray) {
 
-                                            if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("4")){
+                                JsonObject paymentObj = pa.getAsJsonObject();
+                                MenuCrud menuCrud = new MenuCrud(mContext);
 
-                                                DBHelper dataBaseHelper = new DBHelper(mContext);
-                                                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                                db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + paymentC.get("Valor").getAsString()  + "'");
-                                                db.close();
+                                Menu menu = new Menu();
+                                menu.Nombre = paymentObj.get("Nombre").getAsString();
+                                menu.Code = paymentObj.get("Id").getAsString();
+                                menu.MenuId = _Menu_Id;
+                                _Menu_Id = menuCrud.insert(menu);
+                                JsonArray jarraconf = paymentObj.getAsJsonArray("Configuracion");
 
-                                                Log.e("ALERT 4 ", paymentC.get("Valor").getAsString());
-                                            }
+                                for (JsonElement co : jarraconf) {
+                                    JsonObject paymentC = co.getAsJsonObject();
+                                    // ALERT
+                                    if(paymentObj.get("Id").getAsString().equalsIgnoreCase("2")){
+                                        if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("3")){
+
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                            db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + paymentC.get("Valor").getAsString() + "'");
+                                            db.close();
+                                            Log.e("ALERT 3 ", paymentC.get("Valor").getAsString());
+
                                         }
 
-                                        // BRAVO PAPA
-                                        if(paymentObj.get("Id").getAsString().equalsIgnoreCase("3")){
+                                        if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("4")){
 
-                                            if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("5")){
-
-                                                DBHelper dataBaseHelper = new DBHelper(mContext);
-                                                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                                                db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+paymentC.get("Valor").getAsString()+"'");
-                                                db.close();
-                                            }
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                            db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + paymentC.get("Valor").getAsString()  + "'");
+                                            db.close();
+                                            Log.e("ALERT 4 ", paymentC.get("Valor").getAsString());
                                         }
-
                                     }
 
+                                    // BRAVO PAPA
+                                    if(paymentObj.get("Id").getAsString().equalsIgnoreCase("3")){
+                                        if(paymentC.get("ConfiguracionId").getAsString().equalsIgnoreCase("5")){
+
+                                            DBHelper dataBaseHelper = new DBHelper(mContext);
+                                            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                                            db.execSQL("UPDATE Configuration SET VecesPresionarVolumen = '"+paymentC.get("Valor").getAsString()+"'");
+                                            db.close();
+                                        }
+                                    }
                                 }
+                            }
 
-                                //generarMenu(savedInstanceState);
-                                initView(); // Initialize the GUI Components
-                                fillData(); // Insert The Data
-                                setDataAdapter(); // Set the Data Adapter
-
+                            initView(); // Initialize the GUI Components
+                            fillData(); // Insert The Data
+                            setDataAdapter(); // Set the Data Adapter
                             try {
 
                                 if (pDialog != null && pDialog.isShowing()) {

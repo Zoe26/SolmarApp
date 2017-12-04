@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.idslatam.solmar.Models.Entities.Alert;
+import com.idslatam.solmar.Models.Entities.Aplicaciones;
 import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Cargo;
 import com.idslatam.solmar.Models.Entities.CargoPrecinto;
@@ -214,6 +215,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 + People.KEY_fotoVehiculoGuantera + " TEXT,"
                 + People.KEY_fotoVehiculoMaletera + " TEXT)";
 
+        String CREATE_TABLE_APLICACIONES = "CREATE TABLE " + Aplicaciones.TABLE_APLICACIONES + "("
+                + Aplicaciones.KEY_ID_Aplicaciones + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Aplicaciones.KEY_Nombre + " TEXT)";
+
+        db.execSQL(CREATE_TABLE_APLICACIONES);
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
         db.execSQL(CREATE_TABLE_ASISTENCIA);
@@ -269,6 +275,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + People.TABLE_PEOPLE);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + Aplicaciones.TABLE_APLICACIONES);
         onCreate(db);
 
     }

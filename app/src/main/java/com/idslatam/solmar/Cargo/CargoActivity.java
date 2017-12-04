@@ -1575,6 +1575,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
 
                                         if (!result.get("persNombres").isJsonNull()){
+
+                                            Log.e("NroDOI ", result.get("NroDOI").getAsString());
+
                                             primero_edt_dni.setText(result.get("NroDOI").getAsString());
                                             cargo_txt_dni_persona.setText(result.get("persNombres").getAsString());
                                             cargo_txt_empresa_persona.setText(result.get("persEmpresa").getAsString());
@@ -1583,7 +1586,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                         try {
                                             DBHelper dbHelperAlarm = new DBHelper(mContext);
                                             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                                            dba.execSQL("UPDATE Cargo SET Dni = "+result.get("NroDOI").getAsString()+"");
+                                            dba.execSQL("UPDATE Cargo SET Dni = '"+result.get("NroDOI").getAsString()+"'");
                                             dba.execSQL("UPDATE Cargo SET json = '"+String.valueOf(result.toString())+"'");
                                             dba.close();
 
@@ -2881,6 +2884,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
+
+        Log.e("Dni ENVIADO ", Dni);
+
         Ion.with(mContext)
                 .load(URL)
                 .uploadProgressHandler(new ProgressCallback() {
@@ -3023,10 +3029,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     public void loadPrecinto(){
-
-
-        //----------------
-
 
         int count = 0;
 

@@ -80,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="bottom|center"
-                android:text="Margen"
+                android:text="Margen."
                 android:textColor="@color/negro_general"
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />
@@ -152,7 +152,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="bottom|center"
-                android:text="Última Marcación"
+                android:text="Última Marcación."
                 android:textColor="@color/negro_general"
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />
@@ -204,7 +204,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="bottom|center"
-                android:text="Proxima Marcación"
+                android:text="Proxima Marcación."
                 android:textColor="@color/negro_general"
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />

@@ -173,7 +173,7 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
     String NumeroReinstlado, ClienteId;
     protected String URL_API;
     String estado, RequiereNumero, Id;
-    TextView txtApro;
+    TextView txtApro, txtNumeroCelular;
 
     boolean flagPermisos;
 
@@ -505,17 +505,9 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         }
 
         int SIMState=tm.getSimState();
-        switch(SIMState)
-        {
+        switch(SIMState) {
             case TelephonyManager.SIM_STATE_ABSENT :
                 // your code
-                //Log.e("--STATE_ABSENT ", String.valueOf(SIMState));
-
-                //serieSIM = "8951061121515203889f";
-                //imei = "014578003254447";
-                //numero = "931732035";
-
-                //simDialogo();
                 break;
 
             case TelephonyManager.SIM_STATE_READY :
@@ -532,13 +524,6 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
                 SimOtorgaNumero = "true";
                 if (numero.equals("")) {SimOtorgaNumero = "false";}
-
-                //Log.e("--STATE_READY ", String.valueOf(SIMState));
-                //Log.e("--Country ", String.valueOf(tm.getSimCountryIso()));
-                //Log.e("--OperatorCode ", String.valueOf(tm.getSimOperator()));
-                //Log.e("--OperatorName ", String.valueOf(tm.getSimOperatorName()));
-                //Log.e("--simSerial ", String.valueOf(tm.getSimSerialNumber()));
-
                 break;
 
             case TelephonyManager.SIM_STATE_UNKNOWN :
@@ -559,17 +544,32 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
         String androidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         numero = tm.getLine1Number();
 
+        String numeroAux = null;
+
+        txtNumeroCelular = (TextView)findViewById(R.id.info);
+
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
             String selectQueryBusca = "SELECT NumeroCel FROM Configuration WHERE ConfigurationId = 1";
             Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
             busca = cbusca.getCount();
+
+            if(cbusca.moveToLast()){
+                numeroAux = cbusca.getString(cbusca.getColumnIndex("NumeroCel"));
+            }
+
             cbusca.close();
             dbc.close();
 
         } catch (Exception e) {}
 
+
+        if (numeroAux!=null){
+            Log.e("numeroAux ", numeroAux);
+
+            txtNumeroCelular.setText(numeroAux);
+        }
 
         if(busca==0){
 
@@ -785,7 +785,18 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
                                         RequiereNumero = "true";
                                         Log.e("NumeroReinstlado ", "INGRESÓ");
                                     } else {
+                                        Log.e("NumeroReinstlado ", result.get("Numero").getAsString());
                                         NumeroReinstlado = result.get("Numero").getAsString();
+                                        try {
+
+                                            DBHelper dbHelperNumero = new DBHelper(mContext);
+                                            SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                                            dbNro.execSQL("UPDATE Configuration SET NumeroCel = '"+result.get("Numero").getAsString()+"'");
+                                            dbNro.close();
+
+                                        } catch (Exception esv){}
+
+                                        txtNumeroCelular.setText(result.get("Numero").getAsString());
                                     }
 
                                     //*********************************
@@ -1079,14 +1090,38 @@ public class Bienvenido extends AppCompatActivity implements GoogleApiClient.Con
 
     public  Boolean actualizarNumero(){
 
+        String numeroAux = null;
+
         try {
 
             DBHelper dbHelperNumero = new DBHelper(this);
             SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
-            dbNro.execSQL("UPDATE Configuration SET NumeroCel = '"+NumeroReinstlado+"' WHERE ConfigurationId = 1");
+            dbNro.execSQL("UPDATE Configuration SET NumeroCel = '"+NumeroReinstlado+"'");
             dbNro.close();
 
         } catch (Exception e){}
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbc = dataBaseHelper.getReadableDatabase();
+            String selectQueryBusca = "SELECT NumeroCel FROM Configuration";
+            Cursor cbusca = dbc.rawQuery(selectQueryBusca, new String[]{});
+
+            if(cbusca.moveToLast()){
+                numeroAux = cbusca.getString(cbusca.getColumnIndex("NumeroCel"));
+            }
+
+            cbusca.close();
+            dbc.close();
+
+        } catch (Exception e) {}
+        Log.e("NumeroReinstlado ", NumeroReinstlado);
+
+        if (numeroAux!=null){
+            Log.e("numeroAux ", numeroAux);
+
+            txtNumeroCelular.setText(numeroAux);
+        }
 
         return true;
     }

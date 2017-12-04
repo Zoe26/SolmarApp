@@ -3,20 +3,27 @@ package com.idslatam.solmar.BravoPapa;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import static android.content.Context.AUDIO_SERVICE;
 
 public class VolumeReceiver extends BroadcastReceiver {
 
@@ -30,6 +37,8 @@ public class VolumeReceiver extends BroadcastReceiver {
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     protected String URL_API;
+
+    private static final float BEEP_VOLUME = 0.90f;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -125,6 +134,7 @@ public class VolumeReceiver extends BroadcastReceiver {
                 dba.close();
             } catch (Exception e){}
 
+            playBeepSound();
             Log.e("-- |RETURN| ", " TRUEEEEEE " + String.valueOf(contador));
 
         } else if(volumenActual > volumenFinal) {
@@ -139,6 +149,7 @@ public class VolumeReceiver extends BroadcastReceiver {
 
         } else if(volumenActual == 0){
 
+            playBeepSound();
             Log.e("----------------------P","----------------------");
             Log.e("-- |volumenFinal| ", String.valueOf(volumenFinal));
             Log.e("-- |volumenActual| ", String.valueOf(volumenActual));
@@ -309,6 +320,8 @@ public class VolumeReceiver extends BroadcastReceiver {
             return;
         }
 
+        playBeepSound();
+
         String URL = URL_API.concat("api/BravoPapa");
 
         Ion.with(mContext)
@@ -326,7 +339,7 @@ public class VolumeReceiver extends BroadcastReceiver {
                     public void onCompleted(Exception e, Response<String> result) {
 
                         if (e!=null){
-                            Log.e("-- |BP | ", e.getMessage());
+                            Log.e("-- |BP | ", "e.getMessage()");
                             return;
                         }
 
@@ -351,5 +364,62 @@ public class VolumeReceiver extends BroadcastReceiver {
                     }
                 });
     }
+
+
+
+    public MediaPlayer playBeepSound() {
+
+        final AudioManager mAudioManager = (AudioManager) mContext.getSystemService(AUDIO_SERVICE);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                //mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+                mp.stop();
+                mp.release();
+            }
+        });
+
+        /*MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.stop();
+                mp.release();
+            }
+        });*/
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                //Log.w(TAG, "Failed to beep " + what + ", " + extra);
+                // possibly media player error, so release and recreate
+                mp.stop();
+                mp.release();
+                return true;
+            }
+        });
+        try {
+            AssetFileDescriptor file = mContext.getResources().openRawResourceFd(R.raw.empty);
+            try {
+                mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
+            } finally {
+                file.close();
+            }
+            mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            return mediaPlayer;
+        } catch (IOException ioe) {
+            //Log.w(TAG, ioe);
+            mediaPlayer.release();
+            return null;
+        }
+    }
+
 
 }

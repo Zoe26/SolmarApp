@@ -17,6 +17,7 @@
         android:background="@mipmap/bienvenido"
         android:textStyle="bold" />
 
+
     <TextView
         android:text="@string/txt_aprobacion"
         android:layout_width="match_parent"
@@ -30,8 +31,11 @@
         android:text="@string/txt_info"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="15dp"
         android:gravity="center|top"
-        android:textSize="15sp"
+        android:textSize="18sp"
+        android:typeface="sans"
+        android:textStyle="bold"
         android:textColor="@color/black_overlay"
         android:id="@+id/info" />
 
