@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Models.Database.DBHelper;
@@ -20,6 +21,7 @@ import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -31,10 +33,11 @@ public class VolumeReceiver extends BroadcastReceiver {
     Context mContext;
 
     String Estado = null, DispositivoId, isScreen;
-    String Latitud = null, Longitud = null, Numero = null, Velocidad, FechaDispositivo;
+    String Latitud = null, Longitud = null, Numero = null, Velocidad, FechaDispositivo, fechaBP;
 
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat formatoIsoParse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     protected String URL_API;
 
@@ -149,6 +152,11 @@ public class VolumeReceiver extends BroadcastReceiver {
 
         } else if(volumenActual == 0){
 
+            Log.e("---", "Screen off");
+            intent = new Intent(context, SoundService.class);
+            intent.putExtra("action", 0);
+            context.startService(intent);
+
             playBeepSound();
             Log.e("----------------------P","----------------------");
             Log.e("-- |volumenFinal| ", String.valueOf(volumenFinal));
@@ -196,9 +204,54 @@ public class VolumeReceiver extends BroadcastReceiver {
                 dba.close();
             } catch (Exception e){}
 
-            sendBP();
+            try{
 
-            Log.e("********|INICIO DE |", "***|BP|********");
+                DBHelper dbHelperVolumen = new DBHelper(mContext);
+                SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
+                String selectQuery = "SELECT FechaBP FROM Configuration";
+                Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
+                if (c.moveToFirst()) {fechaBP = c.getString(c.getColumnIndex("FechaBP"));}
+                c.close();
+                sqlVolumen.close();
+
+            }catch (Exception e){}
+
+            Calendar current = Calendar.getInstance();
+            current.add(Calendar.SECOND, -5);
+
+            Calendar calendar = Calendar.getInstance();
+
+
+            if (fechaBP!=null){
+
+                try {calendar.setTime(formatoIsoParse.parse(fechaBP));}
+                catch (ParseException e) {Log.e(" Exception ", "Error al Parsear ");e.printStackTrace();}
+
+                Log.e("********|current| ", formatoIsoParse.format(current.getTime()));
+                Log.e("********|calendar| ", formatoIsoParse.format(calendar.getTime()));
+
+                if (calendar.after(current)){
+                    Log.e("********|RETURN DE |", "***|BP|********");
+                    try {
+                        DBHelper dbHelperAlarm = new DBHelper(mContext);
+                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                        dba.execSQL("UPDATE Configuration SET ContadorPulsacion = '0'");
+                        dba.close();
+                    } catch (Exception e){}
+                    return;
+                }
+                sendBP();
+                Log.e("********|INICIO DE |", "***|PASO|********");
+
+            } else {sendBP();}
+
+
+
+
+
+
+
+
         }
 
         try {
@@ -251,16 +304,7 @@ public class VolumeReceiver extends BroadcastReceiver {
 
     }
 
-    public void sendBP (){
-
-        try {
-
-            Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(1000 * 1);
-
-        } catch (Exception eewf) {
-            Log.e(" Exception ","vibrator");
-        }
+    public void sendBP(){
 
         try{
 
@@ -296,6 +340,7 @@ public class VolumeReceiver extends BroadcastReceiver {
         }
 
         if (Latitud == null){
+            Toast.makeText(mContext, "BP está actualizando ubicación. Inténtelo en unos minutos.", Toast.LENGTH_LONG).show();
             Log.e("-- |Latitud | ", " NULL ");
             return;
         }
@@ -319,8 +364,23 @@ public class VolumeReceiver extends BroadcastReceiver {
             Log.e("-- |DispositivoId | ", " NULL ");
             return;
         }
+        try {
+            Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(1000 * 1);
+        } catch (Exception eewf) {
+            Log.e(" Exception ","vibrator");
+        }
 
         playBeepSound();
+
+        Calendar current = Calendar.getInstance();
+
+        try {
+            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE Configuration SET FechaBP = '"+formatoIso.format(current.getTime())+"'");
+            dba.close();
+        } catch (Exception e){}
 
         String URL = URL_API.concat("api/BravoPapa");
 
@@ -358,9 +418,8 @@ public class VolumeReceiver extends BroadcastReceiver {
                                 Log.e(" Exception ","vibrator");
                             }
 
-                        } else {
-                            Log.e("¡Pánico NO enviado! ", "");
-                        }
+                        } else {Log.e("¡Pánico NO enviado! ", "");}
+
                     }
                 });
     }

@@ -46,14 +46,13 @@ public class Configuration {
     public static final String KEY_ContadorAux = "ContadorAux";
     public static final String KEY_isScreen = "isScreen";
     public static final String KEY_Sesion = "Sesion";
-
     public static final String KEY_Indice = "Indice";
     public static final String KEY_Posicion = "Posicion";
-
     public static final String KEY_SimSerie = "SimSerie";
-
     public static final String KEY_ContenedorPatrol = "ContenedorPatrol";
     public static final String KEY_ContenedorId = "ContenedorId";
+
+    public static final String KEY_FechaBP = "FechaBP";
 
 
     public int ConfigurationId;
@@ -88,5 +87,6 @@ public class Configuration {
     public String EstadoSignalr;
     public String FechaAlarmaIso;
     public int isScreen;
+    public int FechaBP;
 
 }
