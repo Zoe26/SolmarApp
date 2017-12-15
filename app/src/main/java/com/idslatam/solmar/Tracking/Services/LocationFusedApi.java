@@ -50,8 +50,10 @@ import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Api.Singalr.SignalRService;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
+import com.idslatam.solmar.Models.Crud.AlertCrud;
 import com.idslatam.solmar.Models.Crud.TrackingCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
@@ -65,6 +67,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -651,6 +654,8 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             consultaSinConexion();
 
+            consultarAlertasNoEnviadas();
+
 
             String URL = URL_API.concat("api/Tracking");
 
@@ -878,6 +883,150 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         return true;
     }
+
+    public Boolean consultarAlertasNoEnviadas(){
+
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbN = dataBaseHelper.getWritableDatabase();
+            String selectQueryBuscaN = "SELECT FechaMarcacion FROM Alert WHERE Estado = 'false' AND EstadoBoton = 'true'";
+            Cursor cbuscaN = dbN.rawQuery(selectQueryBuscaN, new String[]{}, null);
+            int contadorAlertas = cbuscaN.getCount();
+            cbuscaN.close();
+            dbN.close();
+
+            if (contadorAlertas>0) {
+                enviarAlertasGuardadas();
+                Log.e("-- EXISTEN ALERTAS ", "--|POR ENVIAR|-- "+String.valueOf(contadorAlertas) );
+            } else {
+                Log.e("-- NO HAY ALERTAS ", "--|POR ENVIAR|--");
+            }
+
+        }catch (Exception e){}
+
+        return true;
+    }
+
+    public void enviarAlertasGuardadas(){
+
+        int _Alert_id_Consultado = 0;
+
+        String fechaEspera = null, numeroCel = null, fechaMarcacion = null,
+                fechaProxima = null, dispositivoId = null, codigoEmpleado = null,
+                finTurno = null, flagTiempo = null, latitud = null, longitud = null;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase existeDatos = dataBaseHelper.getReadableDatabase();
+            String selectQueryconfiguration = "SELECT AlertId, NumeroCel, FechaEsperada, FechaMarcacion, FechaProxima, " +
+                    "DispositivoId, CodigoEmpleado, FinTurno, FlagTiempo, Latitud, Longitud FROM Alert WHERE Estado = 'false' AND EstadoBoton = 'true'";
+            Cursor cA = existeDatos.rawQuery(selectQueryconfiguration, new String[]{});
+
+            if (cA.moveToFirst()) {
+                do {
+                    _Alert_id_Consultado = cA.getInt(cA.getColumnIndex("AlertId"));
+                    numeroCel = cA.getString(cA.getColumnIndex("NumeroCel"));
+                    fechaEspera = cA.getString(cA.getColumnIndex("FechaEsperada"));
+                    fechaMarcacion = cA.getString(cA.getColumnIndex("FechaMarcacion"));
+                    fechaProxima = cA.getString(cA.getColumnIndex("FechaProxima"));
+                    dispositivoId = cA.getString(cA.getColumnIndex("DispositivoId"));
+                    codigoEmpleado = cA.getString(cA.getColumnIndex("CodigoEmpleado"));
+                    finTurno = cA.getString(cA.getColumnIndex("FinTurno"));
+                    flagTiempo = cA.getString(cA.getColumnIndex("FlagTiempo"));
+                    latitud = cA.getString(cA.getColumnIndex("Latitud"));
+                    longitud = cA.getString(cA.getColumnIndex("Longitud"));
+
+                    Log.e("FECHA GUARDADA ",fechaEspera);
+
+                    registrarAlertaApi(_Alert_id_Consultado, numeroCel, fechaEspera, fechaMarcacion, fechaProxima, dispositivoId, codigoEmpleado, finTurno, flagTiempo, latitud, longitud);
+
+                } while(cA.moveToNext());
+
+            }
+            cA.close();
+            existeDatos.close();
+
+        } catch (Exception e) {Log.e("Exception ", e.getMessage());}
+
+    }
+
+    public void registrarAlertaApi(int _Alert_id_Consultado, String numeroCel, String fechaEspera, String fechaMarcacion, String fechaProxima, String dispositivoId, String codigoEmpleado, String finTurno, String flagTiempo, String latitud, String longitud){
+
+        Log.e("INGRESO ENVIO ", "ALERTA API "+ _Alert_id_Consultado);
+
+        Calendar currentMarcacion = Calendar.getInstance();
+        Calendar currentEsperada = Calendar.getInstance();
+        Calendar currentProxima = Calendar.getInstance();
+
+        try {currentMarcacion.setTime(formatoIso.parse(fechaMarcacion));}
+        catch (ParseException e) {Log.e(" EXCEPTION ", "Error al Parsear FECHAAA ");e.printStackTrace();}
+
+        try {currentEsperada.setTime(formatoIso.parse(fechaEspera));}
+        catch (ParseException e) {Log.e(" EXCEPTION ", "Error al Parsear FECHAAA ");e.printStackTrace();}
+
+        try {currentProxima.setTime(formatoIso.parse(fechaProxima));}
+        catch (ParseException e) {Log.e(" EXCEPTION ", "Error al Parsear FECHAAA ");e.printStackTrace();}
+
+        /*Log.e("-----------SEND  ","ALERT-----------");
+        Log.e("--- Numero ", numeroCel);
+        Log.e("--- FechaMarcacion ", formatoGuardar.format(currentMarcacion.getTime()));
+        Log.e("--- FechaEsperada ", formatoGuardar.format(currentEsperada.getTime()));
+        Log.e("--- FechaProxima ", formatoGuardar.format(currentProxima.getTime()));
+        Log.e("--- FlagTiempo ", flagTiempo);
+        Log.e("--- MargenAceptado ", "1");
+        Log.e("--- Latitud ", latitud);
+        Log.e("--- Longitud ", longitud);
+        Log.e("--- DispositivoId ", dispositivoId);
+        Log.e("--- CodigoEmpleado ", codigoEmpleado);
+        Log.e("--------- FIN SEND  ","ALERT---------");*/
+
+
+        String URL = URL_API.concat("api/alert");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("Numero", numeroCel);
+        json.addProperty("FechaMarcacion", formatoGuardar.format(currentMarcacion.getTime()));
+        json.addProperty("FechaEsperada", formatoGuardar.format(currentEsperada.getTime()));
+        json.addProperty("FechaProxima", formatoGuardar.format(currentProxima.getTime()));
+        json.addProperty("FlagTiempo", flagTiempo);
+        json.addProperty("MargenAceptado", "1");
+        json.addProperty("Latitud", latitud);
+        json.addProperty("Longitud", longitud);
+        json.addProperty("DispositivoId", dispositivoId);
+        json.addProperty("CodigoEmpleado", codigoEmpleado);
+
+        Ion.with(this)
+                .load("POST", URL)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> response) {
+
+                        if(response == null){
+                            Log.e(" responde Alert ", " NULL ");
+                            return;
+                        }
+
+                        if (response.getHeaders().code() == 200) {
+
+                            AlertCrud alertCrud = new AlertCrud(mContext);
+                            Alert alert = new Alert();
+                            alert.EstadoA = "true";
+                            alert.AlertId = _Alert_id_Consultado;
+                            alertCrud.updateEstado(alert);
+
+                            Log.e("Alerta GUARDADA ", response.getResult().toString());
+
+
+                        }
+                    }
+                });
+
+    }
+
 
     public void sendSave() {
 

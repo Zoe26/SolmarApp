@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
+        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 122
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 24,
                         "startColumn": 2,
@@ -30,7 +30,7 @@
                     "endOffset": 183
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 25,
                         "startColumn": 2,
@@ -49,7 +49,7 @@
                     "endOffset": 247
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 26,
                         "startColumn": 2,
@@ -68,7 +68,7 @@
                     "endOffset": 312
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 27,
                         "startColumn": 2,
@@ -87,7 +87,7 @@
                     "endOffset": 377
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -106,7 +106,7 @@
                     "endOffset": 431
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -125,7 +125,7 @@
                     "endOffset": 485
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -144,7 +144,7 @@
                     "endOffset": 539
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,
@@ -163,7 +163,7 @@
                     "endOffset": 598
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 21,
                         "startColumn": 2,
@@ -182,7 +182,7 @@
                     "endOffset": 656
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_colors.xml",
                     "position": {
                         "startLine": 22,
                         "startColumn": 2,
@@ -201,7 +201,7 @@
                     "endOffset": 1524
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 22,
                         "startColumn": 2,
@@ -220,7 +220,7 @@
                     "endOffset": 1572
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 24,
                         "startColumn": 2,
@@ -239,7 +239,7 @@
                     "endOffset": 1614
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -258,7 +258,7 @@
                     "endOffset": 1663
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -277,7 +277,7 @@
                     "endOffset": 1715
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,
@@ -296,7 +296,7 @@
                     "endOffset": 1773
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 21,
                         "startColumn": 2,
@@ -315,7 +315,7 @@
                     "endOffset": 1823
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -334,7 +334,7 @@
                     "endOffset": 1877
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_ids.xml",
                     "position": {
                         "startLine": 23,
                         "startColumn": 2,
@@ -353,7 +353,7 @@
                     "endOffset": 1936
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -372,7 +372,7 @@
                     "endOffset": 1983
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -391,7 +391,7 @@
                     "endOffset": 2127
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -410,7 +410,7 @@
                     "endOffset": 2240
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values/zxing_strings.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,
@@ -430,7 +430,7 @@
                     "endOffset": 2340
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_themes.xml",
+                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/values/zxing_themes.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 2,

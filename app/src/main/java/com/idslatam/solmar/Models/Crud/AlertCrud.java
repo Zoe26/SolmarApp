@@ -23,6 +23,30 @@ public class AlertCrud {
 
         dbHelper = new DBHelper(context);
     }
+
+    public int insertPrueba(Alert alert) {
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(Alert.KEY_NumeroA, alert.NumeroA);
+        values.put(Alert.KEY_FechaMarcacion, alert.FechaMarcacion);
+        values.put(Alert.KEY_FechaEsperada, alert.FechaEsperada);
+        values.put(Alert.KEY_FechaProxima, alert.FechaProxima);
+        values.put(Alert.KEY_FlagTiempo, alert.FlagTiempo);
+        values.put(Alert.KEY_MargenAceptado, alert.MargenAceptado);
+        values.put(Alert.KEY_EstadoA, alert.EstadoA);
+        values.put(Alert.KEY_EstadoBoton, alert.EstadoBoton);
+        values.put(Alert.KEY_DispositivoId, alert.DispositivoId);
+        values.put(Alert.KEY_CodigoEmpleado, alert.CodigoEmpleado);
+        values.put(Alert.KEY_FinTurno, alert.FinTurno);
+
+        long AlertId = db.insert(Alert.TABLE_ALERT, null, values);
+        db.close();
+        return (int) AlertId;
+
+    }
+
     public int insertS(Alert alert) {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();

@@ -45,7 +45,7 @@ public class Image extends Activity {
     protected String URL_API;
     Context mContext;
 
-    private String fileUri;
+    private String GuidDipositivo;
     private String filePath = null;
     SimpleDateFormat formatoGuardar = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss")
             , formatoIso = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -161,14 +161,14 @@ public class Image extends Activity {
 
             DBHelper dbHelperVolumen = new DBHelper(mContext);
             SQLiteDatabase sqlVolumen = dbHelperVolumen.getWritableDatabase();
-            String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo,CodigoEmpleado FROM Configuration";
+            String selectQuery = "SELECT NumeroCel, Latitud, Longitud, GuidDipositivo, CodigoEmpleado FROM Configuration";
             Cursor c = sqlVolumen.rawQuery(selectQuery, new String[]{});
 
             if (c.moveToFirst()) {
                 NumeroFile = c.getString(c.getColumnIndex("NumeroCel"));
                 LatitudFile = c.getString(c.getColumnIndex("Latitud"));
                 LongitudFile = c.getString(c.getColumnIndex("Longitud"));
-                DispositivoIdFile = c.getString(c.getColumnIndex("GuidDipositivo"));
+                GuidDipositivo = c.getString(c.getColumnIndex("GuidDipositivo"));
                 CodigoEmpleado = c.getString(c.getColumnIndex("CodigoEmpleado"));
             }
 
@@ -182,6 +182,7 @@ public class Image extends Activity {
         try {
 
             Log.e(" filePath ", String.valueOf(filePath));
+            Log.e("GuidDipositivo ", GuidDipositivo);
 
             String filePathAux = filePath; //decodeFile(filePath,660, 880);
             //Log.e(" filePathAux ", String.valueOf(filePathAux));
@@ -191,7 +192,7 @@ public class Image extends Activity {
             Ion.with(mContext)
                     .load(URLB)
                     .setTimeout(1000*10)
-                    .setMultipartParameter("DispositivoId", DispositivoIdFile)
+                    .setMultipartParameter("DispositivoId", GuidDipositivo)
                     .setMultipartParameter("Latitud", LatitudFile)
                     .setMultipartParameter("Longitud", LongitudFile)
                     .setMultipartParameter("Numero", NumeroFile)

@@ -240,7 +240,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                                                         db.execSQL("UPDATE Configuration SET IntervaloMarcacion = '" + v.getInt("Valor") + "'");
                                                         db.close();
 
-                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
+                                                        Log.e("--"+c.getString("Nombre IM ")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
                                                     }
 
                                                     if(v.getInt("ConfiguracionId")==4){
@@ -249,7 +249,7 @@ public class MenuPrincipal extends  ActionBarActivity {
                                                         SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                                                         db.execSQL("UPDATE Configuration SET IntervaloMarcacionTolerancia = '" + v.getInt("Valor")  + "'");
                                                         db.close();
-                                                        Log.e("--"+c.getString("Nombre")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
+                                                        Log.e("--"+c.getString("Nombre IMT")+" M[" + i + "," + j + "]= ", String.valueOf(v.getInt("Valor")));
                                                     }
                                                 }
                                             }
@@ -559,6 +559,16 @@ public class MenuPrincipal extends  ActionBarActivity {
 
             } catch (Exception e){}
 
+
+            /*try {
+                DBHelper dataBaseHelperB = new DBHelper(this);
+                SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
+                //dbU.execSQL("DELETE FROM sqlite_sequence where name ='Alert'");
+                dbU.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Alert'");
+                //dbU.execSQL("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Alert'");
+                dbU.close();
+
+            } catch (Exception e){}*/
 
             Log.e("Fin Consulta ", " Eliminar ");
 

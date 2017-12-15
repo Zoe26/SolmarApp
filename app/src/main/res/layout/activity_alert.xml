@@ -64,14 +64,13 @@
                     tools:ignore="HardcodedText" />
 
                 <TextView
-
+                    android:id="@+id/txtMargen"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="-"
+                    android:text="0"
                     android:textSize="40sp"
                     android:textColor="@color/negro_general"
-                    android:id="@+id/tolerancia"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
@@ -119,24 +118,24 @@
                     android:src="@drawable/ic_feliz"/>
 
                 <TextView
+                    android:id="@+id/txtUltimaMarcacion"
                     android:layout_marginTop="3sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textColor="@color/negro_general"
                     android:textSize="18sp"
-                    android:id="@+id/ultima_marcacion"
                     android:text="Sin marcación"/>
 
                 <TextView
+                    android:id="@+id/txtEstadoUltimaMarcacion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textColor="@color/negro_general"
                     android:textSize="18sp"
                     tools:ignore="HardcodedText"
-                    android:text="Estado"
-                    android:id="@+id/flag_tiempo"/>
+                    android:text="" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -144,7 +143,7 @@
                     android:gravity="center"
                     android:textColor="@color/negro_general"
                     android:textSize="18sp"
-                    android:id="@+id/ultima_marcacion_fecha" />
+                    android:id="@+id/txtUlltimaMarcacionFecha" />
 
             </LinearLayout>
 
@@ -177,24 +176,23 @@
                 android:gravity="center">
 
                 <TextView
+                    android:id="@+id/txtProximaMarcacionHora"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="-:-"
                     android:textColor="@color/negro_general"
-                    android:id="@+id/hora"
                     android:textSize="40sp"
                     tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 <TextView
+                    android:id="@+id/txtProximaMarcacionFecha"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textColor="@color/negro_general"
-                    android:id="@+id/hora_fecha"
                     android:textSize="14sp"
-                    android:layout_below="@+id/hora"
                     android:layout_alignParentStart="true"
                     tools:ignore="ObsoleteLayoutParam" />
 
