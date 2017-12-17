@@ -962,6 +962,10 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
                 });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     /*private class LoadApplications extends AsyncTask<Void, Void, Void> {
         @Override

@@ -187,6 +187,7 @@ public class People extends AppCompatActivity {
                                 } catch (Exception esc){}
 
                                 startActivity(i);
+                                finish();
 
                             } else {
 
@@ -213,6 +214,21 @@ public class People extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onDestroy() {
+
+       /* try {
+
+            DBHelper dbHelperAlarm = new DBHelper(mContext);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE People SET dni = "+null+", json = "+null+"");
+            dba.close();
+
+        } catch (Exception edc){}*/
+
+        super.onDestroy();
+    }
+
     public void mensajePersona(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -220,7 +236,6 @@ public class People extends AppCompatActivity {
         builder.setMessage("¡Persona no encontrada!. No se ha obtenido datos de ésta persona.");
 
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -233,8 +248,19 @@ public class People extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        try {
+            DBHelper dbHelperAlarm = new DBHelper(this);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE People SET dni = "+null+", json = "+null+", fotoVehiculo = "+null+"," +
+                    " fotoVehiculoGuantera = "+null+", fotoVehiculoMaletera = "+null+", fotoValor = "+null+"");
+            dba.close();
 
-        String dni = null;
+        } catch (Exception edc){
+            Log.e("EXCEPTION  ", " DESOTROY");
+        }
+        Log.e("ON  ", " START");
+
+        /*String dni = null;
 
         try {
 
@@ -256,7 +282,7 @@ public class People extends AppCompatActivity {
             return;
         }
 
-        people_edt_dni.setText(dni);
+        people_edt_dni.setText(dni);*/
 
     }
 }

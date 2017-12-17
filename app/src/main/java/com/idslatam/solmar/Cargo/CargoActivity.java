@@ -84,6 +84,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     String GuidDipositivo, URL_API, valor, formato, numeroPrecintoFoto;
 
+    int numeroPrecintosX;
+
     Context mContext;
     boolean btn_dni = false;
 
@@ -617,7 +619,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 NroOR = c.getString(c.getColumnIndex("GuiaRemision"));
                 CantidadBultos = c.getString(c.getColumnIndex("CantidadBultos"));
                 sTipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
-
                 codContenedor = c.getString(c.getColumnIndex("codigoContenedor"));
                 numeroPrecintos = c.getString(c.getColumnIndex("numeroPrecintos"));
                 origenDestinoC = c.getString(c.getColumnIndex("origenDestino"));
@@ -2024,7 +2025,70 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
-        if (contadorIndice==0){
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT numeroPrecintos FROM Cargo";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                numeroPrecintosX = c.getInt(c.getColumnIndex("numeroPrecintos"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+
+
+        Log.e("numeroPrecintosX ", String.valueOf(numeroPrecintosX));
+        Log.e("contadorIndice ", String.valueOf(contadorIndice));
+
+
+        // AQUI
+
+        if (numeroPrecintosX!=contadorIndice){
+            DBHelper dbgelperDeete = new DBHelper(this);
+            SQLiteDatabase sqldbDelete = dbgelperDeete.getWritableDatabase();
+            sqldbDelete.execSQL("DELETE FROM CargoPrecinto");
+            sqldbDelete.close();
+
+            for (int i = 1; i <= numeroPrecintosX ; i++){
+
+                Log.e("SON DIFERENCTES ", " FOR");
+                try {
+
+                    CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
+                    CargoPrecinto cargoPrecinto = new CargoPrecinto();
+                    cargoPrecinto.Indice = "Precinto No "+ String.valueOf(i);
+                    cargoPrecinto.CargoPrecintoId = _CargoPrecinto_Id;
+                    _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
+                } catch (Exception esca) {esca.printStackTrace();}
+
+            }
+
+            //contadorIndice = numeroPrecintosX;
+        }else {
+
+            Log.e("SON IGUALES ", " FOR");
+
+            /*for (int i = 1; i <= Integer.parseInt(numeroPrecintos) ; i++){
+
+                try {
+
+                    CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
+                    CargoPrecinto cargoPrecinto = new CargoPrecinto();
+                    cargoPrecinto.Indice = "Precinto No "+ String.valueOf(i);
+                    cargoPrecinto.CargoPrecintoId = _CargoPrecinto_Id;
+                    _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
+                } catch (Exception esca) {esca.printStackTrace();}
+
+            }*/
+
+        }
+
+
+        /*if (contadorIndice==0){
 
             for (int i = 1; i <= Integer.parseInt(numeroPrecintos) ; i++){
 
@@ -2038,7 +2102,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 } catch (Exception esca) {esca.printStackTrace();}
 
             }
-        }
+        }*/
 
         loadFotos();
         loadPrecinto();
@@ -3034,6 +3098,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         String numeroPrecintos = null;
 
+        dataModelsMovil = null;
+
             dataModelsMovil = new ArrayList<>();
 
             listView = (GridView) viewPager.findViewById(R.id.quinto_list_fotos);
@@ -3042,6 +3108,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         if (listView==null){
             return;
         }
+
+
             try {
                 DBHelper dataBaseHelper = new DBHelper(this);
                 SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
@@ -3050,6 +3118,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 if (c.moveToFirst()) {
 
                     do {
+
+                        Log.e(" CREACION PRECINTOS ", c.getString(c.getColumnIndex("Indice")));
                         dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Indice")), c.getString(c.getColumnIndex("Foto"))));
                     } while (c.moveToNext());
 

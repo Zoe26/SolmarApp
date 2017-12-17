@@ -54,7 +54,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
     Context mContext;
 
     LinearLayout people_detalle_mensaje, people_detalle_datos, people_detalle_cuarto,
-            people_detalle_quinto, people_detalle_aux;
+            people_detalle_quinto, people_detalle_aux, people_detalle_sexto, people_detalle_septimo;
 
     TextView people_txt_mensaje, people_detalle_mensaje_error;
 
@@ -96,6 +96,10 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
         people_detalle_datos = (LinearLayout)findViewById(R.id.people_detalle_datos);
         people_detalle_cuarto = (LinearLayout)findViewById(R.id.people_detalle_cuarto);
         people_detalle_quinto = (LinearLayout)findViewById(R.id.people_detalle_quinto);
+
+        people_detalle_sexto = (LinearLayout)findViewById(R.id.people_detalle_sexto);
+        people_detalle_septimo = (LinearLayout)findViewById(R.id.people_detalle_septimo);
+
         people_detalle_aux = (LinearLayout)findViewById(R.id.people_detalle_aux);
 
         btn_visualizar_valor = (ImageButton)findViewById(R.id.btn_visualizar_valor);
@@ -281,9 +285,12 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                 //people_detalle_datos.setVisibility(View.GONE);
                 //people_detalle_img.setVisibility(View.GONE);
+
                 people_detalle_btn_registrar.setVisibility(View.GONE);
                 people_detalle_cuarto.setVisibility(View.GONE);
                 people_detalle_quinto.setVisibility(View.GONE);
+                people_detalle_sexto.setVisibility(View.GONE);
+                people_detalle_septimo.setVisibility(View.GONE);
 
             }
 
@@ -689,19 +696,8 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                                 return;
                             } else {
 
-                                limpiarDatos();
-
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                } catch (Exception edsv){}
-
-                                try {
-                                    showDialogSend();
-                                } catch (Exception e1) {
-                                    e1.printStackTrace();
-                                }
+                                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
+                                try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
                             }
                         }
 
@@ -774,19 +770,8 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                                 return;
                             } else {
 
-                                limpiarDatos();
-
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
-                                    }
-                                } catch (Exception edsv){}
-
-                                try {
-                                    showDialogSend();
-                                } catch (Exception e1) {
-                                    e1.printStackTrace();
-                                }
+                                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
+                                try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
                             }
                         }
 
@@ -861,18 +846,8 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                                 return;
                             } else {
 
-                                if (limpiarDatos()){
-
-                                    try {
-                                        if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
-                                    } catch (Exception edsv){}
-                                    try {
-                                        showDialogSend();
-                                    } catch (Exception e1) {
-                                        e1.printStackTrace();
-                                    }
-
-                                }
+                                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
+                                try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
                             }
                         }
 
@@ -962,26 +937,15 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                                 return;
                             } else {
+                                try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
 
-                                if (limpiarDatos()){
+                                try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
 
-                                    try {
-                                        if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}
-                                    } catch (Exception edsv){}
-                                    try {
-                                        showDialogSend();
-                                    } catch (Exception e1) {
-                                        e1.printStackTrace();
-                                    }
 
-                                }
                             }
                         }
 
                         try {
-
-                            Log.e("Exception ", "MaterialVehiculoX");
-                            Log.e("Exception ", String.valueOf(response.getResult()));
 
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
@@ -1053,9 +1017,6 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                                 return;
                             } else {
-
-                                limpiarDatos();
-
                                 try {
                                     if (pDialog != null && pDialog.isShowing()) {
                                         pDialog.dismiss();
@@ -1096,10 +1057,10 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                limpiarDatos();
                 dialog.dismiss();
-                finish();
+                limpiarDatos();
+
+
             }
         });
         builder.show();
@@ -1118,7 +1079,6 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 limpiarDatos();
-                finish();
             }
         });
 
@@ -1160,30 +1120,41 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
         builder.show();
     }
 
+    @Override
+    protected void onDestroy() {
+
+        try {
+            DBHelper dbHelperAlarm = new DBHelper(this);
+            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+            dba.execSQL("UPDATE People SET dni = "+null+", json = "+null+", fotoVehiculo = "+null+"," +
+                    " fotoVehiculoGuantera = "+null+", fotoVehiculoMaletera = "+null+", fotoValor = "+null+"");
+            dba.close();
+
+        } catch (Exception edc){
+            Log.e("EXCEPTION  ", " DESOTROY");
+        }
+        Log.e("ON  ", " DESOTROY");
+
+        super.onDestroy();
+    }
+
     public boolean limpiarDatos(){
 
         try {
-
-            DBHelper dbHelperAlarm = new DBHelper(mContext);
-            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-
-            dba.close();
-
-        } catch (Exception edc){}
-
-
-        try {
-
             DBHelper dbHelperAlarm = new DBHelper(this);
             SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-            dba.execSQL("UPDATE People SET dni = "+null);
-            dba.execSQL("UPDATE People SET fotoVehiculo = " + null);
-            dba.execSQL("UPDATE People SET fotoVehiculoGuantera = " + null);
-            dba.execSQL("UPDATE People SET fotoVehiculoMaletera = " + null);
-            dba.execSQL("UPDATE People SET fotoValor = " + null);
+            dba.execSQL("UPDATE People SET dni = "+null+", json = "+null+", fotoVehiculo = "+null+"," +
+                    " fotoVehiculoGuantera = "+null+", fotoVehiculoMaletera = "+null+", fotoValor = "+null+"");
             dba.close();
+            Log.e("CONSULTA  ", " limpiarDatos");
+        } catch (Exception edc){
+            Log.e("EXCEPTION  ", " limpiarDatos");
+        }
+        Log.e("ON  ", " limpiarDatos");
 
-        } catch (Exception eew){}
+        Intent i = new Intent(PeopleDetalle.this, People.class);
+        startActivity(i);
+        finish();
 
         return true;
     }

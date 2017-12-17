@@ -661,6 +661,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
+                        android:id="@+id/people_detalle_sexto"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
                         android:layout_weight="1"
@@ -693,6 +694,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/people_detalle_septimo"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
                         android:layout_weight="1"

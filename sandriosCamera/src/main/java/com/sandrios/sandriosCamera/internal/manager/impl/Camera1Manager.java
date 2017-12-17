@@ -115,7 +115,12 @@ public class Camera1Manager extends BaseCameraManager<Integer, SurfaceHolder.Cal
             @Override
             public void run() {
                 setCameraPhotoQuality(camera);
-                camera.takePicture(null, null, currentInstance);
+
+                try{
+                    camera.takePicture(null, null, currentInstance);
+                } catch (Exception sf){}
+
+
             }
         });
     }

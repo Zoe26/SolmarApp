@@ -623,11 +623,10 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
             try {
 
-                _TrackingSave_Id = trackingCRUD.insertAll(tracking);
+               // _TrackingSave_Id = trackingCRUD.insertAll(tracking);
                 eliminarRegistro();
 
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
 
             Log.e("-- |*** UPDATE ***", "| -- ");
 
@@ -1209,6 +1208,22 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
     public void eliminarRegistro(){
 
         try {
+            SimpleDateFormat fchActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String fechaActual = fchActual.format(new Date());
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+            db.execSQL("DELETE FROM Tracking WHERE FechaIso < datetime('"+fechaActual+"','-180 minutes')");
+            db.close();
+
+            Log.e(" EliminarRegistro ", " -- ");
+
+        }catch (Exception e){}
+
+    }
+
+    /*public void eliminarRegistro(){
+
+        try {
 
             SimpleDateFormat fchActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String fechaActual = fchActual.format(new Date());
@@ -1219,7 +1234,7 @@ public class LocationFusedApi extends Service implements GoogleApiClient.Connect
 
         }catch (Exception e){}
 
-    }
+    }*/
 
     private void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         final ConnectivityManager conman = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
