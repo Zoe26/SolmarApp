@@ -1152,7 +1152,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         new IntentIntegrator(this).initiateScan();
     }
 
-
     public void enviarPlaca(View view){
         enviarPlaca();
     }
@@ -2162,6 +2161,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         builder.setMessage("¡Registro Guardado!");
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//
+            //review
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -2170,6 +2171,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 dialog.dismiss();
             }
         });
+
         builder.show();
     }
 
