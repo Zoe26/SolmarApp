@@ -1,10 +1,10 @@
 [
     {
-        "merged": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/res/merged/debug/layout/zxing_capture.xml",
-        "source": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/layout/zxing_capture.xml"
+        "merged": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/res/merged/debug/layout/zxing_capture.xml",
+        "source": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/res/layout/zxing_capture.xml"
     },
     {
-        "merged": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/res/merged/debug/layout/zxing_barcode_scanner.xml",
-        "source": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res/layout/zxing_barcode_scanner.xml"
+        "merged": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/res/merged/debug/layout/zxing_barcode_scanner.xml",
+        "source": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/res/layout/zxing_barcode_scanner.xml"
     }
 ]

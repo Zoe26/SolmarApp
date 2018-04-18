@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    class="">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:weightSum="3">
+
+            <LinearLayout
+                android:id="@+id/sendPhotoImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/ic_photo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="5dp"
+                    android:text="Enviar"
+                    android:textColor="@color/squarecamera__white"/>
+            </LinearLayout>
+
+            <!--ImageButton
+                android:id="@+id/sendPhotoImage"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/background"
+                android:src="@drawable/ic_photo"
+                /-->
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/cancelPhotoImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/red"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/ic_clear_white_24dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="5dp"
+                    android:text="Cancelar"
+                    android:textColor="@color/squarecamera__white"/>
+            </LinearLayout>
+            <!--ImageButton
+                android:id="@+id/cancelPhotoImage"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@color/red"
+                android:src="@drawable/ic_clear_white_24dp" /-->
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/image_pre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true" />
+
+        <!--com.idslatam.solmar.ImageClass.MessageView
+            android:id="@+id/nativeCaptureResolution"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/-->
+
+        <!-- com.otaliastudios.cameraview.demo.MessageView
+            android:id="@+id/actualResolution"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/-->
+
+        <com.idslatam.solmar.ImageClass.MessageView
+            android:id="@+id/approxUncompressedSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!--com.idslatam.solmar.ImageClass.MessageView
+            android:id="@+id/captureLatency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/-->
+
+
+
+    </LinearLayout>
+
+</ScrollView>

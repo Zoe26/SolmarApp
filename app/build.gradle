@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -15,7 +15,7 @@ android {
             enabled true
         }
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        
+
     }
 
     Properties properties = new Properties()
@@ -25,7 +25,7 @@ android {
     def keystoreAlias = properties.getProperty('keystore.alias')
     def validConfig = keystoreFile != null && keystorePassword != null && keystoreAlias != null;
 
-    if(validConfig) {
+    if (validConfig) {
         System.out.println("Release signing configured with " + keystoreFile)
         signingConfigs {
             release {
@@ -75,6 +75,9 @@ allprojects {
         flatDir {
             dirs 'libs'
         }
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 
@@ -89,19 +92,20 @@ dependencies {
     //compile project(':squarecamera')
     compile project(':sandriosCamera')
 
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:cardview-v7:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
+
+
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:cardview-v7:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:design:26.1.0'
     compile 'com.google.android.gms:play-services-location:9.6.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.2.1'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.koushikdutta.ion:ion:2.+'
-
+    compile 'com.otaliastudios:cameraview:1.5.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-
-
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
 }

@@ -17,8 +17,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -50,7 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class MenuPrincipal extends  ActionBarActivity {
+public class MenuPrincipal extends AppCompatActivity {
 
     protected String URL_API;
     private Toolbar toolbar;

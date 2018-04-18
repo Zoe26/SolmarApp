@@ -34,14 +34,21 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
-import com.sandrios.sandriosCamera.internal.SandriosCamera;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
+//import com.sandrios.sandriosCamera.internal.SandriosCamera;
+//import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
+
+import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraLogger;
+import com.otaliastudios.cameraview.CameraOptions;
+import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.SessionType;
+import com.otaliastudios.cameraview.Size;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 
 public class Image extends Activity {
-
+    private CameraView camera;
     protected String URL_API;
     Context mContext;
 
@@ -74,10 +81,49 @@ public class Image extends Activity {
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
-        launch();
+        //launch();
+
         //requestForCameraPermission();
+
+        camera = findViewById(R.id.camera);
+
+        camera.addCameraListener(new CameraListener() {
+            //public void onCameraOpened(CameraOptions options) { onOpened(); }
+            public void onPictureTaken(byte[] jpeg) { onPicture(jpeg); }
+
+            /*
+            @Override
+            public void onVideoTaken(File video) {
+                super.onVideoTaken(video);
+                onVideo(video);
+            }
+            */
+        });
     }
 
+    private void onPicture(byte[] jpeg) {
+        /*
+        mCapturingPicture = false;
+        long callbackTime = System.currentTimeMillis();
+        if (mCapturingVideo) {
+            message("Captured while taking video. Size="+mCaptureNativeSize, false);
+            return;
+        }
+
+        // This can happen if picture was taken with a gesture.
+        if (mCaptureTime == 0) mCaptureTime = callbackTime - 300;
+        if (mCaptureNativeSize == null) mCaptureNativeSize = camera.getPictureSize();
+
+        PicturePreviewActivity.setImage(jpeg);
+        Intent intent = new Intent(CameraActivity.this, PicturePreviewActivity.class);
+        intent.putExtra("delay", callbackTime - mCaptureTime);
+        intent.putExtra("nativeWidth", mCaptureNativeSize.getWidth());
+        intent.putExtra("nativeHeight", mCaptureNativeSize.getHeight());
+        startActivity(intent);
+
+        mCaptureTime = 0;
+        mCaptureNativeSize = null;*/
+    }
 
     public void requestForCameraPermission() {
         final String permission = Manifest.permission.CAMERA;
@@ -116,15 +162,17 @@ public class Image extends Activity {
         ActivityCompat.requestPermissions(Image.this, new String[]{permission}, REQUEST_CAMERA_PERMISSION);
     }
 
-    private void launch() {
 
+
+    private void launch() {
+/*
         new SandriosCamera(activity, CAPTURE_MEDIA)
                 .setShowPicker(false)
                 .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
                 .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_MEDIUM)
                 .enableImageCropping(false)
                 .launchCamera();
-
+*/
         /*Intent startCustomCameraIntent = new Intent(Image.this, CameraActivity.class);
         startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);*/
         Log.e("launch","launch FIN.....");
@@ -138,7 +186,8 @@ public class Image extends Activity {
                 final boolean isGranted = numOfRequest == 1
                         && PackageManager.PERMISSION_GRANTED == grantResults[numOfRequest - 1];
                 if (isGranted) {
-                    launch();
+                    //launch();
+
                 }
                 break;
 
@@ -190,6 +239,7 @@ public class Image extends Activity {
             String URLB = URL_API.concat("/api/Image/file");
 
             Ion.with(mContext)
+
                     .load(URLB)
                     .setTimeout(1000*10)
                     .setMultipartParameter("DispositivoId", GuidDipositivo)
@@ -265,11 +315,12 @@ public class Image extends Activity {
 
         Log.e("MENUPRINCIPAL", "RESULT");
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
+            /*
             Log.e("File", "" + data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
 
             String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
             filePath = photoUri;
-
+*/
             uploadImage();
         }
 
@@ -345,6 +396,24 @@ public class Image extends Activity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        camera.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        camera.stop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        camera.destroy();
     }
 
 }

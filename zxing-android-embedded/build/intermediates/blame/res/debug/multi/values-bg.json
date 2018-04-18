@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values-bg/values-bg.xml",
+        "outputFile": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/build/intermediates/incremental/mergeDebugResources/merged.dir/values-bg/values-bg.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 107
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -30,7 +30,7 @@
                     "endOffset": 154
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -49,7 +49,7 @@
                     "endOffset": 306
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -68,7 +68,7 @@
                     "endOffset": 417
                 },
                 "from": {
-                    "file": "/Users/desarrollo03/AndroidStudioProjects/Clientes/GruposSolmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
+                    "file": "/Users/ronaldsalazar/Projects/Android/Solmar/SolmarApp/SolmarApp/zxing-android-embedded/res-orig/values-bg/zxing_strings.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,

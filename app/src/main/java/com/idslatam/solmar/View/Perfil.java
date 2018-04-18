@@ -37,9 +37,11 @@ import com.idslatam.solmar.Alert.AlertActivity;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Apps.ApplicationAdapter;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
+import com.idslatam.solmar.CameraNative.cameraNative;
 import com.idslatam.solmar.Cargo.CargoActivity;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
+import com.idslatam.solmar.ImageClass.ImageCamera;
 import com.idslatam.solmar.Models.Crud.AplicacionCrud;
 import com.idslatam.solmar.Models.Crud.MenuCrud;
 import com.idslatam.solmar.Models.Entities.Aplicaciones;
@@ -277,7 +279,9 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         }
 
         if (data.get(position).getTitle().equalsIgnoreCase("Image")){
-            startActivity(new Intent(mContext, Image.class)
+            //startActivity(new Intent(mContext, Image.class)
+                    //startActivity(new Intent(mContext, ImageCamera.class)
+                    startActivity(new Intent(mContext, cameraNative.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         }
 

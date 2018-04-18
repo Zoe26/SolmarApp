@@ -4,7 +4,6 @@
     package="com.idslatam.solmar"
     android:sharedUserId="com.idslatam.sharedprocess">
 
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -50,11 +49,11 @@
 
     <application
         android:allowBackup="true"
-        android:hardwareAccelerated="false"
-        android:largeHeap="true"
         android:clearTaskOnLaunch="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:launchMode="singleTask"
         android:stateNotNeeded="true"
         android:supportsRtl="true"
@@ -139,9 +138,11 @@
             android:enabled="true"
             android:exported="true" />
 
-        <!--<activity
+        <!--
+            <activity
             android:name="com.desmond.squarecamera.CameraActivity"
-            android:screenOrientation="portrait" />-->
+            android:screenOrientation="portrait" />
+        -->
         <activity
             android:name=".Dialer.ContactosActivity"
             android:screenOrientation="portrait" />
@@ -151,6 +152,14 @@
         <activity
             android:name=".ImageClass.Image"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ImageClass.ImageCamera"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CameraNative.cameraNative"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ImageClass.PicturePreviewActivity" />
         <activity
             android:name=".View.Code.Scan"
             android:screenOrientation="portrait" />
@@ -163,24 +172,23 @@
         <activity
             android:name=".Cargo.CargoActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".People.People"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".People.PeopleDetalle"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".Patrol.PatrolActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".People.People"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden">
-
-        </activity>
-        <activity android:name=".Patrol.ListadoContenedor"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".People.PeopleDetalle"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden">
-        </activity>
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Patrol.PatrolActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Patrol.ListadoContenedor"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>
