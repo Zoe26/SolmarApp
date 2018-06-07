@@ -12,7 +12,8 @@
         android:cropToPadding="false"
         android:scaleType="fitXY"
         android:padding="1dp"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:background="@drawable/ic_camare_add"/>
 
     <TextView
         android:id="@+id/item_num_precinto"

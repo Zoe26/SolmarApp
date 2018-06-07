@@ -1,6 +1,8 @@
 package com.idslatam.solmar.Cargo.Precinto;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,12 +54,12 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
             viewHolder.txtNum = (TextView) convertView.findViewById(R.id.item_num_precinto);
             viewHolder.img = (ImageView) convertView.findViewById(R.id.item_info);
 
-
             result=convertView;
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
+
             result=convertView;
         }
 
@@ -68,10 +70,18 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
 
             try {
 
+                //viewHolder.img.setImageDrawable(null);
+                ImageView imageX = (ImageView) convertView.findViewById(R.id.item_info);
+                imageX.setImageDrawable(null);
+                imageX.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_camare_add));
+
+                /*
                 Ion.with(viewHolder.img)
                         .placeholder(R.drawable.ic_camare_add)
                         .error(R.drawable.ic_camare_add)
                         .load(dataModel.getFoto());
+                */
+                imageX.setImageURI(Uri.parse(dataModel.getFoto()));
 
             } catch (Exception e){}
 

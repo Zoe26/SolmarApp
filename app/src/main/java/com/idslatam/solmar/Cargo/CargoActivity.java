@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -16,6 +17,10 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -25,8 +30,10 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -53,10 +60,14 @@ import com.idslatam.solmar.Cargo.Precinto.PrecintoCustomAdapter;
 import com.idslatam.solmar.Cargo.Precinto.PrecintoDataModel;
 import com.idslatam.solmar.ImageClass.*;
 import com.idslatam.solmar.Models.Crud.CargoCrud;
+import com.idslatam.solmar.Models.Crud.CargoFotoCrud;
 import com.idslatam.solmar.Models.Crud.CargoPrecintoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Cargo;
+import com.idslatam.solmar.Models.Entities.CargoFoto;
 import com.idslatam.solmar.Models.Entities.CargoPrecinto;
+import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoPrecintoDBList;
+import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTakeFotoAsync;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Code.CodeBar;
 import com.idslatam.solmar.View.Perfil;
@@ -72,19 +83,24 @@ import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 public class CargoActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private Toolbar toolbar;
     ViewPager viewPager;
 
-    String GuidDipositivo, URL_API, valor, formato, numeroPrecintoFoto;
+    String GuidDipositivo, URL_API, valor, formato, numeroPrecintoFoto,imageFilePath,imageReducedFilePath;
+    private String pathCamera = null;
 
-    int numeroPrecintosX;
+    int numeroPrecintosX,tipoFoto = 0;
 
     Context mContext;
     boolean btn_dni = false;
@@ -114,6 +130,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
+    private static final String TAG = "CargoAsync";
+    private static final int REQUEST_CODE_PHOTO_TAKEN = 0;
+    private static final int REQUEST_CODE_PHOTO_TAKEN_ASYNC = 2;
 
     String Uri_Foto, idRadioButtom, sfotoPanoramica;
 
@@ -121,9 +140,12 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     String Numero = null, DispositivoId = null, Placa = null, TipoCarga = null, Casco = null, Chaleco = null, Botas = null,
             Dni = null, Licencia = null, NroOR = null, Carga = null, Delantera = null, Trasera = null,
-            Panoramica = null, CargoTipoMovimiento = null, CantidadBultos = null;
+            Panoramica = null, CargoTipoMovimiento = null, CantidadBultos = null,CodigoSincronizacion=null;
 
     String sCodigoContenedor, sPrecinto, sNumeroPrecinto, sOrigen, sNumero, stamañoContenedor, sTipoDocumento;
+
+    List<CargoFoto> cargoFotos = new ArrayList<>();
+    List<CargoPrecintoDBList> cargoPrecintoDBLists = new ArrayList<>();
 
     RadioGroup radiogroup;
 
@@ -135,7 +157,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     PrecintoCustomAdapter adapterMovil;
 
-    int _CargoPrecinto_Id = 0, contadorLista, TIME_OUT = 60 * 1000;
+    int _CargoPrecinto_Id = 0, contadorLista, TIME_OUT = 5*60 * 1000;
 
     boolean isPrecinto = false;
 
@@ -159,6 +181,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new CustomPagerAdapter(this));
         viewPager.addOnPageChangeListener(this);
+
+        final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/Cargo");
+        newFile.mkdir();
+        newFile.mkdirs();
+
+
+        Log.e(TAG, "Create File");
+        Log.e(TAG, newFile.getAbsolutePath());
 
     }
 
@@ -1344,8 +1374,56 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
     }
 
+    @Override
+    protected void onResume() {
+        Log.e("TomaF", "onResume: ");
+        super.onResume();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        /*
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(mContext);
+        builder1.setMessage("Write your message here.");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Actions to do after 10 seconds
+                Log.e("Request Code", "10 segundos");
+                Log.e("Request Code", String.valueOf(requestCode));
+                Log.e("Result Code", String.valueOf(resultCode));
+            }
+        }, 10000);
+        */
+
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        Log.e("Request Code", String.valueOf(requestCode));
+        Log.e("Result Code", String.valueOf(resultCode));
 
         if (resultCode != RESULT_OK){
             btn_dni = false;
@@ -1368,6 +1446,35 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (resultCode != RESULT_OK){
             return;
+        }
+
+
+        if(resultCode == -1 && requestCode == REQUEST_CODE_PHOTO_TAKEN){
+            //Bundle extras = data.getStringExtra();
+            /*if(true){
+                String file = null;
+                //file= data.getStringExtra(MediaStore.EXTRA_OUTPUT);
+                //Log.e("file Send", String.valueOf(file));
+                file= data.getStringExtra("File");
+                Log.e("file 2", String.valueOf(file));
+            }
+            */
+            onPhotoTaken();
+        }
+
+        if(resultCode == -1 && requestCode == REQUEST_CODE_PHOTO_TAKEN_ASYNC){
+
+
+            String ind_precinto = "0";
+            if(tipoFoto == 4){
+                ind_precinto = numeroPrecintoFoto;
+            }
+
+            CargoTakeFotoAsync objFotoWork = new CargoTakeFotoAsync(tipoFoto,imageFilePath,imageReducedFilePath,ind_precinto);
+
+
+            new takePhotoAsync().execute(objFotoWork);
+
         }
 
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
@@ -1445,6 +1552,326 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+
+
+
+
+
+    }
+
+
+    private class takePhotoAsync extends AsyncTask<CargoTakeFotoAsync, Void, CargoTakeFotoAsync> {
+
+        @Override
+        protected CargoTakeFotoAsync doInBackground(CargoTakeFotoAsync... params) {
+
+
+            CargoTakeFotoAsync objFotoWork = params[0];
+
+            String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Cargo/";
+
+            switch (objFotoWork.getTipoFoto()){
+                case 0:
+                    objFotoWork.setSuccess(false);
+                    return objFotoWork;
+                default:
+                    Uri_Foto =  objFotoWork.getImageReducedFilePath();
+                    break;
+            }
+
+            //adjust for camera orientation
+            Bitmap bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
+            int width = bitmapOrig.getWidth();
+            int height = bitmapOrig.getHeight();
+
+            ExifInterface exif = null;
+
+            try
+            {
+                exif = new ExifInterface(objFotoWork.getImageFilePath());
+            }
+            catch (IOException e)
+            {
+                //Error
+                e.printStackTrace();
+            }
+
+            String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+            int orientation = orientString != null ? Integer.parseInt(orientString) :  ExifInterface.ORIENTATION_NORMAL;
+
+            int rotationAngle = 0;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+
+            // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
+            //int newWidth = 300;
+            int newHeight = 400;
+            // calculate the scale
+            float newWidth = (((float) newHeight) * width)/height;
+
+            float scaleWidth = ((float) newWidth) / width;
+            float scaleHeight = ((float) newHeight) / height;
+            // create a matrix for the manipulation
+            Matrix matrix = new Matrix();
+            // resize the bit map
+            //matrix.setRotate(90);
+            matrix.postRotate(rotationAngle);
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // save a scaled down Bitmap
+            Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrig, 0, 0, width, height, matrix, true);
+
+            File file2 = new File (Uri_Foto);
+
+            try {
+                FileOutputStream out = new FileOutputStream(file2);
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+
+
+
+
+                switch (objFotoWork.getTipoFoto()){
+                    case 1:
+
+                        try {
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                            dba.execSQL("UPDATE Cargo SET fotoDelantera = '"+Uri_Foto+"'");
+                            dba.close();
+                        } catch (Exception eew){
+                            Log.e("Exception ", "fotoDelantera");
+                        }
+
+                        objFotoWork.setSuccess(true);
+
+                        break;
+                    case 2:
+                        try {
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                            dba.execSQL("UPDATE Cargo SET fotoTracera = '"+Uri_Foto+"'");
+                            dba.close();
+                        } catch (Exception eew){
+                            Log.e("Exception ", "fotoTracera");
+                        }
+
+                        objFotoWork.setSuccess(true);
+
+                        break;
+                    case 3:
+                        try {
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                            dba.execSQL("UPDATE Cargo SET fotoPanoramica = '"+Uri_Foto+"'");
+                            dba.close();
+                        } catch (Exception eew){
+                            Log.e("Exception ", "fotoPanoramica");
+                        }
+
+                        objFotoWork.setSuccess(true);
+
+                        break;
+                    case 4:
+
+                        try {
+
+                            DBHelper dbHelperNumero = new DBHelper(mContext);
+                            SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                            dbNro.execSQL("UPDATE CargoPrecinto SET Foto = '"+Uri_Foto+"' WHERE Indice = '"+objFotoWork.indexPrecinto+"'");
+                            dbNro.close();
+                        } catch (Exception eew){}
+
+
+                        //revisar
+
+
+                        objFotoWork.setSuccess(true);
+
+                        //return objFotoWork;
+
+                        break;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(CargoTakeFotoAsync result) {
+            Log.e(TAG,"Result Post Execute");
+            Log.e(TAG,result.toString());
+            //TextView txt = (TextView) findViewById(R.id.output);
+            //txt.setText("Executed"); // txt.setText(result);
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+            if(result.getSuccess()){
+                switch (result.getTipoFoto()){
+                    case 1:
+                        btn_visualizar_delantera.setVisibility(View.VISIBLE);
+                        btn_visualizar_delantera.setImageDrawable(null);
+                        btn_visualizar_delantera.setImageURI(Uri.parse(result.getImageReducedFilePath()));
+                        break;
+                    case 2:
+                        btn_visualizar_trasera.setVisibility(View.VISIBLE);
+                        btn_visualizar_trasera.setImageDrawable(null);
+                        btn_visualizar_trasera.setImageURI(Uri.parse(Uri_Foto));
+                        break;
+                    case 3:
+                        btn_visualizar_panoramica.setVisibility(View.VISIBLE);
+                        btn_visualizar_panoramica.setImageDrawable(null);
+                        btn_visualizar_panoramica.setImageURI(Uri.parse(Uri_Foto));
+                        break;
+                    case 4:
+                        loadPrecinto();
+                        break;
+                }
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
+    }
+
+    protected void onPhotoTaken() {
+        //pictureTaken = true;
+
+        String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Cargo/";
+
+        if (isPrecinto){
+            Uri_Foto = pathRoot.concat("PrecintoReduced_".concat(String.valueOf(numeroPrecintoFoto))+".jpg");
+        }else{
+            if (fotoDelantera){
+                Uri_Foto = pathRoot.concat("DelanteraReduced.jpg");
+
+            } else if(fotoTracera){
+                Uri_Foto = pathRoot.concat("TraceraReduced.jpg");
+            }else if(fotoPanoramica){
+                Uri_Foto = pathRoot.concat("PanoramicaReduced.jpg");
+            }
+        }
+
+
+        //adjust for camera orientation
+        Bitmap bitmapOrig = BitmapFactory.decodeFile(pathCamera);
+        int width = bitmapOrig.getWidth();
+        int height = bitmapOrig.getHeight();
+        // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
+        //int newWidth = 300;
+        int newHeight = 400;
+        // calculate the scale
+        float newWidth = (((float) newHeight) * width)/height;
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        //matrix.setRotate(90);
+        matrix.postRotate(90);
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // save a scaled down Bitmap
+        Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrig, 0, 0, width, height, matrix, true);
+
+        File file2 = new File (Uri_Foto);
+
+        try {
+            FileOutputStream out = new FileOutputStream(file2);
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+
+            if (isPrecinto){
+
+                try {
+
+                    DBHelper dbHelperNumero = new DBHelper(this);
+                    SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                    dbNro.execSQL("UPDATE CargoPrecinto SET Foto = '"+Uri_Foto+"' WHERE Indice = '"+numeroPrecintoFoto+"'");
+                    dbNro.close();
+                } catch (Exception eew){}
+
+
+                loadPrecinto();
+
+                return;
+            }
+            //imageView.setImageURI(Uri.parse(path2 + "imageReduced.jpg"));
+            //uploadImage();
+
+
+
+            if (fotoDelantera){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET fotoDelantera = '"+Uri_Foto+"'");
+                    dba.close();
+                } catch (Exception eew){
+                    Log.e("Exception ", "fotoDelantera");
+                }
+                //
+
+                //imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
+                btn_visualizar_delantera.setVisibility(View.VISIBLE);
+                btn_visualizar_delantera.setImageDrawable(null);
+                btn_visualizar_delantera.setImageURI(Uri.parse(Uri_Foto));
+
+                fotoDelantera = false;
+
+
+            }
+            else if (fotoTracera){
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET fotoTracera = '"+Uri_Foto+"'");
+                    dba.close();
+                } catch (Exception eew){
+                    Log.e("Exception ", "fotoTracera");
+                }
+
+                //imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
+                btn_visualizar_trasera.setVisibility(View.VISIBLE);
+                btn_visualizar_trasera.setImageDrawable(null);
+                btn_visualizar_trasera.setImageURI(Uri.parse(Uri_Foto));
+                fotoTracera = false;
+
+            }else if(fotoPanoramica) {
+
+                try {
+                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                    dba.execSQL("UPDATE Cargo SET fotoPanoramica = '"+Uri_Foto+"'");
+                    dba.close();
+                } catch (Exception eew){
+                    Log.e("Exception ", "fotoPanoramica");
+                }
+
+                //imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
+                btn_visualizar_panoramica.setVisibility(View.VISIBLE);
+                btn_visualizar_panoramica.setImageDrawable(null);
+                btn_visualizar_panoramica.setImageURI(Uri.parse(Uri_Foto));
+                fotoPanoramica = false;
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -2109,51 +2536,118 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     public void parteDelantera(View view){
+
+        Log.e(TAG,"parte delantera");
+
+        /*
         fotoDelantera = true;
         fotoTracera = false;
         fotoPanoramica = false;
-
         isPrecinto = false;
+        */
 
-        tomarFoto();
+        tipoFoto = 1;
+
+        //pathCamera = Environment.getExternalStorageDirectory() + "/SolmarCargo/Delantera.jpg";
+
+        //Log.e("Delantera", pathCamera );
+        callCameraAsync();
+        //tomarFoto();
     }
 
     public void parteTracera(View view){
-        fotoDelantera = false;
+        /*fotoDelantera = false;
         fotoTracera = true;
         fotoPanoramica = false;
 
         isPrecinto = false;
 
-        tomarFoto();
+        pathCamera = Environment.getExternalStorageDirectory() + "/SolmarCargo/Tracera.jpg";
+        Log.e("Trasera",pathCamera);
+        callCamera(pathCamera);*/
+        tipoFoto = 2;
+        callCameraAsync();
+
     }
 
     public void partePanoramica(View view){
-        fotoDelantera = false;
+        /*fotoDelantera = false;
         fotoTracera = false;
         fotoPanoramica = true;
 
         isPrecinto = false;
 
-        tomarFoto();
+        pathCamera = Environment.getExternalStorageDirectory() + "/SolmarCargo/Panoramica.jpg";
+        Log.e("Panoramica",pathCamera);
+        callCamera(pathCamera);
+        */
+        tipoFoto = 3;
+        callCameraAsync();
     }
 
-    // METODOS DE CAMARA
-    public void tomarFoto(){
+    private File createImageFile() throws IOException {
 
-        photoUri = null;
+        Log.e(TAG,"Create file");
 
-        new SandriosCamera(activity, CAPTURE_MEDIA)
-                .setShowPicker(false)
-                .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_LOWEST)
-                .enableImageCropping(false)
-                .launchCamera();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+
+        String imageFileName = "IMG_" + timeStamp + "_";
+
+        File storageDir = new File(Environment.getExternalStorageDirectory()+"/SOLGIS/Cargo");//getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        File imageR = File.createTempFile(
+                imageFileName+"R_",  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        imageFilePath = image.getAbsolutePath();
+        imageReducedFilePath = imageR.getAbsolutePath();
+
+        Log.e(TAG,"File Paths");
+        Log.e(TAG,imageFilePath);
+        Log.e(TAG,imageReducedFilePath);
+
+        return image;
     }
+
+    public void callCameraAsync(){
+        Log.e(TAG,"Call Camera");
+        try{
+            File filecc = createImageFile();//new File(path);
+            Uri outputFileUri = Uri.fromFile( filecc );
+            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
+            intent.putExtra( MediaStore.EXTRA_OUTPUT, outputFileUri );
+            startActivityForResult( intent, REQUEST_CODE_PHOTO_TAKEN_ASYNC );
+        }
+        catch (Exception e){
+            Log.e(TAG,e.toString());
+        }
+    }
+
+    /*
+    public void callCamera(String path){
+        //String path = Environment.getExternalStorageDirectory() + "/SolmarCargo/".concat(file);
+        File filecc = new File(path);
+        Uri outputFileUri = Uri.fromFile( filecc );
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
+        //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.putExtra( MediaStore.EXTRA_OUTPUT, outputFileUri );
+        startActivityForResult( intent, REQUEST_CODE_PHOTO_TAKEN );
+    }
+
+
 
     private void requestForPermission(final String permission) {
         ActivityCompat.requestPermissions(CargoActivity.this, new String[]{permission}, REQUEST_CAMERA_PERMISSION);
     }
+    */
 
     public void showDialogSend() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -2417,10 +2911,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }*/
 
-        numeroPrecintoFoto = numeroPrecinto;
-        isPrecinto = true;
-        tomarFoto();
+        /*
+        fotoDelantera = false;
+        fotoTracera = false;
+        fotoPanoramica = false;
+        */
 
+        tipoFoto = 4;
+        numeroPrecintoFoto = numeroPrecinto;
+        //isPrecinto = true;
+        //tomarFoto();
+        //pathCamera = Environment.getExternalStorageDirectory() + "/SolmarCargo/Precinto_".concat(String.valueOf(numeroPrecinto))+".jpg";
+        //Log.e("Precinto",pathCamera);
+        //callCamera(pathCamera);
+        callCameraAsync();
 
     }
 
@@ -2470,7 +2974,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String URL = URL_API.concat("api/Cargo/CreateSinCarga");
+        String URL = URL_API.concat("api/Cargo/CreateSinCargaAsync");
+
+        CodigoSincronizacion = UUID.randomUUID().toString();
 
         Log.e("Numero", Numero);
         Log.e("DispositivoId", DispositivoId);
@@ -2485,6 +2991,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         Log.e("NroORGR", NroOR);
         Log.e("Delantera", Delantera);
         Log.e("Panoramica", Panoramica);
+        Log.e("CodSincro", CodigoSincronizacion);
+
+        cargoFotos =  saveFotosSingle(CodigoSincronizacion,1,Delantera,Panoramica,"",cargoPrecintoDBLists);
 
         Ion.with(mContext)
                 .load(URL)
@@ -2495,19 +3004,20 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     }
                 })
                 .setTimeout(TIME_OUT)
-                .setMultipartParameter("Numero", Numero)
-                .setMultipartParameter("DispositivoId", DispositivoId)
-                .setMultipartParameter("Placa", Placa)
-                .setMultipartParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
-                .setMultipartParameter("CargoTipoCargaId", TipoCarga)
-                .setMultipartParameter("Casco", Casco)
-                .setMultipartParameter("Chaleco", Chaleco)
-                .setMultipartParameter("Botas", Botas)
-                .setMultipartParameter("VigenciaLicenciaConducir", Licencia)
-                .setMultipartParameter("NroDOI", Dni)
-                .setMultipartParameter("NroORGR", NroOR)
-                .setMultipartFile("Delantera", new File(Delantera))
-                .setMultipartFile("Panoramica", new File(Panoramica))
+                .setBodyParameter("Numero", Numero)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .setBodyParameter("Placa", Placa)
+                .setBodyParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
+                .setBodyParameter("CargoTipoCargaId", TipoCarga)
+                .setBodyParameter("Casco", Casco)
+                .setBodyParameter("Chaleco", Chaleco)
+                .setBodyParameter("Botas", Botas)
+                .setBodyParameter("VigenciaLicenciaConducir", Licencia)
+                .setBodyParameter("NroDOI", Dni)
+                .setBodyParameter("NroORGR", NroOR)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                //.setMultipartFile("Delantera", new File(Delantera))
+                //.setMultipartFile("Panoramica", new File(Panoramica))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -2537,7 +3047,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             if (result.get("Estado").getAsBoolean()){
 
+                                enviarFotosSingle(cargoFotos);
                                 limpiarDatos();
+
                                 try {
                                     showDialogSend();
                                 } catch (Exception e1) {
@@ -2555,12 +3067,17 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                             } catch (Exception edsv){}
 
                         }
+                        else{
+                            Log.e("Code",String.valueOf(response.getHeaders().code()));
+                        }
 
                         try {
                             if (pDialog != null && pDialog.isShowing()) {
                                 pDialog.dismiss();
                             }
-                        } catch (Exception edsv){}
+                        } catch (Exception edsv){
+
+                        }
 
                     }
                 });
@@ -2616,6 +3133,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
 
+
+
         final ProgressDialog pDialog;
         pDialog = new ProgressDialog(CargoActivity.this);
         pDialog.setMessage("Registrando Cargo...");
@@ -2623,7 +3142,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String URL = URL_API.concat("api/Cargo/CreateCargaSuelta");
+
+        String URL = URL_API.concat("api/Cargo/CreateCargaSueltaAsync");
+
+        CodigoSincronizacion = UUID.randomUUID().toString();
+        cargoFotos =  saveFotosSingle(CodigoSincronizacion,2,Delantera,Panoramica,Trasera,cargoPrecintoDBLists);
 
         Ion.with(mContext)
                 .load(URL)
@@ -2634,21 +3157,26 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     }
                 })
                 .setTimeout(TIME_OUT)
-                .setMultipartParameter("Numero", Numero)
-                .setMultipartParameter("DispositivoId", DispositivoId)
-                .setMultipartParameter("Placa", Placa)
-                .setMultipartParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
-                .setMultipartParameter("CargoTipoCargaId", TipoCarga)
-                .setMultipartParameter("Casco", Casco)
-                .setMultipartParameter("Chaleco", Chaleco)
-                .setMultipartParameter("Botas", Botas)
-                .setMultipartParameter("VigenciaLicenciaConducir", Licencia)
-                .setMultipartParameter("NroDOI", Dni)
-                .setMultipartParameter("NroORGR", NroOR)
-                .setMultipartParameter("CantidadBultos", CantidadBultos)
+                .setBodyParameter("Numero", Numero)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .setBodyParameter("Placa", Placa)
+                .setBodyParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
+                .setBodyParameter("CargoTipoCargaId", TipoCarga)
+                .setBodyParameter("Casco", Casco)
+                .setBodyParameter("Chaleco", Chaleco)
+                .setBodyParameter("Botas", Botas)
+                .setBodyParameter("VigenciaLicenciaConducir", Licencia)
+                .setBodyParameter("NroDOI", Dni)
+                .setBodyParameter("NroORGR", NroOR)
+                .setBodyParameter("CantidadBultos", CantidadBultos)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+
+                /*
                 .setMultipartFile("Delantera", new File(Delantera))
                 .setMultipartFile("Trasera", new File(Trasera))
                 .setMultipartFile("Panoramica", new File(Panoramica))
+                */
+
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -2681,6 +3209,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             if (result.get("Estado").getAsBoolean()){
 
+                                enviarFotosSingle(cargoFotos);
                                 limpiarDatos();
 
                                 try {
@@ -2759,8 +3288,10 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         } catch (Exception e) {}
 
-        if (contadorLista!=Integer.valueOf(sNumeroPrecinto)){Toast.makeText(mContext, "Complete foto(s) de Precinto(s)", Toast.LENGTH_SHORT).show();
-            return;}
+        if (contadorLista!=Integer.valueOf(sNumeroPrecinto)){
+            Toast.makeText(mContext, "Complete foto(s) de Precinto(s)", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
         final ProgressDialog pDialog;
@@ -2770,9 +3301,14 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String URL = URL_API.concat("api/Cargo/CreateContenedorVacio");
+        String URL = URL_API.concat("api/Cargo/CreateContenedorVacioAsync");
 
-        List <Part> files = new ArrayList();
+        CodigoSincronizacion = UUID.randomUUID().toString();
+
+
+        //List <Part> files = new ArrayList();
+
+        int _in = 0;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
@@ -2780,47 +3316,60 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             String selectQuery = "SELECT Foto FROM CargoPrecinto";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
+
+
+            List<CargoPrecintoDBList> _cargoPrecintoDBLists = new ArrayList<>();
+
             if (c.moveToFirst()) {
+
                 do {
-                    files.add(new FilePart("Precintos", new File(c.getString(c.getColumnIndex("Foto")))));
+                    //files.add(new FilePart("Precintos", new File(c.getString(c.getColumnIndex("Foto")))));
+                    CargoPrecintoDBList _cargoPrecintoDBList = new CargoPrecintoDBList(c.getString(c.getColumnIndex("Foto")),_in);
+                    _cargoPrecintoDBLists.add(_cargoPrecintoDBList);
+                    _in++;
+
                 } while (c.moveToNext());
             }
             c.close();
             dbst.close();
+
+            cargoFotos =  saveFotosSingle(CodigoSincronizacion,3,Delantera,Panoramica,Trasera,_cargoPrecintoDBLists);
 
         } catch (Exception e) {}
 
         Ion.with(mContext)
                 .load(URL)
                 .uploadProgressHandler(new ProgressCallback() {
-
-
                     @Override
                     public void onProgress(long uploaded, long total) {
                         Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
                     }
                 })
                 .setTimeout(TIME_OUT)
-                .addMultipartParts(files)
-                .setMultipartParameter("Numero", Numero)
-                .setMultipartParameter("DispositivoId", DispositivoId)
-                .setMultipartParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
-                .setMultipartParameter("Placa", Placa)
-                .setMultipartParameter("NroDOI", Dni)
-                .setMultipartParameter("VigenciaLicenciaConducir", Licencia)
-                .setMultipartParameter("TamanoContenedor", stamañoContenedor)
-                .setMultipartParameter("CargoTipoCargaId", TipoCarga)
-                .setMultipartParameter("CodigoContenedor", sCodigoContenedor)
-                .setMultipartParameter("NumeroPrecintos", sNumeroPrecinto)
-                .setMultipartParameter("OrigDest", sOrigen)
-                .setMultipartParameter("ContenedorTipoDocumentoId", sTipoDocumento)
-                .setMultipartParameter("NroORGR", sNumero)
-                .setMultipartParameter("Casco", Casco)
-                .setMultipartParameter("Chaleco", Chaleco)
-                .setMultipartParameter("Botas", Botas)
+                //.addMultipartParts(files)
+                .setBodyParameter("Numero", Numero)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .setBodyParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
+                .setBodyParameter("Placa", Placa)
+                .setBodyParameter("NroDOI", Dni)
+                .setBodyParameter("VigenciaLicenciaConducir", Licencia)
+                .setBodyParameter("TamanoContenedor", stamañoContenedor)
+                .setBodyParameter("CargoTipoCargaId", TipoCarga)
+                .setBodyParameter("CodigoContenedor", sCodigoContenedor)
+                .setBodyParameter("NumeroPrecintos", sNumeroPrecinto)
+                .setBodyParameter("OrigDest", sOrigen)
+                .setBodyParameter("ContenedorTipoDocumentoId", sTipoDocumento)
+                .setBodyParameter("NroORGR", sNumero)
+                .setBodyParameter("Casco", Casco)
+                .setBodyParameter("Chaleco", Chaleco)
+                .setBodyParameter("Botas", Botas)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+
+                /*
                 .setMultipartFile("Delantera", new File(Delantera))
                 .setMultipartFile("Trasera", new File(Trasera))
                 .setMultipartFile("Interior", new File(Panoramica))
+                */
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -2851,6 +3400,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             if (result.get("Estado").getAsBoolean()){
 
+                                enviarFotosSingle(cargoFotos);
                                 limpiarDatos();
 
                                 try {
@@ -2862,6 +3412,18 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                                 Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
                             }
+
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+                        }
+                        else{
+
+                            //Revisar para eliminar DB:
+
+                            Toast.makeText(mContext, "Error al enviar cargo", Toast.LENGTH_SHORT).show();
 
                             try {
                                 if (pDialog != null && pDialog.isShowing()) {
@@ -2926,21 +3488,28 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String URL = URL_API.concat("api/Cargo/CreateContenedorLLeno");
+        String URL = URL_API.concat("api/Cargo/CreateContenedorLLenoAsync");
+        CodigoSincronizacion = UUID.randomUUID().toString();
 
-        List <Part> files = new ArrayList();
+        //List <Part> files = new ArrayList();
 
-
+        int _in = 0;
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
             String selectQuery = "SELECT Foto FROM CargoPrecinto";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
+
+            List<CargoPrecintoDBList> _cargoPrecintoDBLists = new ArrayList<>();
+
             if (c.moveToFirst()) {
 
                 do {
-                    files.add(new FilePart("Precintos", new File(c.getString(c.getColumnIndex("Foto")))));
+                    //files.add(new FilePart("Precintos", new File(c.getString(c.getColumnIndex("Foto")))));
+                    CargoPrecintoDBList _cargoPrecintoDBList = new CargoPrecintoDBList(c.getString(c.getColumnIndex("Foto")),_in);
+                    _cargoPrecintoDBLists.add(_cargoPrecintoDBList);
+                    _in++;
                 } while (c.moveToNext());
 
             }
@@ -2948,10 +3517,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             c.close();
             dbst.close();
 
+            cargoFotos =  saveFotosSingle(CodigoSincronizacion,4,Delantera,"",Trasera,_cargoPrecintoDBLists);
+
         } catch (Exception e) {}
 
-
-        Log.e("Dni ENVIADO ", Dni);
+        //Log.e("Dni ENVIADO ", Dni);
 
         Ion.with(mContext)
                 .load(URL)
@@ -2962,25 +3532,27 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     }
                 })
                 .setTimeout(TIME_OUT)
-                .addMultipartParts(files)
-                .setMultipartParameter("Numero", Numero)
-                .setMultipartParameter("DispositivoId", DispositivoId)
-                .setMultipartParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
-                .setMultipartParameter("Placa", Placa)
-                .setMultipartParameter("NroDOI", Dni)
-                .setMultipartParameter("VigenciaLicenciaConducir", Licencia)
-                .setMultipartParameter("TamanoContenedor", stamañoContenedor)
-                .setMultipartParameter("CargoTipoCargaId", TipoCarga)
-                .setMultipartParameter("CodigoContenedor", sCodigoContenedor)
-                .setMultipartParameter("NumeroPrecintos", sNumeroPrecinto)
-                .setMultipartParameter("OrigDest", sOrigen)
-                .setMultipartParameter("ContenedorTipoDocumentoId", sTipoDocumento)
-                .setMultipartParameter("NroORGR", sNumero)
-                .setMultipartParameter("Casco", Casco)
-                .setMultipartParameter("Chaleco", Chaleco)
-                .setMultipartParameter("Botas", Botas)
-                .setMultipartFile("Delantera", new File(Delantera))
-                .setMultipartFile("Trasera", new File(Trasera))
+                //.addMultipartParts(files)
+                .setBodyParameter("Numero", Numero)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .setBodyParameter("CargoTipoMovimientoId", CargoTipoMovimiento)
+                .setBodyParameter("Placa", Placa)
+                .setBodyParameter("NroDOI", Dni)
+                .setBodyParameter("VigenciaLicenciaConducir", Licencia)
+                .setBodyParameter("TamanoContenedor", stamañoContenedor)
+                .setBodyParameter("CargoTipoCargaId", TipoCarga)
+                .setBodyParameter("CodigoContenedor", sCodigoContenedor)
+                .setBodyParameter("NumeroPrecintos", sNumeroPrecinto)
+                .setBodyParameter("OrigDest", sOrigen)
+                .setBodyParameter("ContenedorTipoDocumentoId", sTipoDocumento)
+                .setBodyParameter("NroORGR", sNumero)
+                .setBodyParameter("Casco", Casco)
+                .setBodyParameter("Chaleco", Chaleco)
+                .setBodyParameter("Botas", Botas)
+                .setBodyParameter("NumeroPrecintos", String.valueOf(_in))
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                //.setMultipartFile("Delantera", new File(Delantera))
+                //.setMultipartFile("Trasera", new File(Trasera))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -3010,7 +3582,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
                             if (result.get("Estado").getAsBoolean()){
 
+                                enviarFotosSingle(cargoFotos);
                                 limpiarDatos();
+
                                 try {
                                     showDialogSend();
                                 } catch (Exception e1) {
@@ -3027,8 +3601,195 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                                 }
                             } catch (Exception edsv){}
                         }
+                        else{
+                            try {
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } catch (Exception edsv){}
+                        }
                     }
                 });
+    }
+
+    public List<CargoFoto> saveFotosSingle(String codigoSincronizacion,int tipoCargo,String delantera, String panoramica,String trasera, List<CargoPrecintoDBList> precintos){
+
+        CargoFotoCrud cargoFotoCrud = new CargoFotoCrud(mContext);
+        List<CargoFoto> _cargoFotos = new ArrayList<>();
+
+        switch (tipoCargo){
+            case 1:
+                _cargoFotos = cargoFotoCrud.insertFotosSinCarga(codigoSincronizacion,delantera,panoramica);
+                break;
+            case 2:
+                _cargoFotos = cargoFotoCrud.insertFotosCargaSuelta(codigoSincronizacion,delantera,panoramica,trasera);
+                break;
+            case 3:
+                _cargoFotos = cargoFotoCrud.insertFotosContenedorVacio(codigoSincronizacion,delantera,panoramica,trasera,precintos);
+                break;
+            case 4:
+                _cargoFotos = cargoFotoCrud.insertFotosContenedorLleno(codigoSincronizacion,delantera,panoramica,trasera,precintos);
+                break;
+        }
+
+        return _cargoFotos;
+
+    }
+
+    public void enviarFotosSingle(List<CargoFoto> cargoFotos){
+
+        new sendPhotoAsync().execute(cargoFotos);
+        /*
+        CargoFotoCrud cargoFotoCrud = new CargoFotoCrud(mContext);
+        List<CargoFoto> cargoFotos = new ArrayList<>();
+
+        switch (tipoCargo){
+            case 1:
+                cargoFotos = cargoFotoCrud.insertFotosSinCarga(codigoSincronizacion,delantera,panoramica);
+                //sendToCloud();
+                new sendPhotoAsync().execute(cargoFotos);
+                break;
+            case 2:
+                break;
+        }
+        */
+
+    }
+
+    private class sendPhotoAsync extends AsyncTask<List<CargoFoto>, Void, List<CargoFoto>> {
+
+        @Override
+        protected List<CargoFoto> doInBackground(List<CargoFoto>... params) {
+
+
+            List<CargoFoto> objFotoWork = params[0];
+            CargoFotoCrud cargoFotoCrud = new CargoFotoCrud(mContext);
+
+            try {
+                DBHelper dataBaseHelper = new DBHelper(mContext);
+                SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                String selectQuery = "SELECT GuidDipositivo, NumeroCel FROM Configuration";
+                Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                if (c.moveToFirst()) {
+                    Numero = c.getString(c.getColumnIndex("NumeroCel"));
+                    DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
+                }
+                c.close();
+                dbst.close();
+
+            } catch (Exception e) {}
+
+
+            for (CargoFoto cargoFoto : objFotoWork) {
+
+                String URL = URL_API.concat("api/Cargo/SincronizacionFoto");
+
+                Log.e("Numero", Numero);
+                Log.e("DispositivoId", DispositivoId);
+                Log.e("CodSincro", cargoFoto.codigoSincronizacion);
+                Log.e("Tipo Foto", String.valueOf(cargoFoto.tipoFoto));
+                Log.e("File Path", cargoFoto.filePath);
+                Log.e("Indice", cargoFoto.indice);
+
+                Ion.with(mContext)
+                        .load(URL)
+                        .uploadProgressHandler(new ProgressCallback() {
+                            @Override
+                            public void onProgress(long uploaded, long total) {
+                                Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                            }
+                        })
+                        .setTimeout(TIME_OUT)
+                        .setMultipartParameter("DispositivoId", DispositivoId)
+                        .setMultipartParameter("CodigoSincronizacion", cargoFoto.codigoSincronizacion)
+                        .setMultipartParameter("TipoFoto", String.valueOf(cargoFoto.tipoFoto))
+                        .setMultipartParameter("Id", String.valueOf(cargoFoto.cargoFotoId))
+                        .setMultipartParameter("Indice", cargoFoto.indice)
+                        .setMultipartFile("file", new File(cargoFoto.filePath))
+                        //.setMultipartFile("Panoramica", new File(Panoramica))
+                        .asString()
+                        .withResponse()
+                        .setCallback(new FutureCallback<Response<String>>() {
+                            @Override
+                            public void onCompleted(Exception e, Response<String> response) {
+
+                                if (e != null){
+                                    /*
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                        }
+                                    } catch (Exception edsv){}
+
+                                    if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
+                                        mensajeTimeOut();
+                                    }
+                                    return;
+                                    */
+                                }
+
+                                if(response.getHeaders().code()==200){
+
+                                    Gson gson = new Gson();
+                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                    Log.e("JsonObject ", result.toString());
+
+                                    if (result.get("Estado").getAsBoolean()){
+
+                                        cargoFotoCrud.removeCargoFoto(cargoFoto);
+                                        /*
+                                        Log.e("EliminarId ", String.valueOf(cargoFoto.cargoFotoId));
+
+                                        enviarFotosSingle(CodigoSincronizacion,1,Delantera,Panoramica,"");
+                                        limpiarDatos();
+
+                                        try {
+                                            showDialogSend();
+                                        } catch (Exception e1) {
+                                            e1.printStackTrace();
+                                        }*/
+                                    } /*else {
+
+                                        Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    try {
+                                        if (pDialog != null && pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                        }
+                                    } catch (Exception edsv){}
+                                    */
+
+                                }
+
+                                /*
+                                try {
+                                    if (pDialog != null && pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                    }
+                                } catch (Exception edsv){}
+                                */
+
+                            }
+                        });
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(List<CargoFoto> result) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
     }
 
     public void loadFotos(){
@@ -3142,6 +3903,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         adapterMovil= new PrecintoCustomAdapter(dataModelsMovil,getApplicationContext());
         listView.setAdapter(adapterMovil);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -3153,7 +3915,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 fotoPrecinto = true;
 
                 if (datamo.getFoto()==null){
-                    fotoPrecinto(datamo.getNum() );
+                    fotoPrecinto(datamo.getNum());
                 } else {
                     visualizarImagen(datamo.getFoto());
                 }
@@ -3175,6 +3937,36 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         quinto_txt_nro_precintos.setText("Precintos: "+ String.valueOf(contadorLista) +" de "+ numeroPrecintos);
 
+        //Resize Grid
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        int column_coutnt = listView.getNumColumns();
+
+        double value = (Integer.valueOf(numeroPrecintos))*1.00/column_coutnt;
+        double fractionalPart = value % 1;
+        Double integralPart = value - fractionalPart;
+
+        Log.e("División ",String.valueOf(value));
+
+        if(fractionalPart>0){
+            integralPart=integralPart+1;
+        }
+
+        Log.e("Cantidad Columnas",String.valueOf(column_coutnt));
+
+        int Pixeles = convertDpToPixels(200,mContext);
+
+        params.height =  Pixeles*integralPart.intValue();
+        listView.setLayoutParams(params);
+
+    }
+
+    public static int convertDpToPixels(float dp, Context context){
+        Resources resources = context.getResources();
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                resources.getDisplayMetrics()
+        );
     }
 
     @Override
@@ -3282,6 +4074,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         Ion.with(this)
                 .load("POST", URL)
+                .setTimeout(1000*60)
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .withResponse()

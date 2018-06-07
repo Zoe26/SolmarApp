@@ -91,9 +91,6 @@ dependencies {
     compile project(':zxing-android-embedded')
     //compile project(':squarecamera')
     compile project(':sandriosCamera')
-
-
-
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:cardview-v7:26.1.0'

@@ -8,6 +8,7 @@ import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Aplicaciones;
 import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Cargo;
+import com.idslatam.solmar.Models.Entities.CargoFoto;
 import com.idslatam.solmar.Models.Entities.CargoPrecinto;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
@@ -25,7 +26,7 @@ import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "SolgisDB";
 
     public DBHelper(Context context) {
@@ -220,6 +221,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Aplicaciones.KEY_ID_Aplicaciones + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + Aplicaciones.KEY_Nombre + " TEXT)";
 
+        String CREATE_TABLE_CARGO_FOTO = "CREATE TABLE " + CargoFoto.TABLE_NAME + "("
+                + CargoFoto.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + CargoFoto.KEY_CODIGO_SINCRONIZACION + " TEXT,"
+                + CargoFoto.KEY_TIPO_FOTO + " TEXT,"
+                + CargoFoto.KEY_INDICE + " TEXT,"
+                + CargoFoto.KEY_FILE_PATH + " TEXT)";
+
         db.execSQL(CREATE_TABLE_APLICACIONES);
         db.execSQL(CREATE_TABLE_TRACKING);
         db.execSQL(CREATE_TABLE_CONFIGURATION);
@@ -234,6 +242,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_PATROL_PRECINTO);
         db.execSQL(CREATE_TABLE_PATROL_CONTENEDOR);
         db.execSQL(CREATE_TABLE_PEOPLE);
+        db.execSQL(CREATE_TABLE_CARGO_FOTO);
     }
 
     @Override
@@ -279,6 +288,9 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + Aplicaciones.TABLE_APLICACIONES);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + CargoFoto.TABLE_NAME);
         onCreate(db);
 
     }
