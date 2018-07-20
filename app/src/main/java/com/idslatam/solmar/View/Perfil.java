@@ -281,6 +281,7 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         if (data.get(position).getTitle().equalsIgnoreCase("Image")){
             //startActivity(new Intent(mContext, Image.class)
                     //startActivity(new Intent(mContext, ImageCamera.class)
+            Log.e("Acceso Perfil","Image");
                     startActivity(new Intent(mContext, cameraNative.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         }

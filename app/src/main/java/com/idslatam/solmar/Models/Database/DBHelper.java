@@ -14,8 +14,10 @@ import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.Models.Entities.Menu;
 import com.idslatam.solmar.Models.Entities.PatrolContenedor;
+import com.idslatam.solmar.Models.Entities.PatrolFoto;
 import com.idslatam.solmar.Models.Entities.PatrolPrecinto;
 import com.idslatam.solmar.Models.Entities.People;
+import com.idslatam.solmar.Models.Entities.PeopleFoto;
 import com.idslatam.solmar.Models.Entities.SettingsPermissions;
 import com.idslatam.solmar.Models.Entities.Tracking;
 import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
@@ -226,7 +228,23 @@ public class DBHelper extends SQLiteOpenHelper {
                 + CargoFoto.KEY_CODIGO_SINCRONIZACION + " TEXT,"
                 + CargoFoto.KEY_TIPO_FOTO + " TEXT,"
                 + CargoFoto.KEY_INDICE + " TEXT,"
+                + CargoFoto.KEY_CREATED + " TEXT,"
                 + CargoFoto.KEY_FILE_PATH + " TEXT)";
+
+        String CREATE_TABLE_PATROL_FOTO = "CREATE TABLE " + PatrolFoto.TABLE_NAME + "("
+                + PatrolFoto.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PatrolFoto.KEY_CODIGO_SINCRONIZACION + " TEXT,"
+                + PatrolFoto.KEY_INDICE + " TEXT,"
+                + PatrolFoto.KEY_CREATED + " TEXT,"
+                + PatrolFoto.KEY_FILE_PATH + " TEXT)";
+
+        String CREATE_TABLE_PEOPLE_FOTO = "CREATE TABLE " + PeopleFoto.TABLE_NAME + "("
+                + PeopleFoto.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PeopleFoto.KEY_CODIGO_SINCRONIZACION + " TEXT,"
+                + PeopleFoto.KEY_TIPO_FOTO + " TEXT,"
+                + PeopleFoto.KEY_INDICE + " TEXT,"
+                + PeopleFoto.KEY_CREATED + " TEXT,"
+                + PeopleFoto.KEY_FILE_PATH + " TEXT)";
 
         db.execSQL(CREATE_TABLE_APLICACIONES);
         db.execSQL(CREATE_TABLE_TRACKING);
@@ -243,6 +261,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_PATROL_CONTENEDOR);
         db.execSQL(CREATE_TABLE_PEOPLE);
         db.execSQL(CREATE_TABLE_CARGO_FOTO);
+        db.execSQL(CREATE_TABLE_PATROL_FOTO);
+        db.execSQL(CREATE_TABLE_PEOPLE_FOTO);
     }
 
     @Override
@@ -291,6 +311,12 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + CargoFoto.TABLE_NAME);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + PatrolFoto.TABLE_NAME);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + PeopleFoto.TABLE_NAME);
         onCreate(db);
 
     }

@@ -57,7 +57,6 @@ public class CustomAdapter extends ArrayAdapter<DataModel>{
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.req_nombre);
             viewHolder.item_info = (ImageView) convertView.findViewById(R.id.item_info);
 
-
             result=convertView;
 
             convertView.setTag(viewHolder);

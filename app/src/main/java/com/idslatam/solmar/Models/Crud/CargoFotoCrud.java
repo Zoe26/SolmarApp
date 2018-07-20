@@ -2,18 +2,26 @@ package com.idslatam.solmar.Models.Crud;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.CargoFoto;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoPrecintoDBList;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CargoFotoCrud {
 
     private DBHelper dbHelper;
+    private String formatofecha = "yyyy-MM-dd HH:mm:ss";
+    static final long ONE_MINUTE_IN_MILLIS=60000;//millisecs
 
     public CargoFotoCrud(Context context) {
 
@@ -33,6 +41,9 @@ public class CargoFotoCrud {
         values.put(CargoFoto.KEY_FILE_PATH, delantera);
         values.put(CargoFoto.KEY_INDICE, "0");
 
+        String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        values.put(CargoFoto.KEY_CREATED, created);
+
         long CargoFotoId = db.insert(CargoFoto.TABLE_NAME, null, values);
         db.close();
 
@@ -46,6 +57,9 @@ public class CargoFotoCrud {
         valuesx.put(CargoFoto.KEY_TIPO_FOTO, "3");
         valuesx.put(CargoFoto.KEY_FILE_PATH, panoramica);
         valuesx.put(CargoFoto.KEY_INDICE, "0");
+
+        String createdp = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        valuesx.put(CargoFoto.KEY_CREATED, createdp);
 
         long CargoFotoIdx = dbx.insert(CargoFoto.TABLE_NAME, null, valuesx);
         dbx.close();
@@ -71,6 +85,9 @@ public class CargoFotoCrud {
         values.put(CargoFoto.KEY_FILE_PATH, delantera);
         values.put(CargoFoto.KEY_INDICE, "0");
 
+        String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        values.put(CargoFoto.KEY_CREATED, created);
+
         long CargoFotoId = db.insert(CargoFoto.TABLE_NAME, null, values);
         db.close();
 
@@ -85,6 +102,9 @@ public class CargoFotoCrud {
         valuesy.put(CargoFoto.KEY_TIPO_FOTO, "2");
         valuesy.put(CargoFoto.KEY_FILE_PATH, trasera);
         valuesy.put(CargoFoto.KEY_INDICE, "0");
+
+        String createdt = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        valuesy.put(CargoFoto.KEY_CREATED, createdt);
 
         long CargoFotoIdy = dby.insert(CargoFoto.TABLE_NAME, null, valuesy);
         dby.close();
@@ -101,6 +121,9 @@ public class CargoFotoCrud {
         valuesx.put(CargoFoto.KEY_TIPO_FOTO, "3");
         valuesx.put(CargoFoto.KEY_FILE_PATH, panoramica);
         valuesx.put(CargoFoto.KEY_INDICE, "0");
+
+        String createdp = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        valuesx.put(CargoFoto.KEY_CREATED, createdp);
 
         long CargoFotoIdx = dbx.insert(CargoFoto.TABLE_NAME, null, valuesx);
         dbx.close();
@@ -129,6 +152,9 @@ public class CargoFotoCrud {
             valuespr.put(CargoFoto.KEY_FILE_PATH, precinto.filePath);
             valuespr.put(CargoFoto.KEY_INDICE, String.valueOf(precinto.indice));
 
+            String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+            valuespr.put(CargoFoto.KEY_CREATED, created);
+
             long CargoFotoIdpr = dbpr.insert(CargoFoto.TABLE_NAME, null, valuespr);
             dbpr.close();
 
@@ -147,6 +173,9 @@ public class CargoFotoCrud {
         values.put(CargoFoto.KEY_FILE_PATH, delantera);
         values.put(CargoFoto.KEY_INDICE, "0");
 
+        String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        values.put(CargoFoto.KEY_CREATED, created);
+
         long CargoFotoId = db.insert(CargoFoto.TABLE_NAME, null, values);
         db.close();
 
@@ -161,6 +190,9 @@ public class CargoFotoCrud {
         valuesy.put(CargoFoto.KEY_TIPO_FOTO, "2");
         valuesy.put(CargoFoto.KEY_FILE_PATH, trasera);
         valuesy.put(CargoFoto.KEY_INDICE, "0");
+
+        String createdy = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        valuesy.put(CargoFoto.KEY_CREATED, createdy);
 
         long CargoFotoIdy = dby.insert(CargoFoto.TABLE_NAME, null, valuesy);
         dby.close();
@@ -177,6 +209,9 @@ public class CargoFotoCrud {
         valuesx.put(CargoFoto.KEY_TIPO_FOTO, "5");
         valuesx.put(CargoFoto.KEY_FILE_PATH, panoramica);
         valuesx.put(CargoFoto.KEY_INDICE, "0");
+
+        String createdpn = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        valuesx.put(CargoFoto.KEY_CREATED, createdpn);
 
         long CargoFotoIdx = dbx.insert(CargoFoto.TABLE_NAME, null, valuesx);
         dbx.close();
@@ -207,6 +242,9 @@ public class CargoFotoCrud {
             valuespr.put(CargoFoto.KEY_FILE_PATH, precinto.filePath);
             valuespr.put(CargoFoto.KEY_INDICE, String.valueOf(precinto.indice));
 
+            String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+            valuespr.put(CargoFoto.KEY_CREATED, created);
+
             long CargoFotoIdpr = dbpr.insert(CargoFoto.TABLE_NAME, null, valuespr);
             dbpr.close();
 
@@ -225,6 +263,9 @@ public class CargoFotoCrud {
         values.put(CargoFoto.KEY_FILE_PATH, delantera);
         values.put(CargoFoto.KEY_INDICE, "0");
 
+        String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        values.put(CargoFoto.KEY_CREATED, created);
+
         long CargoFotoId = db.insert(CargoFoto.TABLE_NAME, null, values);
         db.close();
 
@@ -240,6 +281,9 @@ public class CargoFotoCrud {
         valuesy.put(CargoFoto.KEY_FILE_PATH, trasera);
         valuesy.put(CargoFoto.KEY_INDICE, "0");
 
+        String createdx = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
+        valuesy.put(CargoFoto.KEY_CREATED, createdx);
+
         long CargoFotoIdy = dby.insert(CargoFoto.TABLE_NAME, null, valuesy);
         dby.close();
 
@@ -250,6 +294,45 @@ public class CargoFotoCrud {
 
     }
 
+    public List<CargoFoto> listFotosForSync(){
+        List<CargoFoto> cargoFotos = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        Calendar date = Calendar.getInstance();
+        long t= date.getTimeInMillis();
+        Date afterAddingTenMins=new Date(t - (5 * ONE_MINUTE_IN_MILLIS));
+
+        String createdq = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(afterAddingTenMins);
+
+        String selectQuery = "SELECT cargoFotoId,codigoSincronizacion,tipoFoto,indice,filePath,created FROM CargoFoto WHERE created <= '"+createdq+"' LIMIT 10";
+        Cursor c = db.rawQuery(selectQuery, new String[]{});
+
+
+        if (c.moveToFirst()) {
+
+            do {
+                Long cargoFotoId = c.getLong(c.getColumnIndex("cargoFotoId"));
+                String codigoSincronizacion = c.getString(c.getColumnIndex("codigoSincronizacion"));
+                int tipoFoto = c.getInt(c.getColumnIndex("tipoFoto"));
+                String indice = c.getString(c.getColumnIndex("indice"));
+                String filePath = c.getString(c.getColumnIndex("filePath"));
+                String created = c.getString(c.getColumnIndex("created"));
+
+                Log.e("created", created );
+
+                CargoFoto cargoFoto_p = new CargoFoto(cargoFotoId,codigoSincronizacion,tipoFoto,filePath,indice);
+                cargoFotos.add(cargoFoto_p);
+
+            } while (c.moveToNext());
+
+        }
+
+        c.close();
+        db.close();
+
+
+        return  cargoFotos;
+    }
     // Deleting Employee
     public void removeCargoFoto(CargoFoto cargoFoto) {
 

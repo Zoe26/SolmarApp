@@ -13,6 +13,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -29,26 +32,30 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
-import com.idslatam.solmar.Cargo.CargoActivity;
+import com.idslatam.solmar.Models.Crud.PatrolFotoCrud;
 import com.idslatam.solmar.Models.Crud.PatrolPrecintoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolPrecintoDBList;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolTakeFotoAsync;
+import com.idslatam.solmar.Models.Entities.PatrolFoto;
 import com.idslatam.solmar.Models.Entities.PatrolPrecinto;
 import com.idslatam.solmar.Patrol.Contenedor.CustomAdapter;
 import com.idslatam.solmar.Patrol.Contenedor.DataModel;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.async.http.body.FilePart;
-import com.koushikdutta.async.http.body.Part;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
-import com.sandrios.sandriosCamera.internal.SandriosCamera;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 public class PatrolActivity extends AppCompatActivity {
 
@@ -63,7 +70,7 @@ public class PatrolActivity extends AppCompatActivity {
 
     int count = 0;
 
-    String ContenedorId, URL_API, DispositivoId, numeroPrecintoFoto;
+    String ContenedorId, URL_API, DispositivoId, numeroPrecintoFoto,imageFilePath,CodigoSincronizacion;
 
     Context mContext;
 
@@ -79,6 +86,10 @@ public class PatrolActivity extends AppCompatActivity {
 
     int cantidadFotos, posicion;
 
+    private static final String TAG = "PatrolAsync";
+    private static final int REQUEST_CODE_PHOTO_TAKEN_ASYNC = 2;
+
+    List<PatrolFoto> patrolFotos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +104,10 @@ public class PatrolActivity extends AppCompatActivity {
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
+
+        final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/Patrol");
+        newFile.mkdirs();
+
 
     }
 
@@ -175,6 +190,47 @@ public class PatrolActivity extends AppCompatActivity {
         }
     }
 
+    private File createImageFile() throws IOException {
+
+        Log.e(TAG,"Create file");
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+
+        String imageFileName = "IMG_" + timeStamp + "_";
+
+        File storageDir = new File(Environment.getExternalStorageDirectory()+"/Solgis/Patrol");//getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+
+        imageFilePath = image.getAbsolutePath();
+        //imageReducedFilePath = image.getAbsolutePath();
+
+        Log.e(TAG,"File Paths");
+        Log.e(TAG,imageFilePath);
+        //Log.e(TAG,imageReducedFilePath);
+
+        return image;
+    }
+
+    public void tomarFoto(){
+        Log.e(TAG,"Call Camera");
+        try{
+            File filecc = createImageFile();
+            Uri outputFileUri = Uri.fromFile( filecc );
+            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
+            intent.putExtra( MediaStore.EXTRA_OUTPUT, outputFileUri );
+            startActivityForResult( intent, REQUEST_CODE_PHOTO_TAKEN_ASYNC );
+        }
+        catch (Exception e){
+            Log.e(TAG,e.toString());
+        }
+    }
+    /*
     // METODOSDECAMARA
     public void tomarFoto(){
 
@@ -188,13 +244,25 @@ public class PatrolActivity extends AppCompatActivity {
                 .launchCamera();
 
     }
+    */
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode != RESULT_OK){
             return;
         }
 
+        if(resultCode == -1 && requestCode == REQUEST_CODE_PHOTO_TAKEN_ASYNC){
+            //String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
+            PatrolTakeFotoAsync objFotoWork = new PatrolTakeFotoAsync(imageFilePath,numeroPrecintoFoto);
+
+            new takePhotoAsync().execute(objFotoWork);
+
+            //loadPrecinto();
+        }
+
+        /*
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
 
             String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
@@ -211,9 +279,107 @@ public class PatrolActivity extends AppCompatActivity {
 
             Log.e(" Position GUID ", String.valueOf(photoUri));
         }
+        */
 
         super.onActivityResult(requestCode, resultCode, data);
 
+    }
+
+    private class takePhotoAsync extends AsyncTask<PatrolTakeFotoAsync, Void, PatrolTakeFotoAsync> {
+
+        @Override
+        protected PatrolTakeFotoAsync doInBackground(PatrolTakeFotoAsync... params) {
+
+
+            PatrolTakeFotoAsync objFotoWork = params[0];
+
+            String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Patrol/";
+
+            //adjust for camera orientation
+            Bitmap bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
+            int width = bitmapOrig.getWidth();
+            int height = bitmapOrig.getHeight();
+
+            ExifInterface exif = null;
+
+            try
+            {
+                exif = new ExifInterface(objFotoWork.getImageFilePath());
+            }
+            catch (IOException e)
+            {
+                //Error
+                e.printStackTrace();
+            }
+
+            String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+            int orientation = orientString != null ? Integer.parseInt(orientString) :  ExifInterface.ORIENTATION_NORMAL;
+
+            int rotationAngle = 0;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+
+            // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
+            //int newWidth = 300;
+            int newHeight = 600;
+            // calculate the scale
+            float newWidth = (((float) newHeight) * width)/height;
+
+            float scaleWidth = ((float) newWidth) / width;
+            float scaleHeight = ((float) newHeight) / height;
+            // create a matrix for the manipulation
+            Matrix matrix = new Matrix();
+            // resize the bit map
+            //matrix.setRotate(90);
+            matrix.postRotate(rotationAngle);
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // save a scaled down Bitmap
+            Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrig, 0, 0, width, height, matrix, true);
+
+            //File file2 = new File(Uri_Foto);
+            File file2 = new File(objFotoWork.getImageFilePath());
+
+            try {
+                FileOutputStream out = new FileOutputStream(file2);
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+
+                try {
+
+                    DBHelper dbHelperNumero = new DBHelper(mContext);
+                    SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
+                    dbNro.execSQL("UPDATE PatrolPrecinto SET Foto = '"+imageFilePath+"' WHERE Indice = '"+numeroPrecintoFoto+"'");
+                    dbNro.close();
+
+                    objFotoWork.setSuccess(true);
+                } catch (Exception eew){}
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(PatrolTakeFotoAsync result) {
+            Log.e(TAG,"Result Post Execute");
+            Log.e(TAG,result.toString());
+            if(result.getSuccess()){
+                loadPrecinto();
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
     }
 
     public void loadPrecinto(){
@@ -498,24 +664,36 @@ public class PatrolActivity extends AppCompatActivity {
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String URL = URL_API.concat("api/Patrol/Create");
+        String URL = URL_API.concat("api/Patrol/CreateAsync");
+        CodigoSincronizacion = UUID.randomUUID().toString();
 
-        List<Part> files = new ArrayList();
+        int _in = 0;
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM PatrolPrecinto";
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+
+            List<PatrolPrecintoDBList> _patrolPrecintoDBLists = new ArrayList<>();
+
             if (c.moveToFirst()) {
 
                 do {
-                    files.add(new FilePart("Files", new File(c.getString(c.getColumnIndex("Foto")))));
+                    //files.add(new FilePart("Files", new File(c.getString(c.getColumnIndex("Foto")))));
+                    PatrolPrecintoDBList _patrolPrecintoDBList = new PatrolPrecintoDBList(c.getString(c.getColumnIndex("Foto")),_in);
+                    _patrolPrecintoDBLists.add(_patrolPrecintoDBList);
+                    _in++;
+
                 } while (c.moveToNext());
 
             }
+
             c.close();
             dbst.close();
+
+            PatrolFotoCrud patrolFotoCrud = new PatrolFotoCrud(mContext);
+            patrolFotos =  patrolFotoCrud.insertFotosPatrol(CodigoSincronizacion,_patrolPrecintoDBLists);
 
         } catch (Exception e) {}
 
@@ -546,9 +724,11 @@ public class PatrolActivity extends AppCompatActivity {
                 })
                 .setTimeout(TIME_OUT)
                 .setLogging("PATRO_ION", Log.DEBUG)
-                .addMultipartParts(files)
-                .setMultipartParameter("ContenedorId", ContenedorId)
-                .setMultipartParameter("DispositivoId", DispositivoId)
+                //.addMultipartParts(files)
+                .setBodyParameter("ContenedorId", ContenedorId)
+                .setBodyParameter("DispositivoId", DispositivoId)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                .setBodyParameter("NumeroPrecintos", String.valueOf(_in))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -587,6 +767,8 @@ public class PatrolActivity extends AppCompatActivity {
 
                             if (result.get("Estado").getAsBoolean()){
 
+                                enviarFotosSingle(patrolFotos);
+
                                 try {
 
                                     DBHelper dataBaseHelper = new DBHelper(mContext);
@@ -619,6 +801,114 @@ public class PatrolActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void enviarFotosSingle(List<PatrolFoto> patrolFotos){
+
+        new sendPhotoAsync().execute(patrolFotos);
+    }
+
+    private class sendPhotoAsync extends AsyncTask<List<PatrolFoto>, Void, List<PatrolFoto>> {
+
+        @Override
+        protected List<PatrolFoto> doInBackground(List<PatrolFoto>... params) {
+
+
+            List<PatrolFoto> objFotoWork = params[0];
+            PatrolFotoCrud patrolFotoCrud = new PatrolFotoCrud(mContext);
+
+            try {
+                DBHelper dataBaseHelper = new DBHelper(mContext);
+                SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                String selectQuery = "SELECT GuidDipositivo, NumeroCel FROM Configuration";
+                Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                if (c.moveToFirst()) {
+                    //Numero = c.getString(c.getColumnIndex("NumeroCel"));
+                    DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
+                }
+                c.close();
+                dbst.close();
+
+            } catch (Exception e) {}
+
+
+            for (PatrolFoto patrolFoto : objFotoWork) {
+
+                File archivoFoto = new File(patrolFoto.filePath);
+
+                if(archivoFoto.isFile()){
+
+                    //
+                    String URL = URL_API.concat("api/Patrol/SincronizacionFoto");
+
+                    //Log.e("Numero", Numero);
+                    Log.e("DispositivoId", DispositivoId);
+                    Log.e("CodigoSincro", patrolFoto.codigoSincronizacion);
+                    //Log.e("Tipo Foto", String.valueOf(cargoFoto.tipoFoto));
+                    Log.e("File Path", patrolFoto.filePath);
+                    Log.e("Indice", patrolFoto.indice);
+
+                    Ion.with(mContext)
+                            .load(URL)
+                            .uploadProgressHandler(new ProgressCallback() {
+                                @Override
+                                public void onProgress(long uploaded, long total) {
+                                    Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                                }
+                            })
+                            .setTimeout(TIME_OUT)
+                            .setMultipartParameter("DispositivoId", DispositivoId)
+                            .setMultipartParameter("CodigoSincronizacion", patrolFoto.codigoSincronizacion)
+                            .setMultipartParameter("Id", String.valueOf(patrolFoto.patrolFotoId))
+                            .setMultipartParameter("Indice", patrolFoto.indice)
+                            .setMultipartFile("file", new File(patrolFoto.filePath))
+                            //.setMultipartFile("Panoramica", new File(Panoramica))
+                            .asString()
+                            .withResponse()
+                            .setCallback(new FutureCallback<Response<String>>() {
+                                @Override
+                                public void onCompleted(Exception e, Response<String> response) {
+
+                                    if(response.getHeaders().code()==200){
+
+                                        Gson gson = new Gson();
+                                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                        Log.e("JsonObject ", result.toString());
+
+                                        if (result.get("Estado").getAsBoolean()){
+
+                                            patrolFotoCrud.removePatrolFoto(patrolFoto);
+
+                                            File file = new File(patrolFoto.filePath);
+                                            file.delete();
+
+                                        }
+
+                                    }
+                                }
+                            });
+                }
+                else{
+                    patrolFotoCrud.removePatrolFoto(patrolFoto);
+                }
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(List<PatrolFoto> result) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
     }
 
     public void mensajeGuardado(){

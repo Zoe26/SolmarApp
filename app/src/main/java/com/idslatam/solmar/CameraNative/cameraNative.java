@@ -37,8 +37,8 @@ import java.io.StringReader;
 
 public class cameraNative extends AppCompatActivity {
 
-    private String path1 = Environment.getExternalStorageDirectory() + "/ServerSpinner/takepicOrig.jpg";
-    private String path2 = Environment.getExternalStorageDirectory() + "/ServerSpinner/";
+    private String path1 = Environment.getExternalStorageDirectory() + "/Solgis/Image/takepicOrig.jpg";
+    private String path2 = Environment.getExternalStorageDirectory() + "/Solgis/Image/";
     Context mContext;
     public boolean pictureTaken;
     protected static final String PHOTO_TAKEN = "photo_taken";
@@ -54,6 +54,9 @@ public class cameraNative extends AppCompatActivity {
         // take a photo button
         //Button btnPhoto = (Button) findViewById(R.id.photo);
         //btnPhoto.setOnClickListener( new CameraClickHandler() );
+
+        final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/Image");
+        newFile.mkdirs();
 
         mContext = this;
 
@@ -119,10 +122,34 @@ public class cameraNative extends AppCompatActivity {
     protected void onPhotoTaken() {
         pictureTaken = true;
 
+        int width = 0;
+        int height = 0;
+        Bitmap bitmapOrig = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 2;
         //adjust for camera orientation
-        Bitmap bitmapOrig = BitmapFactory.decodeFile( path1);
-        int width = bitmapOrig.getWidth();
-        int height = bitmapOrig.getHeight();
+
+        try{
+            bitmapOrig = BitmapFactory.decodeFile( path1);
+
+            if(bitmapOrig == null){
+                bitmapOrig = BitmapFactory.decodeFile(path1, options);
+
+                width = bitmapOrig.getWidth();
+                height = bitmapOrig.getHeight();
+            }
+            else{
+                width = bitmapOrig.getWidth();
+                height = bitmapOrig.getHeight();
+            }
+        }
+        catch (Exception e){
+
+        }
+
+
+
+
         // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
         //int newWidth = 300;
         int newHeight = 650;

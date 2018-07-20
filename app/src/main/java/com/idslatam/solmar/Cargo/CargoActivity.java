@@ -195,6 +195,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+        Log.e(TAG,"onPageScrolled ");
+
         String sTipoCarga = null, isIngresoV = null;
 
         try {
@@ -632,6 +634,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     @Override
     public void onPageSelected(int position) {
+
+        Log.e(TAG,"on Page Selected ");
 
         String Placa = null, Dni = null, NroOR = null, CantidadBultos = null, sTipoCarga = null, isIngresoV = null,
                 codContenedor = null, numeroPrecintos = null, origenDestinoC = null, numeroC = null;
@@ -1449,18 +1453,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
 
 
+        /*
         if(resultCode == -1 && requestCode == REQUEST_CODE_PHOTO_TAKEN){
             //Bundle extras = data.getStringExtra();
-            /*if(true){
-                String file = null;
-                //file= data.getStringExtra(MediaStore.EXTRA_OUTPUT);
-                //Log.e("file Send", String.valueOf(file));
-                file= data.getStringExtra("File");
-                Log.e("file 2", String.valueOf(file));
-            }
-            */
+
             onPhotoTaken();
         }
+        */
 
         if(resultCode == -1 && requestCode == REQUEST_CODE_PHOTO_TAKEN_ASYNC){
 
@@ -1475,6 +1474,13 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             new takePhotoAsync().execute(objFotoWork);
 
+        }else if(requestCode == REQUEST_CODE_PHOTO_TAKEN_ASYNC){
+
+            File archivoFoto = new File(imageFilePath);
+
+            if(archivoFoto.isFile()){
+                archivoFoto.delete();
+            }
         }
 
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
@@ -1575,10 +1581,11 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     objFotoWork.setSuccess(false);
                     return objFotoWork;
                 default:
-                    Uri_Foto =  objFotoWork.getImageReducedFilePath();
+                    Uri_Foto =  objFotoWork.getImageFilePath();
                     break;
             }
 
+            Log.e("Acceso",objFotoWork.getImageFilePath());
             //adjust for camera orientation
             Bitmap bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
             int width = bitmapOrig.getWidth();
@@ -1606,7 +1613,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
             //int newWidth = 300;
-            int newHeight = 400;
+            int newHeight = 600;
             // calculate the scale
             float newWidth = (((float) newHeight) * width)/height;
 
@@ -1622,7 +1629,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             // save a scaled down Bitmap
             Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrig, 0, 0, width, height, matrix, true);
 
-            File file2 = new File (Uri_Foto);
+            //File file2 = new File(Uri_Foto);
+            File file2 = new File(objFotoWork.getImageFilePath());
 
             try {
                 FileOutputStream out = new FileOutputStream(file2);
@@ -1715,17 +1723,17 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                     case 1:
                         btn_visualizar_delantera.setVisibility(View.VISIBLE);
                         btn_visualizar_delantera.setImageDrawable(null);
-                        btn_visualizar_delantera.setImageURI(Uri.parse(result.getImageReducedFilePath()));
+                        btn_visualizar_delantera.setImageURI(Uri.parse(result.getImageFilePath()));
                         break;
                     case 2:
                         btn_visualizar_trasera.setVisibility(View.VISIBLE);
                         btn_visualizar_trasera.setImageDrawable(null);
-                        btn_visualizar_trasera.setImageURI(Uri.parse(Uri_Foto));
+                        btn_visualizar_trasera.setImageURI(Uri.parse(result.getImageFilePath()));
                         break;
                     case 3:
                         btn_visualizar_panoramica.setVisibility(View.VISIBLE);
                         btn_visualizar_panoramica.setImageDrawable(null);
-                        btn_visualizar_panoramica.setImageURI(Uri.parse(Uri_Foto));
+                        btn_visualizar_panoramica.setImageURI(Uri.parse(result.getImageFilePath()));
                         break;
                     case 4:
                         loadPrecinto();
@@ -1743,137 +1751,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }
     }
 
-    protected void onPhotoTaken() {
-        //pictureTaken = true;
-
-        String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Cargo/";
-
-        if (isPrecinto){
-            Uri_Foto = pathRoot.concat("PrecintoReduced_".concat(String.valueOf(numeroPrecintoFoto))+".jpg");
-        }else{
-            if (fotoDelantera){
-                Uri_Foto = pathRoot.concat("DelanteraReduced.jpg");
-
-            } else if(fotoTracera){
-                Uri_Foto = pathRoot.concat("TraceraReduced.jpg");
-            }else if(fotoPanoramica){
-                Uri_Foto = pathRoot.concat("PanoramicaReduced.jpg");
-            }
-        }
-
-
-        //adjust for camera orientation
-        Bitmap bitmapOrig = BitmapFactory.decodeFile(pathCamera);
-        int width = bitmapOrig.getWidth();
-        int height = bitmapOrig.getHeight();
-        // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
-        //int newWidth = 300;
-        int newHeight = 400;
-        // calculate the scale
-        float newWidth = (((float) newHeight) * width)/height;
-
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // create a matrix for the manipulation
-        Matrix matrix = new Matrix();
-        // resize the bit map
-        //matrix.setRotate(90);
-        matrix.postRotate(90);
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // save a scaled down Bitmap
-        Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrig, 0, 0, width, height, matrix, true);
-
-        File file2 = new File (Uri_Foto);
-
-        try {
-            FileOutputStream out = new FileOutputStream(file2);
-            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.flush();
-            out.close();
-
-            if (isPrecinto){
-
-                try {
-
-                    DBHelper dbHelperNumero = new DBHelper(this);
-                    SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
-                    dbNro.execSQL("UPDATE CargoPrecinto SET Foto = '"+Uri_Foto+"' WHERE Indice = '"+numeroPrecintoFoto+"'");
-                    dbNro.close();
-                } catch (Exception eew){}
-
-
-                loadPrecinto();
-
-                return;
-            }
-            //imageView.setImageURI(Uri.parse(path2 + "imageReduced.jpg"));
-            //uploadImage();
-
-
-
-            if (fotoDelantera){
-
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE Cargo SET fotoDelantera = '"+Uri_Foto+"'");
-                    dba.close();
-                } catch (Exception eew){
-                    Log.e("Exception ", "fotoDelantera");
-                }
-                //
-
-                //imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
-                btn_visualizar_delantera.setVisibility(View.VISIBLE);
-                btn_visualizar_delantera.setImageDrawable(null);
-                btn_visualizar_delantera.setImageURI(Uri.parse(Uri_Foto));
-
-                fotoDelantera = false;
-
-
-            }
-            else if (fotoTracera){
-
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE Cargo SET fotoTracera = '"+Uri_Foto+"'");
-                    dba.close();
-                } catch (Exception eew){
-                    Log.e("Exception ", "fotoTracera");
-                }
-
-                //imgEstadoTrasera.setImageResource(R.drawable.ic_check_foto);
-                btn_visualizar_trasera.setVisibility(View.VISIBLE);
-                btn_visualizar_trasera.setImageDrawable(null);
-                btn_visualizar_trasera.setImageURI(Uri.parse(Uri_Foto));
-                fotoTracera = false;
-
-            }else if(fotoPanoramica) {
-
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(mContext);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE Cargo SET fotoPanoramica = '"+Uri_Foto+"'");
-                    dba.close();
-                } catch (Exception eew){
-                    Log.e("Exception ", "fotoPanoramica");
-                }
-
-                //imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
-                btn_visualizar_panoramica.setVisibility(View.VISIBLE);
-                btn_visualizar_panoramica.setImageDrawable(null);
-                btn_visualizar_panoramica.setImageURI(Uri.parse(Uri_Foto));
-                fotoPanoramica = false;
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public void enviarDNI(){
 
@@ -2073,6 +1950,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void poblarPrimeraVista(){
 
+        Log.e(TAG,"Poblar Primera Vista");
+
         String Placa = null, TipoCarga = null, Dni = null, isCarga = null, isIngresoS = null,
                 EppCasco = null, EppChaleco = null, EppBotas = null, isLicenciaL = null, json = null;
         try {
@@ -2190,6 +2069,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void poblarSegundaVista(){
 
+        Log.e(TAG,"Poblar Segunda Vista");
+
         String Placa = null, TipoCarga = null, Dni = null, isCarga = null, isIngreso = null,
         or = null, ctaBultos = null;
 
@@ -2255,24 +2136,27 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void poblarTerceraVista(){
 
-        String Placa = null, TipoCarga = null, Dni = null, numeroPrecintos = null, isIngreso = null,
-                fotoD=null, fotoT=null, fotoP=null;
+        Log.e(TAG,"Poblar Tercera Vista");
+
+        String Placa = null, TipoCarga = null, Dni = null, isIngreso = null;
 
         try {
-            DBHelper dataBaseHelper = new DBHelper(this);
+            DBHelper dataBaseHelper = new DBHelper(mContext);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, " +
-                    "fotoDelantera, fotoTracera, fotoPanoramica FROM Cargo";
+            String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso FROM Cargo";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
+
                 Placa = c.getString(c.getColumnIndex("Placa"));
                 TipoCarga = c.getString(c.getColumnIndex("TipoCarga"));
                 Dni = c.getString(c.getColumnIndex("Dni"));
                 isIngreso = c.getString(c.getColumnIndex("isIngreso"));
 
-                fotoD = c.getString(c.getColumnIndex("fotoDelantera"));
-                fotoT = c.getString(c.getColumnIndex("fotoTracera"));
-                fotoP = c.getString(c.getColumnIndex("fotoPanoramica"));
+                Log.e("Placa",Placa);
+                Log.e("TipoCarga",TipoCarga);
+                Log.e("Dni",Dni);
+                Log.e("isIngreso",isIngreso);
+
             }
             c.close();
             dbst.close();
@@ -2283,29 +2167,50 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             return;
         }
 
-        if (isIngreso.equalsIgnoreCase("true")){
-            tercer_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
-        } else {
-            tercer_txt_ingreso_tracto.setText("Salida de Tracto "+Placa);
-        }
 
-        if (TipoCarga.equalsIgnoreCase("1")){
-            tercer_txt_carga.setText("Sin Carga");
-        } else if (TipoCarga.equalsIgnoreCase("2")){
-            tercer_txt_carga.setText("Carga Suelta");
-        } else if (TipoCarga.equalsIgnoreCase("3")){
-            tercer_txt_carga.setText("Contenedor Vacío");
+        //if(!tercer_txt_ingreso_tracto.getText().toString().matches(""))
+        //{
+
+            /*
         }else {
-            tercer_txt_carga.setText("Contenedor LLeno");
+            //null or empty
+            Log.e("Placa","Campo Nulo");
         }
+        */
 
-        tercer_txt_dni.setText("Conductor con DNI "+ Dni + "");
+        try{
 
+            Log.e("Placa","Campo no Nulo");
+            // not null not empty
+            if (isIngreso.equalsIgnoreCase("true")){
+                tercer_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
+            } else {
+                tercer_txt_ingreso_tracto.setText("Salida de Tracto "+Placa);
+            }
+
+            if (TipoCarga.equalsIgnoreCase("1")){
+                tercer_txt_carga.setText("Sin Carga");
+            } else if (TipoCarga.equalsIgnoreCase("2")){
+                tercer_txt_carga.setText("Carga Suelta");
+            } else if (TipoCarga.equalsIgnoreCase("3")){
+                tercer_txt_carga.setText("Contenedor Vacío");
+            }else {
+                tercer_txt_carga.setText("Contenedor LLeno");
+            }
+
+            tercer_txt_dni.setText("Conductor con DNI "+ Dni + "");
+        }
+        catch (Exception e){
+
+
+        }
 
 
     }
 
     public void poblarCuartaVista(){
+
+        Log.e(TAG,"Poblar cuarta vista");
 
         String Placa = null, TipoCarga = null, stipoDocumento = null, Dni = null, stamanoContenedor = null,
                 isIngreso = null, codigoContenedor = null, numeroPrecintos = null, origenDestino = null,
@@ -2338,36 +2243,44 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         if (Placa == null){return;}
 
-        if (isIngreso.equalsIgnoreCase("true")){cuarto_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
-        } else {cuarto_txt_ingreso_tracto.setText("Salida de Tracto "+Placa);}
+        try{
+            if (isIngreso.equalsIgnoreCase("true")){cuarto_txt_ingreso_tracto.setText("Ingreso de Tracto "+Placa);
+            } else {cuarto_txt_ingreso_tracto.setText("Salida de Tracto "+Placa);}
 
-        if (TipoCarga.equalsIgnoreCase("1")){cuarto_txt_carga.setText("Sin Carga");
-        } else if (TipoCarga.equalsIgnoreCase("2")){cuarto_txt_carga.setText("Carga Suelta");
-        } else if (TipoCarga.equalsIgnoreCase("3")){cuarto_txt_carga.setText("Contenedor Vacío");
-        }else {cuarto_txt_carga.setText("Contenedor LLeno");}
+            if (TipoCarga.equalsIgnoreCase("1")){cuarto_txt_carga.setText("Sin Carga");
+            } else if (TipoCarga.equalsIgnoreCase("2")){cuarto_txt_carga.setText("Carga Suelta");
+            } else if (TipoCarga.equalsIgnoreCase("3")){cuarto_txt_carga.setText("Contenedor Vacío");
+            }else {cuarto_txt_carga.setText("Contenedor LLeno");}
 
-        cuarto_txt_dni.setText("Conductor con DNI "+ Dni + "");
+            cuarto_txt_dni.setText("Conductor con DNI "+ Dni + "");
 
-        if (stamanoContenedor.equalsIgnoreCase("40")){ cuarto_switch_tamanoContenedor.setChecked(true);}
+            if (stamanoContenedor.equalsIgnoreCase("40")){ cuarto_switch_tamanoContenedor.setChecked(true);}
 
-        if (stipoDocumento.equalsIgnoreCase("2")){ cuarto_switch_tipoDoc.setChecked(true);}
+            if (stipoDocumento.equalsIgnoreCase("2")){ cuarto_switch_tipoDoc.setChecked(true);}
 
 
-        if (codigoContenedor == null){return;}
-        cuarto_edt_codContenedor.setText(codigoContenedor);
+            if (codigoContenedor == null){return;}
+            cuarto_edt_codContenedor.setText(codigoContenedor);
 
-        if (numeroPrecintos == null){return;}
-        cuarto_edt_precinto.setText(numeroPrecintos);
+            if (numeroPrecintos == null){return;}
+            cuarto_edt_precinto.setText(numeroPrecintos);
 
-        if (origenDestino == null){return;}
-        cuarto_edt_origen.setText((origenDestino));
+            if (origenDestino == null){return;}
+            cuarto_edt_origen.setText((origenDestino));
 
-        if (numeroDocumento == null){return;}
-        cuarto_edt_or.setText(numeroDocumento);
+            if (numeroDocumento == null){return;}
+            cuarto_edt_or.setText(numeroDocumento);
+        }
+        catch (Exception e){
+
+        }
+
 
     }
 
     public void poblarQuintaVista(){
+
+        Log.e(TAG,"Poblar Quinta vista");
 
         int contadorIndice = 0, candFotos = 0;
 
@@ -2407,7 +2320,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         }else {quinto_txt_carga.setText("Contenedor LLeno");}
 
         quinto_txt_dni.setText("Conductor con DNI "+ Dni + "");
-
 
         try {
             DBHelper bdh = new DBHelper(this);
@@ -2601,14 +2513,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 storageDir      /* directory */
         );
 
-        File imageR = File.createTempFile(
-                imageFileName+"R_",  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
 
         imageFilePath = image.getAbsolutePath();
-        imageReducedFilePath = imageR.getAbsolutePath();
+        imageReducedFilePath = image.getAbsolutePath();
 
         Log.e(TAG,"File Paths");
         Log.e(TAG,imageFilePath);
@@ -2670,16 +2577,19 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     }
 
     public void returnPersona(View view){
+        Log.e(TAG,"Return Persona");
         segundo_btn_fotos_aux();
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
     }
 
     public void returnPersonaCuarto(View view){
+        Log.e(TAG,"Return Persona 4");
         cuarto_btn_fotos_aux();
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 3);
     }
 
     public void quintoReturnPersona(View view){
+        Log.e(TAG,"Return Persona 5");
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 4);
     }
 
@@ -3639,21 +3549,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     public void enviarFotosSingle(List<CargoFoto> cargoFotos){
 
         new sendPhotoAsync().execute(cargoFotos);
-        /*
-        CargoFotoCrud cargoFotoCrud = new CargoFotoCrud(mContext);
-        List<CargoFoto> cargoFotos = new ArrayList<>();
-
-        switch (tipoCargo){
-            case 1:
-                cargoFotos = cargoFotoCrud.insertFotosSinCarga(codigoSincronizacion,delantera,panoramica);
-                //sendToCloud();
-                new sendPhotoAsync().execute(cargoFotos);
-                break;
-            case 2:
-                break;
-        }
-        */
-
     }
 
     private class sendPhotoAsync extends AsyncTask<List<CargoFoto>, Void, List<CargoFoto>> {
@@ -3682,97 +3577,67 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
             for (CargoFoto cargoFoto : objFotoWork) {
 
-                String URL = URL_API.concat("api/Cargo/SincronizacionFoto");
+                File archivoFoto = new File(cargoFoto.filePath);
 
-                Log.e("Numero", Numero);
-                Log.e("DispositivoId", DispositivoId);
-                Log.e("CodSincro", cargoFoto.codigoSincronizacion);
-                Log.e("Tipo Foto", String.valueOf(cargoFoto.tipoFoto));
-                Log.e("File Path", cargoFoto.filePath);
-                Log.e("Indice", cargoFoto.indice);
+                if(archivoFoto.isFile()){
 
-                Ion.with(mContext)
-                        .load(URL)
-                        .uploadProgressHandler(new ProgressCallback() {
-                            @Override
-                            public void onProgress(long uploaded, long total) {
-                                Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
-                            }
-                        })
-                        .setTimeout(TIME_OUT)
-                        .setMultipartParameter("DispositivoId", DispositivoId)
-                        .setMultipartParameter("CodigoSincronizacion", cargoFoto.codigoSincronizacion)
-                        .setMultipartParameter("TipoFoto", String.valueOf(cargoFoto.tipoFoto))
-                        .setMultipartParameter("Id", String.valueOf(cargoFoto.cargoFotoId))
-                        .setMultipartParameter("Indice", cargoFoto.indice)
-                        .setMultipartFile("file", new File(cargoFoto.filePath))
-                        //.setMultipartFile("Panoramica", new File(Panoramica))
-                        .asString()
-                        .withResponse()
-                        .setCallback(new FutureCallback<Response<String>>() {
-                            @Override
-                            public void onCompleted(Exception e, Response<String> response) {
+                    //
+                    String URL = URL_API.concat("api/Cargo/SincronizacionFoto");
 
-                                if (e != null){
-                                    /*
-                                    try {
-                                        if (pDialog != null && pDialog.isShowing()) {
-                                            pDialog.dismiss();
-                                        }
-                                    } catch (Exception edsv){}
+                    Log.e("Numero", Numero);
+                    Log.e("DispositivoId", DispositivoId);
+                    Log.e("CodSincro", cargoFoto.codigoSincronizacion);
+                    Log.e("Tipo Foto", String.valueOf(cargoFoto.tipoFoto));
+                    Log.e("File Path", cargoFoto.filePath);
+                    Log.e("Indice", cargoFoto.indice);
 
-                                    if (e.toString().equalsIgnoreCase("java.util.concurrent.TimeoutException")){
-                                        mensajeTimeOut();
-                                    }
-                                    return;
-                                    */
+                    Ion.with(mContext)
+                            .load(URL)
+                            .uploadProgressHandler(new ProgressCallback() {
+                                @Override
+                                public void onProgress(long uploaded, long total) {
+                                    Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
                                 }
+                            })
+                            .setTimeout(TIME_OUT)
+                            .setMultipartParameter("DispositivoId", DispositivoId)
+                            .setMultipartParameter("CodigoSincronizacion", cargoFoto.codigoSincronizacion)
+                            .setMultipartParameter("TipoFoto", String.valueOf(cargoFoto.tipoFoto))
+                            .setMultipartParameter("Id", String.valueOf(cargoFoto.cargoFotoId))
+                            .setMultipartParameter("Indice", cargoFoto.indice)
+                            .setMultipartFile("file", new File(cargoFoto.filePath))
+                            //.setMultipartFile("Panoramica", new File(Panoramica))
+                            .asString()
+                            .withResponse()
+                            .setCallback(new FutureCallback<Response<String>>() {
+                                @Override
+                                public void onCompleted(Exception e, Response<String> response) {
 
-                                if(response.getHeaders().code()==200){
+                                    if(response.getHeaders().code()==200){
 
-                                    Gson gson = new Gson();
-                                    JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+                                        Gson gson = new Gson();
+                                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
 
-                                    Log.e("JsonObject ", result.toString());
+                                        Log.e("JsonObject ", result.toString());
 
-                                    if (result.get("Estado").getAsBoolean()){
+                                        if (result.get("Estado").getAsBoolean()){
 
-                                        cargoFotoCrud.removeCargoFoto(cargoFoto);
-                                        /*
-                                        Log.e("EliminarId ", String.valueOf(cargoFoto.cargoFotoId));
+                                            cargoFotoCrud.removeCargoFoto(cargoFoto);
 
-                                        enviarFotosSingle(CodigoSincronizacion,1,Delantera,Panoramica,"");
-                                        limpiarDatos();
+                                            File file = new File(cargoFoto.filePath);
+                                            file.delete();
 
-                                        try {
-                                            showDialogSend();
-                                        } catch (Exception e1) {
-                                            e1.printStackTrace();
-                                        }*/
-                                    } /*else {
-
-                                        Toast.makeText(mContext, result.get("Exception").getAsString(), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    try {
-                                        if (pDialog != null && pDialog.isShowing()) {
-                                            pDialog.dismiss();
                                         }
-                                    } catch (Exception edsv){}
-                                    */
 
-                                }
-
-                                /*
-                                try {
-                                    if (pDialog != null && pDialog.isShowing()) {
-                                        pDialog.dismiss();
                                     }
-                                } catch (Exception edsv){}
-                                */
+                                }
+                            });
+                }
+                else{
+                    cargoFotoCrud.removeCargoFoto(cargoFoto);
+                }
 
-                            }
-                        });
+
             }
 
             return objFotoWork;

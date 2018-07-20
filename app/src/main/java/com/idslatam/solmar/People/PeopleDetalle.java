@@ -14,6 +14,9 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,13 +33,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.ImageClass.ImageConverter;
+import com.idslatam.solmar.Models.Crud.PeopleFotoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.*;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolTakeFotoAsync;
+import com.idslatam.solmar.Models.Entities.DTO.People.PeopleTakeFotoAsync;
+import com.idslatam.solmar.Patrol.PatrolActivity;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.body.FilePart;
 import com.koushikdutta.async.http.body.Part;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
 import com.koushikdutta.ion.bitmap.Transform;
 import com.sandrios.sandriosCamera.internal.SandriosCamera;
@@ -44,8 +52,13 @@ import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 import static java.security.AccessController.getContext;
 
@@ -61,10 +74,12 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
     EditText people_detalle_dni, people_edt_persTipo, people_detalle_nombre, people_detalle_empresa,
             people_detalle_motivo, people_detalle_codArea;
 
-    String GuidDipositivo;
+    String GuidDipositivo,imageFilePath,CodigoSincronizacion=null,Numero=null,DispositivoId;
 
     private static final int CAPTURE_MEDIA = 368;
     private Activity activity;
+    private static final String TAG = "PeopleAsync";
+    private static final int REQUEST_CODE_PHOTO_TAKEN_ASYNC = 2;
 
     String Uri_Foto, URL_API, fotoVal, fotoVeh, fotoVehGuantera, fotoVehMaletera;
 
@@ -77,14 +92,19 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     ImageView people_detalle_img;
 
-    int indice;
+    int indice,TIME_OUT = 5*60 * 1000;
 
     ProgressDialog pDialog;
+
+    List<PeopleFoto> peopleFotoList = new ArrayList<PeopleFoto>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_people_detalle);
+
+        final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/People");
+        newFile.mkdirs();
 
         mContext = this;
         activity = this;
@@ -421,13 +441,52 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     public void tomarFoto(){
 
+        /*
         new SandriosCamera(activity, CAPTURE_MEDIA)
                 .setShowPicker(false)
                 .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
                 .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_LOWEST)
                 .enableImageCropping(false)
                 .launchCamera();
+        */
+        try{
+            File filecc = createImageFile();
+            Uri outputFileUri = Uri.fromFile( filecc );
+            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
+            intent.putExtra( MediaStore.EXTRA_OUTPUT, outputFileUri );
+            startActivityForResult( intent, REQUEST_CODE_PHOTO_TAKEN_ASYNC );
+        }
+        catch (Exception e){
+            Log.e(TAG,e.toString());
+        }
 
+    }
+
+    private File createImageFile() throws IOException {
+
+        Log.e("People","Create file");
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+
+        String imageFileName = "IMG_" + timeStamp + "_";
+
+        File storageDir = new File(Environment.getExternalStorageDirectory()+"/Solgis/People");//getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+
+        imageFilePath = image.getAbsolutePath();
+        //imageReducedFilePath = image.getAbsolutePath();
+
+        Log.e(TAG,"File Paths");
+        Log.e(TAG,imageFilePath);
+        //Log.e(TAG,imageReducedFilePath);
+
+        return image;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -436,84 +495,249 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
-            Log.e("File", "" + data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
+        if (requestCode == REQUEST_CODE_PHOTO_TAKEN_ASYNC && resultCode == RESULT_OK) {
 
-            String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
-            Uri_Foto = photoUri;
+            Log.e("File", "" + imageFilePath);
+
+            //String photoUri  = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
+            Uri_Foto = imageFilePath;
 
             if (fotoValor){
 
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(this);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE People SET fotoValor = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoValor ","true");
-                } catch (Exception eew){}
-
-
-                btn_visualizar_valor.setVisibility(View.VISIBLE);
-                btn_visualizar_valor.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
-
-                //imgEstadoDelantera.setImageResource(R.drawable.ic_check_foto);
-                fotoValor = false;
-                btn_visualizar_valor.setEnabled(true);
+                PeopleTakeFotoAsync fotoPeople =  new PeopleTakeFotoAsync(imageFilePath,"1");
+                new takePhotoAsync().execute(fotoPeople);
 
             } else if (fotoVehiculo){
 
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(this);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE People SET fotoVehiculo = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoVehiculo ","true");
-                } catch (Exception eew){}
-
-                btn_visualizar_vehiculo_delatera.setVisibility(View.VISIBLE);
-                btn_visualizar_vehiculo_delatera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
-
-                //imgEstadoPaniramica.setImageResource(R.drawable.ic_check_foto);
-                fotoVehiculo = false;
-                btn_visualizar_vehiculo_delatera.setEnabled(true);
+                PeopleTakeFotoAsync fotoPeople =  new PeopleTakeFotoAsync(imageFilePath,"2");
+                new takePhotoAsync().execute(fotoPeople);
 
             } else if (fotoVehiculoGuantera){
 
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(this);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE People SET fotoVehiculoGuantera = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoValorGuantera ","true");
-                } catch (Exception eew){}
-
-                btn_visualizar_vehiculo_guantera.setVisibility(View.VISIBLE);
-                btn_visualizar_vehiculo_guantera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
-
-                fotoVehiculoGuantera = false;
-                btn_visualizar_vehiculo_guantera.setEnabled(true);
+                PeopleTakeFotoAsync fotoPeople =  new PeopleTakeFotoAsync(imageFilePath,"3");
+                new takePhotoAsync().execute(fotoPeople);
 
             } else if (fotoVehiculoMaletera){
 
-                try {
-                    DBHelper dbHelperAlarm = new DBHelper(this);
-                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
-                    dba.execSQL("UPDATE People SET fotoVehiculoMaletera = '"+Uri_Foto+"'");
-                    dba.close();
-                    Log.e("fotoValorMaletera ","true");
-                } catch (Exception eew){}
-
-                btn_visualizar_vehiculo_maletera.setVisibility(View.VISIBLE);
-                btn_visualizar_vehiculo_maletera.setImageURI(Uri.parse(getRightAngleImage(Uri_Foto)));
-
-                fotoVehiculoMaletera = false;
-
-                btn_visualizar_vehiculo_maletera.setEnabled(true);
+                PeopleTakeFotoAsync fotoPeople =  new PeopleTakeFotoAsync(imageFilePath,"4");
+                new takePhotoAsync().execute(fotoPeople);
             }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
 
+    }
+
+    private class takePhotoAsync extends AsyncTask<PeopleTakeFotoAsync, Void, PeopleTakeFotoAsync> {
+
+        @Override
+        protected PeopleTakeFotoAsync doInBackground(PeopleTakeFotoAsync... params) {
+
+
+            PeopleTakeFotoAsync objFotoWork = params[0];
+            int width=0,height=0;
+            Bitmap bitmapOrig = null;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            //String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/People/";
+
+            Log.e("File Acces:",objFotoWork.getImageFilePath());
+
+            //Revisión poder de archivo:
+            try {
+                //String imageInSD = "/sdcard/UserImages/" + userImageName;
+                bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
+                if(bitmapOrig == null){
+                    bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath(), options);
+
+                    width = bitmapOrig.getWidth();
+                    height = bitmapOrig.getHeight();
+                }
+                else{
+                    width = bitmapOrig.getWidth();
+                    height = bitmapOrig.getHeight();
+                }
+
+                //return bitmap;
+            } catch (Exception e) {
+
+            }
+
+            //adjust for camera orientation
+            /*
+            Bitmap bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
+            width = bitmapOrig.getWidth();
+            height = bitmapOrig.getHeight();
+            */
+
+            ExifInterface exif = null;
+
+            try
+            {
+                exif = new ExifInterface(objFotoWork.getImageFilePath());
+            }
+            catch (IOException e)
+            {
+                //Error
+                e.printStackTrace();
+            }
+
+            String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+            int orientation = orientString != null ? Integer.parseInt(orientString) :  ExifInterface.ORIENTATION_NORMAL;
+
+            int rotationAngle = 0;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+
+            // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
+            //int newWidth = 300;
+            int newHeight = 600;
+            // calculate the scale
+            float newWidth = (((float) newHeight) * width)/height;
+
+            float scaleWidth = ((float) newWidth) / width;
+            float scaleHeight = ((float) newHeight) / height;
+            // create a matrix for the manipulation
+            Matrix matrix = new Matrix();
+            // resize the bit map
+            //matrix.setRotate(90);
+            matrix.postRotate(rotationAngle);
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // save a scaled down Bitmap
+            Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrig, 0, 0, width, height, matrix, true);
+
+            //File file2 = new File(Uri_Foto);
+            File file2 = new File(objFotoWork.getImageFilePath());
+
+            try {
+                FileOutputStream out = new FileOutputStream(file2);
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+
+                objFotoWork.setSuccess(true);
+
+                try{
+                    switch (objFotoWork.getTipoFoto()){
+                        case "1":
+                            try {
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE People SET fotoValor = '"+objFotoWork.getImageFilePath()+"'");
+                                dba.close();
+                                Log.e("fotoValor ","true");
+                            } catch (Exception eew){}
+                            break;
+                        case "2":
+
+                            try {
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE People SET fotoVehiculo = '"+objFotoWork.getImageFilePath()+"'");
+                                dba.close();
+                                Log.e("fotoVehiculo ","true");
+                            } catch (Exception eew){}
+
+                            break;
+                        case "3":
+
+                            try {
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE People SET fotoVehiculoGuantera = '"+objFotoWork.getImageFilePath()+"'");
+                                dba.close();
+                                Log.e("fotoValorGuantera ","true");
+                            } catch (Exception eew){}
+
+                            break;
+                        case "4":
+
+                            try {
+                                DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                dba.execSQL("UPDATE People SET fotoVehiculoMaletera = '"+objFotoWork.getImageFilePath()+"'");
+                                dba.close();
+                                Log.e("fotoValorMaletera ","true");
+                            } catch (Exception eew){}
+
+
+                        default:
+
+                            break;
+                    }
+                }
+                catch (Exception e){
+
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(PeopleTakeFotoAsync result) {
+            Log.e(TAG,"Result Post Execute");
+            Log.e(TAG,result.toString());
+            if(result.getSuccess()){
+                //loadPrecinto();
+                try{
+                    switch (result.getTipoFoto()){
+                        case "1":
+
+                            btn_visualizar_valor.setVisibility(View.VISIBLE);
+                            btn_visualizar_valor.setImageURI(Uri.parse(result.getImageFilePath()));
+                            fotoValor = false;
+                            btn_visualizar_valor.setEnabled(true);
+
+                            break;
+                        case "2":
+
+                            btn_visualizar_vehiculo_delatera.setVisibility(View.VISIBLE);
+                            btn_visualizar_vehiculo_delatera.setImageURI(Uri.parse(result.getImageFilePath()));
+                            fotoVehiculo = false;
+                            btn_visualizar_vehiculo_delatera.setEnabled(true);
+
+                            break;
+                        case "3":
+
+                            btn_visualizar_vehiculo_guantera.setVisibility(View.VISIBLE);
+                            btn_visualizar_vehiculo_guantera.setImageURI(Uri.parse(result.getImageFilePath()));
+                            fotoVehiculoGuantera = false;
+                            btn_visualizar_vehiculo_guantera.setEnabled(true);
+
+                            break;
+
+                        case "4":
+
+                            btn_visualizar_vehiculo_maletera.setVisibility(View.VISIBLE);
+                            btn_visualizar_vehiculo_maletera.setImageURI(Uri.parse(result.getImageFilePath()));
+                            fotoVehiculoMaletera = false;
+                            btn_visualizar_vehiculo_maletera.setEnabled(true);
+
+                        default:
+                            break;
+
+                    }
+                }
+                catch (Exception e){
+
+                }
+
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
     }
 
     public void guardarPeople(View view){
@@ -643,20 +867,25 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
         Log.e("SinNada ", "Ingreso");
 
-        String URL = URL_API.concat("api/People/Create");
+        String URL = URL_API.concat("api/People/CreateAsync");
+        CodigoSincronizacion = CodigoSincronizacion = UUID.randomUUID().toString();
+
+        Log.e("DispositivoId ", GuidDipositivo);
 
         Ion.with(this)
                 .load(URL)
-                .setMultipartParameter("DispositivoId", GuidDipositivo)
-                .setMultipartParameter("codPers", result.get("codPers").getAsString())
-                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
-                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
-                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
-                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
-                .setMultipartParameter("codArea", result.get("codArea").getAsString())
-                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
+                .setBodyParameter("DispositivoId", GuidDipositivo)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                .setBodyParameter("codPers", result.get("codPers").getAsString())
+                .setBodyParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setBodyParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setBodyParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setBodyParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setBodyParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setBodyParameter("codArea", result.get("codArea").getAsString())
+                .setBodyParameter("nroPase", result.get("nroPase").getAsString())
+                .setBodyParameter("persTipo", result.get("persTipo").getAsString())
+                .setBodyParameter("peopleTipo", "0")
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -716,21 +945,27 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
         Log.e("ConMaterial ", "Ingreso");
 
-        String URL = URL_API.concat("api/People/Create");
+        String URL = URL_API.concat("api/People/CreateAsync");
+        PeopleFotoCrud peopleFotoCrud = new PeopleFotoCrud(mContext);
+        CodigoSincronizacion = CodigoSincronizacion = UUID.randomUUID().toString();
+        //peopleFotoList =
+        peopleFotoList =  peopleFotoCrud.insertConValor(CodigoSincronizacion,fotoVal);
 
         Ion.with(this)
                 .load(URL)
-                .setMultipartParameter("DispositivoId", GuidDipositivo)
-                .setMultipartParameter("codPers", result.get("codPers").getAsString())
-                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
-                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
-                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
-                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
-                .setMultipartParameter("codArea", result.get("codArea").getAsString())
-                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
-                .setMultipartFile("Material", new File(fotoVal))
+                .setBodyParameter("DispositivoId", GuidDipositivo)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                .setBodyParameter("codPers", result.get("codPers").getAsString())
+                .setBodyParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setBodyParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setBodyParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setBodyParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setBodyParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setBodyParameter("codArea", result.get("codArea").getAsString())
+                .setBodyParameter("nroPase", result.get("nroPase").getAsString())
+                .setBodyParameter("persTipo", result.get("persTipo").getAsString())
+                .setBodyParameter("peopleTipo", "1")
+                //.setMultipartFile("Material", new File(fotoVal))
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -760,6 +995,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                             if (result.get("Estado").getAsString().equalsIgnoreCase("false")){
                                 try {
+
                                     if (pDialog != null && pDialog.isShowing()) {
                                         pDialog.dismiss();
                                     }
@@ -770,6 +1006,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                                 return;
                             } else {
 
+                                enviarFotosSingle(peopleFotoList);
                                 try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
                                 try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
                             }
@@ -790,23 +1027,29 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
         Log.e("ConVehiculo ", "Ingreso");
 
-        String URL = URL_API.concat("api/People/Create");
+        String URL = URL_API.concat("api/People/CreateAsync");
+        PeopleFotoCrud peopleFotoCrud = new PeopleFotoCrud(mContext);
+        CodigoSincronizacion = CodigoSincronizacion = UUID.randomUUID().toString();
+        //peopleFotoList =
+        peopleFotoList =  peopleFotoCrud.insertConVehiculo(CodigoSincronizacion,fotoVeh,fotoVehGuantera,fotoVehMaletera);
 
         Ion.with(this)
                 .load(URL)
-                .setMultipartParameter("DispositivoId", GuidDipositivo)
-                .setMultipartParameter("codPers", result.get("codPers").getAsString())
-                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
-                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
-                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
-                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
-                .setMultipartParameter("codArea", result.get("codArea").getAsString())
-                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
-                .setMultipartFile("Delantera", new File(fotoVeh))
+                .setBodyParameter("DispositivoId", GuidDipositivo)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                .setBodyParameter("codPers", result.get("codPers").getAsString())
+                .setBodyParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setBodyParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setBodyParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setBodyParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setBodyParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setBodyParameter("codArea", result.get("codArea").getAsString())
+                .setBodyParameter("nroPase", result.get("nroPase").getAsString())
+                .setBodyParameter("persTipo", result.get("persTipo").getAsString())
+                .setBodyParameter("peopleTipo", "2")
+                /*.setMultipartFile("Delantera", new File(fotoVeh))
                 .setMultipartFile("Guantera", new File(fotoVehGuantera))
-                .setMultipartFile("Maletera", new File(fotoVehMaletera))
+                .setMultipartFile("Maletera", new File(fotoVehMaletera))*/
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -845,7 +1088,7 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                                 return;
                             } else {
-
+                                enviarFotosSingle(peopleFotoList);
                                 try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
                                 try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
                             }
@@ -880,25 +1123,31 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
         Log.e("Guantera ", fotoVehGuantera);
         Log.e("Maletera ", fotoVehMaletera);
 
-        String URL = URL_API.concat("api/People/Create");
-        Log.e("URL ", URL);
+        String URL = URL_API.concat("api/People/CreateAsync");
+        //Log.e("URL ", URL);
+        PeopleFotoCrud peopleFotoCrud = new PeopleFotoCrud(mContext);
+        CodigoSincronizacion = CodigoSincronizacion = UUID.randomUUID().toString();
+        //peopleFotoList =
+        peopleFotoList =  peopleFotoCrud.insertAll(CodigoSincronizacion,fotoVal,fotoVeh,fotoVehGuantera,fotoVehMaletera);
 
         Ion.with(this)
                 .load(URL)
-                .setMultipartParameter("DispositivoId", cadenaA)
-                .setMultipartParameter("codPers", result.get("codPers").getAsString())
-                .setMultipartParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
-                .setMultipartParameter("codMovSgte", result.get("codMovSgte").getAsString())
-                .setMultipartParameter("codMotivo", result.get("codMotivo").getAsString())
-                .setMultipartParameter("codEmpresa", result.get("codEmpresa").getAsString())
-                .setMultipartParameter("codAutoriX", result.get("codAutoriX").getAsString())
-                .setMultipartParameter("codArea", result.get("codArea").getAsString())
-                .setMultipartParameter("nroPase", result.get("nroPase").getAsString())
-                .setMultipartParameter("persTipo", result.get("persTipo").getAsString())
-                .setMultipartFile("Material", new File(fotoVal))
+                .setBodyParameter("DispositivoId", cadenaA)
+                .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                .setBodyParameter("codPers", result.get("codPers").getAsString())
+                .setBodyParameter("CodigoServicio", result.get("CodigoServicio").getAsString())
+                .setBodyParameter("codMovSgte", result.get("codMovSgte").getAsString())
+                .setBodyParameter("codMotivo", result.get("codMotivo").getAsString())
+                .setBodyParameter("codEmpresa", result.get("codEmpresa").getAsString())
+                .setBodyParameter("codAutoriX", result.get("codAutoriX").getAsString())
+                .setBodyParameter("codArea", result.get("codArea").getAsString())
+                .setBodyParameter("nroPase", result.get("nroPase").getAsString())
+                .setBodyParameter("persTipo", result.get("persTipo").getAsString())
+                .setBodyParameter("peopleTipo", "3")
+                /*.setMultipartFile("Material", new File(fotoVal))
                 .setMultipartFile("Delantera", new File(fotoVeh))
                 .setMultipartFile("Guantera", new File(fotoVehGuantera))
-                .setMultipartFile("Maletera", new File(fotoVehMaletera))
+                .setMultipartFile("Maletera", new File(fotoVehMaletera))*/
                 .asString()
                 .withResponse()
                 .setCallback(new FutureCallback<Response<String>>() {
@@ -937,10 +1186,12 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
                                 return;
                             } else {
+
+                                enviarFotosSingle(peopleFotoList);
+
                                 try {if (pDialog != null && pDialog.isShowing()) {pDialog.dismiss();}} catch (Exception edsv){}
 
                                 try {showDialogSend();} catch (Exception e1) {e1.printStackTrace();}
-
 
                             }
                         }
@@ -957,11 +1208,13 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /*
     public void casoConMaterialVehiculo(JsonObject result){
 
         Log.e("ConMaterialVehiculo ", "Ingreso");
 
         String URL = URL_API.concat("api/People/Create");
+        CodigoSincronizacion = UUID.randomUUID().toString();
 
         Ion.with(this)
                 .load(URL)
@@ -1047,6 +1300,119 @@ public class PeopleDetalle extends AppCompatActivity implements View.OnClickList
                 });
 
     }
+    */
+
+    public void enviarFotosSingle(List<PeopleFoto> peopleFotos){
+
+        new sendPhotoAsync().execute(peopleFotos);
+    }
+
+    private class sendPhotoAsync extends AsyncTask<List<PeopleFoto>, Void, List<PeopleFoto>> {
+
+        @Override
+        protected List<PeopleFoto> doInBackground(List<PeopleFoto>... params) {
+
+
+            List<PeopleFoto> objFotoWork = params[0];
+            PeopleFotoCrud peopleFotoCrud = new PeopleFotoCrud(mContext);
+
+            try {
+                DBHelper dataBaseHelper = new DBHelper(mContext);
+                SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+                String selectQuery = "SELECT GuidDipositivo, NumeroCel FROM Configuration";
+                Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+                if (c.moveToFirst()) {
+                    Numero = c.getString(c.getColumnIndex("NumeroCel"));
+                    DispositivoId = c.getString(c.getColumnIndex("GuidDipositivo"));
+                }
+                c.close();
+                dbst.close();
+
+            } catch (Exception e) {}
+
+
+            for (PeopleFoto peopleFoto : objFotoWork) {
+
+                File archivoFoto = new File(peopleFoto.filePath);
+
+                if(archivoFoto.isFile()){
+
+                    //
+                    String URL = URL_API.concat("api/People/SincronizacionFoto");
+
+                    Log.e("Numero", Numero);
+                    Log.e("DispositivoId", DispositivoId);
+                    Log.e("CodSincro", peopleFoto.codigoSincronizacion);
+                    Log.e("Tipo Foto", String.valueOf(peopleFoto.tipoFoto));
+                    Log.e("File Path", peopleFoto.filePath);
+                    Log.e("Indice", peopleFoto.indice);
+
+                    Ion.with(mContext)
+                            .load(URL)
+                            .uploadProgressHandler(new ProgressCallback() {
+                                @Override
+                                public void onProgress(long uploaded, long total) {
+                                    Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                                }
+                            })
+                            .setTimeout(TIME_OUT)
+                            .setMultipartParameter("DispositivoId", DispositivoId)
+                            .setMultipartParameter("CodigoSincronizacion", peopleFoto.codigoSincronizacion)
+                            .setMultipartParameter("TipoFoto", String.valueOf(peopleFoto.tipoFoto))
+                            .setMultipartParameter("Id", String.valueOf(peopleFoto.peopleFotoId))
+                            .setMultipartParameter("Indice", peopleFoto.indice)
+                            .setMultipartFile("file", new File(peopleFoto.filePath))
+                            //.setMultipartFile("Panoramica", new File(Panoramica))
+                            .asString()
+                            .withResponse()
+                            .setCallback(new FutureCallback<Response<String>>() {
+                                @Override
+                                public void onCompleted(Exception e, Response<String> response) {
+
+                                    if(response.getHeaders().code()==200){
+
+                                        Gson gson = new Gson();
+                                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                        Log.e("JsonObject ", result.toString());
+
+                                        if (result.get("Estado").getAsBoolean()){
+
+                                            peopleFotoCrud.removePeopleFoto(peopleFoto);
+
+                                            File file = new File(peopleFoto.filePath);
+                                            file.delete();
+
+                                        }
+
+                                    }
+                                }
+                            });
+                }
+                else{
+                    peopleFotoCrud.removePeopleFoto(peopleFoto);
+                }
+
+
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(List<PeopleFoto> result) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
+    }
+
 
     public void showDialogSend() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
