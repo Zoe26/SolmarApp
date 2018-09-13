@@ -53,11 +53,13 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Cargo.Precinto.PrecintoCustomAdapter;
 import com.idslatam.solmar.Cargo.Precinto.PrecintoDataModel;
+import com.idslatam.solmar.Cargo.TipoCarga.TipoCargaCustomPagerAdapter;
 import com.idslatam.solmar.ImageClass.*;
 import com.idslatam.solmar.Models.Crud.CargoCrud;
 import com.idslatam.solmar.Models.Crud.CargoFotoCrud;
@@ -68,6 +70,8 @@ import com.idslatam.solmar.Models.Entities.CargoFoto;
 import com.idslatam.solmar.Models.Entities.CargoPrecinto;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoPrecintoDBList;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTakeFotoAsync;
+import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTipoCargaDTO;
+import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTipoCargaTableDTO;
 import com.idslatam.solmar.R;
 import com.idslatam.solmar.View.Code.CodeBar;
 import com.idslatam.solmar.View.Perfil;
@@ -167,6 +171,8 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     boolean fotoA,fotoB, fotoC, fotoPrecinto;
 
+    TipoCargaCustomPagerAdapter adapterTipoCarga;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,26 +184,62 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
 
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new CustomPagerAdapter(this));
         viewPager.addOnPageChangeListener(this);
 
+
         final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/Cargo");
-        newFile.mkdir();
+        //newFile.mkdir();
         newFile.mkdirs();
 
+        //Log.e(TAG, "Create File");
+        //Log.e(TAG, newFile.getAbsolutePath());
 
-        Log.e(TAG, "Create File");
-        Log.e(TAG, newFile.getAbsolutePath());
+        getDataTipoCarga();
 
     }
+
+    private void getDataTipoCarga(){
+        Log.e("TipoCarga","Executed");
+
+        Ion.with(mContext)
+                .load("http://190.116.178.163:85/WebApi/api/Cliente/ClienteCargas/Dispositivos/a42a6042-9b5e-4480-bea5-efa0ae5876fa")
+                //.asJsonObject()
+                .as(new TypeToken<CargoTipoCargaTableDTO>(){})
+                .setCallback(new FutureCallback<CargoTipoCargaTableDTO>() {
+                    @Override
+                    public void onCompleted(Exception e, CargoTipoCargaTableDTO result) {
+
+
+                        if(result.Estado){
+                            //Log.e("prop",result.Mensaje);
+                            //Log.e("Json Result",result.Data.toString());
+
+                            adapterTipoCarga = new TipoCargaCustomPagerAdapter(mContext, result.Data);
+                            // Attach the adapter to a ListView
+                            GridView gvTipoCarga = (GridView) findViewById(R.id.gvTipoCarga);
+
+                            gvTipoCarga.setAdapter(adapterTipoCarga);
+                        }
+
+
+                        // do stuff with the result or error
+                    }
+                });
+    }
+
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        Log.e(TAG,"onPageScrolled ");
+        Log.e(TAG,"on Page Scrolled ");
+        Log.e(TAG,String.valueOf(position));
 
         String sTipoCarga = null, isIngresoV = null;
+
+
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
@@ -553,6 +595,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         }
 
+
     }
 
     View.OnClickListener rbSinCargaClick = new View.OnClickListener(){
@@ -636,6 +679,9 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
     public void onPageSelected(int position) {
 
         Log.e(TAG,"on Page Selected ");
+        Log.e(TAG,String.valueOf(position));
+
+
 
         String Placa = null, Dni = null, NroOR = null, CantidadBultos = null, sTipoCarga = null, isIngresoV = null,
                 codContenedor = null, numeroPrecintos = null, origenDestinoC = null, numeroC = null;
@@ -905,6 +951,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         }
 
+
     }
 
     public void onCheckboxClickedSegundo(View view) {
@@ -1124,7 +1171,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
     public void onCheckboxClicked(View view) {
         // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
+        boolean checked = ((CheckBox)view).isChecked();
 
         // Check which checkbox was clicked
         switch(view.getId()) {
@@ -1169,8 +1216,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
                 }
                 break;
         }
-
-
     }
 
     @Override
@@ -1559,10 +1604,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         super.onActivityResult(requestCode, resultCode, data);
 
-
-
-
-
     }
 
 
@@ -1570,7 +1611,6 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
 
         @Override
         protected CargoTakeFotoAsync doInBackground(CargoTakeFotoAsync... params) {
-
 
             CargoTakeFotoAsync objFotoWork = params[0];
 
@@ -2597,8 +2637,38 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
     }
 
+    public void ViewCargaForm(View view){
+        /*
+        CargoTipoCargaDTO tipoCargaSelected = adapterTipoCarga.getItemX();
+
+        Log.e("Nombre",tipoCargaSelected.Nombre);
+        Log.e("Id",String.valueOf(tipoCargaSelected.ClienteCargaId));
+        */
+
+        Log.e("Item",String.valueOf(viewPager.getCurrentItem()));
+        viewPager.setCurrentItem(5);
+    }
+
+
+    public void ViewFotoForm(View view){
+        /*
+        CargoTipoCargaDTO tipoCargaSelected = adapterTipoCarga.getItemX();
+
+        Log.e("Nombre",tipoCargaSelected.Nombre);
+        Log.e("Id",String.valueOf(tipoCargaSelected.ClienteCargaId));
+        */
+
+        Log.e("Item",String.valueOf(viewPager.getCurrentItem()));
+        viewPager.setCurrentItem(6);
+    }
+
+
+    //Anular función
     public void primeroViewCarga(View view){
 
+
+
+        /*
         String Placa = null, Dni = null;
 
         try {
@@ -2655,10 +2725,7 @@ public class CargoActivity extends AppCompatActivity implements ViewPager.OnPage
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 3);
 
         }
-
-    }
-
-    public void primeroViewFoto(View view){
+        */
 
     }
 

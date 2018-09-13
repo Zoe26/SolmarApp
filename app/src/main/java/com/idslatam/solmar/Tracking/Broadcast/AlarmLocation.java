@@ -23,11 +23,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Cargo.CargoActivity;
+import com.idslatam.solmar.Models.Crud.CargoFormFotoCrud;
 import com.idslatam.solmar.Models.Crud.CargoFotoCrud;
+import com.idslatam.solmar.Models.Crud.ConfiguracionCrud;
 import com.idslatam.solmar.Models.Crud.PatrolFotoCrud;
 import com.idslatam.solmar.Models.Crud.PeopleFotoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.CargoFormFoto;
 import com.idslatam.solmar.Models.Entities.CargoFoto;
+import com.idslatam.solmar.Models.Entities.DTO.Configuracion.ConfiguracionSingleDTO;
 import com.idslatam.solmar.Models.Entities.PatrolFoto;
 import com.idslatam.solmar.Models.Entities.PeopleFoto;
 import com.idslatam.solmar.Pruebas.Crud.AlarmTrackCrud;
@@ -44,8 +48,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AlarmLocation extends BroadcastReceiver {
 
@@ -54,6 +61,8 @@ public class AlarmLocation extends BroadcastReceiver {
 
     String scurrentInicio;
     Calendar ccurrentInicio;
+    ConfiguracionCrud configuracionCrud;
+    CargoFormFotoCrud cargoFormFotoCrud;
 
     int intervalo;
 
@@ -235,6 +244,7 @@ public class AlarmLocation extends BroadcastReceiver {
             }
         }
 
+        //Reenvío Cargo:
         try{
             Log.e("alarmSendPhtAsync","Inicio de envío async 0");
             //Envio de imagenes:
@@ -243,6 +253,22 @@ public class AlarmLocation extends BroadcastReceiver {
 
             if(cargoFotos.size() >0){
                 new AlarmLocation.sendPhotoAsync().execute(cargoFotos);
+                Log.e("alarmSendPhtAsync","Inicio de envío async 1");
+            }
+        }
+        catch (Exception e){
+
+        }
+
+        //Reenvío Cargo Form:
+        try{
+            Log.e("alarmSendPhtAsync","Inicio de envío async Cargo Form");
+            //Envio de imagenes:
+            CargoFormFotoCrud _imagenCargo = new CargoFormFotoCrud(mContext);
+            List<CargoFormFoto> cargoFotos = _imagenCargo.listFotosForSync();
+
+            if(cargoFotos.size() >0){
+                new AlarmLocation.sendPhotoCargoFormAsync().execute(cargoFotos);
                 Log.e("alarmSendPhtAsync","Inicio de envío async 1");
             }
         }
@@ -259,7 +285,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
             if(patrolFotos.size() >0){
                 new AlarmLocation.sendPhotoPatrolAsync().execute(patrolFotos);
-                Log.e("alarmSendPhtAsync","Inicio de envío async 1");
+                Log.e("alarmSendPhtAsync","Inicio de envío async 2");
             }
         }
         catch (Exception e){
@@ -281,6 +307,24 @@ public class AlarmLocation extends BroadcastReceiver {
         catch (Exception e){
 
         }
+
+        /*
+        //Reenvío People
+        try{
+            Log.e("alarmSendPhtAsync","Inicio de envío async 0");
+            //Envio de imagenes:
+            PeopleFotoCrud _imagenPeople = new PeopleFotoCrud(mContext);
+            List<PeopleFoto> peopleFotos = _imagenPeople.listFotosForSync();
+
+            if(peopleFotos.size() >0){
+                new AlarmLocation.sendPhotoPeopleAsync().execute(peopleFotos);
+                Log.e("alarmSendPhtAsync","Inicio de envío async 2");
+            }
+        }
+        catch (Exception e){
+
+        }
+        */
 
     }
 
@@ -431,7 +475,7 @@ public class AlarmLocation extends BroadcastReceiver {
                 if(archivoFoto.isFile()){
 
                     //
-                    String URL = URL_API.concat("api/Patrol/SincronizacionFoto");
+                    String URL = URL_API.concat("api/Patrol/SincronizacionFotoForm");
 
                     //Log.e("Numero", Numero);
                     Log.e("DispositivoId", DispositivoId);
@@ -452,7 +496,7 @@ public class AlarmLocation extends BroadcastReceiver {
                             .setMultipartParameter("DispositivoId", DispositivoId)
                             .setMultipartParameter("CodigoSincronizacion", patrolFoto.codigoSincronizacion)
                             .setMultipartParameter("Id", String.valueOf(patrolFoto.patrolFotoId))
-                            .setMultipartParameter("Indice", patrolFoto.indice)
+                            .setMultipartParameter("ClienteMaterialFotoId", patrolFoto.indice)
                             .setMultipartFile("file", new File(patrolFoto.filePath))
                             //.setMultipartFile("Panoramica", new File(Panoramica))
                             .asString()
@@ -605,6 +649,114 @@ public class AlarmLocation extends BroadcastReceiver {
 
         @Override
         protected void onPostExecute(List<CargoFoto> result) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
+    }
+
+    private class sendPhotoCargoFormAsync extends AsyncTask<List<CargoFormFoto>, Void, List<CargoFormFoto>> {
+
+        @Override
+        protected List<CargoFormFoto> doInBackground(List<CargoFormFoto>... params) {
+
+
+            String urlApi = "";
+            int TIME_OUT = 5 * 60 * 1000;
+
+            Constants globalClass = new Constants();
+            urlApi = globalClass.getURL();
+
+            configuracionCrud = new ConfiguracionCrud(mContext);
+            cargoFormFotoCrud = new CargoFormFotoCrud(mContext);
+
+            List<CargoFormFoto> objFotoWork = params[0];
+            //CargoFormFotoCrud cargoFotoCrud = new CargoFormFotoCrud(mContext);
+            ConfiguracionSingleDTO config = configuracionCrud.getConfiguracion();
+
+
+            for (CargoFormFoto cargoFoto : objFotoWork) {
+
+                File archivoFoto = new File(cargoFoto.filePath);
+
+                if(archivoFoto.isFile()){
+
+                    Map<String, List<String>> paramsMP = new HashMap<String, List<String>>();
+                    paramsMP.put("DispositivoId", Arrays.asList(config.DispositivoId));
+                    paramsMP.put("CodigoSincronizacion", Arrays.asList(cargoFoto.codigoSincronizacion));
+                    paramsMP.put("Indice", Arrays.asList(cargoFoto.indice));
+
+                    if(cargoFoto.clienteCargaFotoId != null){
+                        paramsMP.put("ClienteCargaFotoId", Arrays.asList(cargoFoto.clienteCargaFotoId));
+                    }
+                    //
+                    String URL = urlApi.concat("api/CargoForms/SincronizacionFoto");
+
+                    Ion.with(mContext)
+                            .load(URL)
+                            .uploadProgressHandler(new ProgressCallback() {
+                                @Override
+                                public void onProgress(long uploaded, long total) {
+                                    Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                                }
+                            })
+                            .setTimeout(TIME_OUT)
+                            .setMultipartParameters(paramsMP)
+                            .setMultipartFile("file", new File(cargoFoto.filePath))
+                            .asString()
+                            .withResponse()
+                            .setCallback(new FutureCallback<Response<String>>() {
+                                @Override
+                                public void onCompleted(Exception e, Response<String> response) {
+
+                                    if(response!=null){
+                                        Log.e("Response ff",response.toString());
+
+                                        Gson gson = new Gson();
+                                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                        Log.e("JsonObject ", result.toString());
+
+                                    }
+
+                                    if(response.getHeaders().code()==200){
+
+                                        Gson gson = new Gson();
+                                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                        Log.e("JsonObject ", result.toString());
+
+                                        if (result.get("Estado").getAsBoolean()){
+
+                                            cargoFormFotoCrud.removeCargoFoto(cargoFoto);
+
+                                            File file = new File(cargoFoto.filePath);
+                                            file.delete();
+
+                                        }
+
+                                    }
+                                }
+                            });
+                }
+                else{
+                    cargoFormFotoCrud.removeCargoFoto(cargoFoto);
+                }
+
+
+            }
+
+            return objFotoWork;
+        }
+
+        @Override
+        protected void onPostExecute(List<CargoFormFoto> result) {
 
         }
 

@@ -12,11 +12,11 @@ public class PatrolContenedor {
     public static final String KEY_ID_PatrolContenedor = "PatrolContenedorId";
     public static final String KEY_ContenedorId = "ContenedorId";
     public static final String KEY_Codigo = "Codigo";
-
-
+    public static final String KEY_ClienteMaterialId = "ClienteMaterialId";
 
     public int PatrolContenedorId;
     public String ContenedorId;
     public String Codigo;
+    public String ClienteMaterialId;
 
 }

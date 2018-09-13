@@ -28,6 +28,7 @@ public class PatrolContenedorCrud {
 
         values.put(PatrolContenedor.KEY_ContenedorId, patrolContenedor.ContenedorId);
         values.put(PatrolContenedor.KEY_Codigo, patrolContenedor.Codigo);
+        values.put(PatrolContenedor.KEY_ClienteMaterialId, patrolContenedor.ClienteMaterialId);
 
         long PatrolContenedorId = db.insert(PatrolContenedor.TABLE_PATROL_CONTENEDOR, null, values);
         db.close();

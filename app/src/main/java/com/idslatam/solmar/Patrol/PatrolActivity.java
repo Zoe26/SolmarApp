@@ -22,19 +22,28 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.idslatam.solmar.Api.Http.Constants;
+import com.idslatam.solmar.Models.Crud.ConfiguracionCrud;
 import com.idslatam.solmar.Models.Crud.PatrolFotoCrud;
 import com.idslatam.solmar.Models.Crud.PatrolPrecintoCrud;
 import com.idslatam.solmar.Models.Database.DBHelper;
+import com.idslatam.solmar.Models.Entities.DTO.Configuracion.ConfiguracionSingleDTO;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolMaterialDTO;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolMaterialDataDTO;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolMaterialFotoDTO;
+import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolMaterialFotoDataDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolPrecintoDBList;
 import com.idslatam.solmar.Models.Entities.DTO.Patrol.PatrolTakeFotoAsync;
 import com.idslatam.solmar.Models.Entities.PatrolFoto;
@@ -50,6 +59,7 @@ import com.koushikdutta.ion.Response;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,7 +80,8 @@ public class PatrolActivity extends AppCompatActivity {
 
     int count = 0;
 
-    String ContenedorId, URL_API, DispositivoId, numeroPrecintoFoto,imageFilePath,CodigoSincronizacion;
+    String ContenedorId, URL_API, DispositivoId, numeroPrecintoFoto,imageFilePath,CodigoSincronizacion
+            , clienteMaterialFotoId,ClienteMaterialId=null,ClienteMaterialNombre;
 
     Context mContext;
 
@@ -84,12 +95,18 @@ public class PatrolActivity extends AppCompatActivity {
 
     EditText edt_contenedor_seleccionado;
 
-    int cantidadFotos, posicion;
+    int cantidadFotos, posicion,TamanioMaterial=0;
 
     private static final String TAG = "PatrolAsync";
     private static final int REQUEST_CODE_PHOTO_TAKEN_ASYNC = 2;
 
     List<PatrolFoto> patrolFotos = new ArrayList<>();
+    Spinner spinMaterial;
+    ConfiguracionCrud configuracionCrud;
+    ArrayList<String> dataMateriales;
+    Boolean loadMateriales = false,firstLoadMateriales=true,reloadFotos=true;
+    ArrayList<PatrolMaterialDataDTO> DataMateriales;
+    ArrayList<PatrolMaterialFotoDataDTO> DataFotos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,23 +125,58 @@ public class PatrolActivity extends AppCompatActivity {
         final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/Patrol");
         newFile.mkdirs();
 
+        configuracionCrud = new ConfiguracionCrud(mContext);
+        spinMaterial = (Spinner)findViewById(R.id.spinMaterial);
+        dataMateriales = new ArrayList<>();
+        DataMateriales = new ArrayList<>();
+        DataFotos = new ArrayList<>();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        loadPrecinto();
+        //f loadPrecinto();
+        Log.e("on Start","Load another time");
+
+        loadMateriales(URL_API);
+        reviewLoadMaterial();
     }
 
-    public void fotoPrecinto(String numeroPrecinto, int pos){
+    public void reviewLoadMaterial(){
+        String NroContenedor = null;
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT ContenedorPatrol FROM Configuration";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                NroContenedor = c.getString(c.getColumnIndex("ContenedorPatrol"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+
+        if (NroContenedor == null){
+            edt_contenedor_seleccionado.setText("");
+        } else {
+            edt_contenedor_seleccionado.setText(NroContenedor);
+        }
+    }
+
+    public void fotoPrecinto(String numeroPrecinto, String clienteMaterialFotoIdx, int pos){
 
         numeroPrecintoFoto = numeroPrecinto;
+        clienteMaterialFotoId = clienteMaterialFotoIdx;
+
 
         if (edt_contenedor_seleccionado.getText().toString().matches("")){
             Toast.makeText(mContext, "Falta contenedor", Toast.LENGTH_SHORT).show();
             return;
         }
+
 
        int ctaFotos = 0;
 
@@ -186,7 +238,7 @@ public class PatrolActivity extends AppCompatActivity {
         } else if (pos <= ctaFotos){
             tomarFoto();
         }else {
-            Toast.makeText(activity, "Tomar fotos de precintos anteriores", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Tomar fotos anteriores", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -246,6 +298,8 @@ public class PatrolActivity extends AppCompatActivity {
     }
     */
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -292,13 +346,32 @@ public class PatrolActivity extends AppCompatActivity {
 
 
             PatrolTakeFotoAsync objFotoWork = params[0];
+            Bitmap bitmapOrig =null;
+            int width = 0;
+            int height = 0;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
 
-            String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Patrol/";
+            //String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Patrol/";
 
             //adjust for camera orientation
-            Bitmap bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
-            int width = bitmapOrig.getWidth();
-            int height = bitmapOrig.getHeight();
+            try{
+                bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath());
+
+                if(bitmapOrig == null){
+                    bitmapOrig = BitmapFactory.decodeFile(objFotoWork.getImageFilePath(), options);
+
+                    width = bitmapOrig.getWidth();
+                    height = bitmapOrig.getHeight();
+                }
+                else{
+                    width = bitmapOrig.getWidth();
+                    height = bitmapOrig.getHeight();
+                }
+            }
+            catch (Exception e){
+
+            }
 
             ExifInterface exif = null;
 
@@ -349,9 +422,11 @@ public class PatrolActivity extends AppCompatActivity {
 
                 try {
 
+                    Log.e("CMFotoId u DB",clienteMaterialFotoId);
+
                     DBHelper dbHelperNumero = new DBHelper(mContext);
                     SQLiteDatabase dbNro = dbHelperNumero.getWritableDatabase();
-                    dbNro.execSQL("UPDATE PatrolPrecinto SET Foto = '"+imageFilePath+"' WHERE Indice = '"+numeroPrecintoFoto+"'");
+                    dbNro.execSQL("UPDATE PatrolPrecinto SET Foto = '"+imageFilePath+"' WHERE ClienteMaterialFotoId = '"+clienteMaterialFotoId+"'");
                     dbNro.close();
 
                     objFotoWork.setSuccess(true);
@@ -367,9 +442,11 @@ public class PatrolActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(PatrolTakeFotoAsync result) {
             Log.e(TAG,"Result Post Execute");
-            Log.e(TAG,result.toString());
+            Log.e(TAG,result.indexPrecinto.toString());
             if(result.getSuccess()){
-                loadPrecinto();
+                //f loadPrecinto();
+                drawPatrolFoto();
+
             }
         }
 
@@ -380,6 +457,273 @@ public class PatrolActivity extends AppCompatActivity {
         protected void onProgressUpdate(Void... values) {
 
         }
+    }
+
+    private void loadMateriales(String url){
+
+        ConfiguracionSingleDTO config = configuracionCrud.getConfiguracion();
+
+        url = url.concat("api/Cliente/Materiales/Dispositivos/")
+                .concat(config.DispositivoId);
+
+
+
+        if(loadMateriales == true){
+            return;
+        }
+
+
+        Log.e("url Ruta Form",url);
+
+
+        Ion.with(mContext)
+                .load(url)
+                //.asJsonObject()
+                .as(new TypeToken<PatrolMaterialDTO>(){})
+                .setCallback(new FutureCallback<PatrolMaterialDTO>() {
+                    @Override
+                    public void onCompleted(Exception e, PatrolMaterialDTO result) {
+
+                        if(result.Estado){
+
+                            DataMateriales = result.Data;
+
+                            for (PatrolMaterialDataDTO item :result.Data) {
+                                //Log.e("Destino",item.Nombre);
+                                dataMateriales.add(item.Nombre);
+
+                                /*
+                                if(cargo.getDestinoId() != null && !cargo.getDestinoId().isEmpty()){
+                                    if(cargo.getDestinoId().equalsIgnoreCase(item.ClienteRutaId)){
+                                        selectedDestino = item;
+                                    }
+                                }
+                                */
+                            }
+                            spinMaterial.setAdapter(new ArrayAdapter<String>(PatrolActivity.this, android.R.layout.simple_spinner_dropdown_item, dataMateriales));
+
+                            spinMaterial.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+
+                                    // your code here
+                                    /*
+                                    if(firstLoadMateriales){
+                                        if(position == 0 )
+                                        {
+                                            if(cargo.getDestinoId() == null || cargo.getDestinoId().isEmpty()){
+                                                cargoCrud.updateFieldGeneric("DestinoId",DataDestinos.get(position).ClienteRutaId,1);
+                                            }
+                                            else{
+                                                int index = DataDestinos.indexOf(selectedDestino);
+                                                if(index>-1){
+                                                    parentView.setSelection(index);
+                                                }
+                                            }
+                                        }
+
+                                        firstLoadMateriales = false;
+
+                                    }else{
+                                        cargoCrud.updateFieldGeneric("DestinoId",DataDestinos.get(position).ClienteRutaId,1);
+                                    }
+                                    */
+                                    ClienteMaterialId = DataMateriales.get(position).ClienteMaterialId;
+                                    ClienteMaterialNombre = DataMateriales.get(position).Nombre;
+                                    TamanioMaterial = DataMateriales.get(position).Tamannio;
+                                    reloadFotos = true;
+                                    loadPatrolFoto(ClienteMaterialId);
+
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parentView) {
+                                    // your code here
+                                }
+
+                            });
+
+                            loadMateriales = true;
+                        }
+                        // do stuff with the result or error
+                    }
+                });
+
+
+    }
+
+    public void loadPatrolFoto(String clienteMaterialId){
+        Log.e("Item",clienteMaterialId);
+        String NroContenedor = null;
+        //Log.e("Item",item.Nombre);
+
+        ConfiguracionSingleDTO config = configuracionCrud.getConfiguracion();
+
+        String url = URL_API.concat("api/Cliente/MaterialFotos/")
+                .concat(clienteMaterialId);
+
+        try {
+
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
+            dbT.execSQL("UPDATE Configuration SET ContenedorPatrol = null");
+            dbT.execSQL("UPDATE Configuration SET ContenedorId = null");
+            dbT.close();
+
+        } catch (Exception e){}
+        /*
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT ContenedorPatrol FROM Configuration";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+                NroContenedor = c.getString(c.getColumnIndex("ContenedorPatrol"));
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+
+
+
+        if (NroContenedor == null){
+            edt_contenedor_seleccionado.setText("");
+        } else {
+            edt_contenedor_seleccionado.setText(NroContenedor);
+        }
+*/
+
+        if(!reloadFotos){
+            drawPatrolFoto();
+            return;
+        }
+
+
+        Log.e("url Ruta Form",url);
+
+
+        Ion.with(mContext)
+                .load(url)
+                //.asJsonObject()
+                .as(new TypeToken<PatrolMaterialFotoDTO>(){})
+                .setCallback(new FutureCallback<PatrolMaterialFotoDTO>() {
+                    @Override
+                    public void onCompleted(Exception e, PatrolMaterialFotoDTO result) {
+
+                        if(result.Estado){
+
+                            DataFotos = result.Data;
+
+                            PatrolPrecintoCrud patrolPrecintoCrud = new PatrolPrecintoCrud(mContext);
+
+                            patrolPrecintoCrud.deleteAll();
+
+                            for (PatrolMaterialFotoDataDTO item :result.Data) {
+                                //Log.e("Destino",item.Nombre);
+                                //dataMateriales.add(item.Nombre);
+                                try {
+                                    PatrolPrecinto patrolPrecinto = new PatrolPrecinto();
+                                    patrolPrecinto.Indice = item.Nombre;
+                                    patrolPrecinto.ClienteMaterialFotoId = item.ClienteMaterialFotoId;
+                                    Log.e("CMFotoId s DB",patrolPrecinto.ClienteMaterialFotoId);
+                                    //patrolPrecinto.PatrolPrecintoId = _PatrolPrecinto_Id;
+                                    //_PatrolPrecinto_Id =
+                                    patrolPrecintoCrud.insert(patrolPrecinto);
+                                } catch (Exception esca) {esca.printStackTrace();}
+
+                            }
+
+                            drawPatrolFoto();
+                            reloadFotos = false;
+
+                            /*
+                            spinMaterial.setAdapter(new ArrayAdapter<String>(PatrolActivity.this, android.R.layout.simple_spinner_dropdown_item, dataMateriales));
+
+                            spinMaterial.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+
+                                    loadPatrolFoto(DataMateriales.get(position));
+
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parentView) {
+                                    // your code here
+                                }
+
+                            });
+
+                            loadMateriales = true;*/
+                        }
+                        // do stuff with the result or error
+                    }
+                });
+
+    }
+
+    public void drawPatrolFoto(){
+
+        reviewLoadMaterial();
+
+        dataModelsMovil = new ArrayList<>();
+
+        listView = (GridView) findViewById(R.id.quinto_list_fotos);
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Indice, Foto, ClienteMaterialFotoId FROM PatrolPrecinto";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            if (c.moveToFirst()) {
+
+                do {
+                    Log.e("Help",c.getString(c.getColumnIndex("ClienteMaterialFotoId")));
+                    dataModelsMovil.add(new DataModel(c.getString(c.getColumnIndex("Indice")),
+                            c.getString(c.getColumnIndex("Foto")),
+                            c.getString(c.getColumnIndex("ClienteMaterialFotoId"))));
+                } while (c.moveToNext());
+
+            }
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(mContext);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto";// WHERE Foto IS NOT NULL";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            contadorLista = c.getCount();
+            c.close();
+            dbst.close();
+
+        } catch (Exception e) {}
+
+        adapterMovil= new CustomAdapter(dataModelsMovil,getApplicationContext());
+        listView.setAdapter(adapterMovil);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                DataModel datamo = dataModelsMovil.get(position);
+
+                if (datamo.getUri()==null){
+                    fotoPrecinto(datamo.getName(),datamo.getClienteMaterialFotoId(), position);
+                } else {
+                    visualizarImagen(datamo.getUri());
+                }
+            }
+        });
+
+        quinto_txt_nro_precintos.setText("Fotos a tomar: "+ String.valueOf(contadorLista) +"");
+
     }
 
     public void loadPrecinto(){
@@ -406,8 +750,9 @@ public class PatrolActivity extends AppCompatActivity {
                     PatrolPrecintoCrud patrolPrecintoCrud = new PatrolPrecintoCrud(mContext);
                     PatrolPrecinto patrolPrecinto = new PatrolPrecinto();
                     patrolPrecinto.Indice = "Precinto No " + String.valueOf(i);
-                    patrolPrecinto.PatrolPrecintoId = _PatrolPrecinto_Id;
-                    _PatrolPrecinto_Id = patrolPrecintoCrud.insert(patrolPrecinto);
+                    //patrolPrecinto.PatrolPrecintoId = _PatrolPrecinto_Id;
+                    //_PatrolPrecinto_Id =
+                    patrolPrecintoCrud.insert(patrolPrecinto);
                 } catch (Exception esca) {esca.printStackTrace();}
 
             }
@@ -441,13 +786,14 @@ public class PatrolActivity extends AppCompatActivity {
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Indice, Foto FROM PatrolPrecinto";
+            String selectQuery = "SELECT Indice, Foto, ClienteMaterialFotoId FROM PatrolPrecinto";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
 
                 do {
                     dataModelsMovil.add(new DataModel(c.getString(c.getColumnIndex("Indice")),
-                            c.getString(c.getColumnIndex("Foto"))));
+                            c.getString(c.getColumnIndex("Foto")),
+                            c.getString(c.getColumnIndex("ClienteMaterialFotoId"))));
                 } while (c.moveToNext());
 
             }
@@ -476,19 +822,20 @@ public class PatrolActivity extends AppCompatActivity {
                 DataModel datamo = dataModelsMovil.get(position);
 
                 if (datamo.getUri()==null){
-                    fotoPrecinto(datamo.getName(), position);
+                    fotoPrecinto(datamo.getName(),datamo.getClienteMaterialFotoId(), position);
                 } else {
                     visualizarImagen(datamo.getUri());
                 }
             }
         });
 
-        quinto_txt_nro_precintos.setText("Precintos: "+ String.valueOf(contadorLista) +" de 6");
+        quinto_txt_nro_precintos.setText("Fotos a Tomar: "+ String.valueOf(contadorLista) +"");
 
     }
 
     public void listaContenedor(View view){
 
+        /*
         try {
 
             DBHelper dataBaseHelper = new DBHelper(mContext);
@@ -506,8 +853,16 @@ public class PatrolActivity extends AppCompatActivity {
 
         } catch (Exception e){}
 
-        Intent intent = new Intent(PatrolActivity.this, ListadoContenedor.class);
-        startActivity(intent);
+        */
+
+        if(ClienteMaterialId!=null){
+            Intent intent = new Intent(PatrolActivity.this, ListadoContenedor.class);
+            intent.putExtra("ClienteMaterialId",ClienteMaterialId);
+            intent.putExtra("ClienteMaterialNombre",ClienteMaterialNombre);
+            intent.putExtra("TamanioMaterial",TamanioMaterial);
+            startActivity(intent);
+        }
+
     }
 
     public void GuardarPatrol(View view){
@@ -522,8 +877,21 @@ public class PatrolActivity extends AppCompatActivity {
             dbst.close();
         } catch (Exception e) {}
 
+        int fotosTotal = 0;
+
+        try {
+            DBHelper dataBaseHelper = new DBHelper(this);
+            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
+            String selectQuery = "SELECT Foto FROM PatrolPrecinto";
+            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
+            fotosTotal = c.getCount();
+            c.close();
+            dbst.close();
+        } catch (Exception e) {}
+        /*
         int ultimaposi = 0;
 
+        /*
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
@@ -536,12 +904,13 @@ public class PatrolActivity extends AppCompatActivity {
             dbst.close();
 
         } catch (Exception e) {}
+        */
 
 
         Log.e("cantidadFotos G ", String.valueOf(cantidadFotos));
-        Log.e("ultimaposi G ", String.valueOf((ultimaposi)));
+        Log.e("ultimaposi G ", String.valueOf((fotosTotal)));
 
-        if ( cantidadFotos != ultimaposi){
+        if ( cantidadFotos != fotosTotal){
             Toast.makeText(activity, "¡Por favor completar fotos!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -664,7 +1033,7 @@ public class PatrolActivity extends AppCompatActivity {
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String URL = URL_API.concat("api/Patrol/CreateAsync");
+        String URL = URL_API.concat("api/Patrol/CreateFormAsync");
         CodigoSincronizacion = UUID.randomUUID().toString();
 
         int _in = 0;
@@ -672,7 +1041,7 @@ public class PatrolActivity extends AppCompatActivity {
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Foto FROM PatrolPrecinto WHERE Foto IS NOT NULL";
+            String selectQuery = "SELECT Foto,ClienteMaterialFotoId FROM PatrolPrecinto WHERE Foto IS NOT NULL";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
 
             List<PatrolPrecintoDBList> _patrolPrecintoDBLists = new ArrayList<>();
@@ -681,7 +1050,7 @@ public class PatrolActivity extends AppCompatActivity {
 
                 do {
                     //files.add(new FilePart("Files", new File(c.getString(c.getColumnIndex("Foto")))));
-                    PatrolPrecintoDBList _patrolPrecintoDBList = new PatrolPrecintoDBList(c.getString(c.getColumnIndex("Foto")),_in);
+                    PatrolPrecintoDBList _patrolPrecintoDBList = new PatrolPrecintoDBList(c.getString(c.getColumnIndex("Foto")),_in,c.getString(c.getColumnIndex("ClienteMaterialFotoId")));
                     _patrolPrecintoDBLists.add(_patrolPrecintoDBList);
                     _in++;
 
@@ -713,6 +1082,8 @@ public class PatrolActivity extends AppCompatActivity {
 
         Log.e("ContenedorId ", ContenedorId);
         Log.e("DispositivoId ", DispositivoId);
+        Log.e("CodigoSincronizacion ", CodigoSincronizacion);
+        Log.e("ClienteMaterialId ", ClienteMaterialId);
 
         Ion.with(mContext)
                 .load(URL)
@@ -728,6 +1099,7 @@ public class PatrolActivity extends AppCompatActivity {
                 .setBodyParameter("ContenedorId", ContenedorId)
                 .setBodyParameter("DispositivoId", DispositivoId)
                 .setBodyParameter("CodigoSincronizacion", CodigoSincronizacion)
+                .setBodyParameter("ClienteMaterialId", ClienteMaterialId)
                 .setBodyParameter("NumeroPrecintos", String.valueOf(_in))
                 .asString()
                 .withResponse()
@@ -839,14 +1211,14 @@ public class PatrolActivity extends AppCompatActivity {
                 if(archivoFoto.isFile()){
 
                     //
-                    String URL = URL_API.concat("api/Patrol/SincronizacionFoto");
+                    String URL = URL_API.concat("api/Patrol/SincronizacionFotoForm");
 
                     //Log.e("Numero", Numero);
                     Log.e("DispositivoId", DispositivoId);
                     Log.e("CodigoSincro", patrolFoto.codigoSincronizacion);
                     //Log.e("Tipo Foto", String.valueOf(cargoFoto.tipoFoto));
                     Log.e("File Path", patrolFoto.filePath);
-                    Log.e("Indice", patrolFoto.indice);
+                    Log.e("ClienteMaterialFotoId", patrolFoto.indice);
 
                     Ion.with(mContext)
                             .load(URL)
@@ -860,7 +1232,7 @@ public class PatrolActivity extends AppCompatActivity {
                             .setMultipartParameter("DispositivoId", DispositivoId)
                             .setMultipartParameter("CodigoSincronizacion", patrolFoto.codigoSincronizacion)
                             .setMultipartParameter("Id", String.valueOf(patrolFoto.patrolFotoId))
-                            .setMultipartParameter("Indice", patrolFoto.indice)
+                            .setMultipartParameter("ClienteMaterialFotoId", patrolFoto.indice)
                             .setMultipartFile("file", new File(patrolFoto.filePath))
                             //.setMultipartFile("Panoramica", new File(Panoramica))
                             .asString()
@@ -868,6 +1240,13 @@ public class PatrolActivity extends AppCompatActivity {
                             .setCallback(new FutureCallback<Response<String>>() {
                                 @Override
                                 public void onCompleted(Exception e, Response<String> response) {
+
+                                    if(response!=null){
+                                        Gson gson = new Gson();
+                                        JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
+
+                                        Log.e("JsonObject x", result.toString());
+                                    }
 
                                     if(response.getHeaders().code()==200){
 
@@ -983,7 +1362,7 @@ public class PatrolActivity extends AppCompatActivity {
                     } catch (Exception e){}
 
 
-                    loadPrecinto();
+                    //f loadPrecinto();
 
                     dialog.dismiss();
 

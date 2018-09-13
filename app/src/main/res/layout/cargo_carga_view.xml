@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/body">
+
+        <RelativeLayout
+            android:id="@+id/content_S"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+
+
+            <TextView
+                android:id="@+id/txtIngresoTracto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/txtCarga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                android:layout_below="@id/txtIngresoTracto"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/txtDni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textStyle="bold"
+                android:textColor="@color/verde"
+                android:layout_below="@id/txtCarga"
+                style="?android:attr/textAppearanceMedium"/>
+
+            <LinearLayout
+                android:id="@+id/buttums"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/txtDni"
+                android:layout_weight="1">
+
+                <Button
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/verde"
+                    android:drawableTop="@drawable/ic_persona"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:onClick="ViewPersonaForm"
+                    android:text="Persona"/>
+
+                <Button
+                    android:id="@+id/cuarto_btn_carga"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/icons"
+                    android:background="@color/verde"
+                    android:drawableTop="@drawable/ic_blanco_carga"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Carga"/>
+
+                <Button
+                    android:id="@+id/cuarto_btn_foto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/verde"
+                    android:drawableTop="@drawable/ic_foto"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:onClick="ViewFotoForm"
+                    android:text="Foto"/>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/edt_ingresos"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/buttums"
+                android:layout_weight="1">
+
+                <!--<RelativeLayout
+                    android:id="@+id/edt_ingresos"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_below="@id/buttums"
+                    android:layout_weight="1">-->
+
+                <!--Nro Documento-->
+                <LinearLayout
+                    android:id="@+id/lnLyNroDocumento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+                        <TextView
+                            android:id="@+id/txtNroDocumento"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Nº Documento"
+                            android:gravity="center_vertical"/>
+                    </FrameLayout>
+
+
+                    <EditText
+                        android:id="@+id/cuarto_edt_or"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:singleLine="true"
+                        android:hint="Nº Documento"
+                        android:inputType="none"/>
+                </LinearLayout>
+
+                <!--Carreta-->
+                <LinearLayout
+                    android:id="@+id/lnLyCarreta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:padding="5dp"
+                    >
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/txtCarreta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Carreta"
+                            android:gravity="center_vertical"/>
+
+                    </FrameLayout>
+
+                    <EditText
+                        android:id="@+id/etxtCarreta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        style="?android:attr/textAppearanceMedium"
+                        android:gravity="center"/>
+                </LinearLayout>
+
+                <!--Carga-->
+                <LinearLayout
+                    android:id="@+id/lnLyCarga"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:padding="5dp"
+                    >
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtTieneCarga"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Carga"
+                            android:gravity="center_vertical"/>
+
+                    </FrameLayout>
+
+                    <CheckBox
+                        android:id="@+id/chBoxCarga"
+                        android:onClick="onchBoxCargoCarga"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        style="?android:attr/textAppearanceMedium"
+                        android:gravity="center"/>
+
+                </LinearLayout>
+
+                <!--Origen-->
+                <LinearLayout
+                    android:id="@+id/lnLyOrigen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtOrigen"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Origen nro uno nr dos" />
+
+                    </FrameLayout>
+
+
+
+                    <Spinner
+                        android:id="@+id/spinOrigen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        style="?android:attr/textAppearanceMedium"
+                        android:spinnerMode="dialog" />
+                </LinearLayout>
+
+                <!--Destino-->
+                <LinearLayout
+                    android:id="@+id/lnLyDestino"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtDestino"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="" />
+
+                    </FrameLayout>
+
+                    <Spinner
+                        android:id="@+id/spinDestino"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        style="?android:attr/textAppearanceMedium"
+                        android:spinnerMode="dialog" />
+                </LinearLayout>
+
+                <!--Boton Escanear-->
+                <Button
+                    android:id="@+id/btnEscanear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Button"
+                    android:textColor="@color/icons"
+                    android:background="@color/verde"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="40dp"
+                    android:onClick="scanBarcodeNroDoc"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="gone"/>
+
+                <!--PV-->
+                <LinearLayout
+                    android:id="@+id/lnLyPV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtPV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="P.V."
+                            android:gravity="center_vertical"/>
+
+                    </FrameLayout>
+
+                    <EditText
+                        android:id="@+id/etxtPV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:singleLine="true"
+                        android:hint="P.V."/>
+                </LinearLayout>
+
+                <!-- Tamaño Contenedor -->
+                <LinearLayout
+                    android:id="@+id/lnLyTamanioContenedor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtTamanioContenedor"
+                            style="?android:attr/textAppearanceMedium"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Tamaño Contenedor"
+                            android:gravity="center"/>
+
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <TextView
+                            style="?android:attr/textAppearanceMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:text="20" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switchTamanoContenedor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            android:thumb="@drawable/switch_compat_custom"
+                            android:onClick="onchBoxCargoCarga"
+                            app:track="@drawable/switch_compat_custom_track" />
+
+                        <!--<android.support.v7.widget.SwitchCompat
+                        android:id="@+id/cuarto_switch_tamanoContenedor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>-->
+
+                        <TextView
+                            style="?android:attr/textAppearanceMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:text="40" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--Codigo Contenedor-->
+                <LinearLayout
+                    android:id="@+id/lnLyCodigoContenedor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtCodigoContenedor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Contenedor"
+                            android:gravity="center_vertical"/>
+
+                    </FrameLayout>
+
+                    <EditText
+                        android:id="@+id/cuarto_edt_codContenedor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="11"
+                        style="?android:attr/textAppearanceMedium"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                        android:layout_weight="1"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:hint="Código Contenedor"/>
+
+                </LinearLayout>
+
+                <!--Cantidad de Precintos-->
+                <LinearLayout
+                    android:id="@+id/lnLyPrecintos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtPrecintos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Precintos"
+                            android:gravity="center_vertical" />
+
+                    </FrameLayout>
+
+                    <EditText
+                        android:id="@+id/etxtNroPrecintos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:singleLine="true"
+                        android:numeric="integer"
+                        android:maxLength="20"
+                        android:inputType="number"
+                        android:hint="Nº de Precinto(s)"/>
+
+                </LinearLayout>
+
+                <!-- Guia Remisión o Ticket Balanza -->
+                <LinearLayout
+                    android:id="@+id/lnLyGuiaTicket"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Guía Remisión"/>
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/switchTipoGuiaBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:thumb="@drawable/switch_compat_custom"
+                        app:track="@drawable/switch_compat_custom_track"
+                        android:onClick="onchBoxCargoCarga"/>
+
+                    <!--<android.support.v7.widget.SwitchCompat
+                        android:id="@+id/cuarto_switch_tipoDoc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>-->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Ticket Balanza"/>
+
+                </LinearLayout>
+
+                <!--Bultos-->
+                <LinearLayout
+                    android:id="@+id/lnLyBultos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtBultos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Bultos"
+                            android:gravity="center_vertical"/>
+
+                    </FrameLayout>
+
+
+                    <EditText
+                        android:id="@+id/etxtCantidadBultos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:singleLine="true"
+                        android:numeric="integer"
+                        android:maxLength="10"
+                        android:inputType="number"
+                        android:hint="Ingrese cantidad de Bultos"/>
+
+                </LinearLayout>
+
+                <!--Carga Verificada-->
+                <LinearLayout
+                    android:id="@+id/lnLyCargaVerificada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/txtCargaVerificada"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Carga verificada"
+                            android:gravity="center_vertical"/>
+
+                    </FrameLayout>
+
+
+
+                    <CheckBox
+                        android:id="@+id/chBoxCargaVerificada"
+                        android:layout_width="wrap_content"
+                        android:onClick="onchBoxCargoCarga"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginTop="10dp"
+                        style="?android:attr/textAppearanceMedium" />
+
+                </LinearLayout>
+
+
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/verde"
+                android:drawableLeft="@drawable/ic_persona"
+                android:paddingLeft="10dp"
+                android:background="@drawable/button_bd_border"
+                style="?android:attr/textAppearanceMedium"
+                android:onClick="ViewPersonaForm"
+                android:text="Persona"/>
+
+            <Button
+                android:id="@+id/cuarto_btn_fotos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="ViewFotoForm"
+                android:textColor="@color/verde"
+                android:drawableLeft="@drawable/ic_foto"
+                android:paddingLeft="10dp"
+                android:background="@drawable/button_bd_border"
+                style="?android:attr/textAppearanceMedium"
+                android:text="Fotos"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

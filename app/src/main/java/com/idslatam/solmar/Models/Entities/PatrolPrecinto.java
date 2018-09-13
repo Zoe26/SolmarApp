@@ -12,11 +12,12 @@ public class PatrolPrecinto {
     public static final String KEY_ID_PatrolPrecinto = "PatrolPrecintoId";
     public static final String KEY_indice = "Indice";
     public static final String KEY_Foto = "Foto";
+    public static final String KEY_ClienteMaterialFotoId = "ClienteMaterialFotoId";
 
 
-
-    public int PatrolPrecintoId;
+    public long PatrolPrecintoId;
     public String Indice;
     public String Foto;
+    public String ClienteMaterialFotoId;
 
 }

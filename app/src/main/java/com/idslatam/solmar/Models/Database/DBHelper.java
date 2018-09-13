@@ -8,8 +8,10 @@ import com.idslatam.solmar.Models.Entities.Alert;
 import com.idslatam.solmar.Models.Entities.Aplicaciones;
 import com.idslatam.solmar.Models.Entities.Asistencia;
 import com.idslatam.solmar.Models.Entities.Cargo;
+import com.idslatam.solmar.Models.Entities.CargoFormFoto;
 import com.idslatam.solmar.Models.Entities.CargoFoto;
 import com.idslatam.solmar.Models.Entities.CargoPrecinto;
+import com.idslatam.solmar.Models.Entities.CargoTipoFoto;
 import com.idslatam.solmar.Models.Entities.Configuration;
 import com.idslatam.solmar.Models.Entities.Contactos;
 import com.idslatam.solmar.Models.Entities.Menu;
@@ -173,6 +175,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Cargo.KEY_Placa + " TEXT,"
                 + Cargo.KEY_NombrePlaca + " TEXT,"
                 + Cargo.KEY_TipoCarga + " TEXT,"
+                + Cargo.KEY_TipoCargaForFotos + " TEXT,"
+                + Cargo.KEY_UpdateTipoCarga + " TEXT,"
                 + Cargo.KEY_EppCasco + " TEXT,"
                 + Cargo.KEY_EppChaleco + " TEXT,"
                 + Cargo.KEY_EppBotas + " TEXT,"
@@ -180,18 +184,23 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Cargo.KEY_isLicencia + " TEXT,"
                 + Cargo.KEY_NroOR + " TEXT,"
                 + Cargo.KEY_isIngreso + " TEXT,"
-                + Cargo.KEY_isCarga + " TEXT,"
-                + Cargo.KEY_CantidadBultos + " TEXT,"
                 + Cargo.KEY_fotoDelantera + " TEXT,"
                 + Cargo.KEY_fotoTracera + " TEXT,"
                 + Cargo.KEY_fotoPanoramica + " TEXT,"
+                + Cargo.KEY_origenDestino + " TEXT,"
+                + Cargo.KEY_tipoDocumento + " TEXT,"
+                + Cargo.KEY_Carreta + " TEXT,"
+                + Cargo.KEY_isCarga + " TEXT,"
+                + Cargo.KEY_OrigenId + " TEXT,"
+                + Cargo.KEY_DestinoId + " TEXT,"
                 + Cargo.KEY_tamanoContenedor + " TEXT,"
                 + Cargo.KEY_codigoContenedor + " TEXT,"
                 + Cargo.KEY_numeroPrecintos + " TEXT,"
-                + Cargo.KEY_origenDestino + " TEXT,"
-                + Cargo.KEY_tipoDocumento + " TEXT,"
-                + Cargo.KEY_numeroDocumento + " TEXT,"
                 + Cargo.KEY_GuiaRemision + " TEXT,"
+                + Cargo.KEY_pv + " TEXT,"
+                + Cargo.KEY_numeroDocumento + " TEXT,"
+                + Cargo.KEY_CantidadBultos + " TEXT,"
+                + Cargo.KEY_isCargaVerificada + " TEXT,"
                 + Cargo.KEY_json + " TEXT)";
 
         String CREATE_TABLE_CARGO_PRECINTO = "CREATE TABLE " + CargoPrecinto.TABLE_CARGO_PRECINTO + "("
@@ -202,11 +211,13 @@ public class DBHelper extends SQLiteOpenHelper {
         String CREATE_TABLE_PATROL_PRECINTO = "CREATE TABLE " + PatrolPrecinto.TABLE_PATROL_PRECINTO + "("
                 + PatrolPrecinto.KEY_ID_PatrolPrecinto + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + PatrolPrecinto.KEY_indice + " TEXT,"
+                + PatrolPrecinto.KEY_ClienteMaterialFotoId + " TEXT,"
                 + PatrolPrecinto.KEY_Foto + " TEXT)";
 
         String CREATE_TABLE_PATROL_CONTENEDOR = "CREATE TABLE " + PatrolContenedor.TABLE_PATROL_CONTENEDOR + "("
                 + PatrolContenedor.KEY_ID_PatrolContenedor + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + PatrolContenedor.KEY_ContenedorId + " TEXT,"
+                + PatrolContenedor.KEY_ClienteMaterialId + " TEXT,"
                 + PatrolContenedor.KEY_Codigo + " TEXT)";
 
         String CREATE_TABLE_PEOPLE = "CREATE TABLE " + People.TABLE_PEOPLE + "("
@@ -231,6 +242,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 + CargoFoto.KEY_CREATED + " TEXT,"
                 + CargoFoto.KEY_FILE_PATH + " TEXT)";
 
+        String CREATE_TABLE_CARGOFORM_FOTO = "CREATE TABLE " + CargoFormFoto.TABLE_NAME + "("
+                + CargoFormFoto.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + CargoFormFoto.KEY_CODIGO_SINCRONIZACION + " TEXT,"
+                + CargoFormFoto.KEY_TIPO_FOTO + " TEXT,"
+                + CargoFormFoto.KEY_INDICE + " TEXT,"
+                + CargoFormFoto.KEY_CREATED + " TEXT,"
+                + CargoFormFoto.KEY_FILE_PATH + " TEXT)";
+
         String CREATE_TABLE_PATROL_FOTO = "CREATE TABLE " + PatrolFoto.TABLE_NAME + "("
                 + PatrolFoto.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + PatrolFoto.KEY_CODIGO_SINCRONIZACION + " TEXT,"
@@ -245,6 +264,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 + PeopleFoto.KEY_INDICE + " TEXT,"
                 + PeopleFoto.KEY_CREATED + " TEXT,"
                 + PeopleFoto.KEY_FILE_PATH + " TEXT)";
+
+        String CREATE_TABLE_CARGO_TIPO_FOTO = "CREATE TABLE " + CargoTipoFoto.TABLE_NAME + "("
+                + CargoTipoFoto.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + CargoTipoFoto.KEY_NOMBRE + " TEXT,"
+                + CargoTipoFoto.KEY_FILE_PATH + " TEXT,"
+                + CargoTipoFoto.KEY_CLIENTE_CARGA_FOTO_ID + " TEXT)";
 
         db.execSQL(CREATE_TABLE_APLICACIONES);
         db.execSQL(CREATE_TABLE_TRACKING);
@@ -263,6 +288,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CARGO_FOTO);
         db.execSQL(CREATE_TABLE_PATROL_FOTO);
         db.execSQL(CREATE_TABLE_PEOPLE_FOTO);
+        db.execSQL(CREATE_TABLE_CARGO_TIPO_FOTO);
+        db.execSQL(CREATE_TABLE_CARGOFORM_FOTO);
     }
 
     @Override
@@ -317,6 +344,12 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         db.execSQL("DROP TABLE IF EXISTS " + PeopleFoto.TABLE_NAME);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + CargoTipoFoto.TABLE_NAME);
+        onCreate(db);
+
+        db.execSQL("DROP TABLE IF EXISTS " + CargoFormFoto.TABLE_NAME);
         onCreate(db);
 
     }

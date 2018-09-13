@@ -42,7 +42,7 @@ public class PatrolFotoCrud {
 
             valuespr.put(PatrolFoto.KEY_CODIGO_SINCRONIZACION, codigoSincronizacion);
             valuespr.put(PatrolFoto.KEY_FILE_PATH, precinto.filePath);
-            valuespr.put(PatrolFoto.KEY_INDICE, String.valueOf(precinto.indice));
+            valuespr.put(PatrolFoto.KEY_INDICE, precinto.clienteMaterialFotoId);
 
             String created = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(new Date());
             valuespr.put(PatrolFoto.KEY_CREATED, created);
@@ -50,7 +50,7 @@ public class PatrolFotoCrud {
             long PatrolFotoIdpr = dbpr.insert(PatrolFoto.TABLE_NAME, null, valuespr);
             dbpr.close();
 
-            PatrolFoto patrolFoto_pr = new PatrolFoto(PatrolFotoIdpr,codigoSincronizacion,String.valueOf(precinto.indice),precinto.filePath);
+            PatrolFoto patrolFoto_pr = new PatrolFoto(PatrolFotoIdpr,codigoSincronizacion,String.valueOf(precinto.clienteMaterialFotoId),precinto.filePath);
             patrolFotos.add(patrolFoto_pr);
 
             //i++;

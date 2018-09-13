@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fadeScrollbars="false">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:id="@+id/lnlyPrincipal">
+
+                <LinearLayout
+                    android:id="@+id/primero_tracto"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp">
+
+                    <EditText
+                        android:id="@+id/primero_edt_tracto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Nro de Placa Tracto"
+                        android:layout_weight="1"
+                        android:maxLength="9"
+                        style="?android:attr/textAppearanceMedium"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Buscar"
+                        android:background="@color/verde"
+                        android:textColor="@color/icons"
+                        android:onClick="enviarPlaca"
+                        style="?android:attr/textAppearanceSmall"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/primero_txt_mje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:textColor="@color/verde"
+                    android:text=""
+                    android:layout_below="@id/primero_tracto"
+                    style="?android:attr/textAppearanceMedium"/>
+
+                <View
+                    android:id="@+id/view_s"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/primero_txt_mje"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#C8C9CB" />
+
+
+                <GridView
+                    android:id="@+id/gvTipoCarga"
+                    android:numColumns="2"
+                    android:gravity="center"
+                    android:scrollbars="vertical"
+                    android:stretchMode="columnWidth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:choiceMode="singleChoice"
+                    android:layout_below="@+id/view_s"
+                    />
+
+                <View
+                    android:id="@+id/view_f"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/gvTipoCarga"
+                    android:layout_marginBottom="5dp"
+                    android:background="#C8C9CB" />
+
+                <LinearLayout
+                    android:id="@+id/buttums"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/view_f">
+
+                    <Button
+                        android:id="@+id/primero_btn_persona"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="2dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/icons"
+                        android:background="@color/verde"
+                        android:drawableTop="@drawable/ic_blanco_persona"
+                        style="?android:attr/textAppearanceSmall"
+                        android:text="Persona"/>
+
+                    <Button
+                        android:id="@+id/primero_btn_carga"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="2dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/verde"
+                        android:drawableTop="@drawable/ic_carga"
+                        android:background="@drawable/button_bd_border"
+                        style="?android:attr/textAppearanceSmall"
+                        android:onClick="ViewCargaGoForm"
+                        android:text="Carga"/>
+
+                    <Button
+                        android:id="@+id/primero_btn_foto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="2dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/verde"
+                        android:drawableTop="@drawable/ic_foto"
+                        android:background="@drawable/button_bd_border"
+                        style="?android:attr/textAppearanceSmall"
+                        android:text="Foto"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ly_foto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_below="@+id/buttums">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="right"
+                        android:paddingRight="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_cargo_persona"
+                            android:layout_width="110dp"
+                            android:layout_height="120dp"
+                            android:adjustViewBounds="true"
+                            android:cropToPadding="false"
+                            android:scaleType="fitXY"
+                            android:background="@drawable/ic_persona"
+                            android:onClick="previewFotoCargo"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="left|center"
+                        android:paddingRight="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/cargo_txt_dni_persona"
+                            android:layout_width="190dp"
+                            android:layout_height="wrap_content"
+                            android:hint="Nombre"
+                            style="?android:attr/textAppearanceMedium"/>
+
+                        <TextView
+                            android:id="@+id/cargo_txt_empresa_persona"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="Empresa"
+                            android:layout_marginTop="5dp"
+                            android:textStyle="bold"
+                            style="?android:attr/textAppearanceMedium"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoud_licencia_conducir"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/ly_foto">
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="5dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_marginTop="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_epp"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                style="?android:attr/textAppearanceSmall"
+                                android:text="EPP"/>
+                        </LinearLayout>
+
+                        <CheckBox
+                            android:id="@+id/check_casco"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:onClick="onCheckboxClicked"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Casco"/>
+
+                        <CheckBox
+                            android:id="@+id/check_chaleco"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="onCheckboxClicked"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Chaleco"/>
+
+                        <CheckBox
+                            android:id="@+id/check_botas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="onCheckboxClicked"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Botas"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:background="#C8C9CB" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="left"
+                        >
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <EditText
+                                        android:id="@+id/primero_edt_dni"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:maxLength="11"
+                                        android:singleLine="true"
+                                        android:inputType="number"
+                                        style="?android:attr/textAppearanceMedium"
+                                        android:hint="DNI"/>
+
+                                    <LinearLayout
+
+                                        android:layout_marginLeft="5dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <ImageButton
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_marginRight="1dp"
+                                            android:layout_weight="1"
+                                            android:textColor="@color/icons"
+                                            android:onClick="buscarDNI"
+                                            android:background="@color/verde"
+                                            android:src="@drawable/ic_buscar" />
+                                        <Button
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_marginLeft="1dp"
+                                            android:layout_weight="1"
+                                            android:textColor="@color/icons"
+                                            android:onClick="scanDNI"
+                                            android:background="@color/verde"
+                                            style="?android:attr/textAppearanceSmall"
+                                            android:text="Escanear"/>
+                                    </LinearLayout>
+
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    style="?android:attr/textAppearanceMedium"
+                                    android:text="Licencia de conducir"/>
+
+                                <LinearLayout
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    >
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        style="?android:attr/textAppearanceMedium"
+                                        android:text="Vigente"/>
+
+                                    <android.support.v7.widget.SwitchCompat
+                                        android:id="@+id/switch_licencia"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:thumb="@drawable/switch_compat_custom"
+                                        app:track="@drawable/switch_compat_custom_track"/>
+
+                                    <!--<android.support.v7.widget.SwitchCompat
+                                        android:id="@+id/switch_licencia"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/ic_sync_black"
+                                        android:checked="false"/>-->
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        style="?android:attr/textAppearanceMedium"
+                                        android:text="Vencida"/>
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+
+                        </FrameLayout>
+
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_below="@+id/lnlyPrincipal">
+
+                <Button
+                    android:id="@+id/primero_btn_verificar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/icons"
+                    android:drawableLeft="@drawable/ic_blanco_carga"
+                    android:paddingLeft="10dp"
+                    android:onClick="ViewCargaGoForm"
+                    android:background="@color/verde"
+                    style="?android:attr/textAppearanceMedium"
+                    android:text="Verificar"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </FrameLayout>
+
+
+    <!--<RelativeLayout
+        android:id="@+id/content_S"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/body">
+
+
+
+    </RelativeLayout>-->
+
+</ScrollView>

@@ -260,14 +260,14 @@
             </LinearLayout>
 
             <GridView
-                    android:id="@+id/quinto_list_fotos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:numColumns="auto_fit"
-                    android:columnWidth="150dp"
-                    android:stretchMode="spacingWidthUniform"
-                    android:layout_below="@id/title_precinto"
-                    android:layout_gravity="center" />
+                android:id="@+id/quinto_list_fotos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:numColumns="auto_fit"
+                android:columnWidth="150dp"
+                android:stretchMode="spacingWidthUniform"
+                android:layout_below="@id/title_precinto"
+                android:layout_gravity="center" />
 
 
 

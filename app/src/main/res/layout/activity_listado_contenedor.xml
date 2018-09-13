@@ -32,8 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         style="?android:attr/textAppearanceMedium"
-        android:text="Buscar Contenedor"
-        android:inputType="textVisiblePassword"/>
+        android:text="Buscar "
+        android:inputType="textVisiblePassword"
+        android:id="@+id/titlePatrolList"/>
 
     <LinearLayout
         android:layout_marginTop="2dp"

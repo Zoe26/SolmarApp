@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Ingrese código del contenedor"
+        android:text="Ingrese código"
         style="?android:attr/textAppearanceMedium"
         android:layout_weight="0.5"
         android:textColor="@color/common_google_signin_btn_text_light"
@@ -37,7 +37,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
-        android:maxLength="11"
         android:hint="Código"
         style="?android:attr/textAppearanceMedium"
         android:layout_weight="0.5"

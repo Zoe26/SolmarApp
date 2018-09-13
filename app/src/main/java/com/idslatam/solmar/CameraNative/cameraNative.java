@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -33,6 +34,7 @@ import com.koushikdutta.ion.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 
 public class cameraNative extends AppCompatActivity {
@@ -147,8 +149,25 @@ public class cameraNative extends AppCompatActivity {
 
         }
 
+        ExifInterface exif = null;
 
+        try
+        {
+            exif = new ExifInterface(path1);
+        }
+        catch (IOException e)
+        {
+            //Error
+            e.printStackTrace();
+        }
 
+        String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+        int orientation = orientString != null ? Integer.parseInt(orientString) :  ExifInterface.ORIENTATION_NORMAL;
+
+        int rotationAngle = 0;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
 
         // the following are reverse because we are going to rotate the image 90 due to portrait pics always used
         //int newWidth = 300;
@@ -162,7 +181,7 @@ public class cameraNative extends AppCompatActivity {
         Matrix matrix = new Matrix();
         // resize the bit map
         //matrix.setRotate(90);
-        matrix.postRotate(90);
+        matrix.postRotate(rotationAngle);
         matrix.postScale(scaleWidth, scaleHeight);
 
         // save a scaled down Bitmap

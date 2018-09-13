@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
@@ -53,10 +54,12 @@ public class ListadoContenedor extends AppCompatActivity {
 
     Context mContext;
 
-    String sUsername;
+    String sUsername,ClienteMaterialId="",ClienteMaterialNombre="";
 
     // Search EditText
     EditText inputSearch;
+
+    TextView titlePatrolList;
 
     String URL_API, ContenedorId;
 
@@ -64,7 +67,7 @@ public class ListadoContenedor extends AppCompatActivity {
 
     boolean isProgress = false;
 
-    int _PatrolContenedor_Id = 0, contadorLista;
+    int _PatrolContenedor_Id = 0, contadorLista,TamanioMaterial=0;
 
     ArrayList<PrecintoDataModel> dataModelsMovil;
 
@@ -79,6 +82,18 @@ public class ListadoContenedor extends AppCompatActivity {
 
         Constants globalClass = new Constants();
         URL_API = globalClass.getURL();
+
+        titlePatrolList = (TextView)findViewById(R.id.titlePatrolList);
+
+        Intent intent = getIntent();
+
+        ClienteMaterialId = intent.getStringExtra("ClienteMaterialId");
+        ClienteMaterialNombre = intent.getStringExtra("ClienteMaterialNombre");
+        TamanioMaterial = intent.getIntExtra("TamanioMaterial",0);
+
+        titlePatrolList.setText("Buscar "+ClienteMaterialNombre);
+
+        Log.e("ClienteMaterialId",ClienteMaterialId);
 
         dataModelsMovil = new ArrayList<>();
 
@@ -141,12 +156,13 @@ public class ListadoContenedor extends AppCompatActivity {
 
     public boolean loadLista(){
 
+        Log.e("Load","Inicia");
         itemsList.clear();
 
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Codigo FROM PatrolContenedor";
+            String selectQuery = "SELECT Codigo FROM PatrolContenedor WHERE ClienteMaterialId = '"+ClienteMaterialId+"' COLLATE NOCASE";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             if (c.moveToFirst()) {
                 do {
@@ -212,7 +228,7 @@ public class ListadoContenedor extends AppCompatActivity {
         } catch (Exception e) {}
 
 
-        String URL = URL_API.concat("api/Contenedor/GetAll?DispositivoId="+DispositivoId);
+        String URL = URL_API.concat("api/Contenedor/GetAllMaterial?DispositivoId="+DispositivoId+"&ClienteMaterialId="+ClienteMaterialId);
 
         Ion.with(this)
                 .load("GET", URL)
@@ -266,10 +282,13 @@ public class ListadoContenedor extends AppCompatActivity {
                                 try {
 
                                     PatrolContenedorCrud patrolContenedorCrud = new PatrolContenedorCrud(mContext);
+
                                     PatrolContenedor patrolContenedor = new PatrolContenedor();
                                     patrolContenedor.ContenedorId = jsonObject1.get("ContenedorId").getAsString();
                                     patrolContenedor.Codigo = jsonObject1.get("Codigo").getAsString();
+                                    patrolContenedor.ClienteMaterialId = jsonObject1.get("ClienteMaterialId").getAsString();
                                     patrolContenedor.PatrolContenedorId = _PatrolContenedor_Id;
+
                                     _PatrolContenedor_Id = patrolContenedorCrud.insert(patrolContenedor);
 
                                 } catch (Exception esca) {esca.printStackTrace();}
@@ -326,7 +345,7 @@ public class ListadoContenedor extends AppCompatActivity {
         Log.e("ContenedorId ", ContenedorId);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Ha selecionado el contenedor "+value+" .¿Desea Continuar?");
+        builder.setMessage("Ha selecionado "+ClienteMaterialNombre+" "+value+" .¿Desea Continuar?");
         builder.setCancelable(false);
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 
@@ -387,11 +406,11 @@ public class ListadoContenedor extends AppCompatActivity {
 
                     if (editText.getText().toString().matches("")){
                         //dialog.dismiss();
-                        Toast.makeText(mContext, "Ingrese código de contenedor", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "Ingrese código de "+ClienteMaterialNombre, Toast.LENGTH_SHORT).show();
                         return;
-                    } else if (editText.getText().toString().length() <= 10){
+                    } else if (editText.getText().toString().length() != (TamanioMaterial)){
                         //dialog.dismiss();
-                        Toast.makeText(mContext, "Contenedor debe tener 11 caracteres", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "Contenedor debe tener "+String.valueOf(TamanioMaterial)+" caracteres", Toast.LENGTH_SHORT).show();
                         return;
                     } else {
                         dialog.dismiss();
@@ -439,12 +458,14 @@ public class ListadoContenedor extends AppCompatActivity {
 
         Log.e(" Codigo ", codigoContenedor);
         Log.e(" GuidDipositivo ", DispositivoId);
+        Log.e(" ClienteMaterialId ", ClienteMaterialId);
 
-        String URL = URL_API.concat("api/Contenedor/Create");
+        String URL = URL_API.concat("api/Contenedor/CreateMaterial");
 
         JsonObject json = new JsonObject();
         json.addProperty("DispositivoId", DispositivoId);
         json.addProperty("Codigo", codigoContenedor);
+        json.addProperty("ClienteMaterialId", ClienteMaterialId);
 
         Ion.with(this)
                 .load("POST", URL)

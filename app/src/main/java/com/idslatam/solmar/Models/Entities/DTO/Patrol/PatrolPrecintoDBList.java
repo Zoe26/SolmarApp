@@ -4,10 +4,12 @@ public class PatrolPrecintoDBList {
 
     public String filePath;
     public int indice;
+    public String clienteMaterialFotoId;
 
-    public PatrolPrecintoDBList(String filePath, int indice) {
+    public PatrolPrecintoDBList(String filePath, int indice,String clienteMaterialFotoId) {
         this.filePath = filePath;
         this.indice = indice;
+        this.clienteMaterialFotoId = clienteMaterialFotoId;
     }
 
     public String getFilePath() {
@@ -26,4 +28,11 @@ public class PatrolPrecintoDBList {
         this.indice = indice;
     }
 
+    public String getClienteMaterialFotoId() {
+        return clienteMaterialFotoId;
+    }
+
+    public void setClienteMaterialFotoId(String clienteMaterialFotoId) {
+        this.clienteMaterialFotoId = clienteMaterialFotoId;
+    }
 }

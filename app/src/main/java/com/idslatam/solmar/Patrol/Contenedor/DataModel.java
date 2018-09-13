@@ -8,10 +8,12 @@ public class DataModel {
 
     String name;
     String uri;
+    String ClienteMaterialFotoId;
 
-    public DataModel(String name, String uri) {
+    public DataModel(String name, String uri,String clienteMaterialFotoId) {
         this.name=name;
         this.uri=uri;
+        this.ClienteMaterialFotoId = clienteMaterialFotoId;
     }
 
     public String getName() {
@@ -22,5 +24,7 @@ public class DataModel {
         return uri;
     }
 
-
+    public String getClienteMaterialFotoId() {
+        return ClienteMaterialFotoId;
+    }
 }

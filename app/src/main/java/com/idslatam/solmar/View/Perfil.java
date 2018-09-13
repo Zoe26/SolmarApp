@@ -39,6 +39,7 @@ import com.idslatam.solmar.Apps.ApplicationAdapter;
 import com.idslatam.solmar.BravoPapa.ScreenReceiver;
 import com.idslatam.solmar.CameraNative.cameraNative;
 import com.idslatam.solmar.Cargo.CargoActivity;
+import com.idslatam.solmar.Cargo.CargoFormActivity;
 import com.idslatam.solmar.Dialer.ContactosActivity;
 import com.idslatam.solmar.ImageClass.Image;
 import com.idslatam.solmar.ImageClass.ImageCamera;
@@ -308,7 +309,10 @@ public class Perfil extends AppCompatActivity implements AdapterView.OnItemClick
         }
 
         if (data.get(position).getTitle().equalsIgnoreCase("Cargo")){
-            startActivity(new Intent(mContext, CargoActivity.class)
+            /*startActivity(new Intent(mContext, CargoActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));*/
+
+            startActivity(new Intent(mContext, CargoFormActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         }
 

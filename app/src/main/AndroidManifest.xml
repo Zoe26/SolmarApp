@@ -189,6 +189,7 @@
             android:name=".Patrol.ListadoContenedor"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".Cargo.CargoFormActivity"></activity>
     </application>
 
 </manifest>

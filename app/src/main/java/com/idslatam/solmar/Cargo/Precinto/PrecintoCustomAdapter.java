@@ -37,6 +37,8 @@ public class PrecintoCustomAdapter extends ArrayAdapter<PrecintoDataModel>{
 
     }
 
+
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
