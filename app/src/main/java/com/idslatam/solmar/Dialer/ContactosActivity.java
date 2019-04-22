@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.idslatam.solmar.Api.Http.Constants;
 import com.idslatam.solmar.Models.Crud.ContactosCrud;
@@ -288,7 +289,22 @@ public class ContactosActivity extends Activity {
                                             Contactos contactos = new Contactos();
                                             contactos.Nombre = paymentObj.get("Nombre").getAsString();
                                             contactos.PrimerNumero = paymentObj.get("Numero0").getAsInt();
-                                            contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
+
+
+                                            try{
+                                                //JsonObject numero1 = paymentObj.getAsJsonObject("Numero1");
+                                                JsonObject jsonObject = new JsonObject();
+
+                                                if(jsonObject.get("Numero1") != JsonNull.INSTANCE){
+                                                    contactos.SegundoNumero = paymentObj.get("Numero1").getAsInt();
+                                                }
+                                            }
+                                            catch (Exception ex){
+
+                                            }
+
+
+
                                             contactos.ContactosId = _Contactos_Id;
                                             _Contactos_Id = contactosCrud.insert(contactos);
                                         }

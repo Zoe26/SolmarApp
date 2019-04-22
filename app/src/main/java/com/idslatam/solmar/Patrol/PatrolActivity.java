@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -81,7 +82,7 @@ public class PatrolActivity extends AppCompatActivity {
     int count = 0;
 
     String ContenedorId, URL_API, DispositivoId, numeroPrecintoFoto,imageFilePath,CodigoSincronizacion
-            , clienteMaterialFotoId,ClienteMaterialId=null,ClienteMaterialNombre;
+            , clienteMaterialFotoId,ClienteMaterialId=null,ClienteMaterialNombre = "";
 
     Context mContext;
 
@@ -96,6 +97,8 @@ public class PatrolActivity extends AppCompatActivity {
     EditText edt_contenedor_seleccionado;
 
     int cantidadFotos, posicion,TamanioMaterial=0;
+
+    Boolean TamanioObligatorio = false,BackPresed = false;
 
     private static final String TAG = "PatrolAsync";
     private static final int REQUEST_CODE_PHOTO_TAKEN_ASYNC = 2;
@@ -139,7 +142,7 @@ public class PatrolActivity extends AppCompatActivity {
         //f loadPrecinto();
         Log.e("on Start","Load another time");
 
-        loadMateriales(URL_API);
+        loadMateriales();
         reviewLoadMaterial();
     }
 
@@ -173,7 +176,7 @@ public class PatrolActivity extends AppCompatActivity {
 
 
         if (edt_contenedor_seleccionado.getText().toString().matches("")){
-            Toast.makeText(mContext, "Falta contenedor", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Seleccione un código de material "+ClienteMaterialNombre, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -228,10 +231,14 @@ public class PatrolActivity extends AppCompatActivity {
         cantidadFotos = ctaFotos;
         posicion = pos;
 
+        tomarFoto();
+        /*
         if (ctaFotos==0 && pos == 0){
             tomarFoto();
             return;
         }
+
+
 
         if(ctaFotos == pos){
             tomarFoto();
@@ -240,6 +247,8 @@ public class PatrolActivity extends AppCompatActivity {
         }else {
             Toast.makeText(activity, "Tomar fotos anteriores", Toast.LENGTH_SHORT).show();
         }
+
+        */
     }
 
     private File createImageFile() throws IOException {
@@ -262,14 +271,15 @@ public class PatrolActivity extends AppCompatActivity {
         imageFilePath = image.getAbsolutePath();
         //imageReducedFilePath = image.getAbsolutePath();
 
-        Log.e(TAG,"File Paths");
-        Log.e(TAG,imageFilePath);
+        //Log.e(TAG,"File Paths");
+        //Log.e(TAG,imageFilePath);
         //Log.e(TAG,imageReducedFilePath);
 
         return image;
     }
 
     public void tomarFoto(){
+        /*
         Log.e(TAG,"Call Camera");
         try{
             File filecc = createImageFile();
@@ -281,24 +291,26 @@ public class PatrolActivity extends AppCompatActivity {
         catch (Exception e){
             Log.e(TAG,e.toString());
         }
+        */
+        Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try{
+                photoFile = createImageFile();
+            }
+            catch (IOException ex){
+
+            }
+            if(photoFile != null){
+                String appId = mContext.getPackageName();
+                appId = appId+".provider";
+                //Log.e("auth",appId);
+                Uri photoURI = FileProvider.getUriForFile(mContext,appId, photoFile);
+                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(pictureIntent,REQUEST_CODE_PHOTO_TAKEN_ASYNC);
+            }
+        }
     }
-    /*
-    // METODOSDECAMARA
-    public void tomarFoto(){
-
-        photoUri = null;
-
-        new SandriosCamera(activity, CAPTURE_MEDIA)
-                .setShowPicker(false)
-                .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                .setMediaQuality(CameraConfiguration.MEDIA_QUALITY_LOWEST)
-                .enableImageCropping(false)
-                .launchCamera();
-
-    }
-    */
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -459,11 +471,11 @@ public class PatrolActivity extends AppCompatActivity {
         }
     }
 
-    private void loadMateriales(String url){
+    private void loadMateriales(){
 
         ConfiguracionSingleDTO config = configuracionCrud.getConfiguracion();
 
-        url = url.concat("api/Cliente/Materiales/Dispositivos/")
+        String url = URL_API.concat("api/Cliente/Materiales/Dispositivos/")
                 .concat(config.DispositivoId);
 
 
@@ -492,13 +504,6 @@ public class PatrolActivity extends AppCompatActivity {
                                 //Log.e("Destino",item.Nombre);
                                 dataMateriales.add(item.Nombre);
 
-                                /*
-                                if(cargo.getDestinoId() != null && !cargo.getDestinoId().isEmpty()){
-                                    if(cargo.getDestinoId().equalsIgnoreCase(item.ClienteRutaId)){
-                                        selectedDestino = item;
-                                    }
-                                }
-                                */
                             }
                             spinMaterial.setAdapter(new ArrayAdapter<String>(PatrolActivity.this, android.R.layout.simple_spinner_dropdown_item, dataMateriales));
 
@@ -507,31 +512,11 @@ public class PatrolActivity extends AppCompatActivity {
                                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
 
-                                    // your code here
-                                    /*
-                                    if(firstLoadMateriales){
-                                        if(position == 0 )
-                                        {
-                                            if(cargo.getDestinoId() == null || cargo.getDestinoId().isEmpty()){
-                                                cargoCrud.updateFieldGeneric("DestinoId",DataDestinos.get(position).ClienteRutaId,1);
-                                            }
-                                            else{
-                                                int index = DataDestinos.indexOf(selectedDestino);
-                                                if(index>-1){
-                                                    parentView.setSelection(index);
-                                                }
-                                            }
-                                        }
-
-                                        firstLoadMateriales = false;
-
-                                    }else{
-                                        cargoCrud.updateFieldGeneric("DestinoId",DataDestinos.get(position).ClienteRutaId,1);
-                                    }
-                                    */
                                     ClienteMaterialId = DataMateriales.get(position).ClienteMaterialId;
                                     ClienteMaterialNombre = DataMateriales.get(position).Nombre;
                                     TamanioMaterial = DataMateriales.get(position).Tamannio;
+                                    TamanioObligatorio = DataMateriales.get(position).Obligatorio;
+
                                     reloadFotos = true;
                                     loadPatrolFoto(ClienteMaterialId);
 
@@ -572,30 +557,7 @@ public class PatrolActivity extends AppCompatActivity {
             dbT.close();
 
         } catch (Exception e){}
-        /*
 
-        try {
-            DBHelper dataBaseHelper = new DBHelper(this);
-            SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT ContenedorPatrol FROM Configuration";
-            Cursor c = dbst.rawQuery(selectQuery, new String[]{});
-            if (c.moveToFirst()) {
-                NroContenedor = c.getString(c.getColumnIndex("ContenedorPatrol"));
-            }
-            c.close();
-            dbst.close();
-
-        } catch (Exception e) {}
-
-
-
-
-        if (NroContenedor == null){
-            edt_contenedor_seleccionado.setText("");
-        } else {
-            edt_contenedor_seleccionado.setText(NroContenedor);
-        }
-*/
 
         if(!reloadFotos){
             drawPatrolFoto();
@@ -835,31 +797,13 @@ public class PatrolActivity extends AppCompatActivity {
 
     public void listaContenedor(View view){
 
-        /*
-        try {
-
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
-            dbT.execSQL("DELETE FROM sqlite_sequence WHERE NAME ='PatrolPrecinto'");
-            dbT.close();
-
-        } catch (Exception edsv){}
-
-        try {
-            DBHelper dataBaseHelper = new DBHelper(mContext);
-            SQLiteDatabase dbT = dataBaseHelper.getWritableDatabase();
-            dbT.execSQL("DELETE FROM PatrolPrecinto");
-            dbT.close();
-
-        } catch (Exception e){}
-
-        */
-
         if(ClienteMaterialId!=null){
             Intent intent = new Intent(PatrolActivity.this, ListadoContenedor.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             intent.putExtra("ClienteMaterialId",ClienteMaterialId);
             intent.putExtra("ClienteMaterialNombre",ClienteMaterialNombre);
             intent.putExtra("TamanioMaterial",TamanioMaterial);
+            intent.putExtra("TamanioObligatorio",TamanioObligatorio);
             startActivity(intent);
         }
 
@@ -948,6 +892,7 @@ public class PatrolActivity extends AppCompatActivity {
                         dbT.close();
 
                     } catch (Exception edsv){}
+                    BackPresed = true;
                     borrarDatos();
                     dialog.dismiss();
 
@@ -996,7 +941,16 @@ public class PatrolActivity extends AppCompatActivity {
 
         } catch (Exception edsv){}
 
-        finish();
+
+        if(BackPresed){
+            finish();
+        }
+        else{
+            reloadFotos = true;
+            listView.setAdapter(null);
+            loadPatrolFoto(ClienteMaterialId);
+        }
+
     }
 
     public void guardarPatrol(){
@@ -1004,7 +958,7 @@ public class PatrolActivity extends AppCompatActivity {
         int contador = 0;
 
         if (edt_contenedor_seleccionado.getText().toString().matches("")){
-            Toast.makeText(mContext, "¡Falta Contenedor!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "¡Falta "+ClienteMaterialNombre+"!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1021,7 +975,7 @@ public class PatrolActivity extends AppCompatActivity {
         } catch (Exception e) {}
 
         if (contador == 0){
-            Toast.makeText(mContext, "¡Falta precintos!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "¡Falta fotos!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1296,6 +1250,7 @@ public class PatrolActivity extends AppCompatActivity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("¡Patrol Guardado!");
+            builder.setCancelable(false);
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -1363,7 +1318,7 @@ public class PatrolActivity extends AppCompatActivity {
 
 
                     //f loadPrecinto();
-
+                    drawPatrolFoto();
                     dialog.dismiss();
 
                 }

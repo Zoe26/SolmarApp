@@ -128,8 +128,6 @@ public class TipoCargaCustomPagerAdapter extends ArrayAdapter<CargoTipoCargaDTO>
             rbtnTipoCarga.setChecked(position == selectedPosition);
         }
 
-
-
         rbtnTipoCarga.setTag(position);
 
         rbtnTipoCarga.setOnClickListener(new View.OnClickListener() {
@@ -137,15 +135,28 @@ public class TipoCargaCustomPagerAdapter extends ArrayAdapter<CargoTipoCargaDTO>
             public void onClick(View v) {
 
                 selectedPosition = positionx;
+                Cargo cargo = cargoCrud.getCargo();
 
                 String Id =  tipoCarga.get(selectedPosition).ClienteCargaId;
                 String Nombre =  tipoCarga.get(selectedPosition).Nombre;
-                //Log.e("Id",Id);
-                //Log.e("Nombre",Nombre);
 
-                cargoCrud = new CargoCrud(mContext);
+                //cargoCrud = new CargoCrud(mContext);
+
+                if(cargo.getTipoCarga() != null && !cargo.getTipoCarga().isEmpty()){
+                    if(cargo.getTipoCarga().equalsIgnoreCase(Id)){
+                        /*rbtnTipoCarga.setChecked(true);
+                        cargoCrud.updateFieldGeneric("UpdateTipoCarga","true",1);
+                        selectedPosition = position;*/
+                    }else {
+                        cargoCrud.updateFieldGeneric("UpdateTipoCarga","true",1);
+                        cargoCrud.cargaNull();
+                        //rbtnTipoCarga.setChecked(position == selectedPosition);
+                    }
+                }
+
                 cargoCrud.updateTipoCarga(Id,1);
-                cargoCrud.updateFieldGeneric("UpdateTipoCarga","true",1);
+
+                //Log.e("Lim chang", "UpdateTipoCarga");
 
                 notifyDataSetChanged();
             }

@@ -61,7 +61,7 @@
                 android:layout_weight="1">
 
                 <Button
-
+                    android:id="@+id/cuarto_btn_persona"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="2dp"
@@ -72,7 +72,8 @@
                     android:background="@drawable/button_bd_border"
                     style="?android:attr/textAppearanceSmall"
                     android:onClick="ViewPersonaForm"
-                    android:text="Persona"/>
+                    android:text="Persona"
+                    android:visibility="gone"/>
 
                 <Button
                     android:id="@+id/cuarto_btn_carga"
@@ -99,7 +100,8 @@
                     android:background="@drawable/button_bd_border"
                     style="?android:attr/textAppearanceSmall"
                     android:onClick="ViewFotoForm"
-                    android:text="Foto"/>
+                    android:text="Foto"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 
@@ -618,7 +620,7 @@
             android:gravity="center">
 
             <Button
-
+                android:id="@+id/cuarto_btn_personas"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -628,7 +630,8 @@
                 android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceMedium"
                 android:onClick="ViewPersonaForm"
-                android:text="Persona"/>
+                android:text="Persona"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/cuarto_btn_fotos"
@@ -641,7 +644,8 @@
                 android:paddingLeft="10dp"
                 android:background="@drawable/button_bd_border"
                 style="?android:attr/textAppearanceMedium"
-                android:text="Fotos"/>
+                android:text="Fotos"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

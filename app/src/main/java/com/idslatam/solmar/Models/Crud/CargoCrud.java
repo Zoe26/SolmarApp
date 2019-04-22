@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.idslatam.solmar.Models.Database.DBHelper;
 import com.idslatam.solmar.Models.Entities.Cargo;
@@ -88,7 +89,7 @@ public class CargoCrud {
         SQLiteDatabase dbst = dbHelper.getReadableDatabase();
         String selectQuery = "SELECT Placa, TipoCarga, Dni, isIngreso, numeroPrecintos,isCarga," +
                 " numeroDocumento, CantidadBultos, EppCasco, EppChaleco, EppBotas," +
-                " isLicencia, json, UpdateTipoCarga, codigoContenedor, "+
+                " isLicencia,Alcolimetro, json, UpdateTipoCarga, codigoContenedor, "+
                 " Carreta, numeroPrecintos, pv, isCargaVerificada, tamanoContenedor, GuiaRemision, "+
                 " OrigenId, DestinoId, TipoCargaForFotos"+
                 " FROM Cargo";
@@ -110,6 +111,7 @@ public class CargoCrud {
             cargo.setEppChaleco(c.getString(c.getColumnIndex("EppChaleco")));
             cargo.setEppBotas(c.getString(c.getColumnIndex("EppBotas")));
             cargo.setIsLicencia(c.getString(c.getColumnIndex("isLicencia")));
+            cargo.setAlcolimetro(c.getString(c.getColumnIndex("Alcolimetro")));
             cargo.setJson(c.getString(c.getColumnIndex("json")));
 
             //Carga:
@@ -133,6 +135,7 @@ public class CargoCrud {
         return cargo;
     }
 
+
     public void allCargoNull(){
         //DBHelper dbHelperAlarm = new DBHelper(mContext);
         SQLiteDatabase dba = dbHelper.getWritableDatabase();
@@ -148,6 +151,7 @@ public class CargoCrud {
         dba.execSQL("UPDATE Cargo SET EppChaleco = " + null);
         dba.execSQL("UPDATE Cargo SET EppBotas = " + null);
         dba.execSQL("UPDATE Cargo SET isLicencia = " + null);
+        dba.execSQL("UPDATE Cargo SET Alcolimetro = " + null);
 
         //Carga:
         dba.execSQL("UPDATE Cargo SET Carreta = " + null);
@@ -164,5 +168,28 @@ public class CargoCrud {
         dba.execSQL("UPDATE Cargo SET isCargaVerificada = " + null);
 
         dba.close();
+    }
+
+    public void cargaNull(){
+
+        SQLiteDatabase dba = dbHelper.getWritableDatabase();
+
+        //Carga:
+        dba.execSQL("UPDATE Cargo SET Carreta = " + null);
+        dba.execSQL("UPDATE Cargo SET isCarga = " + null);
+        dba.execSQL("UPDATE Cargo SET OrigenId = " + null);
+        dba.execSQL("UPDATE Cargo SET DestinoId = " + null);
+        dba.execSQL("UPDATE Cargo SET tamanoContenedor = " + null);
+        dba.execSQL("UPDATE Cargo SET codigoContenedor = " + null);
+        dba.execSQL("UPDATE Cargo SET numeroPrecintos = " + null);
+        dba.execSQL("UPDATE Cargo SET GuiaRemision = " + null);
+        dba.execSQL("UPDATE Cargo SET pv = " + null);
+        dba.execSQL("UPDATE Cargo SET numeroDocumento = " + null);
+        dba.execSQL("UPDATE Cargo SET CantidadBultos = " + null);
+        dba.execSQL("UPDATE Cargo SET isCargaVerificada = " + null);
+
+        dba.close();
+
+
     }
 }

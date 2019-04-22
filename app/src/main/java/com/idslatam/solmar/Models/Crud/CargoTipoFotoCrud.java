@@ -33,7 +33,6 @@ public class CargoTipoFotoCrud {
     }
 
     public void deleteAll(){
-
         SQLiteDatabase sqldbDelete = dbHelper.getWritableDatabase();
         sqldbDelete.execSQL("DELETE FROM "+CargoTipoFoto.TABLE_NAME);
         sqldbDelete.close();

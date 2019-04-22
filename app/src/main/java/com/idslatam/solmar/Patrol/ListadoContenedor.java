@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -65,13 +66,15 @@ public class ListadoContenedor extends AppCompatActivity {
 
     ArrayList<String> itemsList = new ArrayList<String>();
 
-    boolean isProgress = false;
+    boolean isProgress = false,TamanioObligatorio;
 
     int _PatrolContenedor_Id = 0, contadorLista,TamanioMaterial=0;
 
     ArrayList<PrecintoDataModel> dataModelsMovil;
 
     PrecintoCustomAdapter adapterMovil;
+
+    InputFilter filterLenght = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,7 @@ public class ListadoContenedor extends AppCompatActivity {
         ClienteMaterialId = intent.getStringExtra("ClienteMaterialId");
         ClienteMaterialNombre = intent.getStringExtra("ClienteMaterialNombre");
         TamanioMaterial = intent.getIntExtra("TamanioMaterial",0);
+        TamanioObligatorio = intent.getBooleanExtra("TamanioObligatorio",false);
 
         titlePatrolList.setText("Buscar "+ClienteMaterialNombre);
 
@@ -102,7 +106,7 @@ public class ListadoContenedor extends AppCompatActivity {
         try {
             DBHelper dataBaseHelper = new DBHelper(this);
             SQLiteDatabase dbst = dataBaseHelper.getWritableDatabase();
-            String selectQuery = "SELECT Codigo FROM PatrolContenedor";
+            String selectQuery = "SELECT Codigo FROM PatrolContenedor WHERE ClienteMaterialId = '"+ClienteMaterialId+"' COLLATE NOCASE";
             Cursor c = dbst.rawQuery(selectQuery, new String[]{});
             contadorLista = c.getCount();
             c.close();
@@ -117,10 +121,19 @@ public class ListadoContenedor extends AppCompatActivity {
             loadLista();
         }
 
-
         adapterMovil= new PrecintoCustomAdapter(dataModelsMovil,getApplicationContext());
 
         inputSearch = (EditText) findViewById(R.id.inputSearch);
+
+        //Agregar restricciones para input Search:
+
+        if(Integer.valueOf(TamanioMaterial)>0){
+            filterLenght = new InputFilter.LengthFilter(Integer.valueOf(TamanioMaterial));
+        }
+        else{
+            filterLenght = new InputFilter.LengthFilter(Integer.valueOf(50));
+        }
+        inputSearch.setFilters(new InputFilter[] { filterLenght });
 
         // Adding items to listview
         adapter = new ArrayAdapter<String>(this, R.layout.list_item_contenedor, R.id.product_name, itemsList);
@@ -156,7 +169,7 @@ public class ListadoContenedor extends AppCompatActivity {
 
     public boolean loadLista(){
 
-        Log.e("Load","Inicia");
+        //Log.e("Load","Inicia");
         itemsList.clear();
 
         try {
@@ -229,6 +242,8 @@ public class ListadoContenedor extends AppCompatActivity {
 
 
         String URL = URL_API.concat("api/Contenedor/GetAllMaterial?DispositivoId="+DispositivoId+"&ClienteMaterialId="+ClienteMaterialId);
+
+        Log.e("URL MAtCont", URL);
 
         Ion.with(this)
                 .load("GET", URL)
@@ -394,10 +409,21 @@ public class ListadoContenedor extends AppCompatActivity {
         mView = getLayoutInflater().inflate(R.layout.dialog_patrol_crear_contenedor, null);
 
         EditText editText = (EditText) mView.findViewById(R.id.patrol_cod_contenedor);
-        //TextView texMje = (TextView) mView.findViewById(R.id.cargo_mje_failed);
+        TextView cargo_title_failed = (TextView) mView.findViewById(R.id.cargo_title_failed);
+        TextView txtLabelCrearBien = (TextView) mView.findViewById(R.id.txtLabelCrearBien);
         //texMje.setText(mensaje);
 
+        cargo_title_failed.setText("Crear: "+ClienteMaterialNombre);
+        txtLabelCrearBien.setText("Ingrese Código "+String.valueOf(TamanioMaterial)+" caracteres");
         sUsername = editText.getText().toString();
+
+        if(Integer.valueOf(TamanioMaterial)>0){
+            filterLenght = new InputFilter.LengthFilter(Integer.valueOf(TamanioMaterial));
+        }
+        else{
+            filterLenght = new InputFilter.LengthFilter(Integer.valueOf(50));
+        }
+        editText.setFilters(new InputFilter[] { filterLenght });
 
         try {
 
@@ -405,16 +431,34 @@ public class ListadoContenedor extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int id) {
 
                     if (editText.getText().toString().matches("")){
-                        //dialog.dismiss();
+
                         Toast.makeText(mContext, "Ingrese código de "+ClienteMaterialNombre, Toast.LENGTH_SHORT).show();
                         return;
-                    } else if (editText.getText().toString().length() != (TamanioMaterial)){
-                        //dialog.dismiss();
-                        Toast.makeText(mContext, "Contenedor debe tener "+String.valueOf(TamanioMaterial)+" caracteres", Toast.LENGTH_SHORT).show();
-                        return;
-                    } else {
-                        dialog.dismiss();
-                        contenedorApi(editText.getText().toString());
+                    }
+                    else {
+
+                        if(TamanioObligatorio){
+
+                            if (editText.getText().toString().length() != (TamanioMaterial)){
+                                Toast.makeText(mContext, ClienteMaterialNombre+" debe tener "+String.valueOf(TamanioMaterial)+" caracteres", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else{
+                                dialog.dismiss();
+                                contenedorApi(editText.getText().toString());
+                            }
+
+                        }else{
+
+                            /*
+                            if (editText.getText().toString().length() != (TamanioMaterial)){
+                                Toast.makeText(mContext, "Contenedor debe tener "+String.valueOf(TamanioMaterial)+" caracteres", Toast.LENGTH_SHORT).show();
+                                return;
+                            }*/
+                            dialog.dismiss();
+                            contenedorApi(editText.getText().toString());
+
+                        }
                     }
 
                 }
@@ -433,7 +477,7 @@ public class ListadoContenedor extends AppCompatActivity {
         final ProgressDialog pDialog;
 
         pDialog = new ProgressDialog(ListadoContenedor.this);
-        pDialog.setMessage("Creando contenedor...");
+        pDialog.setMessage("Creando "+ClienteMaterialNombre+" ...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(true);
         pDialog.show();
@@ -548,6 +592,13 @@ public class ListadoContenedor extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    public void retornaPatrol(View view){
+        //Intent intent = new Intent(ListadoContenedor.this, PatrolActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        //startActivity(intent);
+        finish();
     }
 
 }

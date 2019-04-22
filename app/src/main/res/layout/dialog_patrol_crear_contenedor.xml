@@ -18,6 +18,7 @@
         android:layout_marginBottom="4dp"/>
 
     <TextView
+        android:id="@+id/txtLabelCrearBien"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="Ingrese código"

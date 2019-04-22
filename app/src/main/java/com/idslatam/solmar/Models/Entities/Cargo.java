@@ -16,15 +16,19 @@ public class Cargo {
     public static final String KEY_TipoCarga = "TipoCarga";//ok
     public static final String KEY_TipoCargaForFotos = "TipoCargaForFotos";
     public static final String KEY_UpdateTipoCarga = "UpdateTipoCarga";//ok
-    public static final String KEY_EppCasco = "EppCasco";//ok
-    public static final String KEY_EppChaleco = "EppChaleco";//ok
-    public static final String KEY_EppBotas = "EppBotas";//ok
-    public static final String KEY_Dni = "Dni";//ok
-    public static final String KEY_isLicencia = "isLicencia";//ok
+
     public static final String KEY_NroOR = "NroOR";
     public static final String KEY_isIngreso = "isIngreso";//ok
     public static final String KEY_tipoDocumento = "tipoDocumento";//iniciar
     public static final String KEY_json= "json";
+
+    //Persona:
+    public static final String KEY_Dni = "Dni";//ok
+    public static final String KEY_EppCasco = "EppCasco";//ok
+    public static final String KEY_EppChaleco = "EppChaleco";//ok
+    public static final String KEY_EppBotas = "EppBotas";//ok
+    public static final String KEY_isLicencia = "isLicencia";//ok
+    public static final String KEY_Alcolimetro = "Alcolimetro";//ok
 
     //Eliminar
     public static final String KEY_origenDestino = "origenDestino";
@@ -52,14 +56,17 @@ public class Cargo {
     public String NombrePlaca;
     public String TipoCarga;
     public String TipoCargaForFotos;
-    public String isLicencia;
+    public String tipoDocumento;
+    public String isIngreso;
+    public String json;
+
+    //Persona
+    public String Dni;
     public String EppCasco;
     public String EppChaleco;
     public String EppBotas;
-    public String tipoDocumento;
-    public String Dni;
-    public String isIngreso;
-    public String json;
+    public String isLicencia;
+    public String Alcolimetro;
 
     //Carga:
     public String Carreta;
@@ -251,6 +258,10 @@ public class Cargo {
     public void setIsLicencia(String isLicencia) {
         this.isLicencia = isLicencia;
     }
+
+    public String getAlcolimetro() { return Alcolimetro; }
+
+    public void setAlcolimetro(String alcolimetro) { Alcolimetro = alcolimetro; }
 
     public String getJson() {
         return json;

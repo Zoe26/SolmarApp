@@ -269,7 +269,7 @@ public class AlarmLocation extends BroadcastReceiver {
 
             if(cargoFotos.size() >0){
                 new AlarmLocation.sendPhotoCargoFormAsync().execute(cargoFotos);
-                Log.e("alarmSendPhtAsync","Inicio de envío async 1");
+                Log.e("alarmSendPhtAsync","Inicio de envío Cargo async 1");
             }
         }
         catch (Exception e){
@@ -685,8 +685,9 @@ public class AlarmLocation extends BroadcastReceiver {
 
                 File archivoFoto = new File(cargoFoto.filePath);
 
-                if(archivoFoto.isFile()){
-
+                if(archivoFoto.exists()){
+                    //
+                    Log.e("Async","Archivo Existe +"+cargoFoto.getCargoFormFotoId());
                     Map<String, List<String>> paramsMP = new HashMap<String, List<String>>();
                     paramsMP.put("DispositivoId", Arrays.asList(config.DispositivoId));
                     paramsMP.put("CodigoSincronizacion", Arrays.asList(cargoFoto.codigoSincronizacion));
@@ -716,7 +717,7 @@ public class AlarmLocation extends BroadcastReceiver {
                                 public void onCompleted(Exception e, Response<String> response) {
 
                                     if(response!=null){
-                                        Log.e("Response ff",response.toString());
+                                        Log.e("Response c ff",response.toString());
 
                                         Gson gson = new Gson();
                                         JsonObject result = gson.fromJson(response.getResult(), JsonObject.class);
@@ -747,6 +748,7 @@ public class AlarmLocation extends BroadcastReceiver {
                 }
                 else{
                     cargoFormFotoCrud.removeCargoFoto(cargoFoto);
+                    Log.e("Async","Archivo no Existe");
                 }
 
 

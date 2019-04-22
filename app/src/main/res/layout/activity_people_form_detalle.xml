@@ -1,0 +1,1430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_people_detalle"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context="com.idslatam.solmar.People.PeopleDetalle">
+
+    <LinearLayout
+        android:id="@+id/content_S"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/body">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/people_detalle_mensaje"
+                android:background="@color/verde"
+                android:layout_alignParentTop="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/people_txt_mensaje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/squarecamera__white"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    style="?android:attr/textAppearanceLarge"
+                    android:text="Autorizado"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/people_detalle_img"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:onClick="peopleFoto"
+                    android:src="@drawable/ic_foto_fail"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/people_detalle_datos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/people_detalle_primero"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/people_detalle_mensaje"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                style="?android:attr/textAppearanceMedium"
+                                android:text="DNI: "/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:padding="5dp"
+                                style="?android:attr/textAppearanceMedium"
+                                android:text="Personal: "/>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+
+                            <EditText
+                                android:id="@+id/people_detalle_dni"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="5dp"
+                                style="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/negro_general"
+                                android:enabled="false"
+                                android:background="@drawable/button_bd_border"
+                                android:layout_weight="1"/>
+
+                            <EditText
+                                android:id="@+id/people_edt_persTipo"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="5dp"
+                                android:padding="5dp"
+                                style="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/negro_general"
+                                android:enabled="false"
+                                android:background="@drawable/button_bd_border"
+                                android:layout_weight="1"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/people_detalle_segundo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/people_detalle_primero"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Nombres: "/>
+
+                        <!--<TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:padding="5dp"
+                            android:text="Empresa: "/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Autorizante: "/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Motivo: "/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Área: "/>-->
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+
+                        <EditText
+                            android:id="@+id/people_detalle_nombre"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="false"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/negro_general"
+                            android:padding="5dp"
+                            android:background="@drawable/button_bd_border" />
+
+                        <!--<EditText
+                            android:id="@+id/people_detalle_empresa"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:enabled="false"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:background="@drawable/button_bd_border" />
+
+                        <EditText
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/negro_general"
+                            style="?android:attr/textAppearanceMedium"
+                            android:enabled="false"
+                            android:padding="5dp"
+                            android:background="@drawable/button_bd_border" />
+
+                        <EditText
+                            android:id="@+id/people_detalle_motivo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:enabled="false"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>
+
+                        <EditText
+                            android:id="@+id/people_detalle_codArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>-->
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/people_detalle_tercero"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:padding="5dp"
+                            android:text="Empresa: "/>
+
+                        <!--<TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Autorizante: "/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Motivo: "/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Área: "/>-->
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/people_detalle_empresa"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:enabled="false"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:background="@drawable/button_bd_border" />
+
+                        <!--<EditText
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/negro_general"
+                            style="?android:attr/textAppearanceMedium"
+                            android:enabled="false"
+                            android:padding="5dp"
+                            android:background="@drawable/button_bd_border" />
+
+                        <EditText
+                            android:id="@+id/people_detalle_motivo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:enabled="false"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>
+
+                        <EditText
+                            android:id="@+id/people_detalle_codArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>-->
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:padding="5dp"
+                            android:text="Area Acceso: "/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/spinAreaAcceso"
+                            style="?android:attr/textAppearanceMedium">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:padding="5dp"
+                            android:text="Motivo: "/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/spinMotivo"
+                            style="?android:attr/textAppearanceMedium">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:padding="5dp"
+                            android:text="Autorizante: "/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/spinAutorizante"
+                            style="?android:attr/textAppearanceMedium">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Autorizante: "/>
+
+                        <!--<TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Motivo: "/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Área: "/>-->
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+
+                        <EditText
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/negro_general"
+                            style="?android:attr/textAppearanceMedium"
+                            android:enabled="false"
+                            android:padding="5dp"
+                            android:background="@drawable/button_bd_border" />
+
+                        <!--<EditText
+                            android:id="@+id/people_detalle_motivo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:enabled="false"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>
+
+                        <EditText
+                            android:id="@+id/people_detalle_codArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>-->
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Motivo: "/>
+
+                        <!--<TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Área: "/>-->
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/people_detalle_motivo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:enabled="false"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>
+
+                        <!--<EditText
+                            android:id="@+id/people_detalle_codArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>-->
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:text="Área: "/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/people_detalle_codArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            style="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/negro_general"
+                            android:background="@drawable/button_bd_border"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/people_detalle_aux"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                    <TextView
+                        android:id="@+id/people_detalle_mensaje_error"
+                        android:padding="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/red"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/people_detalle_cuarto"
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_visualizar_valor"
+                                android:layout_width="150dp"
+                                android:layout_height="170dp"
+                                android:adjustViewBounds="true"
+                                android:cropToPadding="false"
+                                android:scaleType="fitXY"
+                                android:gravity="center"
+                                android:background="@drawable/bg_fotos"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="?android:attr/textAppearanceMedium"
+                                android:text="Valor"/>
+
+                            <ImageButton
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:onClick="fotoValor"
+                                android:gravity="center"
+                                android:background="@drawable/ic_foto"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/people_detalle_quinto"
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_visualizar_vehiculo_delatera"
+                                android:layout_width="150dp"
+                                android:layout_height="170dp"
+                                android:adjustViewBounds="true"
+                                android:cropToPadding="false"
+                                android:scaleType="fitXY"
+                                android:gravity="center"
+                                android:background="@drawable/bg_fotos"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="?android:attr/textAppearanceMedium"
+                                android:text="Vehículo Delantera"/>
+
+                            <ImageButton
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:onClick="fotoVehiculo"
+                                android:gravity="center"
+                                android:background="@drawable/ic_foto"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/people_detalle_sexto"
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageButton
+                                android:id="@+id/btn_visualizar_vehiculo_guantera"
+                                android:layout_width="150dp"
+                                android:layout_height="170dp"
+                                android:adjustViewBounds="true"
+                                android:cropToPadding="false"
+                                android:scaleType="fitXY"
+                                android:gravity="center"
+                                android:background="@drawable/bg_fotos"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="?android:attr/textAppearanceMedium"
+                                android:text="Vehículo Guantera"/>
+
+                            <ImageButton
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:onClick="fotoVehiculoGuantera"
+                                android:gravity="center"
+                                android:background="@drawable/ic_foto"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/people_detalle_septimo"
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageButton
+                                android:id="@+id/btn_visualizar_vehiculo_maletera"
+                                android:layout_width="150dp"
+                                android:layout_height="170dp"
+                                android:adjustViewBounds="true"
+                                android:cropToPadding="false"
+                                android:scaleType="fitXY"
+                                android:gravity="center"
+                                android:background="@drawable/bg_fotos"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="?android:attr/textAppearanceMedium"
+                                android:text="Vehículo Maletera"/>
+
+                            <ImageButton
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:onClick="fotoVehiculoMaletera"
+                                android:gravity="center"
+                                android:background="@drawable/ic_foto"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!--<LinearLayout
+                    android:id="@+id/people_detalle_cuarto"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="vertical"
+                    android:layout_below="@+id/people_detalle_segundo"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Valor"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="fotoValor"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_valor"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:gravity="center"
+                            android:background="@drawable/ic_visualizar"/>
+
+                        <TextView
+                            android:id="@+id/people_detalle_txtfoto_valor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="Sin foto"
+                            android:gravity="center"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/people_detalle_quinto"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="vertical"
+                    android:layout_below="@+id/people_detalle_cuarto"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Vehículo Delantera"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="fotoVehiculo"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_vehiculo_delatera"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:gravity="center"
+                            android:background="@drawable/ic_visualizar"/>
+
+                        <TextView
+                            android:id="@+id/people_detalle_txtfoto_vehiculo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="Sin foto"
+                            android:gravity="center"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="vertical"
+                    android:layout_below="@+id/people_detalle_cuarto"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Vehículo Guantera"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="fotoVehiculoGuantera"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_vehiculo_guantera"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:gravity="center"
+                            android:background="@drawable/ic_visualizar"/>
+
+                        <TextView
+                            android:id="@+id/people_detalle_txtfoto_vehiculo_guantera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="Sin foto"
+                            android:gravity="center"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Vehículo Maletera"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:onClick="fotoVehiculoMaletera"
+                            android:gravity="center"
+                            android:background="@drawable/ic_foto"/>
+
+                        <ImageButton
+                            android:id="@+id/btn_visualizar_vehiculo_maletera"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:gravity="center"
+                            android:background="@drawable/ic_visualizar"/>
+
+                        <TextView
+                            android:id="@+id/people_detalle_txtfoto_vehiculo_maletera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="Sin foto"
+                            android:gravity="center"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>-->
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/verde"
+                android:paddingLeft="10dp"
+                android:onClick="salir"
+                android:background="@drawable/button_bd_border"
+                style="?android:attr/textAppearanceMedium"
+                android:text="Salir"/>
+
+            <Button
+                android:id="@+id/people_detalle_btn_registrar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="guardarPeople"
+                android:textColor="@color/verde"
+                android:paddingLeft="10dp"
+                android:background="@drawable/button_bd_border"
+                style="?android:attr/textAppearanceMedium"
+                android:text="Registrar"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_people_detalle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="com.idslatam.solmar.People.PeopleDetalle">
+
+            <LinearLayout
+                android:id="@+id/people_detalle_mensaje"
+                android:background="@color/verde"
+                android:layout_alignParentTop="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/people_txt_mensaje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/squarecamera__white"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    style="?android:attr/textAppearanceLarge"
+                    android:text="Autorizado"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/people_detalle_primero"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_below="@id/people_detalle_mensaje"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="DNI: "/>
+
+                    <EditText
+                        android:id="@+id/people_detalle_dni"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/negro_general"
+                        android:gravity="center"
+                        android:enabled="false"
+                        android:background="@drawable/button_bd_border"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Personal: "/>
+
+                    <EditText
+                        android:id="@+id/people_edt_persTipo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/negro_general"
+                        android:gravity="center"
+                        android:enabled="false"
+                        android:background="@drawable/button_bd_border"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/people_detalle_segundo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/people_detalle_primero"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="2"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Nombres: "/>
+
+                    <EditText
+                        android:id="@+id/people_detalle_nombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:background="@drawable/button_bd_border" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="2"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceMedium"
+                        android:padding="5dp"
+                        android:text="Empresa: "/>
+
+                    <EditText
+                        android:id="@+id/people_detalle_empresa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/negro_general"
+                        android:enabled="false"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:background="@drawable/button_bd_border" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Autorizante: "/>
+
+                    <EditText
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/negro_general"
+                        style="?android:attr/textAppearanceMedium"
+                        android:enabled="false"
+                        android:padding="5dp"
+                        android:background="@drawable/button_bd_border" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/people_detalle_tercero"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_below="@+id/people_detalle_segundo"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Motivo: "/>
+
+                    <EditText
+                        android:id="@+id/people_detalle_motivo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/negro_general"
+                        android:enabled="false"
+                        android:background="@drawable/button_bd_border"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:text="Área: "/>
+
+                    <EditText
+                        android:id="@+id/people_detalle_codArea"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        style="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/negro_general"
+                        android:background="@drawable/button_bd_border"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/people_detalle_cuarto"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:orientation="vertical"
+                android:layout_below="@+id/people_detalle_tercero"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/textAppearanceMedium"
+                    android:text="Valor"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:onClick="fotoValor"
+                        android:gravity="center"
+                        android:background="@drawable/ic_foto"/>
+
+                    <TextView
+                        android:id="@+id/people_detalle_txtfoto_valor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/people_detalle_quinto"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:orientation="vertical"
+                android:layout_below="@+id/people_detalle_cuarto"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/textAppearanceMedium"
+                    android:text="Vehículo"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:onClick="fotoVehiculo"
+                        android:gravity="center"
+                        android:background="@drawable/ic_foto"/>
+
+                    <TextView
+                        android:id="@+id/people_detalle_txtfoto_vehiculo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="@color/verde"
+                    android:paddingLeft="10dp"
+                    android:onClick="salir"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Salir"/>
+
+                <Button
+                    android:id="@+id/people_detalle_btn_registrar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:onClick="guardarPeople"
+                    android:textColor="@color/verde"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/button_bd_border"
+                    style="?android:attr/textAppearanceSmall"
+                    android:text="Registrar"/>
+
+            </LinearLayout>
+
+    </RelativeLayout>-->

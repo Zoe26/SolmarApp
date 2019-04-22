@@ -15,6 +15,7 @@ public class Constants {
     public String URL = "http://solmartest.azurewebsites.net/webapi/";
     //public String URL = "http://190.116.178.163:85/webapi/";//"http://190.116.178.163:85/webapi/"; //"http://solmar.azurewebsites.net/WebApi/";//"http://190.116.178.163:85/webapi/";// "http://solmar.azurewebsites.net/WebApi/"; http://mdmwebapi2.azurewebsites.net/
     //public String URL = "http://190.116.178.163:85/webapiTest/";
+    long STATUS_TIMEOUT_SECONDS = 25;
     public static final String PACKAGE_NAME = "com.google.android.gms.location.activityrecognition";
 
     public static final String BROADCAST_ACTION = PACKAGE_NAME + ".BROADCAST_ACTION";

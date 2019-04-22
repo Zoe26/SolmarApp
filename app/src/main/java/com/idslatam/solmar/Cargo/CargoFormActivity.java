@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,20 +14,19 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputFilter;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -65,6 +65,8 @@ import com.idslatam.solmar.Models.Entities.Cargo;
 import com.idslatam.solmar.Models.Entities.CargoFormFoto;
 import com.idslatam.solmar.Models.Entities.CargoPrecinto;
 import com.idslatam.solmar.Models.Entities.CargoTipoFoto;
+import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoAlcolimetroDTO;
+import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoAutenticacionDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoCargaFormDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoCargaFormDataDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoFormTakeFotoAsync;
@@ -73,9 +75,7 @@ import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoFotoFormDataDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoPersonaFormDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoRutaFormDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoRutaFormItemDTO;
-import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTakeFotoAsync;
 import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTipoCargaDTO;
-import com.idslatam.solmar.Models.Entities.DTO.Cargo.CargoTipoCargaTableDTO;
 import com.idslatam.solmar.Models.Entities.DTO.Configuracion.ConfiguracionSingleDTO;
 import com.idslatam.solmar.R;
 import com.koushikdutta.async.future.FutureCallback;
@@ -109,24 +109,29 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             firstLoadDestino = true,viewOrigen = false,viewDestino= false,reloadCarga=false;
     GridView gvTipoCarga,gvPrecintos,gvCargoFotos;
     int sizeTipoCarga = 0,_CargoPrecinto_Id=0,heightTipoFoto=0,heightFotoPrecinto=0,columnsFotoPrecinto=0,
-            heightTipoCarga=0,fotoPrecinto=0,TIME_OUT = 5 * 60 * 1000;
+            heightTipoCarga=0,fotoPrecinto=0,TIME_OUT = 5 * 60 * 1000,columnsCargaFoto=0;
     String urlApi,valor,formato,numeroPrecintoFoto = "0",imageFilePath="",CodigoSincronizacion="";
     EditText primero_edt_tracto,primero_edt_dni,cuarto_edt_codContenedor,cuarto_edt_or,
             etxtCarreta,etxtCantidadBultos,etxtPV,etxtNroPrecintos;
     LinearLayout lnLyTamanioContenedor,lnLyOrigen,lnLyDestino,lnLyGuiaTicket,lnLyCarreta,lnLyCarga,
             lnLyNroDocumento,lnLyPV,lnLyCodigoContenedor,lnLyPrecintos,lnLyBultos,lnLyCargaVerificada,
-            lnlyTempOrder;
+            lnlyTempOrder,lnlyAlcolimetro;
     CheckBox chBoxCarga,chBoxCargaVerificada;
     TextView primero_txt_mje,cargo_txt_dni_persona, cargo_txt_empresa_persona,
             txtTamanioContenedor,txtOrigen,txtDestino,quinto_txt_nro_precintos,
             txtIngresoTracto,txtCarga,txtDni,txtCarreta,txtTieneCarga,txtNroDocumento,txtPV,
             txtCodigoContenedor,txtPrecintos,txtBultos,txtCargaVerificada,
-            quinto_txt_dni, quinto_txt_carga,quinto_txt_ingreso_tracto;
+            quinto_txt_dni, quinto_txt_carga,quinto_txt_ingreso_tracto,txtPAPositivo,txtPANegativo;
     Spinner spinOrigen,spinDestino;
-    Button btnEscanear;
+    Button btnEscanear,primero_btn_verificar,primero_btn_carga
+            //btn Carga
+            ,cuarto_btn_persona,cuarto_btn_foto
+            ,cuarto_btn_personas,cuarto_btn_fotos
+            //btn Finalizar
+            ,btn_finish_carga,btn_finish_cargas,btn_finish;
     ImageView img_cargo_persona;
-    SwitchCompat isLicencia,switchTamanoContenedor,switchTipoGuiaBalance;
-    CheckBox check_casco,check_chaleco,check_botas;
+    SwitchCompat isLicencia,switchTamanoContenedor,switchTipoGuiaBalance,switchResultadoAlcoholimetro;
+    CheckBox check_casco,check_chaleco,check_botas,chBoxPruebaAlcohol;
 
     CargoCrud cargoCrud;
     ConfiguracionCrud configuracionCrud;
@@ -148,6 +153,9 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
     CargoRutaFormItemDTO selectedDestino = new CargoRutaFormItemDTO();
     List<CargoFormFoto> cargoFormFotos = new ArrayList<>();
 
+    ArrayList<CargoAutenticacionDTO> cargoAutenticacionDTO;
+    CargoAlcolimetroDTO cargoAlcolimetroDTO = new CargoAlcolimetroDTO();
+
     private static final int REQUEST_CODE_PHOTO_TAKEN_ASYNC = 2;
 
     public void finalizarCargoSend(View view){
@@ -160,7 +168,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         int fotosTipoTomadas =  cargoTipoFotoCrud.getFotosTomadas();
 
         if(fotosPrecintoTotal != fotosPrecintoTomadas){
-            Toast.makeText(mContext, "Complete fotos de precintos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Complete fotos", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -207,6 +215,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         params.put("Botas", Arrays.asList(Botas));
         params.put("NroDoi", Arrays.asList(Dni));
         params.put("VigenciaLicenciaCoducir", Arrays.asList(Licencia));
+
+        if(cargo.getAlcolimetro()!=null){
+            params.put("PruebaAlcolimetro", Arrays.asList(cargo.getAlcolimetro()));
+        }
 
         for (CargoCargaFormDataDTO item : cargoCargaForm.Data) {
             switch (item.Codigo){
@@ -343,7 +355,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         }
                         */
 
-
                         if (e != null){
 
                             try {
@@ -411,17 +422,15 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         @Override
         protected List<CargoFormFoto> doInBackground(List<CargoFormFoto>... params) {
 
-
             List<CargoFormFoto> objFotoWork = params[0];
             CargoFormFotoCrud cargoFotoCrud = new CargoFormFotoCrud(mContext);
             ConfiguracionSingleDTO config = configuracionCrud.getConfiguracion();
-
 
             for (CargoFormFoto cargoFoto : objFotoWork) {
 
                 File archivoFoto = new File(cargoFoto.filePath);
 
-                if(archivoFoto.isFile()){
+                if(archivoFoto.exists()){
 
                     Map<String, List<String>> paramsMP = new HashMap<String, List<String>>();
                     paramsMP.put("DispositivoId", Arrays.asList(config.DispositivoId));
@@ -440,7 +449,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                             .uploadProgressHandler(new ProgressCallback() {
                                 @Override
                                 public void onProgress(long uploaded, long total) {
-                                    Log.e("total = " + String.valueOf((int) total), "--- uploaded = " + String.valueOf(uploaded));
+                                    Log.e("total = " + String.valueOf((int) total), "--- uploaded Fotos= " + String.valueOf(uploaded));
                                 }
                             })
                             .setTimeout(TIME_OUT)
@@ -509,7 +518,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mContext = this;
 
         Constants constants = new Constants();
@@ -550,8 +559,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
         loadRuta = false;
 
-        final File newFile = new File(Environment.getExternalStorageDirectory() + "/Solgis/Cargo");
+        final File newFile = new File(Environment.getExternalStorageDirectory() + "/SOLGIS/Cargo");
+        //Environment.getExternalStorageDirectory()+"/SOLGIS/Cargo"
         newFile.mkdirs();
+        Log.e("Direx",newFile.getAbsolutePath().toString());
 
     }
 
@@ -568,8 +579,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        Log.e("onPageScrolled","3");
-
         try{
             switch (position){
                 case 0:
@@ -585,6 +594,12 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     check_casco = (CheckBox) vpCargoForm.findViewById(R.id.check_casco);
                     check_chaleco = (CheckBox) vpCargoForm.findViewById(R.id.check_chaleco);
                     check_botas = (CheckBox) vpCargoForm.findViewById(R.id.check_botas);
+                    chBoxPruebaAlcohol = (CheckBox)vpCargoForm.findViewById(R.id.chBoxPruebaAlcohol);
+                    lnlyAlcolimetro = (LinearLayout) vpCargoForm.findViewById(R.id.lnlyAlcolimetro);
+                    txtPAPositivo = (TextView)vpCargoForm.findViewById(R.id.txtPAPositivo);
+                    txtPANegativo = (TextView)vpCargoForm.findViewById(R.id.txtPANegativo);
+                    primero_btn_verificar = (Button)vpCargoForm.findViewById(R.id.primero_btn_verificar);
+                    primero_btn_carga = (Button)vpCargoForm.findViewById(R.id.primero_btn_carga);
 
                     getPersonaForm(urlApi);
 
@@ -614,7 +629,39 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         }
                     });
 
+                    switchResultadoAlcoholimetro = (SwitchCompat)findViewById(R.id.switchResultadoAlcoholimetro);
+                    switchResultadoAlcoholimetro.setClickable(false);
+                    switchResultadoAlcoholimetro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                            Log.e("Change ResAl",String.valueOf(isChecked));
+
+                            if (isChecked){
+                                try {
+                                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                    dba.execSQL("UPDATE Cargo SET Alcolimetro = 'false'");
+                                    dba.close();
+                                } catch (Exception eew){}
+
+                            } else {
+                                try {
+                                    DBHelper dbHelperAlarm = new DBHelper(mContext);
+                                    SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                                    dba.execSQL("UPDATE Cargo SET Alcolimetro = 'true'");
+                                    dba.close();
+                                } catch (Exception eew){}
+                            }
+                            //Toast.makeText(ScanCode.this, "Is checked? "+swCarga.isChecked(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
+
                     drawPersonaForm();
+                    drawPersonaAlcolimetroForm();
+
+
 
                     break;
                 case 1:
@@ -639,6 +686,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     lnLyBultos = (LinearLayout)vpCargoForm.findViewById(R.id.lnLyBultos);
                     lnLyCargaVerificada = (LinearLayout)vpCargoForm.findViewById(R.id.lnLyCargaVerificada);
                     //edt_ingresos = (LinearLayout)vpCargoForm.findViewById(R.id.edt_ingresos);
+                    cuarto_btn_persona = (Button)vpCargoForm.findViewById(R.id.cuarto_btn_persona);
+                    cuarto_btn_foto = (Button)vpCargoForm.findViewById(R.id.cuarto_btn_foto);
+                    cuarto_btn_personas = (Button)vpCargoForm.findViewById(R.id.cuarto_btn_personas);
+                    cuarto_btn_fotos = (Button)vpCargoForm.findViewById(R.id.cuarto_btn_fotos);
 
                     txtTamanioContenedor = (TextView) findViewById(R.id.txtTamanioContenedor);
                     txtOrigen = (TextView) findViewById(R.id.txtOrigen);
@@ -673,6 +724,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     quinto_txt_dni = (TextView) findViewById(R.id.quinto_txt_dni);
                     quinto_txt_carga = (TextView) findViewById(R.id.quinto_txt_carga);
                     quinto_txt_ingreso_tracto = (TextView) findViewById(R.id.quinto_txt_ingreso_tracto);
+
+                    btn_finish_carga = (Button)vpCargoForm.findViewById(R.id.btn_finish_carga);
+                    btn_finish_cargas = (Button)vpCargoForm.findViewById(R.id.btn_finish_cargas);
+                    btn_finish = (Button)vpCargoForm.findViewById(R.id.btn_finish);
 
                     gvPrecintos = (GridView) findViewById(R.id.gvPrecintos);
                     gvCargoFotos = (GridView) findViewById(R.id.gvCargoFotos);
@@ -748,8 +803,8 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Log.e("requestCode",String.valueOf(requestCode));
-        //Log.e("resultCode",String.valueOf(resultCode));
+        Log.e("requestCode",String.valueOf(requestCode));
+        Log.e("resultCode",String.valueOf(resultCode));
 
 
         if(resultCode == 0){
@@ -761,17 +816,18 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         switch (requestCode){
             case 1:
                 break;
-            case 2://Fotos
+            case REQUEST_CODE_PHOTO_TAKEN_ASYNC://Fotos
 
-                if(fotoPrecinto == 1){
+                if(fotoPrecinto == 1){//Viene de Precintos:
 
+                    Log.e("Precinto", imageFilePath );
                     CargoFormTakeFotoAsync objFotoWork = new CargoFormTakeFotoAsync(0,imageFilePath,null,numeroPrecintoFoto);
 
                     new takePhotoAsync().execute(objFotoWork);
 
                 }else if(fotoPrecinto ==2){
                     CargoFormTakeFotoAsync objFotoWork = new CargoFormTakeFotoAsync(1,imageFilePath,cargoFotoDataModel.ClienteCargaFotoId,"0");
-
+                    Log.e("Foto", imageFilePath );
                     new takePhotoAsync().execute(objFotoWork);
                 }
 
@@ -784,28 +840,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     btn_nroDoc = false;
                     return;
                 }
-
-                /*
-                //En el caso
-                if(btn_nroDoc){
-
-                    if(result != null) {
-                        if(result.getContents() == null) {
-                            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-                        } else {
-
-                            if (btn_dni){
-                                isScanner = true;
-                                valor = result.getContents();
-                                formato = result.getFormatName();
-                                enviarDNI();
-                            }
-                        }
-                    }
-
-                    return;
-                }
-                */
 
                 if(result != null) {
                     if(result.getContents() == null) {
@@ -844,8 +878,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             String filePath = "";
             filePath = objFotoWork.getImageFilePath();
 
-            //String pathRoot = Environment.getExternalStorageDirectory() + "/Solgis/Cargo/";
-
             try{
                 bitmapOrig = BitmapFactory.decodeFile(filePath);
 
@@ -863,17 +895,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             catch (Exception e){
 
             }
-
-            /*
-            switch (objFotoWork.getTipoFoto()){
-                case 0:
-                    objFotoWork.setSuccess(false);
-                    return objFotoWork;
-                default:
-                    Uri_Foto =  objFotoWork.getImageFilePath();
-                    break;
-            }
-            */
 
             Log.e("Acceso",objFotoWork.getImageFilePath());
             //adjust for camera orientation
@@ -1009,29 +1030,8 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
         @Override
         protected void onPostExecute(CargoFormTakeFotoAsync result) {
-            //Log.e(TAG,"Result Post Execute");
-            //Log.e(TAG,result.toString());
-            //TextView txt = (TextView) findViewById(R.id.output);
-            //txt.setText("Executed"); // txt.setText(result);
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
             if(result.getSuccess()){
                 switch (result.getTipoFoto()){
-                    /*case 1:
-                        btn_visualizar_delantera.setVisibility(View.VISIBLE);
-                        btn_visualizar_delantera.setImageDrawable(null);
-                        btn_visualizar_delantera.setImageURI(Uri.parse(result.getImageFilePath()));
-                        break;
-                    case 2:
-                        btn_visualizar_trasera.setVisibility(View.VISIBLE);
-                        btn_visualizar_trasera.setImageDrawable(null);
-                        btn_visualizar_trasera.setImageURI(Uri.parse(result.getImageFilePath()));
-                        break;
-                    case 3:
-                        btn_visualizar_panoramica.setVisibility(View.VISIBLE);
-                        btn_visualizar_panoramica.setImageDrawable(null);
-                        btn_visualizar_panoramica.setImageURI(Uri.parse(result.getImageFilePath()));
-                        break;*/
                     case 0:
                         loadPrecinto();
                         break;
@@ -1075,7 +1075,24 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 return false;
                             }
                             else{
-                                cargoCrud.updateFieldGeneric("numeroPrecintos",valueInput.trim(),1);
+
+                                if(item.CaracteresTamanio != null){
+                                    if(item.CaracteresTamanio != "") {
+                                        int _lengh = Integer.valueOf(item.CaracteresTamanio);
+                                        if (valueInput.length() < _lengh) {
+                                            Toast.makeText(mContext, item.Label + " debe tener " + _lengh + " caracteres.", Toast.LENGTH_SHORT).show();
+                                            return false;
+                                        } else {
+                                            cargoCrud.updateFieldGeneric("numeroPrecintos", valueInput.trim(), 1);
+                                        }
+                                    }
+                                    else{
+                                        cargoCrud.updateFieldGeneric("numeroPrecintos", valueInput.trim(), 1);
+                                    }
+
+                                }else{
+                                    cargoCrud.updateFieldGeneric("numeroPrecintos",valueInput.trim(),1);
+                                }
                             }
 
                         }else{
@@ -1098,7 +1115,21 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 return false;
                             }
                             else{
-                                cargoCrud.updateFieldGeneric("Carreta",valueInput.trim(),1);
+
+                                if(item.CaracteresTamanio != null){
+                                    int _lengh = Integer.valueOf(item.CaracteresTamanio);
+                                    if(valueInput.length() < _lengh){
+                                        Toast.makeText(mContext,  item.Label+" debe tener "+_lengh+" caracteres.", Toast.LENGTH_SHORT).show();
+                                        return false;
+                                    }
+                                    else{
+                                        cargoCrud.updateFieldGeneric("Carreta",valueInput.trim(),1);
+                                    }
+
+                                }else{
+                                    cargoCrud.updateFieldGeneric("Carreta",valueInput.trim(),1);
+                                }
+
                             }
 
                         }
@@ -1133,7 +1164,20 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 return false;
                             }
                             else{
-                                cargoCrud.updateFieldGeneric("numeroDocumento",valueInput.trim(),1);
+
+                                if(item.CaracteresTamanio != null){
+                                    int _lengh = Integer.valueOf(item.CaracteresTamanio);
+                                    if(valueInput.length() < _lengh){
+                                        Toast.makeText(mContext,  item.Label+" debe tener "+_lengh+" caracteres.", Toast.LENGTH_SHORT).show();
+                                        return false;
+                                    }
+                                    else{
+                                        cargoCrud.updateFieldGeneric("numeroDocumento",valueInput.trim(),1);
+                                    }
+
+                                }else{
+                                    cargoCrud.updateFieldGeneric("numeroDocumento",valueInput.trim(),1);
+                                }
                             }
                         }
                         else{
@@ -1157,7 +1201,21 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 return false;
                             }
                             else{
-                                cargoCrud.updateFieldGeneric("pv",valueInput.trim(),1);
+
+                                if(item.CaracteresTamanio != null){
+                                    int _lengh = Integer.valueOf(item.CaracteresTamanio);
+                                    if(valueInput.length() < _lengh){
+                                        Toast.makeText(mContext,  item.Label+" debe tener "+_lengh+" caracteres.", Toast.LENGTH_SHORT).show();
+                                        return false;
+                                    }
+                                    else{
+                                        cargoCrud.updateFieldGeneric("pv",valueInput.trim(),1);
+                                    }
+
+                                }else{
+                                    cargoCrud.updateFieldGeneric("pv",valueInput.trim(),1);
+                                }
+
                             }
                         }
                         else{
@@ -1181,7 +1239,26 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 return false;
                             }
                             else{
-                                cargoCrud.updateFieldGeneric("CantidadBultos",valueInput.trim(),1);
+                                if(item.CaracteresTamanio != null){
+                                    if(item.CaracteresTamanio != ""){
+                                        int _lengh = Integer.valueOf(item.CaracteresTamanio);
+                                        if(valueInput.length() < _lengh){
+                                            Toast.makeText(mContext,  item.Label+" debe tener "+_lengh+" caracteres.", Toast.LENGTH_SHORT).show();
+                                            return false;
+                                        }
+                                        else{
+                                            cargoCrud.updateFieldGeneric("CantidadBultos",valueInput.trim(),1);
+                                        }
+                                    }
+                                    else{
+                                        cargoCrud.updateFieldGeneric("CantidadBultos",valueInput.trim(),1);
+                                    }
+
+
+                                }else{
+                                    cargoCrud.updateFieldGeneric("CantidadBultos",valueInput.trim(),1);
+                                }
+
                             }
                         }
                         else{
@@ -1212,7 +1289,19 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 return false;
                             }
                             else{
-                                cargoCrud.updateFieldGeneric("codigoContenedor",valueInput.trim(),1);
+                                if(item.CaracteresTamanio != null){
+                                    int _lengh = Integer.valueOf(item.CaracteresTamanio);
+                                    if(valueInput.length() < _lengh){
+                                        Toast.makeText(mContext,  item.Label+" debe tener "+_lengh+" caracteres.", Toast.LENGTH_SHORT).show();
+                                        return false;
+                                    }
+                                    else{
+                                        cargoCrud.updateFieldGeneric("codigoContenedor",valueInput.trim(),1);
+                                    }
+
+                                }else{
+                                    cargoCrud.updateFieldGeneric("codigoContenedor",valueInput.trim(),1);
+                                }
                             }
                         }
                         else{
@@ -1641,6 +1730,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         if(adapterTipoCarga!=null){
             Log.e("Tamanio",String.valueOf(adapterTipoCarga.getCount()));
 
+            if(cargoAlcolimetroDTO != null){
+                drawPersonaAlcolimetroForm();
+            }
+
             gvTipoCarga = (GridView) vpCargoForm.findViewById(R.id.gvTipoCarga);
             gvTipoCarga.setAdapter(adapterTipoCarga);
             gridViewResized = false;
@@ -1654,6 +1747,9 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     }
                 }
             });
+
+            primero_btn_verificar.setVisibility(View.VISIBLE);
+            primero_btn_carga.setVisibility(View.VISIBLE);
 
             return;
         }
@@ -1673,6 +1769,9 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         }
                         else if(result.Estado){
 
+                            primero_btn_verificar.setVisibility(View.VISIBLE);
+                            primero_btn_carga.setVisibility(View.VISIBLE);
+
                             Log.e("result",result.toString());
 
                             sizeTipoCarga = result.Data.Carga.size();
@@ -1691,6 +1790,21 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                     }
                                 }
                             });
+
+                            //Autenticación:
+                            cargoAutenticacionDTO = result.Data.Autenticacion;
+                            Log.e("Autenticacion", cargoAutenticacionDTO.toString() );
+
+                            cargoAlcolimetroDTO = result.Data.Alcolimetro;
+
+                            if(cargoAlcolimetroDTO!=null){
+                                Log.e("Alcolimetro", cargoAlcolimetroDTO.toString() );
+                            }
+                            else{
+                                Log.e("Alcolimetro", "nulo" );
+                            }
+
+                            drawPersonaAlcolimetroForm();
 
                         }
                         // do stuff with the result or error
@@ -1722,6 +1836,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
         if(!actualizar){
             if(cargoCargaForm != null){
+                cuarto_btn_persona.setVisibility(View.VISIBLE);
+                cuarto_btn_foto.setVisibility(View.VISIBLE);
+                cuarto_btn_personas.setVisibility(View.VISIBLE);
+                cuarto_btn_fotos.setVisibility(View.VISIBLE);
                 drawCargaForm();
                 return;
             }
@@ -1732,6 +1850,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         try{
 
             if(tipoCargaSelected.ClienteCargaId == null){
+                cuarto_btn_persona.setVisibility(View.VISIBLE);
+                cuarto_btn_foto.setVisibility(View.VISIBLE);
+                cuarto_btn_personas.setVisibility(View.VISIBLE);
+                cuarto_btn_fotos.setVisibility(View.VISIBLE);
                 return;
             }
 
@@ -1752,10 +1874,15 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                                 }
                                 else if(result.Estado){
 
+                                    cuarto_btn_persona.setVisibility(View.VISIBLE);
+                                    cuarto_btn_foto.setVisibility(View.VISIBLE);
+                                    cuarto_btn_personas.setVisibility(View.VISIBLE);
+                                    cuarto_btn_fotos.setVisibility(View.VISIBLE);
+
                                     Log.e("Carga",result.Data.toString());
 
                                     cargoCargaForm = result;
-                                    cargoCrud.updateFieldGeneric("UpdateTipoCarga","false",1);
+
                                     drawCargaForm();
 
                                 }
@@ -1791,6 +1918,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         if(cargo.getTipoCargaForFotos() != null && !cargo.getTipoCargaForFotos().isEmpty() ){
             if(cargo.getTipoCarga().equalsIgnoreCase(cargo.getTipoCargaForFotos())){
                 if(cargoFotoFormDTO!=null){
+                    btn_finish_carga.setVisibility(View.VISIBLE);
+                    btn_finish_cargas.setVisibility(View.VISIBLE);
+                    btn_finish.setVisibility(View.VISIBLE);
+
                     loadCargoTipoFoto();
                     return;
                 }
@@ -1809,6 +1940,9 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     public void onCompleted(Exception e, CargoFotoFormDTO result) {
 
                         if(result.Estado){
+                            btn_finish_carga.setVisibility(View.VISIBLE);
+                            btn_finish_cargas.setVisibility(View.VISIBLE);
+                            btn_finish.setVisibility(View.VISIBLE);
 
                             cargoFotoFormDTO = result;
                             cargoCrud.updateFieldGeneric("TipoCargaForFotos",cargoFotoFormDTO.ClienteCargaId,1);
@@ -2039,6 +2173,19 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                 if (!gvTipoFotoResized) {
                     gvTipoFotoResized = true;
                     resizeGridViewFotos(gvCargoFotos, cargoFotoCustomAdapter.getCount());
+                }else{
+
+                    int rows = (int)(cargoFotoCustomAdapter.getCount() / columnsCargaFoto);
+                    int remainder = cargoFotoCustomAdapter.getCount() % columnsCargaFoto;
+                    int newHeight = heightTipoFoto * rows;
+
+                    if(remainder>0){
+                        newHeight = newHeight+heightTipoFoto;
+                    }
+
+                    ViewGroup.LayoutParams params = gvCargoFotos.getLayoutParams();
+                    params.height = newHeight;
+                    gvCargoFotos.setLayoutParams(params);
                 }
             }
         });
@@ -2070,7 +2217,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
         if(cargo.getNumeroPrecintos() != null && !cargo.getNumeroPrecintos().isEmpty()){
             nroPrecintos = Integer.parseInt(cargo.getNumeroPrecintos());
-            quinto_txt_nro_precintos.setText("Precintos: "+fotoTomadas+" de "+ cargo.getNumeroPrecintos());
+            quinto_txt_nro_precintos.setText("Fotos: "+fotoTomadas+" de "+ cargo.getNumeroPrecintos());
 
             if(fotoTotal!=nroPrecintos){
 
@@ -2083,7 +2230,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     try {
                         CargoPrecintoCrud cargoPrecintoCrud = new CargoPrecintoCrud(mContext);
                         CargoPrecinto cargoPrecinto = new CargoPrecinto();
-                        cargoPrecinto.Indice = "Precinto No "+ String.valueOf(i);
+                        cargoPrecinto.Indice = "Foto "+ String.valueOf(i);
                         cargoPrecinto.CargoPrecintoId = 0;
                         _CargoPrecinto_Id = cargoPrecintoCrud.insert(cargoPrecinto);
                     } catch (Exception esca) {esca.printStackTrace();}
@@ -2133,7 +2280,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             if (c.moveToFirst()) {
 
                 do {
-                    Log.e(" CREACION PRECINTOS ", c.getString(c.getColumnIndex("Indice")));
+                    //Log.e(" CREACION PRECINTOS ", c.getString(c.getColumnIndex("Indice")));
                     dataModelsMovil.add(new PrecintoDataModel(c.getString(c.getColumnIndex("Indice")), c.getString(c.getColumnIndex("Foto"))));
                 } while (c.moveToNext());
 
@@ -2153,11 +2300,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 PrecintoDataModel datamo = dataModelsMovil.get(position);
 
-                //fotoA = false;
-                //fotoB = false;
-                //fotoC = false;
-                //fotoPrecinto = true;
-
                 if (datamo.getFoto()==null){
                     //fotoPrecinto(datamo.getNum());
                 } else {
@@ -2169,7 +2311,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         numeroPrecintos = cargo.getNumeroPrecintos();
 
 
-        quinto_txt_nro_precintos.setText("Precintos: "+ String.valueOf(fotoTomadas) +" de "+ numeroPrecintos);
+        quinto_txt_nro_precintos.setText("Fotos: "+ String.valueOf(fotoTomadas) +" de "+ numeroPrecintos);
 
         gvPrecintos.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -2191,7 +2333,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     ViewGroup.LayoutParams params = gvPrecintos.getLayoutParams();
                     params.height = newHeight;
                     gvPrecintos.setLayoutParams(params);
-
                 }
             }
         });
@@ -2211,35 +2352,9 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             }
         });
 
-        /*
-        //Resize Grid
-        ViewGroup.LayoutParams params = gvPrecintos.getLayoutParams();
-        int column_coutnt = gvPrecintos.getNumColumns();
-
-        double value = (Integer.valueOf(numeroPrecintos))*1.00/column_coutnt;
-        double fractionalPart = value % 1;
-        Double integralPart = value - fractionalPart;
-
-        Log.e("División ",String.valueOf(value));
-
-        if(fractionalPart>0){
-            integralPart=integralPart+1;
-        }
-
-        Log.e("Cantidad Columnas",String.valueOf(column_coutnt));
-
-        int Pixeles = convertDpToPixels(200,mContext);
-
-        params.height =  Pixeles*integralPart.intValue();
-        gvPrecintos.setLayoutParams(params);
-
-        */
-
     }
 
-
     String cadenaAll = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnÑñOoPpQqRrSsTtUuVvWwXxYyZz 1234567890";
-
 
     private InputFilter createFilter(String cadenaPermitida){
 
@@ -2279,6 +2394,8 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         Boolean workPrecintos = false;
         //fnfnfnnf
         Cargo cargo = cargoCrud.getCargo();
+        String valorGet = cargo.getUpdateTipoCarga();
+        Boolean limpiarDatosX = Boolean.valueOf(valorGet);
 
         String Placa = cargo.getPlaca();
 
@@ -2389,20 +2506,35 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         lnLyPrecintos.setVisibility(View.VISIBLE);
                         etxtNroPrecintos.setVisibility(View.VISIBLE);
 
+                        if(reloadCarga){
+                            etxtNroPrecintos.setText("");
+                        }
+
+                        if(limpiarDatosX){
+                            etxtNroPrecintos.setText("");
+                        }
+
                         //Inicio Filtro
                         InputFilter filterLenght = null;
                         if(item.CaracteresTamanio != null){
-                            if(Integer.valueOf(item.CaracteresTamanio)>0){
-                                filterLenght = new InputFilter.LengthFilter(Integer.valueOf(item.CaracteresTamanio));
+                            if(item.CaracteresTamanio!=""){
+                                if(Integer.valueOf(item.CaracteresTamanio)>0){
+                                    filterLenght = new InputFilter.LengthFilter(Integer.valueOf(item.CaracteresTamanio));
+                                }
+                                else{
+                                    filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
+                                }
                             }
                             else{
                                 filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
                             }
+
                         }
                         else{
                             filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
                         }
 
+                        /*
                         if(item.CaracteresPermitidos != null){
                             //cadenaNroDocumento = item.CaracteresPermitidos;
                             InputFilter filter = createFilter(item.CaracteresPermitidos);
@@ -2413,6 +2545,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                             InputFilter filter = createFilter(cadenaAll);
                             etxtNroPrecintos.setFilters(new InputFilter[] { filter,filterLenght });
                         }
+                        */
                         //Fin Filtro
 
                         if(i>=1){
@@ -2423,10 +2556,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
                         }else{
                             resIdOrder = R.id.lnLyPrecintos;
-                        }
-
-                        if(reloadCarga){
-                            etxtNroPrecintos.setText("");
                         }
 
                         if(etxtNroPrecintos.getText().toString() == null || etxtNroPrecintos.getText().toString().isEmpty())
@@ -2457,6 +2586,14 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
                         etxtCarreta.setVisibility(View.VISIBLE);
                         lnLyCarreta.setVisibility(View.VISIBLE);
+
+                        if(reloadCarga){
+                            etxtCarreta.setText("");
+                        }
+
+                        if(limpiarDatosX){
+                            etxtCarreta.setText("");
+                        }
 
                         //Inicio Filtro
                         InputFilter filterLenght = null;
@@ -2490,10 +2627,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
                         }else{
                             resIdOrder = R.id.lnLyCarreta;
-                        }
-
-                        if(reloadCarga){
-                            etxtCarreta.setText("");
                         }
 
                         if(etxtCarreta.getText().toString() == null || etxtCarreta.getText().toString().isEmpty())
@@ -2532,10 +2665,16 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                             resIdOrder = R.id.lnLyCarga;
 
                         }else{
+                            params = (RelativeLayout.LayoutParams) lnLyCarga.getLayoutParams();
+                            params.removeRule(RelativeLayout.BELOW);
                             resIdOrder = R.id.lnLyCarga;
                         }
 
                         if(reloadCarga){
+                            chBoxCarga.setChecked(false);
+                        }
+
+                        if(limpiarDatosX){
                             chBoxCarga.setChecked(false);
                         }
 
@@ -2583,6 +2722,14 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     //aplicaFiltroLenght = false;
 
                     if(reloadCarga){
+                        cuarto_edt_or.setText("");
+                    }
+
+                    if(limpiarDatosX){
+                        cuarto_edt_or.setText("");
+                    }
+
+                    if(limpiarDatosX){
                         cuarto_edt_or.setText("");
                     }
 
@@ -2671,6 +2818,9 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         etxtPV.setText("");
                     }
 
+                    if(limpiarDatosX){
+                        etxtPV.setText("");
+                    }
 
                     if(item.Visible){
                         etxtPV.setVisibility(View.VISIBLE);
@@ -2736,6 +2886,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         etxtCantidadBultos.setText("");
                     }
 
+                    if(limpiarDatosX){
+                        etxtCantidadBultos.setText("");
+                    }
+
                     if(item.Visible){
                         lnLyBultos.setVisibility(View.VISIBLE);
                         etxtCantidadBultos.setVisibility(View.VISIBLE);
@@ -2743,25 +2897,32 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         //Inicio Filtro
                         InputFilter filterLenght = null;
                         if(item.CaracteresTamanio != null){
-                            if(Integer.valueOf(item.CaracteresTamanio)>0){
-                                filterLenght = new InputFilter.LengthFilter(Integer.valueOf(item.CaracteresTamanio));
+                            if(item.CaracteresTamanio != ""){
+                                if(Integer.valueOf(item.CaracteresTamanio)>0){
+                                    filterLenght = new InputFilter.LengthFilter(Integer.valueOf(item.CaracteresTamanio));
+                                }
+                                else{
+                                    //filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
+                                }
+                            }else{
+                                //filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
                             }
-                            else{
-                                filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
-                            }
+
                         }
                         else{
-                            filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
+                            //filterLenght = new InputFilter.LengthFilter(Integer.valueOf(500));
                         }
 
+                        /*
                         if(item.CaracteresPermitidos != null){
                             InputFilter filter = createFilter(item.CaracteresPermitidos);
                             etxtCantidadBultos.setFilters(new InputFilter[] { filter,filterLenght });
                         }
                         else{
-                            InputFilter filter = createFilter(cadenaAll);
-                            etxtCantidadBultos.setFilters(new InputFilter[] { filter,filterLenght });
-                        }
+                        */
+                          //  InputFilter filter = createFilter(cadenaAll);
+                          //  etxtCantidadBultos.setFilters(new InputFilter[] { filter,filterLenght });
+                        //}
                         //Fin Filtro
 
                         if(i>=1){
@@ -2798,6 +2959,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         chBoxCargaVerificada.setChecked(false);
                     }
 
+                    if(limpiarDatosX){
+                        chBoxCargaVerificada.setChecked(false);
+                    }
+
                     if(item.Visible){
 
                         lnLyCargaVerificada.setVisibility(View.VISIBLE);
@@ -2830,6 +2995,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     txtCodigoContenedor.setText(item.Label);
 
                     if(reloadCarga){
+                        cuarto_edt_codContenedor.setText("");
+                    }
+
+                    if(limpiarDatosX){
                         cuarto_edt_codContenedor.setText("");
                     }
 
@@ -2895,6 +3064,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                         switchTamanoContenedor.setChecked(false);
                     }
 
+                    if(limpiarDatosX){
+                        switchTamanoContenedor.setChecked(false);
+                    }
+
                     if(item.Visible){
                         lnLyTamanioContenedor.setVisibility(View.VISIBLE);
 
@@ -2921,6 +3094,10 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                 case "13"://Guia o Balance
                     //txtTamanioContenedor.setText(item.Label);
                     if(reloadCarga){
+                        switchTipoGuiaBalance.setChecked(false);
+                    }
+
+                    if(limpiarDatosX){
                         switchTipoGuiaBalance.setChecked(false);
                     }
 
@@ -2957,11 +3134,14 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         if(!workPrecintos){
             cargoCrud.updateFieldGeneric("numeroPrecintos",null,1);
         }
+
+        cargoCrud.updateFieldGeneric("UpdateTipoCarga","false",1);
     }
 
     public void drawPersonaForm(){
 
         Cargo cargo = cargoCrud.getCargo();
+
 
         //Placa
         if(cargo.getPlaca() != null && !cargo.getPlaca().isEmpty()){
@@ -3029,6 +3209,46 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                 isLicencia.setChecked(true);
             }
         }
+
+        //Autenticación
+
+
+    }
+
+    public void drawPersonaAlcolimetroForm(){
+
+        lnlyAlcolimetro.setVisibility(View.GONE);
+        Cargo cargo = cargoCrud.getCargo();
+
+        //Alcolimetro
+        Log.e("Ingreso Alcoholimetro","Alcoholimetro");
+
+        if(cargoAlcolimetroDTO != null){
+            Log.e("cargoAlcolimetroDTO x",cargoAlcolimetroDTO.toString());
+            lnlyAlcolimetro.setVisibility(View.VISIBLE);
+            chBoxPruebaAlcohol.setText(cargoAlcolimetroDTO.Titulo);
+            txtPAPositivo.setText(cargoAlcolimetroDTO.Positivo);
+            txtPANegativo.setText(cargoAlcolimetroDTO.Negativo);
+        }
+        else{
+            //Ocultar:
+            //lnlyAlcolimetro.setVisibility(View.GONE);
+            Log.e("cargoAlcolimetroDTO x","Ocultar");
+            lnlyAlcolimetro.setVisibility(View.GONE);
+        }
+
+        if(cargo.getAlcolimetro() != null){
+            //Activar Check Box:
+            chBoxPruebaAlcohol.setChecked(true);
+            switchResultadoAlcoholimetro.setClickable(true);
+
+            if(cargo.getAlcolimetro().equalsIgnoreCase("true")){
+                switchResultadoAlcoholimetro.setChecked(false);
+            }else{
+                switchResultadoAlcoholimetro.setChecked(true);
+            }
+        }
+
     }
 
     //Registrar Placa
@@ -3379,6 +3599,48 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
                     db.close();
                 }
                 break;
+
+            case R.id.chBoxPruebaAlcohol:
+
+
+                //Log.e("Check Box", "ALcolimetro" );
+
+                if(checked){
+
+                    //Habilitar el swith
+                    Boolean _alcolimetro =  switchResultadoAlcoholimetro.isChecked();
+                    switchResultadoAlcoholimetro.setClickable(true);
+
+                    if(_alcolimetro){
+
+                        try {
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                            dba.execSQL("UPDATE Cargo SET Alcolimetro = 'false'");
+                            dba.close();
+                        } catch (Exception eew){}
+
+                    }
+                    else{
+
+                        try {
+                            DBHelper dbHelperAlarm = new DBHelper(mContext);
+                            SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                            dba.execSQL("UPDATE Cargo SET Alcolimetro = 'true'");
+                            dba.close();
+                        } catch (Exception eew){}
+
+                    }
+                }else{
+                    switchResultadoAlcoholimetro.setClickable(false);
+                    try {
+                        DBHelper dbHelperAlarm = new DBHelper(mContext);
+                        SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
+                        dba.execSQL("UPDATE Cargo SET Alcolimetro = "+null);
+                        dba.close();
+                    } catch (Exception eew){}
+
+                }
         }
     }
 
@@ -3411,60 +3673,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         builder.show();
 
     }
-
-    /*
-    public void visualizarImagen(String uri){
-
-        View mView;
-
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(CargoFormActivity.this);
-        mView = getLayoutInflater().inflate(R.layout.popup_visualizacion, null);
-        mBuilder.setCancelable(false);
-
-        ImageView img = (ImageView) mView.findViewById(R.id.popup_img_visualizacion);
-        Uri myUri = Uri.parse(uri);
-        img.setImageURI(myUri);
-
-        try {
-
-            mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-
-                }
-            });
-            mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-
-                    if (fotoPrecinto == 1){
-
-                        try {
-                            DBHelper dataBaseHelperB = new DBHelper(mContext);
-                            SQLiteDatabase dbU = dataBaseHelperB.getWritableDatabase();
-                            //dbU.execSQL("DELETE FROM CargoPrecinto WHERE Foto = '"+uri+"'");
-                            dbU.execSQL("UPDATE CargoPrecinto SET Foto = " + null+" WHERE Foto = '"+uri+"'");
-                            dbU.close();
-
-                        } catch (Exception e){}
-
-                    }
-
-                    loadPrecinto();
-
-                    dialog.dismiss();
-
-                }
-            });
-
-            mBuilder.setView(mView);
-            AlertDialog dialog = mBuilder.create();
-            dialog.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-    */
 
     public void visualizarImagen(String uri,int tipoFoto){
 
@@ -3578,6 +3786,7 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
     public void callCameraAsync(){
         //Log.e(TAG,"Call Camera");
+        /*
         try{
             File filecc = createImageFile();//new File(path);
             Uri outputFileUri = Uri.fromFile( filecc );
@@ -3588,6 +3797,32 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         catch (Exception e){
             //Log.e(TAG,e.toString());
         }
+        */
+        /*
+
+startActivityForResult(pictureIntent, REQUEST_CODE_PHOTO_TAKEN_ASYNC);
+
+        */
+
+        Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try{
+                photoFile = createImageFile();
+            }
+            catch (IOException ex){
+
+            }
+            if(photoFile != null){
+                String appId = mContext.getPackageName();
+                appId = appId+".provider";
+                Log.e("auth",appId);
+                Uri photoURI = FileProvider.getUriForFile(mContext,appId, photoFile);
+                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(pictureIntent,REQUEST_CODE_PHOTO_TAKEN_ASYNC);
+            }
+        }
+
     }
 
     private File createImageFile() throws IOException {
@@ -3732,10 +3967,14 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
     }
 
     private void resizeGridViewFotos(GridView gridView, int items) {
+
         ViewGroup.LayoutParams params = gridView.getLayoutParams();
-        //int oneRowHeight = gridView.getHeight();
+
         int columns = gridView.getNumColumns();
         int rows = 0;
+
+        columnsCargaFoto = columns;
+
 
         if(heightTipoFoto==0){
 
@@ -3743,42 +3982,13 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
             int remainder = items % columns;
 
             if(remainder>0){
-                //newHeight = newHeight+oneRowHeight;
                 rows++;
             }
 
-            heightTipoFoto = convertDpToPixels(210,mContext);//oneRowHeight;
-        }
-        else{
-
-            rows = (int)(items / columns);
-            int remainder = items % columns;
-
-            if(remainder>0){
-                //newHeight = newHeight+oneRowHeight;
-                rows++;
-            }
-
-            //oneRowHeight = heightTipoFoto;
+            heightTipoFoto = convertDpToPixels(210,mContext);
         }
 
-
-        //columns = gridView.getNumColumns();
-
-
-        //int newHeight = oneRowHeight * rows;
-
-
-        Log.e("rows FF: ",String.valueOf(rows));
-        /*
-
-        Log.e("columns: ",String.valueOf(columns));
-        Log.e("rows: ",String.valueOf(rows));
-        Log.e("oneRowHeight",String.valueOf(oneRowHeight));
-        */
-        //Log.e("",String.valueOf());
         params.height = heightTipoFoto*rows;
-        //params.height = oneRowHeight+(rows*50);
         gridView.setLayoutParams(params);
     }
 
@@ -3787,8 +3997,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
         ViewGroup.LayoutParams params = gridView.getLayoutParams();
 
         //Se obtiene el alto total
-        int oneRowHeight = gridView.getHeight();
-        //Log.e("totalRowHeight: ",String.valueOf(oneRowHeight));
         int columns = gridView.getNumColumns();
         int rows = 0;
 
@@ -3798,26 +4006,13 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
             rows = (int)(items / columns);
             int remainder = items % columns;
-            //int newHeight = oneRowHeight * rows;
 
             if(remainder>0){
                 rows++;
             }
 
-            //heightFotoPrecinto = oneRowHeight/rows;
             heightFotoPrecinto = convertDpToPixels(210,mContext);
         }
-        else{
-            oneRowHeight = heightFotoPrecinto;
-        }
-
-        //Log.e("items: ",String.valueOf(items));
-        //Log.e("heightFotoPrecinto: ",String.valueOf(heightFotoPrecinto));
-        //Log.e("rows: ",String.valueOf(rows));
-        //Log.e("oneRowHeight",String.valueOf(oneRowHeight));
-
-        //Log.e("",String.valueOf());
-        //params.height = newHeight;
 
         params.height = (heightFotoPrecinto*rows);
         gridView.setLayoutParams(params);
@@ -3866,7 +4061,6 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
     }
 
-
     public void visualizarImagenX(String uri){
 
         View mView;
@@ -3903,32 +4097,5 @@ public class CargoFormActivity extends AppCompatActivity implements ViewPager.On
 
     }
 
-    private boolean enabled = false;
-
-    /*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (this.enabled) {
-            return super.onTouchEvent(event);
-        }
-
-        return false;
-    }
-
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (this.enabled) {
-            return super.onInterceptTouchEvent(event);
-        }
-
-        return false;
-    }
-
-    public void setPagingEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    */
 
 }

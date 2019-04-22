@@ -143,7 +143,7 @@ public class CargoFormFotoCrud {
         String createdq = new SimpleDateFormat(formatofecha, Locale.getDefault()).format(afterAddingTenMins);
 
         //clienteCargaFotoId
-        String selectQuery = "SELECT cargoFormFotoId,codigoSincronizacion,clienteCargaFotoId,indice,filePath,created FROM CargoFormFoto WHERE created <= '"+createdq+"' LIMIT 10";
+        String selectQuery = "SELECT cargoFormFotoId,codigoSincronizacion,clienteCargaFotoId,indice,filePath,created FROM CargoFormFoto WHERE created <= '"+createdq+"' LIMIT 25";
         Cursor c = db.rawQuery(selectQuery, new String[]{});
 
         if (c.moveToFirst()) {

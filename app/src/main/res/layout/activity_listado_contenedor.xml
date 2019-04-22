@@ -1,80 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_listado_contenedor"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context="com.idslatam.solmar.Patrol.ListadoContenedor">
 
-    <LinearLayout
-        android:id="@+id/titleBar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="PATROL"
-            android:textColor="@color/squarecamera__white"
-            style="?android:attr/textAppearanceMedium"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:padding="7dp" />
-
-    </LinearLayout>
-
-    <!-- Editext for Search -->
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        style="?android:attr/textAppearanceMedium"
-        android:text="Buscar "
-        android:inputType="textVisiblePassword"
-        android:id="@+id/titlePatrolList"/>
-
-    <LinearLayout
-        android:layout_marginTop="2dp"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
-
-        <!-- Editext for Search -->
-        <EditText android:id="@+id/inputSearch"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/textAppearanceMedium"
-            android:layout_weight="1"
-            android:hint="Ingrese número"
-            android:inputType="textVisiblePassword"/>
-
-        <Button
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            style="?android:attr/textAppearanceMedium"
-            android:textColor="@color/squarecamera__white"
-            android:onClick="Nuevo"
-            android:text="SYNC"/>
+            android:orientation="vertical"
+            android:layout_above="@+id/btns_buttom"
+            android:padding="@dimen/body">
 
-        <Button
+            <LinearLayout
+                android:id="@+id/titleBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PATROL"
+                    android:textColor="@color/squarecamera__white"
+                    style="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:padding="7dp" />
+
+            </LinearLayout>
+
+            <!-- Editext for Search -->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                style="?android:attr/textAppearanceMedium"
+                android:text="Buscar "
+                android:inputType="textVisiblePassword"
+                android:id="@+id/titlePatrolList"
+                android:layout_below="@+id/titleBar"/>
+
+            <LinearLayout
+                android:id="@+id/lnLySearch"
+                android:layout_marginTop="2dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/titlePatrolList">
+
+                <!-- Editext for Search -->
+                <EditText android:id="@+id/inputSearch"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/textAppearanceMedium"
+                    android:layout_weight="1"
+                    android:hint="Ingrese número"
+                    android:inputType="textVisiblePassword"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.5"
+                    style="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/squarecamera__white"
+                    android:onClick="Nuevo"
+                    android:text="SYNC"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    style="?android:attr/textAppearanceMedium"
+                    android:onClick="crearContenedor"
+                    android:textColor="@color/squarecamera__white"
+                    android:text="NUEVO"/>
+
+            </LinearLayout>
+
+            <!-- List View -->
+            <ListView
+                android:id="@+id/list_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/lnLySearch">
+
+
+            </ListView>
+
+        </RelativeLayout>
+
+        <LinearLayout
+
+            android:id="@+id/btns_buttom_list_bienes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            style="?android:attr/textAppearanceMedium"
-            android:onClick="crearContenedor"
-            android:textColor="@color/squarecamera__white"
-            android:text="NUEVO"/>
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:gravity="center">
 
-    </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/colorPrimary"
+                android:paddingLeft="10dp"
+                android:background="@drawable/btn_border_patrol"
+                style="?android:attr/textAppearanceMedium"
+                android:onClick="retornaPatrol"
+                android:textStyle="bold"
+                android:text="Cancelar"/>
 
-    <!-- List View -->
-    <ListView
-        android:id="@+id/list_view"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        </LinearLayout>
 
-</LinearLayout>
+    </RelativeLayout>
+
+
+</ScrollView>

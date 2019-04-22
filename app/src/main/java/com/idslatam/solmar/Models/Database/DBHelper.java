@@ -30,7 +30,7 @@ import com.idslatam.solmar.Pruebas.Entities.AlarmTrack;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "SolgisDB";
 
     public DBHelper(Context context) {
@@ -182,6 +182,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Cargo.KEY_EppBotas + " TEXT,"
                 + Cargo.KEY_Dni + " TEXT,"
                 + Cargo.KEY_isLicencia + " TEXT,"
+                + Cargo.KEY_Alcolimetro + " TEXT,"
                 + Cargo.KEY_NroOR + " TEXT,"
                 + Cargo.KEY_isIngreso + " TEXT,"
                 + Cargo.KEY_fotoDelantera + " TEXT,"
