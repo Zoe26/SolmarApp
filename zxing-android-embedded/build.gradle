@@ -4,7 +4,7 @@ apply plugin: 'com.jfrog.bintray'
 
 
 
-ext.artifactId = 'zxing-android-embedded'
+ext.artifactId ='zxing-android-embedded'
 
 dependencies {
     compile project.zxingCore
@@ -47,6 +47,9 @@ android {
         unitTests.returnDefaultValues = true
     }
     buildToolsVersion '25.0.0'
+    defaultConfig {
+        minSdkVersion = 9
+    }
 }
 
 task sourceJar(type: Jar) {

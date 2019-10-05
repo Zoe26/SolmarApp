@@ -12,6 +12,8 @@ public class ScreenReceiver extends BroadcastReceiver {
     public ScreenReceiver() {
     }
 
+
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -20,7 +22,7 @@ public class ScreenReceiver extends BroadcastReceiver {
         if ("android.intent.action.SCREEN_OFF".equals(intent.getAction()))
         {
 
-            try {
+           try {
                 DBHelper dbHelperAlarm = new DBHelper(context);
                 SQLiteDatabase dba = dbHelperAlarm.getWritableDatabase();
                 dba.execSQL("UPDATE Configuration SET isScreen = 'false'");

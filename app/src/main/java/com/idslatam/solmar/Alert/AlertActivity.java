@@ -360,7 +360,7 @@ public class AlertActivity extends AppCompatActivity {
         mostrarDatos();
 
     }
-
+//--------------------------
     public void mostrarDatos(){
 
         Calendar hora = Calendar.getInstance();

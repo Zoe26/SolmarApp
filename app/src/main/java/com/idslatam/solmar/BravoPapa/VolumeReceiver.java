@@ -479,6 +479,4 @@ public class VolumeReceiver extends BroadcastReceiver {
             return null;
         }
     }
-
-
 }
