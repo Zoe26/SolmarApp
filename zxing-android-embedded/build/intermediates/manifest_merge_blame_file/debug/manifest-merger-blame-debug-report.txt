@@ -1,0 +1,88 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3 Copyright (C) 2008 ZXing authors
+4
+5 Licensed under the Apache License, Version 2.0 (the "License");
+6 you may not use this file except in compliance with the License.
+7 You may obtain a copy of the License at
+8
+9      http://www.apache.org/licenses/LICENSE-2.0
+10
+11 Unless required by applicable law or agreed to in writing, software
+12 distributed under the License is distributed on an "AS IS" BASIS,
+13 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+14 See the License for the specific language governing permissions and
+15 limitations under the License.
+16-->
+17<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+18    package="com.google.zxing.client.android" >
+19
+20    <uses-sdk android:minSdkVersion="9" />
+20-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml
+21
+22    <uses-permission android:name="android.permission.CAMERA" />
+22-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:19:3-62
+22-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:19:20-60
+23
+24    <!-- Support Android 2.3+. -->
+25
+26
+27    <!-- Don't require camera, as this requires a rear camera. This allows it to work on the Nexus 7 -->
+28    <uses-feature
+28-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:24:3-82
+29        android:name="android.hardware.camera"
+29-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:24:17-55
+30        android:required="false" />
+30-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:24:56-80
+31    <uses-feature
+31-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:25:3-88
+32        android:name="android.hardware.camera.front"
+32-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:25:17-61
+33        android:required="false" />
+33-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:25:62-86
+34    <!-- TODO replace above two with next line after Android 4.2 -->
+35    <!-- <uses-feature android:name="android.hardware.camera.any"/> -->
+36    <uses-feature
+36-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:28:3-92
+37        android:name="android.hardware.camera.autofocus"
+37-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:28:17-65
+38        android:required="false" />
+38-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:28:66-90
+39    <uses-feature
+39-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:29:3-88
+40        android:name="android.hardware.camera.flash"
+40-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:29:17-61
+41        android:required="false" />
+41-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:29:62-86
+42    <uses-feature
+42-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:30:3-93
+43        android:name="android.hardware.screen.landscape"
+43-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:30:17-65
+44        android:required="false" />
+44-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:30:66-90
+45    <uses-feature
+45-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:31:3-80
+46        android:name="android.hardware.wifi"
+46-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:31:17-53
+47        android:required="false" />
+47-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:31:54-78
+48
+49    <application>
+49-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:34:3-41:17
+50        <activity
+50-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:35:7-40:66
+51            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+51-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:35:17-78
+52            android:clearTaskOnLaunch="true"
+52-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:36:17-49
+53            android:screenOrientation="sensorLandscape"
+53-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:37:17-60
+54            android:stateNotNeeded="true"
+54-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:38:17-46
+55            android:theme="@style/zxing_CaptureTheme"
+55-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:39:17-58
+56            android:windowSoftInputMode="stateAlwaysHidden" />
+56-->C:\Users\ZOILA\Downloads\SolmarApp\zxing-android-embedded\AndroidManifest.xml:40:17-64
+57    </application>
+58
+59</manifest>
